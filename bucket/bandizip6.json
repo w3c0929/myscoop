@@ -7,31 +7,27 @@
         "url": "https://www.bandisoft.com/bandizip/help/eula/"
     },
     "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18-portable.zip",
-    "hash": "sha256:2c0e9ce4839be9fb9dee9f13fef194abc0eab86c1883c6d1970c1ae433207776",
+    "hash": "sha256:eb146f62b5aa15bad50efb9bf887ad7598de8485ed8e78c43616ac42c68fd09d",
     "post_install": [
         "$guid = '{5B69A6B4-393B-459C-8EBB-214237A9E7AC}'",
-        "if ($architecture -eq '64bit') { regsvr32 /s \"$dir\\bdzshl64.dll\" }",
-        "elseif ($architecture -eq 'arm64') { regsvr32 /s \"$dir\\bdzshl64a.dll\" }",
-        "else { regsvr32 /s \"$dir\\bdzshl32.dll\" }",
+        "regsvr32 /s \"$dir\\bdzshl64.dll\"",
         "$regRoot = 'HKCU:\\Software\\Classes'",
-        "@('*\\ShellEx\\ContextMenuHandlers', '*\\ShellEx\\DragDropHandlers', 'Directory\\ShellEx\\ContextMenuHandlers', 'Directory\\ShellEx\\DragDropHandlers', 'Drive\\ShellEx\\ContextMenuHandlers', 'Directory\\Background\\ShellEx\\ContextMenuHandlers') | ForEach-Object { New-Item -Path \"$regRoot\\$_\\AABdzCtx\" -Force | Out-Null; Set-ItemProperty -Path \"$regRoot\\$_\\AABdzCtx\" -Name '(default)' -Value $guid }"
+        "@('*\\ShellEx\\ContextMenuHandlers', '*\\ShellEx\\DragDropHandlers', 'Directory\\ShellEx\\ContextMenuHandlers', 'Directory\\ShellEx\\DragDropHandlers', 'Drive\\ShellEx\\ContextMenuHandlers', 'Directory\\Background\\ShellEx\\ContextMenuHandlers') | ForEach-Object { New-Item -Path \"$regRoot\\$_\\BZContextMenu\" -Force | Out-Null; Set-ItemProperty -Path \"$regRoot\\$_\\BZContextMenu\" -Name '(default)' -Value $guid }"
     ],
     "pre_uninstall": [
-        "if ($architecture -eq '64bit') { regsvr32 /s /u \"$dir\\bdzshl64.dll\" }",
-        "elseif ($architecture -eq 'arm64') { regsvr32 /s /u \"$dir\\bdzshl64a.dll\" }",
-        "else { regsvr32 /s /u \"$dir\\bdzshl32.dll\" }",
+        "regsvr32 /s /u \"$dir\\bdzshl64.dll\"",
         "$regRoot = 'HKCU:\\Software\\Classes'",
-        "@('*\\ShellEx\\ContextMenuHandlers\\AABdzCtx', '*\\ShellEx\\DragDropHandlers\\AABdzCtx', 'Directory\\ShellEx\\ContextMenuHandlers\\AABdzCtx', 'Directory\\ShellEx\\DragDropHandlers\\AABdzCtx', 'Drive\\ShellEx\\ContextMenuHandlers\\AABdzCtx', 'Directory\\Background\\ShellEx\\ContextMenuHandlers\\AABdzCtx') | ForEach-Object { Remove-Item -Path \"$regRoot\\$_\" -Recurse -Force -ErrorAction SilentlyContinue }"
+        "@('*\\ShellEx\\ContextMenuHandlers\\BZContextMenu', '*\\ShellEx\\DragDropHandlers\\BZContextMenu', 'Directory\\ShellEx\\ContextMenuHandlers\\BZContextMenu', 'Directory\\ShellEx\\DragDropHandlers\\BZContextMenu', 'Drive\\ShellEx\\ContextMenuHandlers\\BZContextMenu', 'Directory\\Background\\ShellEx\\ContextMenuHandlers\\BZContextMenu') | ForEach-Object { Remove-Item -Path \"$regRoot\\$_\" -Recurse -Force -ErrorAction SilentlyContinue }"
     ],
     "bin": [
-        "Bandizip64.exe",
-        "bz.exe"
+        "Bandizip.exe",
+        "bc.exe"
     ],
     "shortcuts": [
         [
-            "Bandizip64.exe",
+            "Bandizip.exe",
             "Bandizip 6.18"
         ]
     ],
-    "notes": "Shell extension registered for right-click context menu. If menu doesn't appear, restart Explorer (taskkill /f /im explorer.exe && start explorer.exe)."
+    "notes": "Shell extension registered for right-click context menu. Restart Explorer (taskkill /f /im explorer.exe && start explorer.exe) if menu doesn't appear."
 }
