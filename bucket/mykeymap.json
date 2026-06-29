@@ -1,0 +1,23 @@
+{
+    "version": "2.0-beta33",
+    "description": "AutoHotkey-based keyboard mapping and productivity tool",
+    "homepage": "https://xianyukang.com/MyKeymap.html",
+    "license": "GPL-3.0",
+    "url": "https://github.com/xianyukang/MyKeymap/releases/download/v2.0-beta33/MyKeymap-2.0-beta33.7z",
+    "hash": "sha256:b4c769a0324ed8c2615b56f26102713fdf25915c1b38eb33c3511a32b54e6177",
+    "extract_dir": "MyKeymap-2.0-beta33",
+    "bin": "bin\\settings.exe",
+    "shortcuts": [
+        [
+            "bin\\settings.exe",
+            "MyKeymap Settings"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/xianyukang/MyKeymap"
+    },
+    "autoupdate": {
+        "url": "https://github.com/xianyukang/MyKeymap/releases/download/v$version/MyKeymap-$version.7z",
+        "extract_dir": "MyKeymap-$version"
+    }
+}

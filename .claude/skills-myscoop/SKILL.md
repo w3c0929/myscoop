@@ -38,10 +38,12 @@ for a in r['assets']:
 
 根据 release 资产判断采用哪种方案：
 
-#### 情况 A：有 portable .zip（首选）
+#### 情况 A：有 portable .zip/.7z（首选）
 
-> 条件：release 中包含 `portable.zip` 或普通 `.zip` 文件（非 Setup.exe）
-> 参考：ContextMenuMgr
+> 条件：release 中包含 `portable.zip`、`.7z` 或普通 `.zip` 文件（非 Setup.exe）
+> 参考：ContextMenuMgr（多架构 zip）、MyKeymap（单包 7z）
+>
+> Scoop 原生支持 .zip 和 .7z 格式，无需额外工具。
 
 1. **下载并查看 zip 内部结构**（确定有无顶层目录）：
 
