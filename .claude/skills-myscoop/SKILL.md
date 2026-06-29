@@ -170,14 +170,16 @@ certutil -hashfile _temp.zip SHA256
     "url": "https://github.com/{owner}/{repo}/releases/download/$version/$version.zip",
     "hash": "sha256:{hash}",
     "depends": "lessmsi",
-    "post_install": [
-        "Push-Location \"$dir\"",
-        "lessmsi xo \"{msi_filename}.msi\"",
-        "Get-ChildItem \".\\{ProductName}\\SourceDir\\{AppName}\\*\" -Recurse | Move-Item -Destination \"$dir\" -Force",
-        "Remove-Item \".\\{ProductName}\" -Recurse -Force -ErrorAction SilentlyContinue",
-        "Remove-Item \"{msi_filename}.msi\" -Force -ErrorAction SilentlyContinue",
-        "Pop-Location"
-    ],
+    "installer": {
+        "script": [
+            "Push-Location \"$dir\"",
+            "lessmsi xo \"{msi_filename}.msi\"",
+            "Get-ChildItem \".\\{ProductName}\\SourceDir\\{AppName}\\*\" -Recurse | Move-Item -Destination \"$dir\" -Force",
+            "Remove-Item \".\\{ProductName}\" -Recurse -Force -ErrorAction SilentlyContinue",
+            "Remove-Item \"{msi_filename}.msi\" -Force -ErrorAction SilentlyContinue",
+            "Pop-Location"
+        ]
+    },
     "bin": "{main_exe}",
     "shortcuts": [["{main_exe}", "{Display Name}"]],
     "checkver": { "github": "https://github.com/{owner}/{repo}" },
@@ -187,7 +189,9 @@ certutil -hashfile _temp.zip SHA256
 }
 ```
 
-> **注意**：`post_install` 中 `<ProductName>` 和 `<AppName>` 来自 lessmsi 实际提取的目录名，必须通过实测确定。`checkver` 的 `$version` 不带 `v` 前缀则 tag 也不带 `v`。
+> **关键**：必须用 `installer.script` 而非 `post_install`。因为 Scoop 的执行顺序是 `pre_install → installer.script → 创建shim → post_install`。如果提取放在 `post_install`，shim 创建时 exe 还不存在，会报 `File doesn't exist`。
+>
+> `<ProductName>` 和 `<AppName>` 来自 lessmsi 实际提取的目录名，必须通过实测确定。`checkver` 的 `$version` 不带 `v` 前缀则 tag 也不带 `v`。
 
 #### 情况 D：只有 Setup.exe 安装包（最后手段）
 

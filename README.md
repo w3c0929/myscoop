@@ -272,14 +272,16 @@ git push origin main
     "url": "https://github.com/yingDev/WGestures/releases/download/1.8.3.0/1.8.3.0.zip",
     "hash": "sha256:ebab8bff932e735a9f34ff5581df2d2d32fd2265c9532077dd20a3d2324f87eb",
     "depends": "lessmsi",
-    "post_install": [
-        "Push-Location \"$dir\"",
-        "lessmsi xo \"Install WGestures.msi\"",
-        "Get-ChildItem \".\\Install WGestures\\SourceDir\\WGestures\\*\" -Recurse | Move-Item -Destination \"$dir\" -Force",
-        "Remove-Item \".\\Install WGestures\" -Recurse -Force",
-        "Remove-Item \"Install WGestures.msi\" -Force",
-        "Pop-Location"
-    ],
+    "installer": {
+        "script": [
+            "Push-Location \"$dir\"",
+            "lessmsi xo \"Install WGestures.msi\"",
+            "Get-ChildItem \".\\Install WGestures\\SourceDir\\WGestures\\*\" -Recurse | Move-Item -Destination \"$dir\" -Force",
+            "Remove-Item \".\\Install WGestures\" -Recurse -Force",
+            "Remove-Item \"Install WGestures.msi\" -Force",
+            "Pop-Location"
+        ]
+    },
     "bin": "WGestures.exe",
     "shortcuts": [["WGestures.exe", "WGestures"]],
     "checkver": { "github": "https://github.com/yingDev/WGestures" },
