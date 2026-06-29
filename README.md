@@ -9,6 +9,7 @@
 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.0 |
 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具，释放 AppData 大量空间 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
 | [WGestures](https://github.com/yingDev/WGestures) — Windows 全局鼠标手势（上游已归档，社区维护） | `scoop install wgestures` | portable zip（自托管） | 1.8.5.0 |
+| [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 无广告压缩工具（最后免费版，社区维护） | `scoop install bandizip6` | portable zip（NSIS 解包自托管） | 6.18 |
 
 ## 快速开始（用户）
 
@@ -312,6 +313,32 @@ git push origin main
 
 自托管流程：`lessmsi 提取 MSI → 打包为 portable zip → gh release create → 更新 manifest`。不再设 `checkver`/`autoupdate`（上游已死，无需自动检查）。
 
+**模式 5 — NSIS 安装器 7z 直接解包**（`bandizip6.json`）
+
+部分安装器（NSIS 等）本身就是 7z 自解压包，`7z l` 看到 `Type = 7z` 即可直接提取：
+
+```bash
+# 检测是否可解包
+7z l Setup.exe | grep "Type = 7z"
+# 提取
+7z x Setup.exe -o_output -y
+```
+
+```json
+{
+    "version": "6.18",
+    "description": "All-in-one compression tool (v6.18 - last ad-free version, community-maintained)",
+    "homepage": "https://www.bandisoft.com/bandizip/old/6/",
+    "license": { "identifier": "Freeware", "url": "https://www.bandisoft.com/bandizip/help/eula/" },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18-portable.zip",
+    "hash": "sha256:2c0e9ce4839be9fb9dee9f13fef194abc0eab86c1883c6d1970c1ae433207776",
+    "bin": ["Bandizip64.exe", "bz.exe"],
+    "shortcuts": [["Bandizip64.exe", "Bandizip 6.18"]]
+}
+```
+
+关键点：NSIS 安装器 → `7z x` 直接提取 → 打包 portable zip → 自托管。`bin` 可设数组暴露多个 exe。License 为非标准 SPDX 时用对象格式。
+
 ### 使用 AI Skill 自动化（推荐）
 
 项目内置了 `.claude/skills-myscoop/SKILL.md`，向 AI 助手发送以下指令即可自动完成收录：
@@ -481,7 +508,8 @@ myscoop/
 ├── bucket/           ← 所有 manifest JSON 放这里
 │   ├── contextmenumgr-plus.json   (模式1：多架构 zip)
 │   ├── windowsclear.json           (模式2：单 exe)
-│   └── wgestures.json              (模式4：自托管 portable zip)
+│   ├── wgestures.json              (模式4：自托管 portable zip)
+│   └── bandizip6.json              (模式5：NSIS 解包自托管)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能

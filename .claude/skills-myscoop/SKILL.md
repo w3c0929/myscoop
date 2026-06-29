@@ -193,18 +193,41 @@ certutil -hashfile _temp.zip SHA256
 >
 > `<ProductName>` 和 `<AppName>` 来自 lessmsi 实际提取的目录名，必须通过实测确定。`checkver` 的 `$version` 不带 `v` 前缀则 tag 也不带 `v`。
 
-#### 情况 D：只有 Setup.exe 安装包（最后手段）
+#### 情况 D：只有 Setup.exe 安装包
 
 > 条件：release 只有 Setup.exe，没有 portable/zip/msi
+> 参考：Bandizip 6.18
 
-1. 先尝试用 7-Zip 直接解压 Setup.exe：
+1. 先用 7z 检测安装器类型：
 
 ```bash
-7z l Setup.exe | head -30
+7z l Setup.exe 2>&1 | grep "Type = "
 ```
 
-2. 如果 7-Zip 能解压 → 参照情况 A 处理
-3. 如果不能解压 → 告知用户需要等作者发布 portable 版，或考虑用 `innounp`
+2. 分类型处理：
+
+| 7z 检测结果 | 处理方式 |
+|------------|---------|
+| `Type = 7z` | **NSIS 安装器 → 直接 7z 提取**，打包为 portable zip，参照情况 F 自托管 |
+| `Type = PE` 且无 `7z` | 可能是 Inno Setup → 尝试 `innounp` 解包 |
+| 无法识别 | 告知用户等待 portable 版，或考虑 `lessmsi`（如果是 MSI 内嵌） |
+
+3. **NSIS 解包流程**（最常见的可解包安装器）：
+
+```bash
+# 查看文件列表
+7z l Setup.exe | tail -30
+# 提取
+7z x Setup.exe -o_output -y
+# 确认主 exe 和文件结构
+ls output/
+# 打包为便携 zip
+cd output && 7z a -tzip ../app-portable.zip * -r -mx9
+# 计算 hash
+certutil -hashfile ../app-portable.zip SHA256
+```
+
+4. 如果所有方式都无法解包 → 告知用户该软件不适合 Scoop 收录
 
 #### 情况 E：framework-dependent 额外依赖
 
