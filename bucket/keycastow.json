@@ -1,0 +1,12 @@
+{
+    "version": "1.0",
+    "description": "KeyCastOW - on-screen keycast display for presentations and tutorials",
+    "homepage": "https://github.com/brookhong/KeyCastOW",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/brookhong/KeyCastOW/blob/master/LICENSE"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vKeyCastOW/KeyCastOW.zip",
+    "hash": "sha256:33d001c9b2e287886938fc7ef5cb1238bfc9673967b339f846d3ed829cc5a2b2",
+    "post_install": "Start-Process \"$dir\\KeyCastOW.exe\""
+}
