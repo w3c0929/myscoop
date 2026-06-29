@@ -8,6 +8,7 @@
 |------|---------|------|------|
 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.0 |
 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具，释放 AppData 大量空间 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
+| [WGestures](https://github.com/yingDev/WGestures) — Windows 全局鼠标手势 | `scoop install wgestures` | zip 内含 MSI（lessmsi 解包） | 1.8.3.0 |
 
 ## 快速开始（用户）
 
@@ -59,29 +60,36 @@ scoop uninstall contextmenumgr-plus
 
 ### 第一步：分析目标项目
 
-打开目标软件的 GitHub Releases 页面，确认以下信息：
+通过 GitHub API 快速获取项目信息（比打开网页快 10 倍，且不会因页面渲染失败报错）：
 
-| 关键信息       | 说明                                                              |
-| -------------- | ----------------------------------------------------------------- |
-| 便携版/安装版  | Scoop 强烈偏好 portable/绿色版（.zip），避免使用安装版（.exe）    |
-| 架构支持       | x64 / x86 / arm64，分别对应 64bit / 32bit / arm64                 |
-| zip 内部结构   | 解压后是否有顶层目录？主 exe 在哪？                                |
-| License        | GitHub 项目主页右侧可查看，或通过 `api.github.com/repos/owner/repo/license` |
-| 版本号         | Tag 格式（如 `v1.7.0`），确认 `v` 前缀                            |
+| 关键信息       | API / 方法                                                      |
+| -------------- | --------------------------------------------------------------- |
+| 项目描述/License | `curl -s api.github.com/repos/{owner}/{repo}` + `python3 -m json` |
+| Release 资产   | `curl -s api.github.com/repos/{owner}/{repo}/releases/latest`   |
+| 架构支持       | 看 asset 文件名中的 x64/x86/arm64                                |
+| zip 内部结构   | `curl -L -o temp.zip "{url}" && 7z l temp.zip`                  |
+| 版本号         | Tag 名（注意有无 `v` 前缀）                                      |
 
-**以 ContextMenuMgr 为例：**
+**两条核心命令（并行执行）：**
 
-```powershell
-# 查看 GitHub 项目信息
-curl -s "https://api.github.com/repos/PLFJY/ContextMenuMgr" | Select-String -Pattern '"description"|"license"|"homepage"'
+```bash
+# 1. 项目元信息（描述、License）
+curl -s "https://api.github.com/repos/{owner}/{repo}" | python3 -c "
+import sys,json; r=json.load(sys.stdin)
+print('Description:', r.get('description'))
+print('License:', r.get('license',{}).get('spdx_id','unknown'))
+"
 
-# 查看 Release 文件
-curl -s "https://api.github.com/repos/PLFJY/ContextMenuMgr/releases/latest" | Select-String -Pattern '"name"|"browser_download_url"'
-
-# 下载并查看 zip 内部结构（关键是确认有没有顶层目录）
-curl -L -o temp.zip "https://github.com/owner/repo/releases/download/v1.0/app.zip"
-7z l temp.zip
+# 2. 最新 Release 资产（文件名、大小、下载 URL）
+curl -s "https://api.github.com/repos/{owner}/{repo}/releases/latest" | python3 -c "
+import sys,json; r=json.load(sys.stdin)
+print('Tag:', r['tag_name'])
+for a in r['assets']:
+    print(f'  {a[\"name\"]}  ({a[\"size\"]} bytes)')
+"
 ```
+
+> 为什么用 API 而不是打开网页？GitHub API 返回纯 JSON（几 KB），网页则是完整 HTML（几百 KB）。前者更快、更稳定，且可直接用 `jsonpath` 精确提取字段。
 
 **判断 extract_dir（重要）：**
 
@@ -99,12 +107,10 @@ config.ini
 
 ### 第二步：生成 SHA256
 
-```powershell
-# 方式 1：下载后本地计算
-curl -L -o temp.zip "<下载链接>"
-certutil -hashfile temp.zip SHA256
-
-# 方式 2：如果 release 页面已经贴了 sha256，直接复制使用
+```bash
+# 下载后本地计算（唯一可靠来源，不要用网页上贴的 hash）
+curl -L -o _temp.zip "<下载链接>"
+certutil -hashfile _temp.zip SHA256
 ```
 
 **Hash 格式**：在 manifest 中写为 `sha256:xxxxxxxx`。
@@ -255,9 +261,39 @@ git push origin main
 
 关键区别：模式 1 用 `architecture` 块，模式 2 用顶层 `url`/`hash`。
 
+**模式 3 — zip 内含 MSI**（`wgestures.json`）
+
+适用于 release 提供 zip，但 zip 内只有一个 `.msi` 安装包的项目。需要 `lessmsi` 解包：
+
+```json
+{
+    "version": "1.8.3.0",
+    "license": "GPL-2.0",
+    "url": "https://github.com/yingDev/WGestures/releases/download/1.8.3.0/1.8.3.0.zip",
+    "hash": "sha256:ebab8bff932e735a9f34ff5581df2d2d32fd2265c9532077dd20a3d2324f87eb",
+    "depends": "lessmsi",
+    "post_install": [
+        "Push-Location \"$dir\"",
+        "lessmsi xo \"Install WGestures.msi\"",
+        "Get-ChildItem \".\\Install WGestures\\SourceDir\\WGestures\\*\" -Recurse | Move-Item -Destination \"$dir\" -Force",
+        "Remove-Item \".\\Install WGestures\" -Recurse -Force",
+        "Remove-Item \"Install WGestures.msi\" -Force",
+        "Pop-Location"
+    ],
+    "bin": "WGestures.exe",
+    "shortcuts": [["WGestures.exe", "WGestures"]],
+    "checkver": { "github": "https://github.com/yingDev/WGestures" },
+    "autoupdate": {
+        "url": "https://github.com/yingDev/WGestures/releases/download/$version/$version.zip"
+    }
+}
+```
+
+关键点：zip 内 MSI → `depends: lessmsi` → `post_install` 提取并将文件移到 `$dir`。
+
 ### 使用 AI Skill 自动化（推荐）
 
-项目内置了 `.claude/skills/scoop-add.md`，向 AI 助手发送以下指令即可自动完成收录：
+项目内置了 `.claude/skills-myscoop/SKILL.md`，向 AI 助手发送以下指令即可自动完成收录：
 
 ```
 把这个项目加到 myscoop：<GitHub 仓库链接>
@@ -423,10 +459,11 @@ git push origin main
 myscoop/
 ├── bucket/           ← 所有 manifest JSON 放这里
 │   ├── contextmenumgr-plus.json   (模式1：多架构 zip)
-│   └── windowsclear.json           (模式2：单 exe)
+│   ├── windowsclear.json           (模式2：单 exe)
+│   └── wgestures.json              (模式3：zip 内含 MSI)
 ├── .claude/
-│   └── skills/
-│       └── scoop-add.md            ← AI 自动收录技能
+│   └── skills-myscoop/
+│       └── SKILL.md            ← AI 自动收录技能
 ├── README.md         ← 这个文件
 └── .gitignore        ← 可选
 ```

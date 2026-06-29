@@ -120,9 +120,78 @@ curl -L -o _temp.exe "{url}" && certutil -hashfile _temp.exe SHA256
 }
 ```
 
-#### 情况 C：只有 Setup.exe 安装包（最后手段）
+#### 情况 C：zip 内含 MSI 安装包
 
-> 条件：release 只有 Setup.exe，没有 portable/zip
+> 条件：release 提供 .zip，但解压后只有 .msi 文件（非直接可执行文件）
+> 参考：WGestures
+
+1. 下载 zip 并查看内部结构：
+
+```bash
+curl -L -o _temp.zip "{url}" && 7z l _temp.zip | head -30
+```
+
+2. 如果 zip 内只有一个 .msi，用 `lessmsi` 查看 MSI 文件清单：
+
+```bash
+# 先解压 zip 得到 msi
+7z x _temp.zip -o_temp_dir
+# 用 lessmsi 查看 MSI 文件表，找出主 exe 名称
+lessmsi l -t File _temp_dir/xxx.msi | head -40
+```
+
+3. 安装 `lessmsi`（Scoop 解包 .msi 的工具）：
+
+```bash
+scoop install lessmsi
+```
+
+4. 用 lessmsi 提取 MSI，确认输出结构：
+
+```bash
+cd _temp_dir && lessmsi xo "xxx.msi"
+# 输出路径: ./<ProductName>/SourceDir/<AppName>/
+```
+
+5. 计算 zip 的 SHA256（不是 msi 的）：
+
+```bash
+certutil -hashfile _temp.zip SHA256
+```
+
+6. Manifest 模板：
+
+```json
+{
+    "version": "{version}",
+    "description": "{英文一句话描述}",
+    "homepage": "https://github.com/{owner}/{repo}",
+    "license": "{spdx_id}",
+    "url": "https://github.com/{owner}/{repo}/releases/download/$version/$version.zip",
+    "hash": "sha256:{hash}",
+    "depends": "lessmsi",
+    "post_install": [
+        "Push-Location \"$dir\"",
+        "lessmsi xo \"{msi_filename}.msi\"",
+        "Get-ChildItem \".\\{ProductName}\\SourceDir\\{AppName}\\*\" -Recurse | Move-Item -Destination \"$dir\" -Force",
+        "Remove-Item \".\\{ProductName}\" -Recurse -Force -ErrorAction SilentlyContinue",
+        "Remove-Item \"{msi_filename}.msi\" -Force -ErrorAction SilentlyContinue",
+        "Pop-Location"
+    ],
+    "bin": "{main_exe}",
+    "shortcuts": [["{main_exe}", "{Display Name}"]],
+    "checkver": { "github": "https://github.com/{owner}/{repo}" },
+    "autoupdate": {
+        "url": "https://github.com/{owner}/{repo}/releases/download/$version/$version.zip"
+    }
+}
+```
+
+> **注意**：`post_install` 中 `<ProductName>` 和 `<AppName>` 来自 lessmsi 实际提取的目录名，必须通过实测确定。`checkver` 的 `$version` 不带 `v` 前缀则 tag 也不带 `v`。
+
+#### 情况 D：只有 Setup.exe 安装包（最后手段）
+
+> 条件：release 只有 Setup.exe，没有 portable/zip/msi
 
 1. 先尝试用 7-Zip 直接解压 Setup.exe：
 
@@ -133,7 +202,7 @@ curl -L -o _temp.exe "{url}" && certutil -hashfile _temp.exe SHA256
 2. 如果 7-Zip 能解压 → 参照情况 A 处理
 3. 如果不能解压 → 告知用户需要等作者发布 portable 版，或考虑用 `innounp`
 
-#### 情况 D：额外依赖
+#### 情况 E：framework-dependent 额外依赖
 
 如果 zip 内有 `runtimes/` 目录（如 .NET runtime），说明是 framework-dependent：
 - 对于 framework-dependent zip，需要在 manifest 中加 `"depends": ["dotnet-sdk"]` 或类似依赖
