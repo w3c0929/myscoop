@@ -9,7 +9,7 @@
 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.0 |
 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具，释放 AppData 大量空间 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
 | [WGestures](https://github.com/yingDev/WGestures) — Windows 全局鼠标手势（上游已归档，社区维护） | `scoop install wgestures` | portable zip（自托管） | 1.8.5.0 |
-| [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php) — 解锁删除被锁文件/文件夹 | `scoop install iobitunlocker` | 单 exe 手动安装（post_install 自动启动） | 1.3.0.11 |
+| [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php) — 解锁删除被锁文件/文件夹 | `scoop install iobit` | 单 exe 手动安装（post_install 自动启动） | 1.3.0.11 |
 | [Uninstall Tool](https://www.crystalidea.com/uninstall-tool) — 强力卸载工具，支持强制删除和实时监控 | `scoop install uninstalltool` | portable zip（静默安装自托管） | 3.4.3 |
 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 基于 AutoHotkey 的键盘映射与效率工具 | `scoop install mykeymap` | portable 7z（官方 release） | 2.0-beta33 |
 | [HiBit Uninstaller](https://www.hibitsoft.ir/Uninstaller.html) — 强力卸载工具，支持强制删除和批量卸载 | `scoop install hibituninstaller` | 单 exe（自托管） | 4.0.10 |
@@ -519,7 +519,7 @@ myscoop/
 │   ├── termius.json                  (模式5：NSIS+asar)
 │   ├── 2345pic.json                  (模式5：已绿化)
 │   ├── apollo.json                   (模式6：手动安装)
-│   ├── iobitunlocker.json            (模式6：手动安装)
+│   ├── iobit.json                     (模式6：手动安装)
 │   ├── idm.json                      (模式6：手动安装)
 │   └── bandizip6.json                (模式6：手动安装)
 ├── .claude/
