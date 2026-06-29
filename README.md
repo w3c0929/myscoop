@@ -9,7 +9,6 @@
 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.0 |
 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具，释放 AppData 大量空间 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
 | [WGestures](https://github.com/yingDev/WGestures) — Windows 全局鼠标手势（上游已归档，社区维护） | `scoop install wgestures` | portable zip（自托管） | 1.8.5.0 |
-| [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 无广告压缩工具（最后免费版，社区维护） | `scoop install bandizip6` | portable zip（NSIS 解包自托管） | 6.18 |
 | [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php) — 解锁删除被锁文件/文件夹 | `scoop install iobitunlocker` | portable zip（Inno Setup 解包自托管） | 1.3.0.11 |
 | [Uninstall Tool](https://www.crystalidea.com/uninstall-tool) — 强力卸载工具，支持强制删除和实时监控 | `scoop install uninstalltool` | portable zip（静默安装自托管） | 3.4.3 |
 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 基于 AutoHotkey 的键盘映射与效率工具 | `scoop install mykeymap` | portable 7z（官方 release） | 2.0-beta33 |
@@ -316,44 +315,9 @@ git push origin main
 
 自托管流程：`lessmsi 提取 MSI → 打包为 portable zip → gh release create → 更新 manifest`。不再设 `checkver`/`autoupdate`（上游已死，无需自动检查）。
 
-**模式 5 — NSIS 安装器 7z 直接解包**（`bandizip6.json`）
+**模式 5 — Inno Setup 解包**（`iobitunlocker.json`）：当 `7z l` 显示 `Type = PE` 且无嵌入 7z 归档，但注释含 "Inno Setup" 时，用 `innounp` 解包，打包便携 zip 自托管。
 
-部分安装器（NSIS 等）本身就是 7z 自解压包，`7z l` 看到 `Type = 7z` 即可直接提取：
-
-```bash
-# 检测是否可解包
-7z l Setup.exe | grep "Type = 7z"
-# 提取
-7z x Setup.exe -o_output -y
-```
-
-```json
-{
-    "version": "6.18",
-    "license": { "identifier": "Freeware", "url": "https://www.bandisoft.com/bandizip/help/eula/" },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18-portable.zip",
-    "hash": "sha256:2c0e9ce4839be9fb9dee9f13fef194abc0eab86c1883c6d1970c1ae433207776",
-    "post_install": [
-        "if ($architecture -eq '64bit') { regsvr32 /s \"$dir\\bdzshl64.dll\" }",
-        "elseif ($architecture -eq 'arm64') { regsvr32 /s \"$dir\\bdzshl64a.dll\" }",
-        "else { regsvr32 /s \"$dir\\bdzshl32.dll\" }"
-    ],
-    "pre_uninstall": [
-        "if ($architecture -eq '64bit') { regsvr32 /s /u \"$dir\\bdzshl64.dll\" }",
-        "elseif ($architecture -eq 'arm64') { regsvr32 /s /u \"$dir\\bdzshl64a.dll\" }",
-        "else { regsvr32 /s /u \"$dir\\bdzshl32.dll\" }"
-    ],
-    "bin": ["Bandizip64.exe", "bz.exe"],
-    "shortcuts": [["Bandizip64.exe", "Bandizip 6.18"]],
-    "notes": "Shell extension registered for right-click context menu."
-}
-```
-
-关键点：NSIS 安装器 → `7z x` 提取 → 打包 portable zip → 自托管。便携版不自动注册 shell 扩展，需 `post_install` 中用 `regsvr32` 注册 DLL、`pre_uninstall` 注销。`bin` 可设数组暴露多个 exe。
-
-**Inno Setup 变体**（`iobitunlocker.json`）：当 `7z l` 显示 `Type = PE` 且无嵌入 7z 归档，但注释含 "Inno Setup" 时，改用 `innounp` 解包，其余流程与模式 5 相同。
-
-**Inno Setup Custom 加密变体**（`uninstalltool.json`）：当 innounp 提示密码或 innoextract 显示 `encrypted` 无法解包时，改用静默安装法：`installer.exe /VERYSILENT /DIR=output`，然后从安装目录打包便携 zip。这是密码破解失败时的兜底方案。
+**模式 5 — 加密 Inno Setup 静默安装**（`uninstalltool.json`）：当 innounp 提示密码或 innoextract 显示 `encrypted` 无法解包时，改用静默安装法 `installer.exe /VERYSILENT /DIR=output`，从安装目录打包便携 zip。密码破解失败时的兜底方案。
 
 ### 使用 AI Skill 自动化（推荐）
 
@@ -525,7 +489,6 @@ myscoop/
 │   ├── contextmenumgr-plus.json   (模式1：多架构 zip)
 │   ├── windowsclear.json           (模式2：单 exe)
 │   ├── wgestures.json              (模式4：自托管 portable zip)
-│   ├── bandizip6.json              (模式5：NSIS 解包自托管)
 │   ├── iobitunlocker.json           (模式5：Inno Setup 解包)
 │   ├── uninstalltool.json           (模式5：加密 Inno Setup 静默安装)
 │   └── mykeymap.json                (模式1：portable 7z 官方 release)
