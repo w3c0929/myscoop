@@ -1,0 +1,22 @@
+{
+    "version": "1.1.0",
+    "description": "Lightweight cross-platform desktop sticky notes with Markdown editing and preview",
+    "homepage": "https://github.com/Achilng/floral-notepaper",
+    "license": "MIT",
+    "url": "https://github.com/Achilng/floral-notepaper/releases/download/v1.1.0/floral-notepaper_1.1.0.exe",
+    "hash": "sha256:88efadda2f0b048ee47b2528072255a38379ec0aeb768bbc6f71128adf7d7e3f",
+    "pre_install": "Move-Item \"$dir\\floral-notepaper_$version.exe\" \"$dir\\floral-notepaper.exe\" -Force",
+    "bin": "floral-notepaper.exe",
+    "shortcuts": [
+        [
+            "floral-notepaper.exe",
+            "Floral Notepaper"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/Achilng/floral-notepaper"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version.exe"
+    }
+}
