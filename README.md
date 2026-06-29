@@ -11,6 +11,7 @@
 | [WGestures](https://github.com/yingDev/WGestures) — Windows 全局鼠标手势（上游已归档，社区维护） | `scoop install wgestures` | portable zip（自托管） | 1.8.5.0 |
 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 无广告压缩工具（最后免费版，社区维护） | `scoop install bandizip6` | portable zip（NSIS 解包自托管） | 6.18 |
 | [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php) — 解锁删除被锁文件/文件夹 | `scoop install iobitunlocker` | portable zip（Inno Setup 解包自托管） | 1.3.0.11 |
+| [Uninstall Tool](https://www.crystalidea.com/uninstall-tool) — 强力卸载工具，支持强制删除和实时监控 | `scoop install uninstalltool` | portable zip（静默安装自托管） | 3.4.3 |
 
 ## 快速开始（用户）
 
@@ -342,6 +343,8 @@ git push origin main
 
 **Inno Setup 变体**（`iobitunlocker.json`）：当 `7z l` 显示 `Type = PE` 且无嵌入 7z 归档，但注释含 "Inno Setup" 时，改用 `innounp` 解包，其余流程与模式 5 相同。
 
+**Inno Setup Custom 加密变体**（`uninstalltool.json`）：当 innounp 提示密码或 innoextract 显示 `encrypted` 无法解包时，改用静默安装法：`installer.exe /VERYSILENT /DIR=output`，然后从安装目录打包便携 zip。这是密码破解失败时的兜底方案。
+
 ### 使用 AI Skill 自动化（推荐）
 
 项目内置了 `.claude/skills-myscoop/SKILL.md`，向 AI 助手发送以下指令即可自动完成收录：
@@ -513,7 +516,8 @@ myscoop/
 │   ├── windowsclear.json           (模式2：单 exe)
 │   ├── wgestures.json              (模式4：自托管 portable zip)
 │   ├── bandizip6.json              (模式5：NSIS 解包自托管)
-│   └── iobitunlocker.json           (模式5：Inno Setup 解包)
+│   ├── iobitunlocker.json           (模式5：Inno Setup 解包)
+│   └── uninstalltool.json           (模式5：加密 Inno Setup 静默安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能

@@ -209,7 +209,7 @@ certutil -hashfile _temp.zip SHA256
 | 7z 检测结果 | 处理方式 |
 |------------|---------|
 | `Type = 7z` | **NSIS 安装器 → 直接 7z 提取**，打包为 portable zip，参照情况 F 自托管 |
-| `Type = PE` 且无 `7z` | 可能是 Inno Setup → 尝试 `innounp` 解包 |
+| `Type = PE` 且无 `7z` | 可能是 Inno Setup → 尝试 `innounp` 解包；若加密则改用静默安装 |
 | 无法识别 | 告知用户等待 portable 版，或考虑 `lessmsi`（如果是 MSI 内嵌） |
 
 3. **NSIS 解包流程**（7z 可直接提取）：
@@ -235,7 +235,20 @@ cd _output/{app} && 7z a -tzip ../../app-portable.zip * -r -mx9
 certutil -hashfile ../../app-portable.zip SHA256
 ```
 
-5. 如果所有方式都无法解包 → 告知用户该软件不适合 Scoop 收录
+5. **加密 Inno Setup 兜底流程**（密码破解失败时）：
+
+```bash
+# 静默安装到临时目录
+installer.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="output"
+# 清理卸载残留（unins000.*, *.lnk）
+find output -name "unins*" -delete
+# 打包便携 zip
+cd output && 7z a -tzip ../app-portable.zip . -r -mx9
+```
+
+> 密码枚举：先用 `innoextract --show-password` 获取 hash/salt，再用 `--check-password` 逐个测试。常见密码：产品名（含空格）、公司名全小写、版本号。
+
+6. 如果所有方式都无法解包且静默安装也失败 → 告知用户该软件不适合 Scoop 收录
 
 #### 情况 E：framework-dependent 额外依赖
 
