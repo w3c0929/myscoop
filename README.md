@@ -10,6 +10,7 @@
 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具，释放 AppData 大量空间 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
 | [WGestures](https://github.com/yingDev/WGestures) — Windows 全局鼠标手势（上游已归档，社区维护） | `scoop install wgestures` | portable zip（自托管） | 1.8.5.0 |
 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 无广告压缩工具（最后免费版，社区维护） | `scoop install bandizip6` | portable zip（NSIS 解包自托管） | 6.18 |
+| [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php) — 解锁删除被锁文件/文件夹 | `scoop install iobitunlocker` | portable zip（Inno Setup 解包自托管） | 1.3.0.11 |
 
 ## 快速开始（用户）
 
@@ -339,6 +340,8 @@ git push origin main
 
 关键点：NSIS 安装器 → `7z x` 直接提取 → 打包 portable zip → 自托管。`bin` 可设数组暴露多个 exe。License 为非标准 SPDX 时用对象格式。
 
+**Inno Setup 变体**（`iobitunlocker.json`）：当 `7z l` 显示 `Type = PE` 且无嵌入 7z 归档，但注释含 "Inno Setup" 时，改用 `innounp` 解包，其余流程与模式 5 相同。
+
 ### 使用 AI Skill 自动化（推荐）
 
 项目内置了 `.claude/skills-myscoop/SKILL.md`，向 AI 助手发送以下指令即可自动完成收录：
@@ -509,7 +512,8 @@ myscoop/
 │   ├── contextmenumgr-plus.json   (模式1：多架构 zip)
 │   ├── windowsclear.json           (模式2：单 exe)
 │   ├── wgestures.json              (模式4：自托管 portable zip)
-│   └── bandizip6.json              (模式5：NSIS 解包自托管)
+│   ├── bandizip6.json              (模式5：NSIS 解包自托管)
+│   └── iobitunlocker.json           (模式5：Inno Setup 解包)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能

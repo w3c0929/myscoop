@@ -212,22 +212,30 @@ certutil -hashfile _temp.zip SHA256
 | `Type = PE` 且无 `7z` | 可能是 Inno Setup → 尝试 `innounp` 解包 |
 | 无法识别 | 告知用户等待 portable 版，或考虑 `lessmsi`（如果是 MSI 内嵌） |
 
-3. **NSIS 解包流程**（最常见的可解包安装器）：
+3. **NSIS 解包流程**（7z 可直接提取）：
 
 ```bash
-# 查看文件列表
-7z l Setup.exe | tail -30
-# 提取
-7z x Setup.exe -o_output -y
-# 确认主 exe 和文件结构
-ls output/
-# 打包为便携 zip
+7z l Setup.exe | tail -30          # 确认 Type = 7z
+7z x Setup.exe -o_output -y         # 直接提取
+ls output/                           # Main exe: app.exe
 cd output && 7z a -tzip ../app-portable.zip * -r -mx9
-# 计算 hash
 certutil -hashfile ../app-portable.zip SHA256
 ```
 
-4. 如果所有方式都无法解包 → 告知用户该软件不适合 Scoop 收录
+4. **Inno Setup 解包流程**（需 innounp，`7z l` 显示 `Type = PE` 无嵌入 7z，含 "Inno Setup" 注释）：
+
+```bash
+# 安装 innounp
+scoop install innounp
+# 解包（文件通常在 {app}/ 子目录）
+innounp -x -d_output Setup.exe
+ls _output/{app}/
+# 从 {app} 内打包
+cd _output/{app} && 7z a -tzip ../../app-portable.zip * -r -mx9
+certutil -hashfile ../../app-portable.zip SHA256
+```
+
+5. 如果所有方式都无法解包 → 告知用户该软件不适合 Scoop 收录
 
 #### 情况 E：framework-dependent 额外依赖
 
