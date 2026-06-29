@@ -1,0 +1,18 @@
+{
+    "version": "10.8.0.9683",
+    "description": "2345Pic - fast image viewer with editing and batch processing (v10.8.0.9683, community-maintained)",
+    "homepage": "https://pic.2345.cc/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.2345.com/privacy.htm"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v10.8.0.9683/2345pic-10.8.0.9683-portable.zip",
+    "hash": "sha256:90b7784be9306b7fc15f7d483c47c756e286c0602935ffca31fd95a50657dbcf",
+    "bin": "Bin\\2345Pic.exe",
+    "shortcuts": [
+        [
+            "Bin\\2345Pic.exe",
+            "2345看图王"
+        ]
+    ]
+}

@@ -17,6 +17,7 @@
 | [Beyond Compare 5](https://www.scootersoftware.com/) — 强大文件/文件夹对比工具（社区维护） | `scoop install bcompare` | portable zip（静默安装自托管） | 5.2.2 |
 | [Termius](https://termius.com/) — 现代 SSH 客户端（汉化版，跳过登录） | `scoop install termius` | portable zip（NSIS 解包+asar 替换） | 9.40.1 |
 | [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器（社区维护） | `scoop install idm` | portable zip（静默安装自托管） | 6.4.3 |
+| [2345看图王](https://pic.2345.cc/) — 快速图片查看/编辑/批量处理（社区维护） | `scoop install 2345pic` | portable zip（已绿化便携版） | 10.8.0.9683 |
 
 ## 快速开始（用户）
 
@@ -501,7 +502,8 @@ myscoop/
 │   ├── floral-notepaper.json          (模式2：单 exe 官方 release)
 │   ├── bcompare.json                  (模式5：静默安装自托管)
 │   ├── termius.json                    (模式5：NSIS 解包+asar 替换)
-│   └── idm.json                        (模式5：静默安装自托管)
+│   ├── idm.json                        (模式5：静默安装自托管)
+│   └── 2345pic.json                     (模式5：已绿化便携版自托管)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能
