@@ -3,13 +3,7 @@
     "description": "Apollo - Sunshine fork for game streaming with native client resolution support",
     "homepage": "https://github.com/ClassicOldSong/Apollo",
     "license": "GPL-3.0",
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v0.4.6/Apollo-0.4.6-portable.zip",
-    "hash": "sha256:93508ab6fd44635e21e6da1f5545a2f8a38aa202f6068eefe4771be75b7f67b0",
-    "bin": "sunshine.exe",
-    "shortcuts": [
-        [
-            "sunshine.exe",
-            "Apollo"
-        ]
-    ]
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v0.4.6/Apollo-0.4.6.exe",
+    "hash": "sha256:42b2aefaacb3474511517a56b96ee9f0517f30ac38b5dd2fda9fd5b478f5021a",
+    "bin": "Apollo-0.4.6.exe"
 }
