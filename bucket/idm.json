@@ -1,18 +1,12 @@
 {
     "version": "6.4.3",
-    "description": "Internet Download Manager - accelerate downloads by up to 5 times (v6.4.3, community-maintained)",
+    "description": "Internet Download Manager - accelerate downloads by up to 5 times",
     "homepage": "https://www.internetdownloadmanager.com/",
     "license": {
         "identifier": "Proprietary",
         "url": "https://www.internetdownloadmanager.com/support/terms.html"
     },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.4.3/IDM-6.4.3-portable.zip",
-    "hash": "sha256:dc83495f3fb50c35293688ac909a636e4a85130389471812208c9eb27c4c7457",
-    "bin": "IDMan.exe",
-    "shortcuts": [
-        [
-            "IDMan.exe",
-            "Internet Download Manager"
-        ]
-    ]
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.4.3/idm-6.4.3.exe",
+    "hash": "sha256:22bc3ab4c0a96263eeba29cf3d61e0347945ff875a30b771512f86c533820e84",
+    "post_install": "Start-Process \"$dir\\idm-6.4.3.exe\""
 }

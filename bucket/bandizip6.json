@@ -1,0 +1,12 @@
+{
+    "version": "6.18",
+    "description": "Bandizip - all-in-one compression tool (v6.18 - last ad-free version)",
+    "homepage": "https://www.bandisoft.com/bandizip/old/6/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.bandisoft.com/bandizip/help/eula/"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18.exe",
+    "hash": "sha256:171dc8f923add71f1e7c850ad736075b2c2ab741e15915e741fd84967cde9ff4",
+    "post_install": "Start-Process \"$dir\\Bandizip-6.18.exe\""
+}

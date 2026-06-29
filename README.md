@@ -9,14 +9,15 @@
 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.0 |
 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具，释放 AppData 大量空间 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
 | [WGestures](https://github.com/yingDev/WGestures) — Windows 全局鼠标手势（上游已归档，社区维护） | `scoop install wgestures` | portable zip（自托管） | 1.8.5.0 |
-| [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php) — 解锁删除被锁文件/文件夹 | `scoop install iobitunlocker` | portable zip（Inno Setup 解包自托管） | 1.3.0.11 |
+| [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php) — 解锁删除被锁文件/文件夹 | `scoop install iobitunlocker` | 单 exe 手动安装（post_install 自动启动） | 1.3.0.11 |
 | [Uninstall Tool](https://www.crystalidea.com/uninstall-tool) — 强力卸载工具，支持强制删除和实时监控 | `scoop install uninstalltool` | portable zip（静默安装自托管） | 3.4.3 |
 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 基于 AutoHotkey 的键盘映射与效率工具 | `scoop install mykeymap` | portable 7z（官方 release） | 2.0-beta33 |
 | [HiBit Uninstaller](https://www.hibitsoft.ir/Uninstaller.html) — 强力卸载工具，支持强制删除和批量卸载 | `scoop install hibituninstaller` | 单 exe（自托管） | 4.0.10 |
 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺，跨平台 Markdown 桌面便签 | `scoop install floral-notepaper` | 单 exe（官方 release） | 1.1.0 |
 | [Beyond Compare 5](https://www.scootersoftware.com/) — 强大文件/文件夹对比工具（社区维护） | `scoop install bcompare` | portable zip（静默安装自托管） | 5.2.2 |
 | [Termius](https://termius.com/) — 现代 SSH 客户端（汉化版，跳过登录） | `scoop install termius` | portable zip（NSIS 解包+asar 替换） | 9.40.1 |
-| [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器（社区维护） | `scoop install idm` | portable zip（静默安装自托管） | 6.4.3 |
+| [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器 | `scoop install idm` | 单 exe 手动安装（post_install 自动启动） | 6.4.3 |
+| [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 无广告压缩工具（最后免费版） | `scoop install bandizip6` | 单 exe 手动安装（post_install 自动启动） | 6.18 |
 | [2345看图王](https://pic.2345.cc/) — 快速图片查看/编辑/批量处理（社区维护） | `scoop install 2345pic` | portable zip（已绿化便携版） | 10.8.0.9683 |
 | [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端，支持客户端原生分辨率 | `scoop install apollo` | 单 exe 手动安装（post_install 自动启动） | 0.4.6 |
 
@@ -506,20 +507,21 @@ git push origin main
 
 ```
 myscoop/
-├── bucket/           ← 所有 manifest JSON 放这里
-│   ├── contextmenumgr-plus.json   (模式1：多架构 zip)
-│   ├── windowsclear.json           (模式2：单 exe)
-│   ├── wgestures.json              (模式4：自托管 portable zip)
-│   ├── iobitunlocker.json           (模式5：Inno Setup 解包)
-│   ├── uninstalltool.json           (模式5：加密 Inno Setup 静默安装)
-│   └── mykeymap.json                (模式1：portable 7z 官方 release)
+├── bucket/
+│   ├── contextmenumgr-plus.json      (模式1：多架构 zip)
+│   ├── mykeymap.json                 (模式1：portable 7z)
+│   ├── windowsclear.json             (模式2：单 exe)
 │   ├── hibituninstaller.json         (模式2：单 exe 自托管)
-│   ├── floral-notepaper.json          (模式2：单 exe 官方 release)
-│   ├── bcompare.json                  (模式5：静默安装自托管)
-│   ├── termius.json                    (模式5：NSIS 解包+asar 替换)
-│   ├── idm.json                        (模式5：静默安装自托管)
-│   ├── 2345pic.json                     (模式5：已绿化便携版自托管)
-│   └── apollo.json                      (模式6：单 exe 手动安装)
+│   ├── floral-notepaper.json         (模式2：单 exe 官方)
+│   ├── wgestures.json                (模式4：自托管)
+│   ├── uninstalltool.json            (模式5：静默安装)
+│   ├── bcompare.json                 (模式5：静默安装)
+│   ├── termius.json                  (模式5：NSIS+asar)
+│   ├── 2345pic.json                  (模式5：已绿化)
+│   ├── apollo.json                   (模式6：手动安装)
+│   ├── iobitunlocker.json            (模式6：手动安装)
+│   ├── idm.json                      (模式6：手动安装)
+│   └── bandizip6.json                (模式6：手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能
