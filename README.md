@@ -8,7 +8,7 @@
 |------|---------|------|------|
 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.0 |
 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具，释放 AppData 大量空间 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
-| [WGestures](https://github.com/yingDev/WGestures) — Windows 全局鼠标手势 | `scoop install wgestures` | zip 内含 MSI（lessmsi 解包） | 1.8.3.0 |
+| [WGestures](https://github.com/yingDev/WGestures) — Windows 全局鼠标手势（上游已归档，社区维护） | `scoop install wgestures` | portable zip（自托管） | 1.8.5.0 |
 
 ## 快速开始（用户）
 
@@ -261,37 +261,56 @@ git push origin main
 
 关键区别：模式 1 用 `architecture` 块，模式 2 用顶层 `url`/`hash`。
 
-**模式 3 — zip 内含 MSI**（`wgestures.json`）
+**模式 3 — zip 内含 MSI**
 
 适用于 release 提供 zip，但 zip 内只有一个 `.msi` 安装包的项目。需要 `lessmsi` 解包：
 
 ```json
 {
-    "version": "1.8.3.0",
-    "license": "GPL-2.0",
-    "url": "https://github.com/yingDev/WGestures/releases/download/1.8.3.0/1.8.3.0.zip",
-    "hash": "sha256:ebab8bff932e735a9f34ff5581df2d2d32fd2265c9532077dd20a3d2324f87eb",
+    "version": "1.0.0",
+    "license": "MIT",
+    "url": "https://github.com/owner/repo/releases/download/1.0.0/1.0.0.zip",
+    "hash": "sha256:xxxx",
     "depends": "lessmsi",
     "installer": {
         "script": [
             "Push-Location \"$dir\"",
-            "lessmsi xo \"Install WGestures.msi\"",
-            "Get-ChildItem \".\\Install WGestures\\SourceDir\\WGestures\\*\" -Recurse | Move-Item -Destination \"$dir\" -Force",
-            "Remove-Item \".\\Install WGestures\" -Recurse -Force",
-            "Remove-Item \"Install WGestures.msi\" -Force",
+            "lessmsi xo \"Setup.msi\"",
+            "Get-ChildItem \".\\<ProductName>\\SourceDir\\<AppName>\\*\" -Recurse | Move-Item -Destination \"$dir\" -Force",
+            "Remove-Item \".\\<ProductName>\" -Recurse -Force",
+            "Remove-Item \"Setup.msi\" -Force",
             "Pop-Location"
         ]
     },
-    "bin": "WGestures.exe",
-    "shortcuts": [["WGestures.exe", "WGestures"]],
-    "checkver": { "github": "https://github.com/yingDev/WGestures" },
+    "bin": "app.exe",
+    "shortcuts": [["app.exe", "App Name"]],
+    "checkver": { "github": "https://github.com/owner/repo" },
     "autoupdate": {
-        "url": "https://github.com/yingDev/WGestures/releases/download/$version/$version.zip"
+        "url": "https://github.com/owner/repo/releases/download/$version/$version.zip"
     }
 }
 ```
 
-关键点：zip 内 MSI → `depends: lessmsi` → `post_install` 提取并将文件移到 `$dir`。
+**关键**：必须用 `installer.script` 而非 `post_install`。Scoop 执行顺序是 `installer.script → 创建 shim → post_install`，shim 创建时 exe 必须已存在。
+
+**模式 4 — 上游停更，自托管**（`wgestures.json` 当前实际方案）
+
+当上游项目已归档/停更，拿到新版 MSI 后，提取内容做成便携 zip，自托管到 bucket 仓库的 Release：
+
+```json
+{
+    "version": "1.8.5.0",
+    "description": "Modern mouse gestures for Windows (community-maintained, upstream archived)",
+    "homepage": "https://github.com/yingDev/WGestures",
+    "license": "GPL-2.0",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.8.5.0/WGestures-1.8.5.0-portable.zip",
+    "hash": "sha256:ccf49874f125cbc0f1e0415b8eb88c3a127ab2526378e3ff6e00ba6baeba191b",
+    "bin": "WGestures.exe",
+    "shortcuts": [["WGestures.exe", "WGestures"]]
+}
+```
+
+自托管流程：`lessmsi 提取 MSI → 打包为 portable zip → gh release create → 更新 manifest`。不再设 `checkver`/`autoupdate`（上游已死，无需自动检查）。
 
 ### 使用 AI Skill 自动化（推荐）
 
@@ -462,7 +481,7 @@ myscoop/
 ├── bucket/           ← 所有 manifest JSON 放这里
 │   ├── contextmenumgr-plus.json   (模式1：多架构 zip)
 │   ├── windowsclear.json           (模式2：单 exe)
-│   └── wgestures.json              (模式3：zip 内含 MSI)
+│   └── wgestures.json              (模式4：自托管 portable zip)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能

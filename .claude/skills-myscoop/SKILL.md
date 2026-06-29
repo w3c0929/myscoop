@@ -212,6 +212,56 @@ certutil -hashfile _temp.zip SHA256
 - 对于 framework-dependent zip，需要在 manifest 中加 `"depends": ["dotnet-sdk"]` 或类似依赖
 - 优先推荐用户使用 self-contained 版本
 
+#### 情况 F：上游停更，自托管便携 zip
+
+> 条件：上游项目已归档/停更，但用户有更新的安装包（如 MSI）
+> 参考：WGestures 1.8.5.0
+
+1. 用 `lessmsi` 提取 MSI 内容，查看输出目录结构：
+
+```bash
+lessmsi xo "xxx.msi"
+# 记录输出路径: ./<ProductName>/SourceDir/<AppName>/
+```
+
+2. 打包为便携 zip（从提取的目录内打包，确保扁平结构）：
+
+```bash
+cd "<ProductName>/SourceDir/<AppName>"
+7z a -tzip "<appname>-<version>-portable.zip" * -r -mx9
+```
+
+3. 计算 SHA256：
+
+```bash
+certutil -hashfile "<appname>-<version>-portable.zip" SHA256
+```
+
+4. 上传为 bucket 仓库的 Release：
+
+```bash
+gh release create v<version> "<appname>-<version>-portable.zip" \
+  --title "<AppName> <version>" \
+  --notes "Community-maintained portable release. Upstream project archived."
+```
+
+5. Manifest 模板（无 checkver/autoupdate）：
+
+```json
+{
+    "version": "{version}",
+    "description": "{描述} (community-maintained, upstream archived)",
+    "homepage": "https://github.com/{upstream_owner}/{upstream_repo}",
+    "license": "{spdx_id}",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v{version}/{appname}-{version}-portable.zip",
+    "hash": "sha256:{hash}",
+    "bin": "{main_exe}",
+    "shortcuts": [["{main_exe}", "{Display Name}"]]
+}
+```
+
+> **注意**：自托管不设置 `checkver`/`autoupdate`。清理上游原有的 MSI 相关字段（`depends: lessmsi`、`installer.script`）。manifest 回归到最简单的 portable zip 模式。
+
 ### 第三步：生成 Manifest 文件
 
 文件名规则：**小写 + 连字符**，如 `contextmenumgr-plus.json`、`windowsclear.json`
