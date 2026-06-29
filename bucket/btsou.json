@@ -1,0 +1,17 @@
+{
+    "version": "25.11.12",
+    "description": "BTSOU - BT search and download tool",
+    "homepage": "https://www.btsou.io/",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v25.11.12/btsou-v25.11.12.zip",
+    "hash": "sha256:030ed6def1cde795761b748f6ddd09ffb62a6bf133f68dddcd96bf24aedf335b",
+    "bin": "BTSOU.exe",
+    "shortcuts": [
+        [
+            "BTSOU.exe",
+            "BTSOU"
+        ]
+    ]
+}

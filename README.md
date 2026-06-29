@@ -27,6 +27,7 @@
 | [TinyTask](https://www.tinytask.net/) — 极简宏录制/自动化工具 | `scoop install tinytask` | 单 exe 便携（直接启动） | 1.0 |
 | [360宽带测速](https://www.360.cn/) — 网络测速工具 | `scoop install 360bwtest` | 单 exe 便携（直接启动） | 1.0 |
 | [PixPin](https://pixpinapp.com/) — 截图标注工具 | `scoop install pixpin` | 单 exe 手动安装（post_install 自动启动） | 3.2.3.1 |
+| [BTSOU](https://www.btsou.io/) — BT 搜索下载工具 | `scoop install btsou` | zip 便携版（解压即用） | 25.11.12 |
 
 ## 快速开始（用户）
 
@@ -535,7 +536,8 @@ myscoop/
 │   ├── uuyc.json                       (模式6：单 exe 手动安装)
 │   ├── tinytask.json                    (模式2：单 exe 便携)
 │   ├── 360bwtest.json                   (模式2：单 exe 便携)
-│   └── pixpin.json                      (模式6：单 exe 手动安装)
+│   ├── pixpin.json                      (模式6：单 exe 手动安装)
+│   └── btsou.json                       (模式2：zip 便携解压即用)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能
