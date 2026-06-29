@@ -26,6 +26,7 @@
 | [UU远程](https://uuyc.163.com/) — 网易远程桌面控制工具 | `scoop install uuyc` | 单 exe 手动安装（post_install 自动启动） | 4.30.1 |
 | [TinyTask](https://www.tinytask.net/) — 极简宏录制/自动化工具 | `scoop install tinytask` | 单 exe 便携（直接启动） | 1.0 |
 | [360宽带测速](https://www.360.cn/) — 网络测速工具 | `scoop install 360bwtest` | 单 exe 便携（直接启动） | 1.0 |
+| [PixPin](https://pixpinapp.com/) — 截图标注工具 | `scoop install pixpin` | 单 exe 手动安装（post_install 自动启动） | 3.2.3.1 |
 
 ## 快速开始（用户）
 
@@ -533,7 +534,8 @@ myscoop/
 │   ├── litemonitor.json                (模式1：官方 release+自动更新)
 │   ├── uuyc.json                       (模式6：单 exe 手动安装)
 │   ├── tinytask.json                    (模式2：单 exe 便携)
-│   └── 360bwtest.json                   (模式2：单 exe 便携)
+│   ├── 360bwtest.json                   (模式2：单 exe 便携)
+│   └── pixpin.json                      (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能

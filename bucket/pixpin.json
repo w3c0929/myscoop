@@ -1,0 +1,11 @@
+{
+    "version": "3.2.3.1",
+    "description": "PixPin - screenshot and annotation tool",
+    "homepage": "https://pixpinapp.com/",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v3.2.3.1/PixPin-3.2.3.1.exe",
+    "hash": "sha256:78b72241b92e38eb977e9115521b7f4ba07735c66f0c355289b670a9b83e5f8a",
+    "post_install": "Start-Process \"$dir\\PixPin-3.2.3.1.exe\""
+}
