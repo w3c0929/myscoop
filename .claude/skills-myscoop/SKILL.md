@@ -252,6 +252,37 @@ cd output && 7z a -tzip ../app-portable.zip . -r -mx9
 
 6. 如果所有方式都无法解包且静默安装也失败 → 告知用户该软件不适合 Scoop 收录
 
+#### 特殊处理：右键菜单/Shell 扩展
+
+> 条件：软件需要注册 shell 扩展 DLL 才能在右键菜单显示（如 Bandizip）
+> 参考：bandizip6.json
+
+便携版不会自动注册 shell 扩展，需在 manifest 中添加 `post_install` 和 `pre_uninstall`：
+
+```json
+"post_install": [
+    "if ($architecture -eq '64bit') {",
+    "    regsvr32 /s \"$dir\\shell_ext64.dll\"",
+    "} elseif ($architecture -eq 'arm64') {",
+    "    regsvr32 /s \"$dir\\shell_ext_arm64.dll\"",
+    "} else {",
+    "    regsvr32 /s \"$dir\\shell_ext32.dll\"",
+    "}"
+],
+"pre_uninstall": [
+    "if ($architecture -eq '64bit') {",
+    "    regsvr32 /s /u \"$dir\\shell_ext64.dll\"",
+    "} elseif ($architecture -eq 'arm64') {",
+    "    regsvr32 /s /u \"$dir\\shell_ext_arm64.dll\"",
+    "} else {",
+    "    regsvr32 /s /u \"$dir\\shell_ext32.dll\"",
+    "}"
+],
+"notes": "Shell extension registered. If not visible immediately, restart Explorer."
+```
+
+> `$architecture` 在 Scoop 脚本中可用，值为 `64bit`、`32bit` 或 `arm64`。`regsvr32 /s` 静默注册，`/s /u` 静默注销。
+
 #### 情况 E：framework-dependent 额外依赖
 
 如果 zip 内有 `runtimes/` 目录（如 .NET runtime），说明是 framework-dependent：

@@ -330,17 +330,26 @@ git push origin main
 ```json
 {
     "version": "6.18",
-    "description": "All-in-one compression tool (v6.18 - last ad-free version, community-maintained)",
-    "homepage": "https://www.bandisoft.com/bandizip/old/6/",
     "license": { "identifier": "Freeware", "url": "https://www.bandisoft.com/bandizip/help/eula/" },
     "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18-portable.zip",
     "hash": "sha256:2c0e9ce4839be9fb9dee9f13fef194abc0eab86c1883c6d1970c1ae433207776",
+    "post_install": [
+        "if ($architecture -eq '64bit') { regsvr32 /s \"$dir\\bdzshl64.dll\" }",
+        "elseif ($architecture -eq 'arm64') { regsvr32 /s \"$dir\\bdzshl64a.dll\" }",
+        "else { regsvr32 /s \"$dir\\bdzshl32.dll\" }"
+    ],
+    "pre_uninstall": [
+        "if ($architecture -eq '64bit') { regsvr32 /s /u \"$dir\\bdzshl64.dll\" }",
+        "elseif ($architecture -eq 'arm64') { regsvr32 /s /u \"$dir\\bdzshl64a.dll\" }",
+        "else { regsvr32 /s /u \"$dir\\bdzshl32.dll\" }"
+    ],
     "bin": ["Bandizip64.exe", "bz.exe"],
-    "shortcuts": [["Bandizip64.exe", "Bandizip 6.18"]]
+    "shortcuts": [["Bandizip64.exe", "Bandizip 6.18"]],
+    "notes": "Shell extension registered for right-click context menu."
 }
 ```
 
-关键点：NSIS 安装器 → `7z x` 直接提取 → 打包 portable zip → 自托管。`bin` 可设数组暴露多个 exe。License 为非标准 SPDX 时用对象格式。
+关键点：NSIS 安装器 → `7z x` 提取 → 打包 portable zip → 自托管。便携版不自动注册 shell 扩展，需 `post_install` 中用 `regsvr32` 注册 DLL、`pre_uninstall` 注销。`bin` 可设数组暴露多个 exe。
 
 **Inno Setup 变体**（`iobitunlocker.json`）：当 `7z l` 显示 `Type = PE` 且无嵌入 7z 归档，但注释含 "Inno Setup" 时，改用 `innounp` 解包，其余流程与模式 5 相同。
 

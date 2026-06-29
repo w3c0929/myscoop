@@ -8,6 +8,24 @@
     },
     "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18-portable.zip",
     "hash": "sha256:2c0e9ce4839be9fb9dee9f13fef194abc0eab86c1883c6d1970c1ae433207776",
+    "post_install": [
+        "if ($architecture -eq '64bit') {",
+        "    regsvr32 /s \"$dir\\bdzshl64.dll\"",
+        "} elseif ($architecture -eq 'arm64') {",
+        "    regsvr32 /s \"$dir\\bdzshl64a.dll\"",
+        "} else {",
+        "    regsvr32 /s \"$dir\\bdzshl32.dll\"",
+        "}"
+    ],
+    "pre_uninstall": [
+        "if ($architecture -eq '64bit') {",
+        "    regsvr32 /s /u \"$dir\\bdzshl64.dll\"",
+        "} elseif ($architecture -eq 'arm64') {",
+        "    regsvr32 /s /u \"$dir\\bdzshl64a.dll\"",
+        "} else {",
+        "    regsvr32 /s /u \"$dir\\bdzshl32.dll\"",
+        "}"
+    ],
     "bin": [
         "Bandizip64.exe",
         "bz.exe"
@@ -17,5 +35,6 @@
             "Bandizip64.exe",
             "Bandizip 6.18"
         ]
-    ]
+    ],
+    "notes": "Shell extension registered for right-click context menu. If menu doesn't appear immediately, restart Explorer or log out/in."
 }
