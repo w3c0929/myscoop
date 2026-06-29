@@ -1,0 +1,12 @@
+{
+    "version": "4.30.1",
+    "description": "UU Remote - NetEase remote desktop control tool (v4.30.1)",
+    "homepage": "https://uuyc.163.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://uuyc.163.com/agreement.html"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v4.30.1/uuyc-4.30.1.exe",
+    "hash": "sha256:eb610cb461cc14f89c636fa8b01d2c3e5cc11461dc0202abb25f9b0d51453053",
+    "post_install": "Start-Process \"$dir\\uuyc-4.30.1.exe\""
+}
