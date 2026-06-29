@@ -18,7 +18,7 @@
 | [Termius](https://termius.com/) — 现代 SSH 客户端（汉化版，跳过登录） | `scoop install termius` | portable zip（NSIS 解包+asar 替换） | 9.40.1 |
 | [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器（社区维护） | `scoop install idm` | portable zip（静默安装自托管） | 6.4.3 |
 | [2345看图王](https://pic.2345.cc/) — 快速图片查看/编辑/批量处理（社区维护） | `scoop install 2345pic` | portable zip（已绿化便携版） | 10.8.0.9683 |
-| [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端，支持客户端原生分辨率 | `scoop install apollo` | portable zip（NSIS 解包） | 0.4.6 |
+| [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端，支持客户端原生分辨率 | `scoop install apollo` | 单 exe 手动安装（post_install 自动启动） | 0.4.6 |
 
 ## 快速开始（用户）
 
@@ -326,6 +326,20 @@ git push origin main
 
 **模式 5 — 加密 Inno Setup 静默安装**（`uninstalltool.json`）：当 innounp 提示密码或 innoextract 显示 `encrypted` 无法解包时，改用静默安装法 `installer.exe /VERYSILENT /DIR=output`，从安装目录打包便携 zip。密码破解失败时的兜底方案。
 
+**模式 6 — 单 exe 手动安装**（`apollo.json`）：当用户明确说"手动安装"时，exe 直接上传到 GitHub Release，不做解包。用 `post_install` 自动启动安装器：
+
+```json
+{
+    "version": "0.4.6",
+    "license": "GPL-3.0",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v0.4.6/Apollo-0.4.6.exe",
+    "hash": "sha256:42b2aefaacb3474511517a56b96ee9f0517f30ac38b5dd2fda9fd5b478f5021a",
+    "post_install": "Start-Process \"$dir\\Apollo-0.4.6.exe\""
+}
+```
+
+流程：`gh release create → 下载后 post_install 自动启动 exe → 用户手动操作安装向导`。不设 `bin`（安装器用完即弃）。
+
 ### 使用 AI Skill 自动化（推荐）
 
 项目内置了 `.claude/skills-myscoop/SKILL.md`，向 AI 助手发送以下指令即可自动完成收录：
@@ -505,7 +519,7 @@ myscoop/
 │   ├── termius.json                    (模式5：NSIS 解包+asar 替换)
 │   ├── idm.json                        (模式5：静默安装自托管)
 │   ├── 2345pic.json                     (模式5：已绿化便携版自托管)
-│   └── apollo.json                      (模式5：NSIS 解包自托管)
+│   └── apollo.json                      (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能

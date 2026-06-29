@@ -308,6 +308,35 @@ gh release create v<version> "<appname>-<version>-portable.zip" \
 
 > **注意**：自托管不设置 `checkver`/`autoupdate`。清理上游原有的 MSI 相关字段（`depends: lessmsi`、`installer.script`）。manifest 回归到最简单的 portable zip 模式。
 
+#### 情况 G：单 exe 手动安装（用户明确要求时）
+
+> 条件：用户说"手动安装"或要求 exe 直接上传不做解包
+> 参考：Apollo
+
+1. 直接上传原始 exe 到 GitHub Release：
+
+```bash
+gh release create v<version> "<appname>-<version>.exe" \
+  --title "<AppName> <version>" \
+  --notes "<AppName> <version> installer. Manual installation."
+```
+
+2. Manifest 模板（无 `bin`，用 `post_install` 自动启动）：
+
+```json
+{
+    "version": "{version}",
+    "description": "{英文一句话描述}",
+    "homepage": "https://github.com/{owner}/{repo}",
+    "license": "{spdx_id}",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v{version}/{appname}-{version}.exe",
+    "hash": "sha256:{hash}",
+    "post_install": "Start-Process \"$dir\\{appname}-{version}.exe\""
+}
+```
+
+流程：`gh release create exe → scoop install 下载 → post_install 自动启动 → 用户手动完成安装向导`。不设 `bin`/`shortcuts`/`checkver`/`autoupdate`。
+
 ### 第三步：生成 Manifest 文件
 
 文件名规则：**小写 + 连字符**，如 `contextmenumgr-plus.json`、`windowsclear.json`
