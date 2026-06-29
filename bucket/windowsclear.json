@@ -1,0 +1,21 @@
+{
+    "version": "0.1.3",
+    "description": "Windows C drive cleanup tool - reclaim large amounts of hard drive space from AppData",
+    "homepage": "https://github.com/tanaer/WindowsClear",
+    "license": "MIT",
+    "url": "https://github.com/tanaer/WindowsClear/releases/download/v0.1.3/WindowsClear.exe",
+    "hash": "sha256:7ecb608bd061acb63eec73733589ad86fd4dc2037921973df53659d3e28905c5",
+    "bin": "WindowsClear.exe",
+    "shortcuts": [
+        [
+            "WindowsClear.exe",
+            "WindowsClear"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/tanaer/WindowsClear"
+    },
+    "autoupdate": {
+        "url": "https://github.com/tanaer/WindowsClear/releases/download/v$version/WindowsClear.exe"
+    }
+}

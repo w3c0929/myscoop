@@ -2,6 +2,13 @@
 
 个人 Scoop Bucket 仓库，收集 GitHub 上的 Windows 软件，支持一键安装和自动更新。
 
+## 收录软件
+
+| 软件 | 安装命令 | 类型 | 版本 |
+|------|---------|------|------|
+| [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.0 |
+| [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具，释放 AppData 大量空间 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
+
 ## 快速开始（用户）
 
 ### 1. 添加 Bucket
@@ -16,8 +23,9 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 # 查看可用软件列表
 scoop search myscoop
 
-# 安装软件（以 ContextMenuMgr 为例）
+# 安装（任选其一）
 scoop install contextmenumgr-plus
+scoop install windowsclear
 
 # 或指定从 myscoop 安装
 scoop install myscoop/contextmenumgr-plus
@@ -170,17 +178,17 @@ certutil -hashfile temp.zip SHA256
 ### 第四步：测试 Manifest
 
 ```powershell
-# 1. 验证 JSON 格式
-scoop checkver <appname>
+# 1. 验证 JSON 语法
+python3 -m json.tool bucket/<appname>.json
 
-# 2. 本地安装测试（不提交前先本地验证）
-scoop install .\bucket\<appname>.json
+# 2. 确认 Scoop 能正确解析
+scoop cat myscoop/<appname>
 
-# 3. 确认程序可以正常启动
-# 如果安装成功，会在 ~\scoop\apps\<appname>\ 下看到文件
+# 3. 确认搜索结果可见
+scoop search <appname>
 
-# 4. 执行自动检查更新测试
-scoop checkver <appname> --update
+# 4. 安装测试（可选，安装到本地验证程序能否启动）
+scoop install <appname>
 ```
 
 ### 第五步：提交到仓库
@@ -192,6 +200,70 @@ git push origin main
 ```
 
 用户只需 `scoop update` 即可获取新 manifest。
+
+### 两种典型 Manifest 模式
+
+通过两个实际案例展示最常见的两种模式：
+
+**模式 1 — 多架构 portable zip**（`contextmenumgr-plus.json`）
+
+适用于 release 有多个架构 zip 包的项目。使用 `architecture` 块区分 64bit/32bit/arm64：
+
+```json
+{
+    "version": "1.7.0",
+    "license": "GPL-3.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/.../ContextMenuMgrPlus-1.7.0-x64-self-contained-portable.zip",
+            "hash": "sha256:7fd2c90bb94b9f7c1da80332037989702e216725eb58c43e3a350ea7e83ecc1a"
+        },
+        "32bit": { ... },
+        "arm64": { ... }
+    },
+    "bin": "ContextMenuManagerPlus.exe",
+    "shortcuts": [["ContextMenuManagerPlus.exe", "Context Menu Manager Plus"]],
+    "checkver": { "github": "https://github.com/PLFJY/ContextMenuMgr" },
+    "autoupdate": {
+        "architecture": {
+            "64bit": { "url": "https://.../v$version/ContextMenuMgrPlus-$version-x64-self-contained-portable.zip" },
+            "32bit": { ... },
+            "arm64": { ... }
+        }
+    }
+}
+```
+
+**模式 2 — 单 exe 直链**（`windowsclear.json`）
+
+适用于 release 直接提供 .exe 文件（非安装包、无 zip）的项目。不设 architecture 块，用顶层 url/hash：
+
+```json
+{
+    "version": "0.1.3",
+    "license": "MIT",
+    "url": "https://github.com/tanaer/WindowsClear/releases/download/v0.1.3/WindowsClear.exe",
+    "hash": "sha256:7ecb608bd061acb63eec73733589ad86fd4dc2037921973df53659d3e28905c5",
+    "bin": "WindowsClear.exe",
+    "shortcuts": [["WindowsClear.exe", "WindowsClear"]],
+    "checkver": { "github": "https://github.com/tanaer/WindowsClear" },
+    "autoupdate": {
+        "url": "https://github.com/tanaer/WindowsClear/releases/download/v$version/WindowsClear.exe"
+    }
+}
+```
+
+关键区别：模式 1 用 `architecture` 块，模式 2 用顶层 `url`/`hash`。
+
+### 使用 AI Skill 自动化（推荐）
+
+项目内置了 `.claude/skills/scoop-add.md`，向 AI 助手发送以下指令即可自动完成收录：
+
+```
+把这个项目加到 myscoop：<GitHub 仓库链接>
+```
+
+Skill 会自动执行：分析资产类型 → 选择对应模式 → 计算 hash → 生成 manifest → 验证。
 
 ---
 
@@ -350,8 +422,11 @@ git push origin main
 ```
 myscoop/
 ├── bucket/           ← 所有 manifest JSON 放这里
-│   ├── contextmenumgr-plus.json
-│   └── your-app.json
+│   ├── contextmenumgr-plus.json   (模式1：多架构 zip)
+│   └── windowsclear.json           (模式2：单 exe)
+├── .claude/
+│   └── skills/
+│       └── scoop-add.md            ← AI 自动收录技能
 ├── README.md         ← 这个文件
 └── .gitignore        ← 可选
 ```
