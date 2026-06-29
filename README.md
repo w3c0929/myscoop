@@ -16,6 +16,7 @@
 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺，跨平台 Markdown 桌面便签 | `scoop install floral-notepaper` | 单 exe（官方 release） | 1.1.0 |
 | [Beyond Compare 5](https://www.scootersoftware.com/) — 强大文件/文件夹对比工具（社区维护） | `scoop install bcompare` | portable zip（静默安装自托管） | 5.2.2 |
 | [Termius](https://termius.com/) — 现代 SSH 客户端（汉化版，跳过登录） | `scoop install termius` | portable zip（NSIS 解包+asar 替换） | 9.40.1 |
+| [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器（社区维护） | `scoop install idm` | portable zip（静默安装自托管） | 6.4.3 |
 
 ## 快速开始（用户）
 
@@ -499,7 +500,8 @@ myscoop/
 │   ├── hibituninstaller.json         (模式2：单 exe 自托管)
 │   ├── floral-notepaper.json          (模式2：单 exe 官方 release)
 │   ├── bcompare.json                  (模式5：静默安装自托管)
-│   └── termius.json                    (模式5：NSIS 解包+asar 替换)
+│   ├── termius.json                    (模式5：NSIS 解包+asar 替换)
+│   └── idm.json                        (模式5：静默安装自托管)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能
