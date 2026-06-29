@@ -24,6 +24,7 @@
 | [搜狗拼音](https://pinyin.sogou.com/) — 中文拼音输入法 v9.0 | `scoop install sougoupy` | 单 exe 手动安装（post_install 自动启动） | 9.0 |
 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面/任务栏硬件性能监控（CPU/GPU/内存/网速/FPS） | `scoop install litemonitor` | portable zip（官方 release+自动更新） | 1.3.6 |
 | [UU远程](https://uuyc.163.com/) — 网易远程桌面控制工具 | `scoop install uuyc` | 单 exe 手动安装（post_install 自动启动） | 4.30.1 |
+| [TinyTask](https://www.tinytask.net/) — 极简宏录制/自动化工具 | `scoop install tinytask` | 单 exe 便携（直接启动） | 1.0 |
 
 ## 快速开始（用户）
 
@@ -529,7 +530,8 @@ myscoop/
 │   ├── keycastow.json                 (模式6：zip 便携+自动启动)
 │   ├── sougoupy.json                  (模式6：单 exe 手动安装)
 │   ├── litemonitor.json                (模式1：官方 release+自动更新)
-│   └── uuyc.json                       (模式6：单 exe 手动安装)
+│   ├── uuyc.json                       (模式6：单 exe 手动安装)
+│   └── tinytask.json                    (模式2：单 exe 便携)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能
