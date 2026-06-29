@@ -5,5 +5,5 @@
     "license": "GPL-3.0",
     "url": "https://github.com/w3c0929/myscoop/releases/download/v0.4.6/Apollo-0.4.6.exe",
     "hash": "sha256:42b2aefaacb3474511517a56b96ee9f0517f30ac38b5dd2fda9fd5b478f5021a",
-    "bin": "Apollo-0.4.6.exe"
+    "post_install": "Start-Process \"$dir\\Apollo-0.4.6.exe\""
 }
