@@ -21,6 +21,7 @@
 | [2345看图王](https://pic.2345.cc/) — 快速图片查看/编辑/批量处理（社区维护） | `scoop install 2345pic` | portable zip（已绿化便携版） | 10.8.0.9683 |
 | [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端，支持客户端原生分辨率 | `scoop install apollo` | 单 exe 手动安装（post_install 自动启动） | 0.4.6 |
 | [KeyCastOW](https://github.com/brookhong/KeyCastOW) — 屏幕按键显示工具，演示/录屏必备 | `scoop install keycastow` | zip 便携版（post_install 自动启动） | 1.0 |
+| [搜狗拼音](https://pinyin.sogou.com/) — 中文拼音输入法 v9.0 | `scoop install sougoupy` | 单 exe 手动安装（post_install 自动启动） | 9.0 |
 
 ## 快速开始（用户）
 
@@ -523,7 +524,8 @@ myscoop/
 │   ├── iobit.json                     (模式6：手动安装)
 │   ├── idm.json                      (模式6：手动安装)
 │   ├── bandizip6.json                (模式6：手动安装)
-│   └── keycastow.json                 (模式6：zip 便携+自动启动)
+│   ├── keycastow.json                 (模式6：zip 便携+自动启动)
+│   └── sougoupy.json                  (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能

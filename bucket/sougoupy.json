@@ -1,0 +1,12 @@
+{
+    "version": "9.0",
+    "description": "Sogou Pinyin - popular Chinese pinyin input method (v9.0)",
+    "homepage": "https://pinyin.sogou.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://pinyin.sogou.com/license.html"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v9.0/sougou-v9.0.exe",
+    "hash": "sha256:a0871b0c3587d8191ff9366b55907a2934e30f36295544882942ebfac8d87d3a",
+    "post_install": "Start-Process \"$dir\\sougou-v9.0.exe\""
+}
