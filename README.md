@@ -15,6 +15,7 @@
 | [HiBit Uninstaller](https://www.hibitsoft.ir/Uninstaller.html) — 强力卸载工具，支持强制删除和批量卸载 | `scoop install hibituninstaller` | 单 exe（自托管） | 4.0.10 |
 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺，跨平台 Markdown 桌面便签 | `scoop install floral-notepaper` | 单 exe（官方 release） | 1.1.0 |
 | [Beyond Compare 5](https://www.scootersoftware.com/) — 强大文件/文件夹对比工具（社区维护） | `scoop install bcompare` | portable zip（静默安装自托管） | 5.2.2 |
+| [Termius](https://termius.com/) — 现代 SSH 客户端（汉化版，跳过登录） | `scoop install termius` | portable zip（NSIS 解包+asar 替换） | 9.40.1 |
 
 ## 快速开始（用户）
 
@@ -497,7 +498,8 @@ myscoop/
 │   └── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── hibituninstaller.json         (模式2：单 exe 自托管)
 │   ├── floral-notepaper.json          (模式2：单 exe 官方 release)
-│   └── bcompare.json                  (模式5：静默安装自托管)
+│   ├── bcompare.json                  (模式5：静默安装自托管)
+│   └── termius.json                    (模式5：NSIS 解包+asar 替换)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能
