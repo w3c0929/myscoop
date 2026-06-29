@@ -22,6 +22,7 @@
 | [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端，支持客户端原生分辨率 | `scoop install apollo` | 单 exe 手动安装（post_install 自动启动） | 0.4.6 |
 | [KeyCastOW](https://github.com/brookhong/KeyCastOW) — 屏幕按键显示工具，演示/录屏必备 | `scoop install keycastow` | zip 便携版（post_install 自动启动） | 1.0 |
 | [搜狗拼音](https://pinyin.sogou.com/) — 中文拼音输入法 v9.0 | `scoop install sougoupy` | 单 exe 手动安装（post_install 自动启动） | 9.0 |
+| [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面/任务栏硬件性能监控（CPU/GPU/内存/网速/FPS） | `scoop install litemonitor` | portable zip（官方 release+自动更新） | 1.3.6 |
 
 ## 快速开始（用户）
 
@@ -525,7 +526,8 @@ myscoop/
 │   ├── idm.json                      (模式6：手动安装)
 │   ├── bandizip6.json                (模式6：手动安装)
 │   ├── keycastow.json                 (模式6：zip 便携+自动启动)
-│   └── sougoupy.json                  (模式6：单 exe 手动安装)
+│   ├── sougoupy.json                  (模式6：单 exe 手动安装)
+│   └── litemonitor.json                (模式1：官方 release+自动更新)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能

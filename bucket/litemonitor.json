@@ -1,0 +1,23 @@
+{
+    "version": "1.3.6",
+    "description": "Lightweight customizable hardware monitor for Windows desktop & taskbar (CPU/GPU/RAM/Network/FPS)",
+    "homepage": "https://github.com/Diorser/LiteMonitor",
+    "license": "MIT",
+    "url": "https://github.com/Diorser/LiteMonitor/releases/download/v1.3.6/LiteMonitor_v1.3.6-win-x64.zip",
+    "hash": "sha256:966c60e0e327d995f8f6edf59c630331a24fdc7aeb4c5765ab539cbf6a6471d7",
+    "extract_dir": "LiteMonitor_v1.3.6-win-x64",
+    "bin": "LiteMonitor.exe",
+    "shortcuts": [
+        [
+            "LiteMonitor.exe",
+            "LiteMonitor"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/Diorser/LiteMonitor"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Diorser/LiteMonitor/releases/download/v$version/LiteMonitor_v$version-win-x64.zip",
+        "extract_dir": "LiteMonitor_v$version-win-x64"
+    }
+}
