@@ -337,6 +337,34 @@ gh release create v<version> "<appname>-<version>.exe" \
 
 流程：`gh release create exe → scoop install 下载 → post_install 自动启动 → 用户手动完成安装向导`。不设 `bin`/`shortcuts`/`checkver`/`autoupdate`。
 
+#### 情况 H：从 Choco/SourceForge 获取便携包
+
+> 条件：软件只存在于 Chocolatey 或 SourceForge，无 GitHub Release
+> 参考：DropIt 8.5.1
+
+1. 用 `choco info <包名>` 查看包的源码仓库
+
+2. 从源码获取下载 URL：
+
+```bash
+# 方法1：从 chocolatey GitHub 源码找 tools/chocolateyInstall.ps1
+curl -s "https://raw.githubusercontent.com/{owner}/chocolatey-packages/master/automatic/{pkg}/tools/chocolateyInstall.ps1"
+
+# 方法2：从 SourceForge 项目页找 portable zip
+curl -s "https://sourceforge.net/projects/{project}/files/{name}/v{version}/" | grep -i portable
+```
+
+3. 下载 portable zip 并计算 hash：
+
+```bash
+curl -L -o _temp.zip "{sourceforge_or_choco_url}"
+certutil -hashfile _temp.zip SHA256
+```
+
+4. 上传到 GitHub Release 并创建 manifest（自托管，无 checkver/autoupdate）
+
+> 优先找 `.portable` 包名，其次是直接在 SourceForge 搜 `_Portable.zip`。如无 portable 版则尝试静默安装。
+
 ### 第三步：生成 Manifest 文件
 
 文件名规则：**小写 + 连字符**，如 `contextmenumgr-plus.json`、`windowsclear.json`

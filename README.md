@@ -504,6 +504,19 @@ git push origin main
 | 用户依赖       | 无需安装运行时        | 需预装对应运行时        |
 | 推荐场景       | **推荐**，开箱即用    | 用户确认有运行时时使用   |
 
+### Q: 软件只在 Choco 上有，如何迁移到 Scoop？
+
+```powershell
+# 1. 查看包的源码仓库
+choco info <包名>
+# 2. 从 GitHub 源码找 tools/chocolateyInstall.ps1 中的下载 URL
+# 3. 如果没有，去 SourceForge 搜 Portable.zip
+curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
+# 4. 下载 → 算 hash → gh release create → 创建 manifest（自托管）
+```
+
+示例：DropIt 8.5.1 — 从 `choco info dropit.portable` 追踪到 SourceForge portable zip，最终自托管到 GitHub。
+
 ---
 
 ## 附录：Manifest 字段速查
@@ -533,7 +546,7 @@ git push origin main
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 24 个）
+├── bucket/        ← 所有 manifest JSON（共 25 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
