@@ -8,20 +8,19 @@
     },
     "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18.exe",
     "hash": "sha256:171dc8f923add71f1e7c850ad736075b2c2ab741e15915e741fd84967cde9ff4",
-    "depends": "7zip",
     "installer": {
         "script": [
-            "7z x \"$dir\\Bandizip-6.18.exe\" -o\"$dir\" -y",
+            "Start-Process \"$dir\\Bandizip-6.18.exe\" -ArgumentList \"/S /D=$dir\" -Wait",
             "Remove-Item \"$dir\\Bandizip-6.18.exe\" -Force"
         ]
     },
     "bin": [
-        "Bandizip64.exe",
-        "bz.exe"
+        "Bandizip.exe",
+        "bc.exe"
     ],
     "shortcuts": [
         [
-            "Bandizip64.exe",
+            "Bandizip.exe",
             "Bandizip 6.18"
         ]
     ]
