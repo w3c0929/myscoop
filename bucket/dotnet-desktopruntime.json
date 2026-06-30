@@ -1,0 +1,11 @@
+{
+    "version": "8.0.28",
+    "description": ".NET Windows Desktop Runtime 8.0.28 x64 - required by .NET WPF/WinForms apps",
+    "homepage": "https://dotnet.microsoft.com/en-us/download/dotnet/8.0",
+    "license": {
+        "identifier": "MIT"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v8.0.28/windowsdesktop-runtime-8.0.28-win-x64.exe",
+    "hash": "sha256:8819b8680a7a7668097bb031a856a5469159c8d6a8cfb2a6b2c0be44e74cb0c1",
+    "post_install": "Start-Process \"$dir\\windowsdesktop-runtime-8.0.28-win-x64.exe\""
+}

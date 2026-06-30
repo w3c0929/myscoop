@@ -28,6 +28,8 @@
 | [360宽带测速](https://www.360.cn/) — 网络测速工具 | `scoop install 360bwtest` | 单 exe 便携（直接启动） | 1.0 |
 | [PixPin](https://pixpinapp.com/) — 截图标注工具 | `scoop install pixpin` | 单 exe 手动安装（post_install 自动启动） | 3.2.3.1 |
 | [BTSOU](https://www.btsou.io/) — BT 搜索下载工具 | `scoop install btsou` | zip 便携版（解压即用） | 25.11.12 |
+| [火绒系统诊断](https://www.huorong.cn/) — 安全分析与系统检查工具 | `scoop install sysdiag` | 单 exe 手动安装（post_install 自动启动） | 6.0.11.0 |
+| [.NET Desktop Runtime 8.0](https://dotnet.microsoft.com/) — WPF/WinForms 运行时 | `scoop install dotnet-desktopruntime` | 单 exe 手动安装（post_install 自动启动） | 8.0.28 |
 
 ## 快速开始（用户）
 
@@ -537,7 +539,9 @@ myscoop/
 │   ├── tinytask.json                    (模式2：单 exe 便携)
 │   ├── 360bwtest.json                   (模式2：单 exe 便携)
 │   ├── pixpin.json                      (模式6：单 exe 手动安装)
-│   └── btsou.json                       (模式2：zip 便携解压即用)
+│   ├── btsou.json                       (模式2：zip 便携解压即用)
+│   ├── sysdiag.json                     (模式6：单 exe 手动安装)
+│   └── dotnet-desktopruntime.json       (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md            ← AI 自动收录技能
