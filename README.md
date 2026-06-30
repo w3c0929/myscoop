@@ -30,6 +30,7 @@
 | [BTSOU](https://www.btsou.io/) — BT 搜索下载工具 | `scoop install btsou` | zip 便携版（解压即用） | 25.11.12 |
 | [火绒系统诊断](https://www.huorong.cn/) — 安全分析与系统检查工具 | `scoop install sysdiag` | 单 exe 手动安装（post_install 自动启动） | 6.0.11.0 |
 | [.NET Desktop Runtime 8.0](https://dotnet.microsoft.com/) — WPF/WinForms 运行时 | `scoop install dotnet-desktopruntime` | 单 exe 手动安装（post_install 自动启动） | 8.0.28 |
+| [电视时光](https://www.dianshishiguang.com/) — 电视直播软件 | `scoop install dianshishiguang` | 单 exe 手动安装（post_install 自动启动） | 2.1.2 |
 
 ## 快速开始（用户）
 
@@ -550,7 +551,8 @@ myscoop/
 │   ├── pixpin.json                  (模式6：单 exe 手动安装)
 │   ├── sysdiag.json                 (模式6：单 exe 手动安装)
 │   ├── dotnet-desktopruntime.json   (模式6：单 exe 手动安装)
-│   └── keycastow.json               (模式6：zip 便携+自动启动)
+│   ├── keycastow.json               (模式6：zip 便携+自动启动)
+│   └── dianshishiguang.json          (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md                 ← AI 自动收录技能
