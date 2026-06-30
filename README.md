@@ -35,6 +35,7 @@
 | [WinMTR](https://github.com/White-Tiger/WinMTR) — 网络诊断工具，Ping + Traceroute 合体（x64） | `scoop install winmtr` | zip 便携版（解压即用） | 0.9.2 |
 | [NetworkFixTool]() — 网络修复工具 | `scoop install networkfixtool` | 单 exe 便携（直接启动） | 1.0 |
 | [系统常用功能助手]() — Windows 系统工具箱 | `scoop install syshelper` | 单 exe 便携（直接启动） | 3.0 |
+| [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 箭头音乐播放器，支持 Subsonic/Navidrome/Emby/Jellyfin | `scoop install amcfy-music` | portable zip（官方 release+自动更新） | 1.2.0 |
 
 ## 快速开始（用户）
 
@@ -560,7 +561,8 @@ myscoop/
 │   ├── rdriveimage.json               (模式2：zip 便携解压即用)
 │   ├── winmtr.json                     (模式2：zip 便携解压即用)
 │   ├── networkfixtool.json             (模式2：单 exe 便携)
-│   └── syshelper.json                  (模式2：单 exe 便携)
+│   ├── syshelper.json                  (模式2：单 exe 便携)
+│   └── amcfy-music.json                 (模式1：官方 release+自动更新)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md                 ← AI 自动收录技能
