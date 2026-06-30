@@ -10,7 +10,7 @@
     "hash": "sha256:171dc8f923add71f1e7c850ad736075b2c2ab741e15915e741fd84967cde9ff4",
     "installer": {
         "script": [
-            "Start-Process \"$dir\\Bandizip-6.18.exe\" -ArgumentList \"/S /D=$dir\" -Wait",
+            "Start-Process \"$dir\\Bandizip-6.18.exe\" -ArgumentList \"/D=$dir\" -Wait",
             "Remove-Item \"$dir\\Bandizip-6.18.exe\" -Force"
         ]
     },
