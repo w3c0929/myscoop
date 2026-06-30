@@ -1,0 +1,17 @@
+{
+    "version": "4.2.3",
+    "description": "Streaming Audio Recorder - record streaming audio from any source (community-maintained)",
+    "homepage": "https://www.apowersoft.cn/streaming-audio-recorder",
+    "license": {
+        "identifier": "Proprietary"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vAudioRecorder4.2.3/录音精灵-4.2.3-portable.zip",
+    "hash": "sha256:a0d6f451996ba57b1d9353a6804b5bc869c6b3c95fd74057ff7e24651560715d",
+    "bin": "Streaming Audio Recorder.exe",
+    "shortcuts": [
+        [
+            "Streaming Audio Recorder.exe",
+            "录音精灵"
+        ]
+    ]
+}

@@ -38,6 +38,8 @@
 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 箭头音乐播放器，支持 Subsonic/Navidrome/Emby/Jellyfin | `scoop install amcfy-music` | portable zip（官方 release+自动更新） | 1.2.0 |
 | [DropIt](http://www.dropitproject.com/) — 文件自动分类/处理工具（从 Choco 迁移） | `scoop install dropit` | portable zip（自托管） | 8.5.1 |
 | [GstarCAD Pro 2022](https://www.gstarcad.net/) — DWG 兼容 CAD 软件（社区维护） | `scoop install gstarcad` | portable zip（多层 NSIS 解包自托管） | 2022 |
+| [静音移除工具]() — 音视频静音段自动删除 | `scoop install cutsilence` | portable zip（解压即用） | 1.0 |
+| [录音精灵](https://www.apowersoft.cn/streaming-audio-recorder) — 声卡录音工具（社区维护） | `scoop install audio-recorder` | portable zip（Inno 解包自托管） | 4.2.3 |
 
 ## 快速开始（用户）
 
@@ -547,7 +549,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 26 个）
+├── bucket/        ← 所有 manifest JSON（共 28 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -579,7 +581,9 @@ myscoop/
 │   ├── syshelper.json                  (模式2：单 exe 便携)
 │   ├── amcfy-music.json                 (模式1：官方 release+自动更新)
 │   ├── dropit.json                      (模式2：便携 zip 自托管)
-│   └── gstarcad.json                    (模式5：多层 NSIS 解包自托管)
+│   ├── gstarcad.json                    (模式5：多层 NSIS 解包自托管)
+│   ├── cutsilence.json                  (模式2：zip 便携解压即用)
+│   └── audio-recorder.json              (模式5：Inno 解包自托管)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md                 ← AI 自动收录技能
