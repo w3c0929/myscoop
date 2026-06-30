@@ -331,25 +331,34 @@ git push origin main
 }
 ```
 
-自托管流程：`lessmsi 提取 MSI → 打包为 portable zip → gh release create → 更新 manifest`。不再设 `checkver`/`autoupdate`（上游已死，无需自动检查）。
+自托管流程：提取安装包 → 打包便携 zip → `gh release create` → 更新 manifest。不设 `checkver`/`autoupdate`。
 
-**模式 5 — Inno Setup 解包**（`iobitunlocker.json`）：当 `7z l` 显示 `Type = PE` 且无嵌入 7z 归档，但注释含 "Inno Setup" 时，用 `innounp` 解包，打包便携 zip 自托管。
+**模式 5 — 安装器解包/静默安装**
 
-**模式 5 — 加密 Inno Setup 静默安装**（`uninstalltool.json`）：当 innounp 提示密码或 innoextract 显示 `encrypted` 无法解包时，改用静默安装法 `installer.exe /VERYSILENT /DIR=output`，从安装目录打包便携 zip。密码破解失败时的兜底方案。
+当只有安装器（Inno Setup、NSIS 等），通过 `innounp` 解包或静默安装提取文件，打包便携 zip 自托管：
 
-**模式 6 — 单 exe 手动安装**（`apollo.json`）：当用户明确说"手动安装"时，exe 直接上传到 GitHub Release，不做解包。用 `post_install` 自动启动安装器：
+| 场景 | 工具 | 示例 |
+|------|------|------|
+| Inno Setup 解密 | `innoextract` 枚举密码 | `uninstalltool.json` |
+| Inno Setup 静默安装 | `/VERYSILENT /DIR=` | `uninstalltool.json`、`bcompare.json` |
+| NSIS 解包+asar 替换 | `7z` + 文件替换 | `termius.json` |
+| 已绿化便携版 | 直接打包 | `2345pic.json` |
+
+**模式 6 — 单 exe 手动安装**
+
+exe 直接上传 GitHub Release，不做解包。`post_install` 自动启动安装/启动器，用户手动操作：
 
 ```json
 {
-    "version": "0.4.6",
-    "license": "GPL-3.0",
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v0.4.6/Apollo-0.4.6.exe",
-    "hash": "sha256:42b2aefaacb3474511517a56b96ee9f0517f30ac38b5dd2fda9fd5b478f5021a",
-    "post_install": "Start-Process \"$dir\\Apollo-0.4.6.exe\""
+    "version": "6.18",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18.exe",
+    "hash": "sha256:xxxx",
+    "post_install": "Start-Process \"$dir\\Bandizip-6.18.exe\""
 }
 ```
 
-流程：`gh release create → 下载后 post_install 自动启动 exe → 用户手动操作安装向导`。不设 `bin`（安装器用完即弃）。
+不设 `bin`/`shortcuts`/`checkver`/`autoupdate`。适用于：安装器类 exe（Bandizip/IDM/IObit）、zip 便携+自动启动（KeyCastOW）。
 
 ### 使用 AI Skill 自动化（推荐）
 
@@ -517,34 +526,33 @@ git push origin main
 
 ```
 myscoop/
-├── bucket/
-│   ├── contextmenumgr-plus.json      (模式1：多架构 zip)
-│   ├── mykeymap.json                 (模式1：portable 7z)
-│   ├── windowsclear.json             (模式2：单 exe)
-│   ├── hibituninstaller.json         (模式2：单 exe 自托管)
-│   ├── floral-notepaper.json         (模式2：单 exe 官方)
-│   ├── wgestures.json                (模式4：自托管)
-│   ├── uninstalltool.json            (模式5：静默安装)
-│   ├── bcompare.json                 (模式5：静默安装)
-│   ├── termius.json                  (模式5：NSIS+asar)
-│   ├── 2345pic.json                  (模式5：已绿化)
-│   ├── apollo.json                   (模式6：手动安装)
-│   ├── iobit.json                     (模式6：手动安装)
-│   ├── idm.json                      (模式6：手动安装)
-│   ├── bandizip6.json                (模式6：手动安装)
-│   ├── keycastow.json                 (模式6：zip 便携+自动启动)
-│   ├── sougoupy.json                  (模式6：单 exe 手动安装)
-│   ├── litemonitor.json                (模式1：官方 release+自动更新)
-│   ├── uuyc.json                       (模式6：单 exe 手动安装)
-│   ├── tinytask.json                    (模式2：单 exe 便携)
-│   ├── 360bwtest.json                   (模式2：单 exe 便携)
-│   ├── pixpin.json                      (模式6：单 exe 手动安装)
-│   ├── btsou.json                       (模式2：zip 便携解压即用)
-│   ├── sysdiag.json                     (模式6：单 exe 手动安装)
-│   └── dotnet-desktopruntime.json       (模式6：单 exe 手动安装)
+├── bucket/        ← 所有 manifest JSON（共 24 个）
+│   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
+│   ├── mykeymap.json                (模式1：portable 7z 官方 release)
+│   ├── litemonitor.json             (模式1：portable zip 官方 release)
+│   ├── windowsclear.json            (模式2：单 exe 便携)
+│   ├── tinytask.json                (模式2：单 exe 便携)
+│   ├── 360bwtest.json               (模式2：单 exe 便携)
+│   ├── hibituninstaller.json        (模式2：单 exe 便携 自托管)
+│   ├── btsou.json                   (模式2：zip 便携 自托管)
+│   ├── floral-notepaper.json        (模式2：单 exe 官方 release)
+│   ├── wgestures.json               (模式4：自托管便携)
+│   ├── uninstalltool.json           (模式5：静默安装)
+│   ├── bcompare.json                (模式5：静默安装)
+│   ├── termius.json                 (模式5：NSIS 解包+asar)
+│   ├── 2345pic.json                 (模式5：已绿化)
+│   ├── apollo.json                  (模式6：单 exe 手动安装)
+│   ├── iobit.json                   (模式6：单 exe 手动安装)
+│   ├── idm.json                     (模式6：单 exe 手动安装)
+│   ├── bandizip6.json               (模式6：单 exe 手动安装)
+│   ├── sougoupy.json                (模式6：单 exe 手动安装)
+│   ├── uuyc.json                    (模式6：单 exe 手动安装)
+│   ├── pixpin.json                  (模式6：单 exe 手动安装)
+│   ├── sysdiag.json                 (模式6：单 exe 手动安装)
+│   ├── dotnet-desktopruntime.json   (模式6：单 exe 手动安装)
+│   └── keycastow.json               (模式6：zip 便携+自动启动)
 ├── .claude/
 │   └── skills-myscoop/
-│       └── SKILL.md            ← AI 自动收录技能
-├── README.md         ← 这个文件
-└── .gitignore        ← 可选
+│       └── SKILL.md                 ← AI 自动收录技能
+└── README.md                        ← 此文件
 ```
