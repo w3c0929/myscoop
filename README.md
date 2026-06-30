@@ -36,6 +36,7 @@
 | [NetworkFixTool]() — 网络修复工具 | `scoop install networkfixtool` | 单 exe 便携（直接启动） | 1.0 |
 | [系统常用功能助手]() — Windows 系统工具箱 | `scoop install syshelper` | 单 exe 便携（直接启动） | 3.0 |
 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 箭头音乐播放器，支持 Subsonic/Navidrome/Emby/Jellyfin | `scoop install amcfy-music` | portable zip（官方 release+自动更新） | 1.2.0 |
+| [DropIt](http://www.dropitproject.com/) — 文件自动分类/处理工具（从 Choco 迁移） | `scoop install dropit` | portable zip（自托管） | 8.5.1 |
 
 ## 快速开始（用户）
 
@@ -562,7 +563,8 @@ myscoop/
 │   ├── winmtr.json                     (模式2：zip 便携解压即用)
 │   ├── networkfixtool.json             (模式2：单 exe 便携)
 │   ├── syshelper.json                  (模式2：单 exe 便携)
-│   └── amcfy-music.json                 (模式1：官方 release+自动更新)
+│   ├── amcfy-music.json                 (模式1：官方 release+自动更新)
+│   └── dropit.json                      (模式2：便携 zip 自托管)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md                 ← AI 自动收录技能
