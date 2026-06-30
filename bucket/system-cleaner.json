@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "System Cleaner - junk file cleanup tool",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vSystemCleaner/system-cleaner.exe",
+    "hash": "sha256:64885aa07a878b9b09c71d987f2dcc523d2612f74441660ac1b6d6ab0d9759d3",
+    "post_install": "Start-Process \"$dir\\system-cleaner.exe\""
+}

@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **39** 款 Windows 软件，其中 **33** 款为本地维护（自托管 Release），**6** 款引用第三方官方 Release。
+> 共收录 **53** 款 Windows 软件，其中 **47** 款为本地维护（自托管 Release），**6** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -43,6 +43,20 @@
 | 31 | 驱动精灵 — 驱动管理更新工具绿色版 | `scoop install driver-genius` | 单 exe 手动安装 | 9.70 |
 | 32 | 360驱动大师 — 驱动管理工具绿色版 | `scoop install 360-driver-master` | 单 exe 手动安装 | 2.0 |
 | 33 | [BOOTICE](http://www.ipauly.com/) — 启动扇区管理/BCD 编辑工具 x64 | `scoop install bootice` | 单 exe 手动安装 | 1.3.4.0 |
+| 34 | DNS 工具 DnsTools — 网络 DNS 诊断工具 | `scoop install dnstools` | 单 exe 手动安装 | 1.2.3 |
+| 35 | FPS Keeper — 游戏帧率保持工具 | `scoop install fps-keeper` | 单 exe 手动安装 | 1.0 |
+| 36 | PDF24 转换器 — 文档转换工具 | `scoop install pdf24-converter` | 单 exe 手动安装 | 1.0 |
+| 37 | PDF 合并及分割 — PDF 合并分割工具 | `scoop install pdf-merge-split` | 单 exe 手动安装 | 1.0 |
+| 38 | 系统垃圾清理 — 系统垃圾清理工具 | `scoop install system-cleaner` | 单 exe 手动安装 | 1.0 |
+| 39 | Robocopy GUI — Windows 文件复制图形界面 | `scoop install robocopy-gui` | 单 exe 手动安装 | 1.3 |
+| 40 | WinHex 编译版 — 十六进制编辑器 | `scoop install winhex` | 单 exe 手动安装 | 1.0 |
+| 41 | 搜狗五笔 — 中文五笔输入法 | `scoop install sogou-wubi` | 单 exe 手动安装 | 1.0 |
+| 42 | 谷歌翻译检查器 — 翻译质量验证工具 | `scoop install google-translate-checker` | 单 exe 手动安装 | 1.0 |
+| 43 | 录屏工具 — 屏幕录制工具 | `scoop install screen-recorder` | 单 exe 手动安装 | 1.0 |
+| 44 | 数字键盘练习 — 数字键盘打字练习 | `scoop install numpad-practice` | 单 exe 手动安装 | 1.0 |
+| 45 | 文件夹加密 — 文件夹/文件加密工具 | `scoop install folder-encrypt` | 单 exe 手动安装 | 1.0 |
+| 46 | GIF 工具 — GIF 制作工具 | `scoop install gif-tool` | 单 exe 手动安装 | 1.0 |
+| 47 | 五金工具 — 五金计算工具 | `scoop install wujin` | 单 exe 手动安装 | 1.0 |
 
 ### 第三方官方（引用原项目 Release）
 

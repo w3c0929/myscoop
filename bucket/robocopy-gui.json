@@ -1,0 +1,8 @@
+{
+    "version": "1.3",
+    "description": "Robocopy GUI - graphical interface for Windows Robocopy file copy tool",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vRobocopyGUI1.3/robocopy-gui-1.3.exe",
+    "hash": "sha256:c35da2fcabc41fa938c8de17debbec80c46536fba3ff3ffd057c3bbcc53b3279",
+    "post_install": "Start-Process \"$dir\\robocopy-gui-1.3.exe\""
+}

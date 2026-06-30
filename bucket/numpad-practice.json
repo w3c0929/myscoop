@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "Numpad Practice - numeric keypad typing practice tool",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vNumpadPractice/numpad-practice.exe",
+    "hash": "sha256:174cbfa0cfc1e239bb40e65c7bb72d3bd6dbd6830645cb04622c1d818a147a85",
+    "post_install": "Start-Process \"$dir\\numpad-practice.exe\""
+}

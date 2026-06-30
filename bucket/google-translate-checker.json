@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "Google Translate Checker - translation quality verification tool",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vGoogleTranslateChecker/google-translate-checker.exe",
+    "hash": "sha256:6e828dbe789a664879424ebb5142584b0e0dfae4a0e49986f4b1692efa9dd295",
+    "post_install": "Start-Process \"$dir\\google-translate-checker.exe\""
+}

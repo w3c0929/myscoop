@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "Screen Recorder - lightweight screen recording tool",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vScreenRecorder/screen-recorder.exe",
+    "hash": "sha256:dc247c52c8f33bf6cdb903bd81f8549f7c08d8f0e4e3a9003f19654cbd60bc8a",
+    "post_install": "Start-Process \"$dir\\screen-recorder.exe\""
+}
