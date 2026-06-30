@@ -399,4 +399,4 @@ powershell -NoProfile -Command "scoop search {appname}"
 6. **description 用英文**，保持国际通用性
 7. **不要猜测 hash**，必须从 release 页或下载计算获取
 8. **manifest 提交前必须验证**，确保 scoop 能正确解析
-9. **上传到 GitHub Release 的文件名必须用英文**（中文名会导致 URL 编码问题下载失败），但 **Release 标题和描述必须用中文**。manifest 中 `description` 用英文，`shortcuts` 名称可用中文。
+9. **Release 命名规范**：**包名（文件名）必须用英文**（中文会导致 URL 下载失败）；**标题必须中英结合**（如"压缩工具 Bandizip 6.18"）；**描述必须纯中文**。manifest 中 `description` 用英文，`shortcuts` 名称用中文。
