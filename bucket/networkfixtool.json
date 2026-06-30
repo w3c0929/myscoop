@@ -1,0 +1,16 @@
+{
+    "version": "1.0",
+    "description": "NetworkFixTool - network diagnostic and repair utility",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0/NetworkFixTool-1.0.exe",
+    "hash": "sha256:9e7efebc397bb1570144d3ee572fdb0e7561fcca1e2225ccd55a028996860f73",
+    "bin": "NetworkFixTool-1.0.exe",
+    "shortcuts": [
+        [
+            "NetworkFixTool-1.0.exe",
+            "NetworkFixTool"
+        ]
+    ]
+}

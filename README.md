@@ -33,6 +33,8 @@
 | [电视时光](https://www.dianshishiguang.com/) — 电视直播软件 | `scoop install dianshishiguang` | 单 exe 手动安装（post_install 自动启动） | 2.1.2 |
 | [R-Drive Image](https://www.drive-image.com/) — 磁盘镜像/备份工具（便携版） | `scoop install rdriveimage` | zip 便携版（解压即用） | 7.2 |
 | [WinMTR](https://github.com/White-Tiger/WinMTR) — 网络诊断工具，Ping + Traceroute 合体（x64） | `scoop install winmtr` | zip 便携版（解压即用） | 0.9.2 |
+| [NetworkFixTool]() — 网络修复工具 | `scoop install networkfixtool` | 单 exe 便携（直接启动） | 1.0 |
+| [系统常用功能助手]() — Windows 系统工具箱 | `scoop install syshelper` | 单 exe 便携（直接启动） | 3.0 |
 
 ## 快速开始（用户）
 
@@ -556,7 +558,9 @@ myscoop/
 │   ├── keycastow.json               (模式6：zip 便携+自动启动)
 │   ├── dianshishiguang.json          (模式6：单 exe 手动安装)
 │   ├── rdriveimage.json               (模式2：zip 便携解压即用)
-│   └── winmtr.json                     (模式2：zip 便携解压即用)
+│   ├── winmtr.json                     (模式2：zip 便携解压即用)
+│   ├── networkfixtool.json             (模式2：单 exe 便携)
+│   └── syshelper.json                  (模式2：单 exe 便携)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md                 ← AI 自动收录技能
