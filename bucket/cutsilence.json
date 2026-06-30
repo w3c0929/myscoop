@@ -4,7 +4,7 @@
     "license": {
         "identifier": "Freeware"
     },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/vCutSilence/静音移除工具-cutsilence.zip",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vCutSilence/cutsilence.zip",
     "hash": "sha256:e35389fbf8b597fbd05821a0a87ecb90d1144836764d1d7c449e2d24b558935e",
     "bin": "CutSilence.exe",
     "shortcuts": [

@@ -5,8 +5,8 @@
     "license": {
         "identifier": "Proprietary"
     },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/vAudioRecorder4.2.3/录音精灵-4.2.3-portable.zip",
-    "hash": "sha256:a0d6f451996ba57b1d9353a6804b5bc869c6b3c95fd74057ff7e24651560715d",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vAudioRecorder4.2.3/audio-recorder-4.2.3-portable.zip",
+    "hash": "sha256:f0f77b191f0da2f3bd2ddb83b761680da4e976ceb384ed3da6487cf1ea4063e5",
     "bin": "Streaming Audio Recorder.exe",
     "shortcuts": [
         [

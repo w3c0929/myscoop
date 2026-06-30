@@ -1,15 +1,15 @@
 {
     "version": "3.0",
-    "description": "系统常用功能助手 - Windows system utility toolbox",
+    "description": "System Utility Helper - Windows system utility toolbox",
     "license": {
         "identifier": "Freeware"
     },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v3.0/系统常用功能助手-3.0.exe",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vSysHelper3.0/syshelper-3.0.exe",
     "hash": "sha256:90f66a748e2b7b7ca363ead42b48cf04c06826f4c510baa31b7fb54d2afa819c",
-    "bin": "系统常用功能助手-3.0.exe",
+    "bin": "syshelper-3.0.exe",
     "shortcuts": [
         [
-            "系统常用功能助手-3.0.exe",
+            "syshelper-3.0.exe",
             "系统常用功能助手"
         ]
     ]
