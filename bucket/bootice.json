@@ -1,0 +1,10 @@
+{
+    "version": "1.3.4.0",
+    "description": "BOOTICE - boot sector management and BCD editor tool (x64)",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vBOOTICE1.3.4/BOOTICEx64_2016.06.17_v1.3.4.0.exe",
+    "hash": "sha256:e1cb831ac9213b52066f934ba0fa80ea8a9de48932452d4142fa085a2ba24fc2",
+    "post_install": "Start-Process \"$dir\\BOOTICEx64_2016.06.17_v1.3.4.0.exe\""
+}

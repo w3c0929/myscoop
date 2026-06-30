@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **34** 款 Windows 软件，其中 **28** 款为本地维护（自托管 Release），**6** 款引用第三方官方 Release。
+> 共收录 **39** 款 Windows 软件，其中 **33** 款为本地维护（自托管 Release），**6** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -38,6 +38,11 @@
 | 26 | [GstarCAD Pro 2022](https://www.gstarcad.net/) — DWG 兼容 CAD | `scoop install gstarcad` | portable zip | 2022 |
 | 27 | 静音移除工具 — 音视频静音段自动删除 | `scoop install cutsilence` | zip 便携解压即用 | 1.0 |
 | 28 | [录音精灵](https://www.apowersoft.cn/streaming-audio-recorder) — 声卡录音工具 | `scoop install audio-recorder` | portable zip | 4.2.3 |
+| 29 | HEU KMS Activator — Windows/Office 激活工具 | `scoop install heu-kms` | 单 exe 手动安装 | 42.3.0 |
+| 30 | VBA 运行库 — Visual Basic for Application 运行时 | `scoop install vba-runtime` | 单 exe 手动安装 | 7.0.1590 |
+| 31 | 驱动精灵 — 驱动管理更新工具绿色版 | `scoop install driver-genius` | 单 exe 手动安装 | 9.70 |
+| 32 | 360驱动大师 — 驱动管理工具绿色版 | `scoop install 360-driver-master` | 单 exe 手动安装 | 2.0 |
+| 33 | [BOOTICE](http://www.ipauly.com/) — 启动扇区管理/BCD 编辑工具 x64 | `scoop install bootice` | 单 exe 手动安装 | 1.3.4.0 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -558,7 +563,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 28 个）
+├── bucket/        ← 所有 manifest JSON（共 39 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)

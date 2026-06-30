@@ -1,0 +1,10 @@
+{
+    "version": "42.3.0",
+    "description": "HEU KMS Activator - Windows/Office activation tool",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v42.3.0/HEU_KMS_Activator-v42.3.0.exe",
+    "hash": "sha256:a8ef5fe0ef18102e7976ad264da9a701595b91b39d4d69ee1cfe5aecf436a9a5",
+    "post_install": "Start-Process \"$dir\\HEU_KMS_Activator-v42.3.0.exe\""
+}

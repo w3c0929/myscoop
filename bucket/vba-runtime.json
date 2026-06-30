@@ -1,0 +1,10 @@
+{
+    "version": "7.0.1590",
+    "description": "Visual Basic for Application Runtime - required by VBA-based applications",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vVBA7.0.1590/vba-runtime-7.0.1590.exe",
+    "hash": "sha256:51fd8e8d84fac2b192becff116170299ffeae2c1887421841e6f90c7192e63cb",
+    "post_install": "Start-Process \"$dir\\vba-runtime-7.0.1590.exe\""
+}
