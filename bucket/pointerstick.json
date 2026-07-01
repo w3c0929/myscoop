@@ -1,0 +1,10 @@
+{
+    "version": "1.0",
+    "description": "PointerStick - screen pointer and annotation tool for teaching",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vPointerStick/pointerstick.zip",
+    "hash": "sha256:20f7f56ac4da8007e8595e15386de309fbe31f261a00cbbdea078457f1edc504",
+    "extract_dir": "PointerStick_x64",
+    "bin": "PointerStick_x64.exe",
+    "shortcuts": [["PointerStick_x64.exe", "PointerStick 网课教鞭"]]
+}

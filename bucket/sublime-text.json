@@ -1,0 +1,10 @@
+{
+    "version": "4200",
+    "description": "Sublime Text - sophisticated text editor for code, markup and prose",
+    "homepage": "https://www.sublimetext.com/",
+    "license": {"identifier": "Proprietary"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vSublimeText4200/sublime-text-4200-x64.zip",
+    "hash": "sha256:e861192f2377d42a7d8ae9a9f76371fe8d7602bd176ba136bdb3bb549b9a542e",
+    "bin": "sublime_text.exe",
+    "shortcuts": [["sublime_text.exe", "Sublime Text 4200"]]
+}

@@ -1,0 +1,9 @@
+{
+    "version": "1.2.0",
+    "description": "Tickeys - mechanical keyboard typing sound simulator",
+    "homepage": "https://github.com/yingDev/Tickeys",
+    "license": {"identifier": "MIT"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vTickeys1.2.0/tickeys-x64-1.2.0.msi",
+    "hash": "sha256:66936cf7932f43fb5b3b0b02b811f7c5b8f334b5c7ca863ab345fd4340dc4056",
+    "post_install": "Start-Process \"$dir\\tickeys-x64-1.2.0.msi\""
+}

@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **53** 款 Windows 软件，其中 **47** 款为本地维护（自托管 Release），**6** 款引用第三方官方 Release。
+> 共收录 **59** 款 Windows 软件，其中 **53** 款为本地维护（自托管 Release），**6** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -57,6 +57,12 @@
 | 45 | 文件夹加密 — 文件夹/文件加密工具 | `scoop install folder-encrypt` | 单 exe 手动安装 | 1.0 |
 | 46 | GIF 工具 — GIF 制作工具 | `scoop install gif-tool` | 单 exe 手动安装 | 1.0 |
 | 47 | 五金工具 — 五金计算工具 | `scoop install wujin` | 单 exe 手动安装 | 1.0 |
+| 48 | [GoldenDict](https://github.com/goldendict/goldendict) — 离线词典翻译工具 | `scoop install goldendict` | zip 便携解压即用 | 1.0 |
+| 49 | PointerStick — 屏幕教鞭教学工具 | `scoop install pointerstick` | zip 便携解压即用 | 1.0 |
+| 50 | [Sublime Text 4200](https://www.sublimetext.com/) — 代码编辑器 x64 | `scoop install sublime-text` | zip 便携解压即用 | 4200 |
+| 51 | Epic Pen — 屏幕标注白板教学工具 | `scoop install epicpen` | portable zip | 3.7.31 |
+| 52 | Tickeys — 机械键盘打字音效 | `scoop install tickeys` | MSI 手动安装 | 1.2.0 |
+| 53 | [Anytxt](https://anytxt.net/) — 图片文字搜索 OCR 工具 | `scoop install anytxt` | 单 exe 手动安装 | 1.3.1952 |
 
 ### 第三方官方（引用原项目 Release）
 
