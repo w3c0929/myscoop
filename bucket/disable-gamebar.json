@@ -1,0 +1,7 @@
+{
+    "version": "1.0",
+    "description": "Disable Xbox GameBar Popup - script to disable/enable game bar notifications",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vDisableGamebar/disable-gamebar.zip",
+    "hash": "sha256:2ae9dc213da3cf58644f4c57cca94e1e83ae65bfa45d0d06626e6ad5d503e8a8"
+}

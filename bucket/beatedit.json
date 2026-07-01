@@ -1,0 +1,8 @@
+{
+    "version": "2.1.003",
+    "description": "BeatEdit Pr - Premiere Pro beat detection and editing plugin (Chinese)",
+    "homepage": "https://aescripts.com/beatedit-for-premiere-pro/",
+    "license": {"identifier": "Proprietary"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vBeatEdit2.1/beatedit-pr-2.1.003.zip",
+    "hash": "sha256:8de430aa5f7036bd0abcbad1df37ee493f9dec68d5095edad868105ccd048e91"
+}
