@@ -17,9 +17,6 @@
         "github": "https://github.com/CherryHQ/cherry-studio"
     },
     "autoupdate": {
-        "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v$version/Cherry-Studio-$version-x64-portable.exe",
-        "hash": {
-            "url": "$url.sha256"
-        }
+        "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v$version/Cherry-Studio-$version-x64-portable.exe"
     }
 }

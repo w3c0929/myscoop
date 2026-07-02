@@ -16,9 +16,6 @@
         "github": "https://github.com/tanaer/WindowsClear"
     },
     "autoupdate": {
-        "url": "https://github.com/tanaer/WindowsClear/releases/download/v$version/WindowsClear.exe",
-        "hash": {
-            "url": "$url.sha256"
-        }
+        "url": "https://github.com/tanaer/WindowsClear/releases/download/v$version/WindowsClear.exe"
     }
 }

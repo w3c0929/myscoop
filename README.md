@@ -251,22 +251,13 @@ certutil -hashfile _temp.zip SHA256
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x64-portable.zip",
-                "hash": {
-                    "url": "$url.sha256"
-                }
+                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x64-portable.zip"
             },
             "32bit": {
-                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x86-portable.zip",
-                "hash": {
-                    "url": "$url.sha256"
-                }
+                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x86-portable.zip"
             },
             "arm64": {
-                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-arm64-portable.zip",
-                "hash": {
-                    "url": "$url.sha256"
-                }
+                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-arm64-portable.zip"
             }
         }
     }
@@ -324,12 +315,7 @@ git push origin main
     "checkver": { "github": "https://github.com/PLFJY/ContextMenuMgr" },
     "autoupdate": {
         "architecture": {
-            "64bit": {
-                "url": "https://.../v$version/ContextMenuMgrPlus-$version-x64-self-contained-portable.zip",
-                "hash": {
-                    "url": "$url.sha256"
-                }
-            },
+            "64bit": { "url": "https://.../v$version/ContextMenuMgrPlus-$version-x64-self-contained-portable.zip" },
             "32bit": { ... },
             "arm64": { ... }
         }
@@ -351,10 +337,7 @@ git push origin main
     "shortcuts": [["WindowsClear.exe", "WindowsClear"]],
     "checkver": { "github": "https://github.com/tanaer/WindowsClear" },
     "autoupdate": {
-        "url": "https://github.com/tanaer/WindowsClear/releases/download/v$version/WindowsClear.exe",
-        "hash": {
-            "url": "$url.sha256"
-        }
+        "url": "https://github.com/tanaer/WindowsClear/releases/download/v$version/WindowsClear.exe"
     }
 }
 ```
@@ -386,10 +369,7 @@ git push origin main
     "shortcuts": [["app.exe", "App Name"]],
     "checkver": { "github": "https://github.com/owner/repo" },
     "autoupdate": {
-        "url": "https://github.com/owner/repo/releases/download/$version/$version.zip",
-        "hash": {
-            "url": "$url.sha256"
-        }
+        "url": "https://github.com/owner/repo/releases/download/$version/$version.zip"
     }
 }
 ```
@@ -478,7 +458,7 @@ Skill 会自动执行：分析资产类型 → 选择对应模式 → 计算 has
 }
 ```
 
-### autoupdate — 下载地址模板 + 哈希自动抓取
+### autoupdate — 下载地址模板
 
 `autoupdate` 定义新版本发布后，下载 URL 如何拼接。用 `$version` 代替版本号：
 
@@ -486,16 +466,31 @@ Skill 会自动执行：分析资产类型 → 选择对应模式 → 计算 has
 "autoupdate": {
     "architecture": {
         "64bit": {
-            "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x64.zip",
-            "hash": {
-                "url": "$url.sha256"
-            }
+            "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x64.zip"
         }
     }
 }
 ```
 
-`hash` 字段使用 `$url.sha256` 自动抓取规则：Scoop 会从下载地址 + `.sha256` 后缀获取校验文件（如 `app.zip.sha256`），无需手动计算哈希。若项目未提供 `.sha256` 文件，`checkver -u` 更新时需手动填入。
+#### 哈希自动更新
+
+Scoop 不设 `hash` 规则时，`checkver -u` 会自动下载文件并计算 SHA256，无需手动填哈希。
+
+**如果项目提供了 checksums 文件**，可以在 `autoupdate` 顶层设置共享 hash 规则：
+
+```json
+"autoupdate": {
+    "architecture": {
+        "64bit": { "url": "https://.../$version/app-x64.zip" },
+        "arm64": { "url": "https://.../$version/app-arm64.zip" }
+    },
+    "hash": {
+        "url": "$baseurl/checksums.txt"
+    }
+}
+```
+
+`$baseurl` 指向 release 下载基地址，Scoop 会自动按文件名匹配对应哈希。**不要使用 `$url.sha256`**，绝大多数项目不提供 `.sha256` 文件。
 
 ### 更新流程
 

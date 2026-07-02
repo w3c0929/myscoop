@@ -17,9 +17,6 @@
         "github": "https://github.com/Achilng/floral-notepaper"
     },
     "autoupdate": {
-        "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version.exe",
-        "hash": {
-            "url": "$url.sha256"
-        }
+        "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version.exe"
     }
 }

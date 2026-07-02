@@ -92,12 +92,7 @@ curl -L -o _temp.zip "{url}" && 7z l _temp.zip | head -40
     "checkver": { "github": "https://github.com/{owner}/{repo}" },
     "autoupdate": {
         "architecture": {
-            "64bit": {
-                "url": "https://github.com/{owner}/{repo}/releases/download/v$version/{asset}-$version-x64-portable.zip",
-                "hash": {
-                    "url": "$url.sha256"
-                }
-            },
+            "64bit": { "url": "https://github.com/{owner}/{repo}/releases/download/v$version/{asset}-$version-x64-portable.zip" },
             "32bit": { ... },
             "arm64": { ... }
         }
@@ -130,10 +125,7 @@ curl -L -o _temp.exe "{url}" && certutil -hashfile _temp.exe SHA256
     "shortcuts": [["{asset}.exe", "{Display Name}"]],
     "checkver": { "github": "https://github.com/{owner}/{repo}" },
     "autoupdate": {
-        "url": "https://github.com/{owner}/{repo}/releases/download/v$version/{asset}.exe",
-        "hash": {
-            "url": "$url.sha256"
-        }
+        "url": "https://github.com/{owner}/{repo}/releases/download/v$version/{asset}.exe"
     }
 }
 ```
@@ -411,8 +403,9 @@ powershell -NoProfile -Command "scoop search {appname}"
 2. **优先 self-contained**（自带运行时），少用 framework-dependent（需额外依赖）
 3. **Hash 格式固定**：`sha256:xxxx`（全小写）
 4. **版本号去 v 前缀**：tag `v1.2.3` → version `1.2.3`
-5. **autoupdate 中的 URL**：tag 部分用 `v$version`，文件名部分用 `$version`
-6. **description 用英文**，保持国际通用性
-7. **不要猜测 hash**，必须从 release 页或下载计算获取
-8. **manifest 提交前必须验证**，确保 scoop 能正确解析
-9. **Release 命名规范**：**包名（文件名）必须用英文**（中文会导致 URL 下载失败）；**标题必须中英结合**（如"压缩工具 Bandizip 6.18"）；**描述必须纯中文**。manifest 中 `description` 用英文，`shortcuts` 名称用中文。
+5. **autoupdate 中的 URL**：tag 部分用 `v$version`（如果 tag 带 v），文件名部分用 `$version`
+6. **autoupdate hash 规则**：**不要用 `$url.sha256`**（大部分项目不提供 `.sha256` 文件）。不写 hash 规则时 `checkver -u` 会自动下载计算。如果项目提供 `checksums.txt`，用 `"hash": { "url": "$baseurl/checksums.txt" }` 放在 autoupdate 顶层
+7. **description 用英文**，保持国际通用性
+8. **Hash 优先使用 GitHub API digest**：`curl -s api.github.com/repos/{o}/{r}/releases/latest` 直接读取 asset 的 `digest: sha256:xxx`，无需下载。仅 API 不可用时才下载计算
+9. **manifest 提交前必须验证**，确保 scoop 能正确解析
+10. **Release 命名规范**：**包名（文件名）必须用英文**（中文会导致 URL 下载失败）；**标题必须中英结合**（如"压缩工具 Bandizip 6.18"）；**描述必须纯中文**。manifest 中 `description` 用英文，`shortcuts` 名称用中文。

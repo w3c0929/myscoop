@@ -17,9 +17,6 @@
         "github": "https://github.com/amcfy-music/amcfy-music"
     },
     "autoupdate": {
-        "url": "https://github.com/amcfy-music/amcfy-music/releases/download/$version/Amcfy.Music_$version-windows-x64.zip",
-        "hash": {
-            "url": "$url.sha256"
-        }
+        "url": "https://github.com/amcfy-music/amcfy-music/releases/download/$version/Amcfy.Music_$version-windows-x64.zip"
     }
 }
