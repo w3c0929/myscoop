@@ -50,7 +50,17 @@ GitHub: https://github.com/w3c0929/myscoop
 ## 常用命令
 
 ```bash
-# 计算 hash
+# 免下载更新所有第三方软件（推荐）
+python3 myscoop-update.py --all
+
+# 获取第三方软件 hash（免下载，从 API digest 读取）
+curl -s "https://api.github.com/repos/{owner}/{repo}/releases/latest" | python3 -c "
+import sys,json; r=json.load(sys.stdin)
+for a in r['assets']:
+    print(a['name'], '→', a.get('digest',''))
+"
+
+# 计算 hash（本地文件）
 certutil -hashfile "file.exe" SHA256 | grep -E "^[a-f0-9]{64}"
 
 # 上传 release

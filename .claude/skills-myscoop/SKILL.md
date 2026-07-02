@@ -397,6 +397,23 @@ powershell -NoProfile -Command "scoop search {appname}"
 - 删除临时下载文件（`_temp.zip`、`_temp.exe` 等）
 - 报告用户：manifest 文件路径、安装命令、关键字段摘要
 
+### 第六步：更新第三方 manifest（免下载）
+
+收录完成后，第三方软件需要定期检查更新。使用 `myscoop-update.py` 脚本，通过 GitHub API digest 免下载获取新版本号和哈希：
+
+```bash
+# 检查更新
+python3 myscoop-update.py --all --dry-run
+
+# 自动更新全部
+python3 myscoop-update.py --all
+
+# 提交
+git add bucket/ && git commit -m "批量更新第三方软件" && git push
+```
+
+**原理**：GitHub Release API 返回的每个 asset 包含 `digest: sha256:xxx`，脚本直接读取，无需下载文件。
+
 ## 关键规则
 
 1. **永远优先 portable/zip**，避免使用安装包

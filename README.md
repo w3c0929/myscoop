@@ -501,19 +501,29 @@ Scoop 不设 `hash` 规则时，`checkver -u` 会自动下载文件并计算 SHA
 
 > **注意**：`autoupdate` 不会自动更新 hash。需要定期运行 `scoop checkver <appname> --update` 来更新 manifest 中的 hash 值并推送到仓库。
 
-### 维护者定期更新步骤
+### 维护者定期更新步骤（推荐：免下载脚本）
 
-```powershell
-# 检查哪些软件有更新
-scoop checkver
+```bash
+# 检查所有第三方软件是否有更新
+python3 myscoop-update.py --all --dry-run
 
-# 更新特定软件的 manifest（写入新版本号和 hash）
-scoop checkver <appname> --update
+# 自动更新全部（版本 + URL + hash 免下载获取）
+python3 myscoop-update.py --all
 
 # 提交更新
-git add bucket/<appname>.json
-git commit -m "<appname>: update to version x.y.z"
-git push origin main
+git add bucket/ && git commit -m "批量更新第三方软件" && git push
+```
+
+脚本通过 GitHub API 的 `digest` 字段直接获取 SHA256，无需下载软件包。也可以单独更新某个软件：
+
+```bash
+python3 myscoop-update.py bucket/amcfy-music.json
+```
+
+传统方式（需下载文件计算 hash）：
+
+```powershell
+scoop checkver <appname> --update
 ```
 
 ---
@@ -661,6 +671,8 @@ myscoop/
 │   └── cherry-studio.json               (模式1：portable exe 官方 release)
 ├── .claude/
 │   └── skills-myscoop/
-│       └── SKILL.md                 ← AI 自动收录技能
+│       ├── SKILL.md                 ← AI 自动收录技能
+│       └── progress.md              ← 项目进展
+├── myscoop-update.py                ← 免下载自动更新脚本
 └── README.md                        ← 此文件
 ```
