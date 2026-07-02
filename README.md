@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **70** 款 Windows 软件，其中 **62** 款为本地维护（自托管 Release），**8** 款引用第三方官方 Release。
+> 共收录 **74** 款 Windows 软件，其中 **62** 款为本地维护（自托管 Release），**12** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -85,6 +85,10 @@
 | 6 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.2 |
 | 7 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry-studio` | portable exe 官方 release | 1.9.11 |
 | 8 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 单 exe 官方 release | 0.4.4 |
+| 9 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.3 |
+| 10 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install embytolocalplayer` | zip 官方 release | 2025.11.13 |
+| 11 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | zip 官方 release | 5.4.2 |
+| 12 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconverter` | MSI 官方 release | 2.2 |
 
 ## 快速开始（用户）
 
@@ -637,7 +641,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 70 个）
+├── bucket/        ← 所有 manifest JSON（共 74 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -677,7 +681,11 @@ myscoop/
 │   ├── cherry-studio.json               (模式1：portable exe 官方 release)
 │   ├── cc-haha.json                    (模式1：单 exe 官方 release)
 │   ├── musictag.json                   (模式2：7z 便携解压即用)
-│   └── miaomi.json                     (模式6：单 exe 手动安装)
+│   ├── miaomi.json                     (模式6：单 exe 手动安装)
+│   ├── cinetry.json                    (模式1：zip 官方 release)
+│   ├── embytolocalplayer.json          (模式1：zip 官方 release)
+│   ├── eserver.json                    (模式1：zip 官方 release)
+│   └── fileconverter.json              (模式1：MSI 官方 release)
 ├── .claude/
 │   └── skills-myscoop/
 │       ├── SKILL.md                 ← AI 自动收录技能

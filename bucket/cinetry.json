@@ -1,0 +1,15 @@
+{
+    "version": "0.8.3",
+    "description": "Cinetry多媒体播放器，Jellyfin、Emby、CMS、IPTV、Webdav、Alist、Openlist、Subsonic、Navidrom、GD音乐台、audiobookshelf、道理鱼、飞牛影视数据导入，服务器一键切换，多服务器数据聚合搜索，支持Andorid、iOS、Windows、macOS、Linux、TV，纯本地客户端，不扫库，不会收集、存储或传输任何个人信息或服务器数据",
+    "homepage": "https://cinetry.gstory.cn",
+    "license": "unknown",
+    "url": "https://github.com/gstory0404/Cinetry/releases/download/0.8.3/Cinetry_0.8.3%2B47_windows.zip",
+    "hash": "sha256:c2c73f433fb2e70051f4647d712f55a825a1a94a7114e313bd99a46f402e5be0",
+    "checkver": {
+        "github": "https://github.com/gstory0404/Cinetry"
+    },
+    "autoupdate": {
+        "url": "https://github.com/gstory0404/Cinetry/releases/download/$version/Cinetry_$version+47_windows.zip"
+    },
+    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+}

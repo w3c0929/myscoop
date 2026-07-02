@@ -1,0 +1,15 @@
+{
+    "version": "5.4.2",
+    "description": "Windows Mac平台下的一款集成Nginx、PHP、MySQL、Redis等服务的GUI集成环境",
+    "homepage": "https://github.com/xianyunleo/EServer",
+    "license": "NOASSERTION",
+    "url": "https://github.com/xianyunleo/EServer/releases/download/v5.4.2/EServer-5.4.2-arm64-win.zip",
+    "hash": "sha256:ac84fdd7f027a3e4962ba51efdf4cf4ef1d8cf1bd133b7336ed1b941a6ea1e00",
+    "checkver": {
+        "github": "https://github.com/xianyunleo/EServer"
+    },
+    "autoupdate": {
+        "url": "https://github.com/xianyunleo/EServer/releases/download/v$version/EServer-$version-arm64-win.zip"
+    },
+    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+}
