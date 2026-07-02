@@ -75,7 +75,7 @@
 
 | # | 软件 | 安装命令 | 类型 | 版本 |
 |--|------|---------|------|------|
-| 1 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.0 |
+| 1 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.1 |
 | 2 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
 | 3 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具 | `scoop install mykeymap` | portable 7z 官方 release | 2.0-beta33 |
 | 4 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral-notepaper` | 单 exe 官方 release | 1.1.0 |
