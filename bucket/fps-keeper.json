@@ -1,8 +1,10 @@
 {
     "version": "1.0",
-    "description": "FPS Keeper - game frame rate stabilization tool",
-    "license": {"identifier": "Freeware"},
-    "url": "https://github.com/w3c0929/myscoop/releases/download/vFPSKeeper/fps-keeper.exe",
+    "description": "FPS Keeper - frame rate locking tool for game streaming",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0-fps-keeper/fps-keeper-1.0.exe",
     "hash": "sha256:aa2f9b98bda154f57232f10f30028c2c45e2a3d6ff3c082b3b307d03be1700ff",
-    "post_install": "Start-Process \"$dir\\fps-keeper.exe\""
+    "post_install": "Start-Process \"$dir\\fps-keeper-1.0.exe\""
 }

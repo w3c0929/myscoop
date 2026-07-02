@@ -1,5 +1,5 @@
 ---
-name: scoop-add
+name: myscoop
 description: 将 GitHub 上的 Windows 软件收录到 myscoop bucket。分析目标项目的 release 资产，选择合适的安装方式，生成 manifest 并验证。
 type: project
 ---

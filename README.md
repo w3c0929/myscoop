@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **78** 款 Windows 软件，其中 **65** 款为本地维护（自托管 Release），**13** 款引用第三方官方 Release。
+> 共收录 **81** 款 Windows 软件，其中 **68** 款为本地维护（自托管 Release），**13** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -75,6 +75,9 @@
 | 63 | Bandicam — 班班录屏，高性能屏幕录制 | `scoop install bandicam` | 7z 便携解压即用 | 8.1.1.2518 |
 | 64 | VP9 视频解码器 — Windows VP9 视频编解码扩展 | `scoop install vp9-video-extensions` | Appx 手动安装 | 1.0.50481.0 |
 | 65 | Edge WebView2 运行时 — 现代 Windows 应用必备组件 | `scoop install webview2-runtime` | 单 exe 手动安装 | 1.3.213.7 |
+| 66 | HardLinkShellExt — Windows 软硬链接 Shell 扩展工具 | `scoop install hardlinkshellext` | 单 exe 手动安装 | 3.9.3.5 |
+| 67 | UltraISO Premium — 软碟通光盘映像制作编辑转换工具 | `scoop install ultraiso` | 单 exe 手动安装 | 9.7.0 |
+| 68 | [EdgeBlock](https://www.sordum.org/edge-blocker/) — Edge 浏览器禁用/启用工具 | `scoop install edgeblock` | zip 便携解压即用 | 2.0 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -645,7 +648,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 78 个）
+├── bucket/        ← 所有 manifest JSON（共 81 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -694,6 +697,9 @@ myscoop/
 │   ├── vp9-video-extensions.json       (模式6：Appx 手动安装)
 │   ├── webview2-runtime.json           (模式6：单 exe 手动安装)
 │   └── tokenicode-deepseek-alpha.json   (模式1：zip 官方 release)
+│   ├── hardlinkshellext.json               (模式6：单 exe 手动安装)
+│   ├── ultraiso.json                       (模式6：单 exe 手动安装)
+│   └── edgeblock.json                      (模式2：zip 便携解压即用)
 ├── .claude/
 │   └── skills-myscoop/
 │       ├── SKILL.md                 ← AI 自动收录技能
