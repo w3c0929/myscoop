@@ -1,0 +1,10 @@
+{
+    "version": "5.0.9.6029",
+    "description": "WeCom - Tencent enterprise communication platform",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v5.0.9.6029-wecom/wecom-5.0.9.6029.exe",
+    "hash": "sha256:2489ce17551b973b14435a64e71d02731324d4a05dc76f6c76f15616bf273bff",
+    "post_install": "Start-Process \"$dir\\wecom-5.0.9.6029.exe\""
+}

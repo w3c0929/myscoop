@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **81** 款 Windows 软件，其中 **67** 款为本地维护（自托管 Release），**14** 款引用第三方官方 Release。
+> 共收录 **86** 款 Windows 软件，其中 **72** 款为本地维护（自托管 Release），**14** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -77,6 +77,11 @@
 | 66 | HardLinkShellExt — Windows 软硬链接 Shell 扩展工具 | `scoop install hardlinkshellext` | 单 exe 手动安装 | 3.9.3.5 |
 | 67 | UltraISO Premium — 软碟通光盘映像制作编辑转换工具 | `scoop install ultraiso` | 单 exe 手动安装 | 9.7.0 |
 | 68 | [EdgeBlock](https://www.sordum.org/edge-blocker/) — Edge 浏览器禁用/启用工具 | `scoop install edgeblock` | zip 便携解压即用 | 2.0 |
+| 69 | DingTalk Downloader — 钉钉下载工具 | `scoop install dingtalk-downloader` | 单 exe 手动安装 | 1.0.0.10 |
+| 70 | HiPC — 电脑助手远程控制工具 | `scoop install hipc` | 单 exe 手动安装 | 5.6.6.174a |
+| 71 | QQ — 腾讯即时通讯客户端 | `scoop install qq` | 单 exe 手动安装 | 9.9.31 |
+| 72 | 微信 WeChat — 腾讯社交聊天应用 | `scoop install wechat` | 单 exe 手动安装 | 4.1.11 |
+| 73 | 企业微信 WeCom — 腾讯企业通讯平台 | `scoop install wecom` | 单 exe 手动安装 | 5.0.9.6029 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -648,7 +653,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 81 个）
+├── bucket/        ← 所有 manifest JSON（共 86 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -701,6 +706,11 @@ myscoop/
 │   ├── hardlinkshellext.json               (模式6：单 exe 手动安装)
 │   ├── ultraiso.json                       (模式6：单 exe 手动安装)
 │   └── edgeblock.json                      (模式2：zip 便携解压即用)
+│   ├── dingtalk-downloader.json            (模式6：单 exe 手动安装)
+│   ├── hipc.json                            (模式6：单 exe 手动安装)
+│   ├── qq.json                              (模式6：单 exe 手动安装)
+│   ├── wechat.json                          (模式6：单 exe 手动安装)
+│   └── wecom.json                           (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       ├── SKILL.md                 ← AI 自动收录技能
