@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **75** 款 Windows 软件，其中 **63** 款为本地维护（自托管 Release），**12** 款引用第三方官方 Release。
+> 共收录 **77** 款 Windows 软件，其中 **65** 款为本地维护（自托管 Release），**12** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -73,6 +73,8 @@
 | 61 | MusicTag — 音乐标签编辑工具 | `scoop install musictag` | 7z 便携解压即用 | 1.0.9.0 |
 | 62 | miaomi — 喵咪客户端 | `scoop install miaomi` | 单 exe 手动安装 | 2.4.5 |
 | 63 | Bandicam — 班班录屏，高性能屏幕录制 | `scoop install bandicam` | 7z 便携解压即用 | 8.1.1.2518 |
+| 64 | VP9 视频解码器 — Windows VP9 视频编解码扩展 | `scoop install vp9-video-extensions` | Appx 手动安装 | 1.0.50481.0 |
+| 65 | Edge WebView2 运行时 — 现代 Windows 应用必备组件 | `scoop install webview2-runtime` | 单 exe 手动安装 | 1.3.213.7 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -642,7 +644,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 75 个）
+├── bucket/        ← 所有 manifest JSON（共 77 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -687,7 +689,9 @@ myscoop/
 │   ├── embytolocalplayer.json          (模式1：zip 官方 release)
 │   ├── eserver.json                    (模式1：zip 官方 release)
 │   ├── fileconverter.json              (模式1：MSI 官方 release)
-│   └── bandicam.json                   (模式2：7z 便携解压即用)
+│   ├── bandicam.json                   (模式2：7z 便携解压即用)
+│   ├── vp9-video-extensions.json       (模式6：Appx 手动安装)
+│   └── webview2-runtime.json           (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       ├── SKILL.md                 ← AI 自动收录技能

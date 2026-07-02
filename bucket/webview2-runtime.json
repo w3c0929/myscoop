@@ -1,0 +1,10 @@
+{
+    "version": "1.3.213.7",
+    "description": "Microsoft Edge WebView2 Runtime - required component for modern Windows apps",
+    "license": {
+        "identifier": "Proprietary"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.3.213.7/WebView2Runtime-1.3.213.7.exe",
+    "hash": "sha256:96ba497132f4a0bd9ed97b4496212801b092002c72ff921cfc5e51a7b51c7e6a",
+    "post_install": "Start-Process \"$dir\\WebView2Runtime-1.3.213.7.exe\""
+}
