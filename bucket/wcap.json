@@ -1,0 +1,17 @@
+{
+    "version": "1.0",
+    "description": "WCAP - Windows screen recording tool",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0-wcap/wcap-1.0.zip",
+    "hash": "sha256:a039145244865cbecddbb03be3130e81c80a9ed8ed093236c521b30d44f0105a",
+    "bin": "wcap.exe",
+    "shortcuts": [
+        [
+            "wcap.exe",
+            "WCAP 屏幕录制"
+        ]
+    ],
+    "post_install": "Start-Process \"$dir\\wcap.exe\""
+}

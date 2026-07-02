@@ -10,11 +10,11 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 
 GitHub: https://github.com/w3c0929/myscoop
 
-## 当前状态（截至 2026-07-01）
+## 当前状态（截至 2026-07-02）
 
-- **收录软件总数**: 64 款
-- **本地维护（自托管 Release）**: 58 款
-- **第三方官方（引用原项目 Release）**: 6 款
+- **收录软件总数**: 67 款
+- **本地维护（自托管 Release）**: 60 款
+- **第三方官方（引用原项目 Release）**: 7 款
 
 不包含上下文提到的草稿软件。
 
@@ -23,7 +23,7 @@ GitHub: https://github.com/w3c0929/myscoop
 1. **Release 命名规范**：包名（文件名）必须英文 → 标题中英结合 → 描述纯中文
 2. **git commit 信息必须用中文**
 3. **收录新软件后，提交前必须同步更新 README.md 和 SKILL.md**
-4. **Hash 必须通过下载计算获取，不能猜测**
+4. **Hash 获取优先使用 GitHub API**：GitHub Release API 返回的每个 asset 包含 `digest: sha256:xxx` 字段，可直接读取无需下载文件。仅在 API 不可用时才下载计算。
 
 ## 标准处理流程
 

@@ -59,9 +59,17 @@ curl -L -o _temp.zip "{url}" && 7z l _temp.zip | head -40
    - 有 `x64`/`x86`/`arm64` 分别的 zip → 使用 `architecture` 块
    - 只有一个通用 zip → 使用顶层 `url`/`hash`
 
-4. **获取 SHA256**：
-   - 优先从 release 页面文本中提取（如果作者贴了）
-   - 否则下载后 `certutil -hashfile _temp.zip SHA256`
+4. **获取 SHA256**（按优先级）：
+   - **方法1（推荐）**：从 GitHub API 的 asset `digest` 字段直接读取——无需下载文件
+     ```bash
+     curl -s "https://api.github.com/repos/{owner}/{repo}/releases/latest" | python3 -c "
+     import sys,json; r=json.load(sys.stdin)
+     for a in r['assets']:
+         print(a['name'], '→', a.get('digest',''))
+     "
+     ```
+   - **方法2**：从 release 页面文本中提取（如果作者贴了 sha256）
+   - **方法3**：下载后 `certutil -hashfile _temp.zip SHA256`（兜底）
 
 5. Manifest 模板（多架构 portable zip）：
 
@@ -84,7 +92,12 @@ curl -L -o _temp.zip "{url}" && 7z l _temp.zip | head -40
     "checkver": { "github": "https://github.com/{owner}/{repo}" },
     "autoupdate": {
         "architecture": {
-            "64bit": { "url": "https://github.com/{owner}/{repo}/releases/download/v$version/{asset}-$version-x64-portable.zip" },
+            "64bit": {
+                "url": "https://github.com/{owner}/{repo}/releases/download/v$version/{asset}-$version-x64-portable.zip",
+                "hash": {
+                    "url": "$url.sha256"
+                }
+            },
             "32bit": { ... },
             "arm64": { ... }
         }
@@ -117,7 +130,10 @@ curl -L -o _temp.exe "{url}" && certutil -hashfile _temp.exe SHA256
     "shortcuts": [["{asset}.exe", "{Display Name}"]],
     "checkver": { "github": "https://github.com/{owner}/{repo}" },
     "autoupdate": {
-        "url": "https://github.com/{owner}/{repo}/releases/download/v$version/{asset}.exe"
+        "url": "https://github.com/{owner}/{repo}/releases/download/v$version/{asset}.exe",
+        "hash": {
+            "url": "$url.sha256"
+        }
     }
 }
 ```

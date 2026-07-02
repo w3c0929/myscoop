@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **64** 款 Windows 软件，其中 **58** 款为本地维护（自托管 Release），**6** 款引用第三方官方 Release。
+> 共收录 **67** 款 Windows 软件，其中 **60** 款为本地维护（自托管 Release），**7** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -68,6 +68,8 @@
 | 56 | BeatEdit Pr — Premiere 节拍编辑插件汉化版 | `scoop install beatedit` | zip 插件包 | 2.1.003 |
 | 57 | MdxBuilder — 字典制作转换工具 | `scoop install mdxbuilder` | zip 便携解压即用 | 3.0 |
 | 58 | 禁用 Xbox GameBar — 弹窗禁用脚本 | `scoop install disable-gamebar` | zip 脚本 | 1.0 |
+| 59 | ChromeSetup — Google Chrome 安装器 | `scoop install chromesetup` | 单 exe 手动安装 | 147.0.7703.0 |
+| 60 | WCAP — Windows 屏幕录制工具 | `scoop install wcap` | zip 便携解压即用 | 1.0 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -79,6 +81,7 @@
 | 4 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral-notepaper` | 单 exe 官方 release | 1.1.0 |
 | 5 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 |
 | 6 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.0 |
+| 7 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry-studio` | portable exe 官方 release | 1.9.11 |
 
 ## 快速开始（用户）
 
@@ -445,7 +448,7 @@ Skill 会自动执行：分析资产类型 → 选择对应模式 → 计算 has
 }
 ```
 
-### autoupdate — 下载地址模板
+### autoupdate — 下载地址模板 + 哈希自动抓取
 
 `autoupdate` 定义新版本发布后，下载 URL 如何拼接。用 `$version` 代替版本号：
 
@@ -453,11 +456,16 @@ Skill 会自动执行：分析资产类型 → 选择对应模式 → 计算 has
 "autoupdate": {
     "architecture": {
         "64bit": {
-            "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x64.zip"
+            "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x64.zip",
+            "hash": {
+                "url": "$url.sha256"
+            }
         }
     }
 }
 ```
+
+`hash` 字段使用 `$url.sha256` 自动抓取规则：Scoop 会从下载地址 + `.sha256` 后缀获取校验文件（如 `app.zip.sha256`），无需手动计算哈希。若项目未提供 `.sha256` 文件，`checkver -u` 更新时需手动填入。
 
 ### 更新流程
 
@@ -588,7 +596,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 39 个）
+├── bucket/        ← 所有 manifest JSON（共 67 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -622,7 +630,10 @@ myscoop/
 │   ├── dropit.json                      (模式2：便携 zip 自托管)
 │   ├── gstarcad.json                    (模式5：多层 NSIS 解包自托管)
 │   ├── cutsilence.json                  (模式2：zip 便携解压即用)
-│   └── audio-recorder.json              (模式5：Inno 解包自托管)
+│   ├── audio-recorder.json              (模式5：Inno 解包自托管)
+│   ├── chromesetup.json                 (模式6：单 exe 手动安装)
+│   ├── wcap.json                       (模式2：zip 便携解压即用)
+│   └── cherry-studio.json               (模式1：portable exe 官方 release)
 ├── .claude/
 │   └── skills-myscoop/
 │       └── SKILL.md                 ← AI 自动收录技能

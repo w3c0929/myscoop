@@ -30,13 +30,22 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-x64-self-contained-portable.zip"
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-x64-self-contained-portable.zip",
+                "hash": {
+                    "url": "$url.sha256"
+                }
             },
             "32bit": {
-                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-x86-self-contained-portable.zip"
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-x86-self-contained-portable.zip",
+                "hash": {
+                    "url": "$url.sha256"
+                }
             },
             "arm64": {
-                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-arm64-self-contained-portable.zip"
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-arm64-self-contained-portable.zip",
+                "hash": {
+                    "url": "$url.sha256"
+                }
             }
         }
     }
