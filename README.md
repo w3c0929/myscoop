@@ -180,8 +180,18 @@ config.ini
 
 ### 第二步：生成 SHA256
 
+**方法1（推荐，无需下载）**：从 GitHub Release API 的 `digest` 字段直接获取：
+
 ```bash
-# 下载后本地计算（唯一可靠来源，不要用网页上贴的 hash）
+curl -s "https://api.github.com/repos/{owner}/{repo}/releases/latest" | python3 -c "
+import sys,json; r=json.load(sys.stdin)
+for a in r['assets']:
+    print(a['name'], '→', a.get('digest',''))
+"
+```
+
+**方法2（兜底）**：下载后本地计算：
+```bash
 curl -L -o _temp.zip "<下载链接>"
 certutil -hashfile _temp.zip SHA256
 ```
@@ -241,13 +251,22 @@ certutil -hashfile _temp.zip SHA256
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x64-portable.zip"
+                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x64-portable.zip",
+                "hash": {
+                    "url": "$url.sha256"
+                }
             },
             "32bit": {
-                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x86-portable.zip"
+                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x86-portable.zip",
+                "hash": {
+                    "url": "$url.sha256"
+                }
             },
             "arm64": {
-                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-arm64-portable.zip"
+                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-arm64-portable.zip",
+                "hash": {
+                    "url": "$url.sha256"
+                }
             }
         }
     }
@@ -305,7 +324,12 @@ git push origin main
     "checkver": { "github": "https://github.com/PLFJY/ContextMenuMgr" },
     "autoupdate": {
         "architecture": {
-            "64bit": { "url": "https://.../v$version/ContextMenuMgrPlus-$version-x64-self-contained-portable.zip" },
+            "64bit": {
+                "url": "https://.../v$version/ContextMenuMgrPlus-$version-x64-self-contained-portable.zip",
+                "hash": {
+                    "url": "$url.sha256"
+                }
+            },
             "32bit": { ... },
             "arm64": { ... }
         }
@@ -327,7 +351,10 @@ git push origin main
     "shortcuts": [["WindowsClear.exe", "WindowsClear"]],
     "checkver": { "github": "https://github.com/tanaer/WindowsClear" },
     "autoupdate": {
-        "url": "https://github.com/tanaer/WindowsClear/releases/download/v$version/WindowsClear.exe"
+        "url": "https://github.com/tanaer/WindowsClear/releases/download/v$version/WindowsClear.exe",
+        "hash": {
+            "url": "$url.sha256"
+        }
     }
 }
 ```
@@ -359,7 +386,10 @@ git push origin main
     "shortcuts": [["app.exe", "App Name"]],
     "checkver": { "github": "https://github.com/owner/repo" },
     "autoupdate": {
-        "url": "https://github.com/owner/repo/releases/download/$version/$version.zip"
+        "url": "https://github.com/owner/repo/releases/download/$version/$version.zip",
+        "hash": {
+            "url": "$url.sha256"
+        }
     }
 }
 ```
