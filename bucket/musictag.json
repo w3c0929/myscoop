@@ -1,0 +1,16 @@
+{
+    "version": "1.0.9.0",
+    "description": "MusicTag - music metadata tag editor",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.9.0/MusicTag-1.0.9.0.7z",
+    "hash": "sha256:b703237d37a5a6a57781f438280d9457fa03e164d105eb80ac3458cafa2d8266",
+    "bin": "MusicTag.exe",
+    "shortcuts": [
+        [
+            "MusicTag.exe",
+            "MusicTag"
+        ]
+    ]
+}

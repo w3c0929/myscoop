@@ -1,0 +1,10 @@
+{
+    "version": "2.4.5",
+    "description": "miaomi - Clash Verge proxy client",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v2.4.5-miaomi/miaomi-2.4.5.exe",
+    "hash": "sha256:c1d5b8547aef62fd3e564c40e3a6cf833cd88b0a2601b61800d6f453b7df004c",
+    "post_install": "Start-Process \"$dir\\miaomi-2.4.5.exe\""
+}

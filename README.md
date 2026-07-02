@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **68** 款 Windows 软件，其中 **60** 款为本地维护（自托管 Release），**8** 款引用第三方官方 Release。
+> 共收录 **70** 款 Windows 软件，其中 **62** 款为本地维护（自托管 Release），**8** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -70,6 +70,8 @@
 | 58 | 禁用 Xbox GameBar — 弹窗禁用脚本 | `scoop install disable-gamebar` | zip 脚本 | 1.0 |
 | 59 | ChromeSetup — Google Chrome 安装器 | `scoop install chromesetup` | 单 exe 手动安装 | 147.0.7703.0 |
 | 60 | WCAP — Windows 屏幕录制工具 | `scoop install wcap` | zip 便携解压即用 | 1.0 |
+| 61 | MusicTag — 音乐标签编辑工具 | `scoop install musictag` | 7z 便携解压即用 | 1.0.9.0 |
+| 62 | miaomi — Clash Verge 代理客户端 | `scoop install miaomi` | 单 exe 手动安装 | 2.4.5 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -635,7 +637,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 68 个）
+├── bucket/        ← 所有 manifest JSON（共 70 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -673,7 +675,9 @@ myscoop/
 │   ├── chromesetup.json                 (模式6：单 exe 手动安装)
 │   ├── wcap.json                       (模式2：zip 便携解压即用)
 │   ├── cherry-studio.json               (模式1：portable exe 官方 release)
-│   └── cc-haha.json                    (模式1：单 exe 官方 release)
+│   ├── cc-haha.json                    (模式1：单 exe 官方 release)
+│   ├── musictag.json                   (模式2：7z 便携解压即用)
+│   └── miaomi.json                     (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       ├── SKILL.md                 ← AI 自动收录技能
