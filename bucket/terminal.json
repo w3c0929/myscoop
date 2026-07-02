@@ -1,0 +1,37 @@
+{
+    "version": "1.24.11321.0",
+    "description": "The new Windows Terminal and the original Windows console host, all in the same place!",
+    "homepage": "https://github.com/microsoft/terminal",
+    "license": "MIT",
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11321.0/Microsoft.WindowsTerminal_1.24.11321.0_x86.zip",
+            "hash": "sha256:5d1619a5031747719b8711ea13350ff428730a596029a9de57a6d6b31448d0e5"
+        },
+        "64bit": {
+            "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11321.0/Microsoft.WindowsTerminal_1.24.11321.0_x64.zip",
+            "hash": "sha256:7caef554147e5498ed1becdca73cdedb79fbc81f89032e46ae9b095c53433812"
+        },
+        "arm64": {
+            "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11321.0/Microsoft.WindowsTerminal_1.24.11321.0_arm64.zip",
+            "hash": "sha256:e69c80df105fa54cf286f17ee301c586ab81bc0b1461c229c450a8666ef31480"
+        }
+    },
+    "checkver": {
+        "github": "https://github.com/microsoft/terminal"
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/microsoft/terminal/releases/download/v$version/Microsoft.WindowsTerminal_$version_x86.zip"
+            },
+            "64bit": {
+                "url": "https://github.com/microsoft/terminal/releases/download/v$version/Microsoft.WindowsTerminal_$version_x64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/microsoft/terminal/releases/download/v$version/Microsoft.WindowsTerminal_$version_arm64.zip"
+            }
+        }
+    },
+    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+}

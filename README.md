@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **80** 款 Windows 软件，其中 **67** 款为本地维护（自托管 Release），**13** 款引用第三方官方 Release。
+> 共收录 **81** 款 Windows 软件，其中 **67** 款为本地维护（自托管 Release），**14** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -95,6 +95,7 @@
 | 11 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | zip 官方 release | 5.4.2 |
 | 12 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconverter` | MSI 官方 release | 2.2 |
 | 13 | [tokenicode-deepseek-alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode-deepseek-alpha` | zip 官方 release | 0.10.4-alpha.1 |
+| 14 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.24.11321.0 |
 
 ## 快速开始（用户）
 
@@ -647,7 +648,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 80 个）
+├── bucket/        ← 所有 manifest JSON（共 81 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -696,6 +697,7 @@ myscoop/
 │   ├── vp9-video-extensions.json       (模式6：Appx 手动安装)
 │   ├── webview2-runtime.json           (模式6：单 exe 手动安装)
 │   └── tokenicode-deepseek-alpha.json   (模式1：zip 官方 release)
+│   ├── terminal.json                       (模式1：多架构 zip 官方 release)
 │   ├── hardlinkshellext.json               (模式6：单 exe 手动安装)
 │   ├── ultraiso.json                       (模式6：单 exe 手动安装)
 │   └── edgeblock.json                      (模式2：zip 便携解压即用)
