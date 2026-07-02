@@ -1,0 +1,17 @@
+{
+    "version": "8.1.1.2518",
+    "description": "Bandicam - high-performance screen recording software",
+    "license": {
+        "identifier": "Shareware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v8.1.1.2518/Bandicam-8.1.1.2518.7z",
+    "hash": "sha256:44baa2ee826d9c00aa5363c22199784c8ef0dc253ab9dd9746a9d384dfcbc106",
+    "extract_dir": "Bandicam",
+    "bin": "BandicamPortable.exe",
+    "shortcuts": [
+        [
+            "BandicamPortable.exe",
+            "班班录屏"
+        ]
+    ]
+}
