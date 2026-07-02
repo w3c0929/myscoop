@@ -1,10 +1,10 @@
 {
-    "version": "1.2.0",
+    "version": "1.2.2",
     "description": "Amcfy Music Player - Subsonic/Navidrome/Emby/Jellyfin client",
     "homepage": "https://github.com/amcfy-music/amcfy-music",
     "license": "MIT",
-    "url": "https://github.com/amcfy-music/amcfy-music/releases/download/1.2.0/Amcfy.Music_1.2.0-windows-x64.zip",
-    "hash": "sha256:f2689dbce46754262062fc788cd36d84ae7e808edbf1383d9dcfa931eaef016c",
+    "url": "https://github.com/amcfy-music/amcfy-music/releases/download/1.2.2/Amcfy.Music_1.2.3.10001-windows.zip",
+    "hash": "sha256:d4af15a007a459d4632aca7525deac9aaedbb85c9c8ef87e4a7349a3d51dc947",
     "pre_install": "Get-ChildItem \"$dir\" -Filter 'Amcfy Music*.exe' | Move-Item -Destination \"$dir\\Amcfy Music.exe\" -Force",
     "bin": "Amcfy Music.exe",
     "shortcuts": [
@@ -14,9 +14,10 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/amcfy-music/amcfy-music"
+        "url": "https://api.github.com/repos/amcfy-music/amcfy-music/releases/latest",
+        "regex": "\"browser_download_url\":\"https://github\\.com/amcfy-music/amcfy-music/releases/download/[\\d.]+/(Amcfy\\.Music_[\\d.]+-windows\\.zip)\""
     },
     "autoupdate": {
-        "url": "https://github.com/amcfy-music/amcfy-music/releases/download/$version/Amcfy.Music_$version-windows-x64.zip"
+        "url": "https://github.com/amcfy-music/amcfy-music/releases/download/$version/Amcfy.Music_$version-windows.zip"
     }
 }
