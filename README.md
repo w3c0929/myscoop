@@ -71,7 +71,7 @@
 | 59 | ChromeSetup — Google Chrome 安装器 | `scoop install chromesetup` | 单 exe 手动安装 | 147.0.7703.0 |
 | 60 | WCAP — Windows 屏幕录制工具 | `scoop install wcap` | zip 便携解压即用 | 1.0 |
 | 61 | MusicTag — 音乐标签编辑工具 | `scoop install musictag` | 7z 便携解压即用 | 1.0.9.0 |
-| 62 | miaomi — Clash Verge 代理客户端 | `scoop install miaomi` | 单 exe 手动安装 | 2.4.5 |
+| 62 | miaomi — 喵咪客户端 | `scoop install miaomi` | 单 exe 手动安装 | 2.4.5 |
 
 ### 第三方官方（引用原项目 Release）
 
