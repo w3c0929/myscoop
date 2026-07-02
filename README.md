@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **81** 款 Windows 软件，其中 **68** 款为本地维护（自托管 Release），**13** 款引用第三方官方 Release。
+> 共收录 **80** 款 Windows 软件，其中 **67** 款为本地维护（自托管 Release），**13** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -52,7 +52,6 @@
 | 40 | WinHex 编译版 — 十六进制编辑器 | `scoop install winhex` | 单 exe 手动安装 | 1.0 |
 | 41 | 搜狗五笔 — 中文五笔输入法 | `scoop install sogou-wubi` | 单 exe 手动安装 | 1.0 |
 | 42 | 谷歌翻译检查器 — 翻译质量验证工具 | `scoop install google-translate-checker` | 单 exe 手动安装 | 1.0 |
-| 43 | 录屏工具 — 屏幕录制工具 | `scoop install screen-recorder` | 单 exe 手动安装 | 1.0 |
 | 44 | 数字键盘练习 — 数字键盘打字练习 | `scoop install numpad-practice` | 单 exe 手动安装 | 1.0 |
 | 45 | 文件夹加密 — 文件夹/文件加密工具 | `scoop install folder-encrypt` | 单 exe 手动安装 | 1.0 |
 | 46 | GIF 工具 — GIF 制作工具 | `scoop install gif-tool` | 单 exe 手动安装 | 1.0 |
@@ -648,7 +647,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 81 个）
+├── bucket/        ← 所有 manifest JSON（共 80 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
