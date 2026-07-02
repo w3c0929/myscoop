@@ -504,10 +504,13 @@ Scoop 不设 `hash` 规则时，`checkver -u` 会自动下载文件并计算 SHA
 ### 维护者定期更新步骤（推荐：免下载脚本）
 
 ```bash
-# 检查所有第三方软件是否有更新
-python3 myscoop-update.py --all --dry-run
+# 全局命令（安装后任何目录可用）
+myscoop-update --all --dry-run    # 检查更新
+myscoop-update --all              # 自动更新全部
+myscoop-update --add <github-url> # 粘贴链接添加新软件
 
-# 自动更新全部（版本 + URL + hash 免下载获取）
+# 或直接运行脚本
+cd D:\scoop\buckets\myscoop
 python3 myscoop-update.py --all
 
 # 提交更新
