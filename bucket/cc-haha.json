@@ -1,0 +1,21 @@
+{
+    "version": "0.4.4",
+    "description": "Claude Code 泄露源码 - 本地可运行版本，新增跨平台桌面端软件补齐Computer Use（附带核心模块解析）",
+    "homepage": "https://claudecode-haha.relakkesyang.org/",
+    "license": "NOASSERTION",
+    "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.4.4/Claude-Code-Haha-0.4.4-win-x64.exe",
+    "hash": "sha256:caf596d0d9d2f0d438f0a3988b77f6b09c07d5e47dc91631ff1e738a730d942d",
+    "checkver": {
+        "github": "https://github.com/NanmiCoder/cc-haha"
+    },
+    "autoupdate": {
+        "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-x64.exe"
+    },
+    "bin": "Claude-Code-Haha-0.4.4-win-x64.exe",
+    "shortcuts": [
+        [
+            "Claude-Code-Haha-0.4.4-win-x64.exe",
+            "cc-haha"
+        ]
+    ]
+}
