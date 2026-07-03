@@ -1,0 +1,19 @@
+{
+    "version": "1.0",
+    "description": "waifu2x-caffe - image super-resolution upscaling tool using convolutional neural networks",
+    "license": {
+        "identifier": "MIT"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0-waifu2x-caffe/waifu2x-caffe.zip",
+    "hash": "sha256:daabe77d2e94bb0acc0abb2ca10cb0d47b974d8cb121ddc36fb3f695b3de9e4f",
+    "bin": [
+        "waifu2x-caffe-cui.exe",
+        "waifu2x-caffe.exe"
+    ],
+    "shortcuts": [
+        [
+            "waifu2x-caffe.exe",
+            "waifu2x 图片放大"
+        ]
+    ]
+}
