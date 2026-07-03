@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **87** 款 Windows 软件，其中 **73** 款为本地维护（自托管 Release），**14** 款引用第三方官方 Release。
+> 共收录 **88** 款 Windows 软件，其中 **74** 款为本地维护（自托管 Release），**14** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -83,6 +83,7 @@
 | 72 | 微信 WeChat — 腾讯社交聊天应用 | `scoop install wechat` | 单 exe 手动安装 | 4.1.11 |
 | 73 | 企业微信 WeCom — 腾讯企业通讯平台 | `scoop install wecom` | 单 exe 手动安装 | 5.0.9.6029 |
 | 74 | waifu2x-caffe — 图片无损放大超分辨率工具 | `scoop install waifu2x-caffe` | zip 便携解压即用 | 1.0 |
+| 75 | Visual Studio BuildTools — VS 2026 生成工具安装器 | `scoop install vs-buildtools` | 单 exe 手动安装 | 18.7.11925.98 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -654,7 +655,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 87 个）
+├── bucket/        ← 所有 manifest JSON（共 88 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式1：portable 7z 官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -713,6 +714,7 @@ myscoop/
 │   ├── wechat.json                          (模式6：单 exe 手动安装)
 │   └── wecom.json                           (模式6：单 exe 手动安装)
 │   ├── waifu2x-caffe.json                   (模式2：zip 便携解压即用)
+│   ├── vs-buildtools.json                 (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       ├── SKILL.md                 ← AI 自动收录技能
