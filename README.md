@@ -14,7 +14,7 @@
 | 2 | [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php) — 文件解锁删除 | `scoop install iobit` | 单 exe 手动安装 | 1.3.0.11 |
 | 3 | [Uninstall Tool](https://www.crystalidea.com/uninstall-tool) — 强力卸载工具 | `scoop install uninstalltool` | portable zip | 3.4.3 |
 | 4 | [HiBit Uninstaller](https://www.hibitsoft.ir/Uninstaller.html) — 强力卸载工具 | `scoop install hibituninstaller` | 单 exe 便携 | 4.0.10 |
-| 5 | [Beyond Compare 5](https://www.scootersoftware.com/) — 文件对比工具 | `scoop install bcompare` | portable zip | 5.2.2 |
+| 5 | [Beyond Compare 5](https://www.scootersoftware.com/) — 文件对比工具 | `scoop install bcompare` | portable zip | 5.2.3 |
 | 6 | [Termius](https://termius.com/) — SSH 客户端汉化版 | `scoop install termius` | portable zip | 9.40.1 |
 | 7 | [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器 | `scoop install idm` | 单 exe 手动安装 | 6.4.3 |
 | 8 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 压缩工具（最后无广告版） | `scoop install bandizip6` | 单 exe 手动安装 | 6.18 |

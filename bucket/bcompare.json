@@ -1,13 +1,13 @@
 {
-    "version": "5.2.2",
+    "version": "5.2.3",
     "description": "Beyond Compare - powerful file and folder comparison tool (community-maintained)",
     "homepage": "https://www.scootersoftware.com/",
     "license": {
         "identifier": "Proprietary",
         "url": "https://www.scootersoftware.com/license"
     },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v5.2.2/BCompare-5.2.2-portable.zip",
-    "hash": "sha256:5cbc8f51bac778b4acf720d719e5d61e53d2f7fd85ade22b591f8d1c176411ac",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v5.2.3/BCompare-5.2.3-portable.zip",
+    "hash": "sha256:1d08f5ca84cf4a7e75458160c0e6a29b6d55647dd10a6e8e261ef65f7803f310",
     "bin": [
         "BCompare.exe",
         "BComp.exe"
