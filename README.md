@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **89** 款 Windows 软件，其中 **75** 款为本地维护（自托管 Release），**14** 款引用第三方官方 Release。
+> 共收录 **89** 款 Windows 软件，其中 **76** 款为本地维护（自托管 Release），**13** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -85,6 +85,7 @@
 | 74 | waifu2x-caffe — 图片无损放大超分辨率工具 | `scoop install waifu2x-caffe` | zip 便携解压即用 | 1.0 |
 | 75 | Visual Studio BuildTools — VS 2026 生成工具安装器 | `scoop install vs-buildtools` | 单 exe 手动安装 | 18.7.11925.98 |
 | 76 | GetDict — 字典转化工具，字典格式编码转换 | `scoop install getdict` | 单 exe 手动安装 | 1.0 |
+| 77 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具 | `scoop install mykeymap` | zip 便携解压即用 | 2.0-beta33 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -92,18 +93,17 @@
 |--|------|---------|------|------|
 | 1 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.1 |
 | 2 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
-| 3 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具 | `scoop install mykeymap` | portable 7z 官方 release | 2.0-beta33 |
-| 4 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral-notepaper` | 单 exe 官方 release | 1.1.0 |
-| 5 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 |
-| 6 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.2 |
-| 7 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry-studio` | portable exe 官方 release | 1.9.11 |
-| 8 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 单 exe 官方 release | 0.4.5 |
-| 9 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.3 |
-| 10 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install embytolocalplayer` | zip 官方 release | 2025.11.13 |
-| 11 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | zip 官方 release | 5.4.2 |
-| 12 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconverter` | MSI 官方 release | 2.2 |
-| 13 | [tokenicode-deepseek-alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode-deepseek-alpha` | zip 官方 release | 0.10.4-alpha.1 |
-| 14 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.24.11321.0 |
+| 3 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral-notepaper` | 单 exe 官方 release | 1.1.0 |
+| 4 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 |
+| 5 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.2 |
+| 6 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry-studio` | portable exe 官方 release | 1.9.11 |
+| 7 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 单 exe 官方 release | 0.4.5 |
+| 8 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.3 |
+| 9 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install embytolocalplayer` | zip 官方 release | 2025.11.13 |
+| 10 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | zip 官方 release | 5.4.2 |
+| 11 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconverter` | MSI 官方 release | 2.2 |
+| 12 | [tokenicode-deepseek-alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode-deepseek-alpha` | zip 官方 release | 0.10.4-alpha.1 |
+| 13 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.24.11321.0 |
 
 ## 快速开始（用户）
 
@@ -658,7 +658,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 myscoop/
 ├── bucket/        ← 所有 manifest JSON（共 89 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
-│   ├── mykeymap.json                (模式1：portable 7z 官方 release)
+│   ├── mykeymap.json                (模式2：zip 便携解压即用)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
 │   ├── windowsclear.json            (模式2：单 exe 便携)
 │   ├── tinytask.json                (模式2：单 exe 便携)
