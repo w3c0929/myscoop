@@ -296,15 +296,18 @@ def add_manifest(github_url, app_name=None):
     best_name = best_asset["name"]
 
     if best_name.endswith(".msi"):
-        # MSI 手动安装：仅下载不自动解包，installer.script 替代默认 msi 提取
-        # 不设 bin/shortcuts/checkver/autoupdate，用户自行选择安装目录（非 scoop 目录）
-        # 注意：必须用 installer.script 而非 post_install，否则 Scoop 会用 msiexec /a 自动解包
+        # MSI 手动安装：仅下载到 scoop 目录，用户手动执行完整安装
+        # Scoop 对 .msi 有硬编码的自动解包（msiexec /a），无法通过 manifest 禁用
+        # 因此用 pre_install 提前从缓存复制 MSI 到 $dir，避开采后的提取覆盖
+        # 不设 bin/shortcuts/checkver/autoupdate
         # 如需恢复 Scoop 默认 MSI 自动解包行为，删除此分支即可
-        print("[MSI] 检测到 MSI 安装包，将使用手动安装模式（仅下载 + 自动启动）")
-        manifest["installer"] = {
-            "script": f"Start-Process \"$dir\\{best_name}\""
-        }
-        # 移除 checkver/autoupdate（手动安装不需要自动更新）
+        print("[MSI] 检测到 MSI 安装包，将使用手动安装模式（pre_install 保存 + post_install 启动）")
+        msi_name = best_name
+        manifest["pre_install"] = [
+            f"$msi = Get-ChildItem \"$env:USERPROFILE\\scoop\\cache\" -Filter \"{msi_name}\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+            f"if ($msi) {{ Copy-Item $msi.FullName \"$dir\\{msi_name}\" }}"
+        ]
+        manifest["post_install"] = f"Start-Process \"$dir\\{msi_name}\""
         if "checkver" in manifest:
             del manifest["checkver"]
         if "autoupdate" in manifest:
