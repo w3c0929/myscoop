@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
 myscoop 管理脚本
-通过 GitHub API 免下载获取版本和哈希。
+通过 GitHub / Gitee API 免下载获取版本和哈希。
 
 用法:
-  # 从 GitHub 链接添加新软件
+  # 从 GitHub / Gitee 链接添加新软件
   python3 myscoop-update.py --add https://github.com/NanmiCoder/cc-haha.git
+  python3 myscoop-update.py --add https://gitee.com/fasterthanlight/automatic_clicker_2.git
   python3 myscoop-update.py --add https://github.com/owner/repo --name my-app-name
 
   # 更新指定 manifest
@@ -29,6 +30,30 @@ from pathlib import Path
 BUCKET_DIR = Path(__file__).parent / "bucket"
 
 
+def parse_repo_url(url):
+    """解析仓库 URL，返回 (platform, owner, repo)"""
+    url = url.rstrip("/").rstrip(".git")
+    for platform, host in [("github", r"github\.com"), ("gitee", r"gitee\.com")]:
+        m = re.match(rf"https?://{host}/([^/]+)/([^/]+?)$", url)
+        if m:
+            return platform, m.group(1), m.group(2)
+    return None, None, None
+
+
+def api_base(platform):
+    """获取 API 基地址"""
+    if platform == "gitee":
+        return "https://gitee.com/api/v5/repos"
+    return "https://api.github.com/repos"
+
+
+def download_base(platform, owner, repo):
+    """获取下载基地址"""
+    if platform == "gitee":
+        return f"https://gitee.com/{owner}/{repo}/releases/download"
+    return f"https://github.com/{owner}/{repo}/releases/download"
+
+
 def fetch_json(url):
     """获取 JSON 数据"""
     req = urllib.request.Request(url, headers={"User-Agent": "myscoop-updater"})
@@ -36,15 +61,17 @@ def fetch_json(url):
         return json.loads(resp.read().decode())
 
 
-def get_latest_release(owner, repo):
+def get_latest_release(owner, repo, platform="github"):
     """获取最新 release 信息"""
-    url = f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
+    base = api_base(platform)
+    url = f"{base}/{owner}/{repo}/releases/latest"
     return fetch_json(url)
 
 
-def get_repo_info(owner, repo):
+def get_repo_info(owner, repo, platform="github"):
     """获取仓库信息"""
-    url = f"https://api.github.com/repos/{owner}/{repo}"
+    base = api_base(platform)
+    url = f"{base}/{owner}/{repo}"
     return fetch_json(url)
 
 
@@ -131,12 +158,8 @@ def score_asset(name):
     return score
 
 
-def generate_autoupdate_url(asset_name, tag, has_v_prefix):
+def generate_autoupdate_url(asset_name, tag, has_v_prefix, platform="github", owner=None, repo=None):
     """根据 asset 文件名和 tag 生成 autoupdate URL 模板"""
-    tag_with_v = f"v{tag}" if not has_v_prefix else tag
-    version = tag.lstrip("v")
-
-    # 找到文件名中的版本号
     ver_match = re.search(r"[\d]+(?:\.[\d]+)+", asset_name)
     if ver_match:
         asset_ver_in_file = ver_match.group(0)
@@ -145,18 +168,17 @@ def generate_autoupdate_url(asset_name, tag, has_v_prefix):
         new_name = asset_name
 
     v_prefix = "v" if re.match(r"^v", tag) else ""
+    if platform == "gitee" and owner and repo:
+        return f"{download_base(platform, owner, repo)}/{v_prefix}$version/{new_name}"
     return f"https://github.com/{{owner}}/{{repo}}/releases/download/{v_prefix}$version/{new_name}"
 
 
-def add_manifest(github_url, app_name=None):
-    """从 GitHub 链接添加新 manifest"""
-    # 解析 URL
-    github_url = github_url.rstrip("/").rstrip(".git")
-    m = re.match(r"https?://github\.com/([^/]+)/([^/]+?)(?:\.git)?$", github_url)
-    if not m:
-        print(f"[错误] 无法解析 GitHub URL: {github_url}")
+def add_manifest(repo_url, app_name=None):
+    """从 GitHub / Gitee 链接添加新 manifest"""
+    platform, owner, repo = parse_repo_url(repo_url)
+    if not platform:
+        print(f"[错误] 无法解析仓库 URL: {repo_url}")
         return None
-    owner, repo = m.group(1), m.group(2)
 
     if not app_name:
         app_name = repo.lower()
@@ -165,39 +187,42 @@ def add_manifest(github_url, app_name=None):
         print(f"[错误] manifest 已存在: {manifest_path.name}")
         return None
 
+    print(f"平台: {platform}")
     print(f"仓库: {owner}/{repo}")
     print(f"应用名: {app_name}")
 
     # 获取仓库信息
     try:
-        info = get_repo_info(owner, repo)
+        info = get_repo_info(owner, repo, platform)
     except Exception as e:
         print(f"[错误] 获取仓库信息失败: {e}")
         return None
 
-    description = info.get("description", f"{repo} - from GitHub")
-    homepage = info.get("homepage", "") or f"https://github.com/{owner}/{repo}"
-    license_spdx = info.get("license", {})
-    license_val = license_spdx.get("spdx_id", "unknown") if license_spdx else "unknown"
+    description = info.get("description", f"{repo} - from {platform}")
+    homepage = info.get("homepage", "") or f"https://{platform}.com/{owner}/{repo}"
+    license_info = info.get("license", {})
+    if isinstance(license_info, dict):
+        license_val = license_info.get("spdx_id", license_info.get("name", "unknown"))
+    else:
+        license_val = license_info or "unknown"
 
     print(f"描述: {description}")
     print(f"License: {license_val}")
 
     # 获取 release
     try:
-        release = get_latest_release(owner, repo)
+        release = get_latest_release(owner, repo, platform)
     except urllib.error.HTTPError as e:
         print(f"[错误] 获取 release 失败 (HTTP {e.code})，将创建无 checkver 的占位 manifest")
-        print("  该项目可能没有 GitHub Release，需要手动处理。")
-        # 创建占位 manifest（自托管模式）
+        print("  该项目可能没有 Release，需要手动处理。")
         manifest = {
             "version": "1.0",
             "description": description,
             "homepage": homepage,
             "license": license_val,
-            "url": f"https://github.com/{owner}/{repo}/releases",
+            "url": f"https://{platform}.com/{owner}/{repo}/releases",
             "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-            "notes": "需要手动设置下载地址和 hash，该项目无 GitHub Release。"
+            "notes": "需要手动设置下载地址和 hash，该项目无 Release。"
         }
         manifest_path_str = str(manifest_path)
         with open(manifest_path_str, "w", encoding="utf-8") as f:
@@ -257,8 +282,17 @@ def add_manifest(github_url, app_name=None):
         "license": license_val,
     }
 
+    # 根据平台设置 checkver
+    if platform == "gitee":
+        manifest["checkver"] = {
+            "url": f"https://gitee.com/api/v5/repos/{owner}/{repo}/releases/latest",
+            "jsonpath": "$.tag_name",
+            "regex": "v([\\d.]+)"
+        }
+    else:
+        manifest["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
+
     if len(arch_assets) >= 2:
-        # 多架构 manifest
         print(f"检测到多架构: {list(arch_assets.keys())}")
         manifest["architecture"] = {}
         au_arch = {}
@@ -269,16 +303,14 @@ def add_manifest(github_url, app_name=None):
                 "url": url,
                 "hash": digest
             }
-            # 生成 autoupdate URL
-            au_url = generate_autoupdate_url(a["name"], tag, has_v_prefix)
-            au_url = au_url.format(owner=owner, repo=repo)
+            au_url = generate_autoupdate_url(a["name"], tag, has_v_prefix, platform, owner, repo)
+            if platform != "gitee":
+                au_url = au_url.format(owner=owner, repo=repo)
             au_arch[arch] = {"url": au_url}
             print(f"  {arch}: {a['name']}")
 
-        manifest["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
         manifest["autoupdate"] = {"architecture": au_arch}
     else:
-        # 单架构 manifest
         best, best_score = win_assets[0]
         url = best["browser_download_url"]
         digest = best.get("digest", "")
@@ -286,10 +318,10 @@ def add_manifest(github_url, app_name=None):
         manifest["url"] = url
         manifest["hash"] = digest
 
-        au_url = generate_autoupdate_url(best["name"], tag, has_v_prefix)
-        au_url = au_url.format(owner=owner, repo=repo)
+        au_url = generate_autoupdate_url(best["name"], tag, has_v_prefix, platform, owner, repo)
+        if platform != "gitee":
+            au_url = au_url.format(owner=owner, repo=repo)
 
-        manifest["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
         manifest["autoupdate"] = {"url": au_url}
 
         print(f"使用: {best['name']}")
@@ -362,13 +394,18 @@ def update_manifest(manifest_path, dry_run=False):
     cv = manifest["checkver"]
     github_url = cv.get("github")
     custom_url = cv.get("url", "")
+    platform = "github"
 
     if github_url:
         m = re.match(r"https?://github\.com/([^/]+)/([^/]+)", github_url)
-    elif "api.github.com/repos" in custom_url:
-        m = re.match(r"https?://api\.github\.com/repos/([^/]+)/([^/]+)", custom_url)
+    elif "api.github.com/repos" in custom_url or "github.com" in custom_url:
+        m = re.match(r"https?://(?:api\.)?github\.com/repos/([^/]+)/([^/]+)", custom_url)
+    elif "gitee.com/api" in custom_url or "gitee.com" in custom_url:
+        m = re.match(r"https?://gitee\.com/api/v5/repos/([^/]+)/([^/]+)", custom_url)
+        if m:
+            platform = "gitee"
     else:
-        print(f"  [跳过] {manifest_path.name}: 非 github checkver")
+        print(f"  [跳过] {manifest_path.name}: 无法识别的 checkver")
         return None
 
     if not m:
@@ -379,7 +416,7 @@ def update_manifest(manifest_path, dry_run=False):
     current_version = manifest["version"]
 
     try:
-        release = get_latest_release(owner, repo)
+        release = get_latest_release(owner, repo, platform)
     except urllib.error.HTTPError as e:
         print(f"  [HTTP {e.code}] {manifest_path.name}: {owner}/{repo}")
         return None
