@@ -47,6 +47,15 @@ GitHub: https://github.com/w3c0929/myscoop
 - 不设 bin/shortcuts/checkver/autoupdate
 - 示例：apollo, iobit, idm, bandizip6, pixpin 等
 
+### 模式 7：MSI 手动安装
+- MSI 直引上游 GitHub Release
+- Scoop 对 .msi 硬编码自动解包（msiexec /a），无法禁止
+- pre_install 从缓存复制 MSI 到 $dir 保存，post_install 自动启动
+- Scoop 缓存文件已重命名为 `{app}#{ver}#{hash}.msi`，需用 `{appname}#*.msi` 通配符查找
+- 缓存路径通过 `$dir -replace '\\apps\\.*$', '\\cache'` 推导
+- 不设 bin/shortcuts/checkver/autoupdate
+- 示例：fileconverter
+
 ## 常用命令
 
 ```bash

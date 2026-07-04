@@ -444,6 +444,29 @@ exe 直接上传 GitHub Release，不做解包。`post_install` 自动启动安�
 
 不设 `bin`/`shortcuts`/`checkver`/`autoupdate`。适用于：安装器类 exe（Bandizip/IDM/IObit）、zip 便携+自动启动（KeyCastOW）。
 
+**模式 7 — MSI 手动安装**
+
+MSI 直引上游 GitHub Release，自动弹出安装向导让用户手动完成：
+
+```json
+{
+    "version": "2.2",
+    "license": "GPL-3.0",
+    "url": "https://github.com/Tichau/FileConverter/releases/download/v2.2/FileConverter-2.2-x64-setup.msi",
+    "hash": "sha256:xxx",
+    "pre_install": [
+        "$appname = Split-Path (Split-Path $dir -Parent) -Leaf",
+        "$cachedir = $dir -replace '\\\\apps\\\\.*$', '\\cache'",
+        "$msi = Get-ChildItem $cachedir -Filter \"$appname#*.msi\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+        "if ($msi) { Copy-Item $msi.FullName \"$dir\\setup.msi\" }"
+    ],
+    "post_install": "Start-Process \"$dir\\setup.msi\"",
+    "notes": "MSI 手动安装包，scoop install 下载后自动启动，用户手动选择安装目录。"
+}
+```
+
+Scoop 对 `.msi` 硬编码了 `msiexec /a` 自动解包（无法禁止），所以用 `pre_install` 从缓存复制原始 MSI 保存，再 `post_install` 启动。Scoop 缓存文件已重命名为 `{app}#{ver}#{hash}.msi`，需用 `{appname}#*.msi` 通配符查找。不设 `bin`/`shortcuts`/`checkver`/`autoupdate`。示例：fileconverter。
+
 ### 使用 AI Skill 自动化（推荐）
 
 项目内置了 `.claude/skills-myscoop/SKILL.md`，向 AI 助手发送以下指令即可自动完成收录：
@@ -700,7 +723,7 @@ myscoop/
 │   ├── cinetry.json                    (模式1：zip 官方 release)
 │   ├── embytolocalplayer.json          (模式1：zip 官方 release)
 │   ├── eserver.json                    (模式1：zip 官方 release)
-│   ├── fileconverter.json              (模式1：MSI 官方 release)
+│   ├── fileconverter.json              (模式7：MSI 手动安装)
 │   ├── bandicam.json                   (模式2：7z 便携解压即用)
 │   ├── vp9-video-extensions.json       (模式6：Appx 手动安装)
 │   ├── webview2-runtime.json           (模式6：单 exe 手动安装)

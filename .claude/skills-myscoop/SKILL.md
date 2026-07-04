@@ -373,6 +373,52 @@ certutil -hashfile _temp.zip SHA256
 
 > 优先找 `.portable` 包名，其次是直接在 SourceForge 搜 `_Portable.zip`。如无 portable 版则尝试静默安装。
 
+#### 情况 I：MSI 手动安装（用户明确要求保留 MSI 时）
+
+> 条件：release 中只有 `.msi` 安装包，用户要求仅下载自启动，手动选择安装目录（非 scoop 目录）
+> 参考：FileConverter 2.2
+
+**关键问题**：Scoop 对 `.msi` 文件有硬编码的 `extract_archive`（执行 `msiexec /a` 管理员安装），在 `pre_install` / `installer` / `post_install` 之前就会解包。无法通过 manifest 字段禁止。
+
+**解决方案**：利用 `pre_install` 从 Scoop 缓存复制 MSI 到 `$dir`，然后再 `post_install` 启动。
+
+```bash
+# 1. 获取 MSI 的 SHA256（直接从 GitHub API digest 读取）
+curl -s "https://api.github.com/repos/{owner}/{repo}/releases/latest" | python3 -c "
+import sys,json; r=json.load(sys.stdin)
+for a in r['assets']:
+    if a['name'].endswith('.msi'):
+        print(a['name'], '→', a.get('digest',''))
+"
+```
+
+2. Manifest 模板：
+
+```json
+{
+    "version": "{version}",
+    "description": "{英文一句话描述}",
+    "homepage": "https://github.com/{owner}/{repo}",
+    "license": "{spdx_id}",
+    "url": "https://github.com/{owner}/{repo}/releases/download/v{version}/{asset}.msi",
+    "hash": "sha256:{hash}",
+    "pre_install": [
+        "$appname = Split-Path (Split-Path $dir -Parent) -Leaf",
+        "$cachedir = $dir -replace '\\\\apps\\\\.*$', '\\cache'",
+        "$msi = Get-ChildItem $cachedir -Filter \"$appname#*.msi\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+        "if ($msi) { Copy-Item $msi.FullName \"$dir\\setup.msi\" }"
+    ],
+    "post_install": "Start-Process \"$dir\\setup.msi\"",
+    "notes": "MSI 手动安装包，scoop install 下载后自动启动，用户手动选择安装目录。"
+}
+```
+
+> **原理**：Scoop 下载 → 缓存文件重命名为 `{appname}#{version}#{hash}.msi` → Scoop 执行 `msiexec /a` 解包到 `$dir` → `pre_install` 从缓存复制原始 MSI → `post_install` 启动安装向导。
+>
+> `$appname` 从 `$dir` 推导（`$dir` = `...\scoop\apps\{appname}\{version}`）。Scoop 缓存文件名格式为 `{appname}#{version}#{hash}.msi`，不是原始文件名，所以必须用 `$appname#*.msi` 通配符匹配。
+>
+> 不设 `bin`/`shortcuts`/`checkver`/`autoupdate`。
+
 ### 第三步：生成 Manifest 文件
 
 文件名规则：**小写 + 连字符**，如 `contextmenumgr-plus.json`、`windowsclear.json`
