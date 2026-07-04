@@ -122,6 +122,9 @@ def score_asset(name):
     # 如需恢复 MSI 正常优先级，删除下面两行即可
     elif name.endswith(".msi"):
         score -= 10
+    # 中文版优先（_zh、-zh、chs、cn）
+    if re.search(r'[._\-]zh[._\-]|_zh$|-zh$|[._\-]chs[._\-]|[._\-]cn[._\-]', lower):
+        score += 3
     # x64 优先
     if "x64" in lower or "64bit" in lower or "amd64" in lower:
         score += 2

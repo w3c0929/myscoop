@@ -1,0 +1,21 @@
+{
+    "version": "1.4.0",
+    "description": "MSST-GUI is a Qt5-based inference GUI, designed to provide a convenient and intuitive way to inference (mainly for my own use)",
+    "homepage": "https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI",
+    "license": "MIT",
+    "url": "https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI/releases/download/v1.4.0/MSST_GUI_v1.4_zh.exe",
+    "hash": "sha256:23f607f62d95f476b952ab76769aed97c7c6755ea86e68a3aae89cdae006a212",
+    "checkver": {
+        "github": "https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI"
+    },
+    "autoupdate": {
+        "url": "https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI/releases/download/v$version/MSST_GUI_v$version_zh.exe"
+    },
+    "bin": "MSST_GUI_v1.4_zh.exe",
+    "shortcuts": [
+        [
+            "MSST_GUI_v1.4_zh.exe",
+            "Music-Source-Separation-Training-GUI"
+        ]
+    ]
+}
