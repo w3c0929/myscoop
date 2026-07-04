@@ -1,0 +1,10 @@
+{
+    "version": "1.0",
+    "description": "PCMaster - system utility toolkit collection (cleaner, disk tools, file tools, etc.)",
+    "homepage": "https://github.com/w3c0929/myscoop",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0-pcmaster/pcmaster-1.0.zip",
+    "hash": "sha256:2ad26fff440fe3586565d20126268bdcaac2550b1bac13f27a7216e9f4021749",
+    "bin": "pcmaster.exe",
+    "shortcuts": [["pcmaster.exe", "软媒PCMaster"]]
+}

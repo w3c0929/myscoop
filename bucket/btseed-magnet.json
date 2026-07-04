@@ -1,0 +1,11 @@
+{
+    "version": "1.0",
+    "description": "BT seed to magnet link converter tool",
+    "homepage": "https://github.com/w3c0929/myscoop",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0-btseed/btseed-magnet-1.0.zip",
+    "hash": "sha256:16ed11362b2675b91fe48cf366ac527c8ff719e358b1355dc4346ba310d8deef",
+    "extract_dir": "BT种子转磁力链工具\\BT种子转磁力链工具",
+    "bin": "BT种子转磁力链工具.exe",
+    "shortcuts": [["BT种子转磁力链工具.exe", "BT种子转磁力链工具"]]
+}

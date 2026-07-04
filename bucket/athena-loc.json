@@ -1,0 +1,10 @@
+{
+    "version": "4.13",
+    "description": "Athena-A - software localization and translation tool (Chinese edition)",
+    "homepage": "https://github.com/w3c0929/myscoop",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v4.13-athena/athena-loc-4.13.7z",
+    "hash": "sha256:49929752d72307a5fd8948bda50f805759a4235f308384f362bff13c971a450c",
+    "bin": "Athena-A.exe",
+    "shortcuts": [["Athena-A.exe", "Athena-A 汉化工具"]]
+}
