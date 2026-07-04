@@ -6,10 +6,11 @@
     "url": "https://github.com/Tichau/FileConverter/releases/download/v2.2/FileConverter-2.2-x64-setup.msi",
     "hash": "sha256:78bb9755b35a94e59a72f299b6b63b5da472deb5c2b03ce016e5fe9f116a3554",
     "pre_install": [
+        "$appname = Split-Path (Split-Path $dir -Parent) -Leaf",
         "$cachedir = $dir -replace '\\\\apps\\\\.*$', '\\cache'",
-        "$msi = Get-ChildItem $cachedir -Filter \"FileConverter-2.2-x64-setup.msi\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
-        "if ($msi) { Copy-Item $msi.FullName \"$dir\\FileConverter-2.2-x64-setup.msi\" }"
+        "$msi = Get-ChildItem $cachedir -Filter \"$appname#*.msi\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+        "if ($msi) { Copy-Item $msi.FullName \"$dir\\setup.msi\" }"
     ],
-    "post_install": "Start-Process \"$dir\\FileConverter-2.2-x64-setup.msi\"",
+    "post_install": "Start-Process \"$dir\\setup.msi\"",
     "notes": "MSI 手动安装包，scoop install 下载后自动启动，用户手动选择安装目录。"
 }

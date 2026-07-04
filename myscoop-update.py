@@ -300,16 +300,16 @@ def add_manifest(github_url, app_name=None):
         # installer 字段在解包之后才执行，无法阻止。
         # 因此用 pre_install 在解包前从缓存复制 MSI 到 $dir 保存，再 post_install 启动
         # 不设 bin/shortcuts/checkver/autoupdate
+        # 注意：Scoop 缓存文件名格式为 {appname}#{version}#{hash}.msi，不是原始文件名
         # 如需恢复 Scoop 默认 MSI 自动解包行为，删除此分支即可
         print("[MSI] 检测到 MSI 安装包，将使用 pre_install 保存 + post_install 启动")
-        # 通过 $dir 推导 scoop 缓存路径（$dir 格式: ...\scoop\apps\app\version）
-        # 缓存路径: ...\scoop\cache
         manifest["pre_install"] = [
+            "$appname = Split-Path (Split-Path $dir -Parent) -Leaf",
             "$cachedir = $dir -replace '\\\\apps\\\\.*$', '\\cache'",
-            f"$msi = Get-ChildItem $cachedir -Filter \"{best_name}\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
-            f"if ($msi) {{ Copy-Item $msi.FullName \"$dir\\{best_name}\" }}"
+            "$msi = Get-ChildItem $cachedir -Filter \"$appname#*.msi\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+            "if ($msi) { Copy-Item $msi.FullName \"$dir\\setup.msi\" }"
         ]
-        manifest["post_install"] = f"Start-Process \"$dir\\{best_name}\""
+        manifest["post_install"] = "Start-Process \"$dir\\setup.msi\""
         if "checkver" in manifest:
             del manifest["checkver"]
         if "autoupdate" in manifest:
