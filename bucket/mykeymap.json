@@ -5,6 +5,7 @@
     "license": "GPL-3.0",
     "url": "https://github.com/w3c0929/myscoop/releases/download/v2.0-beta33-mykeymap/mykeymap.zip",
     "hash": "sha256:eab1817a06faac15af02a1d7ddbfd63f3aa71adf2b6f4a95012c74384db4dd93",
+    "extract_dir": "2.0-beta33",
     "bin": "bin\\settings.exe",
     "shortcuts": [
         [
