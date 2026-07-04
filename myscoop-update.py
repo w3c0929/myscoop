@@ -32,7 +32,9 @@ BUCKET_DIR = Path(__file__).parent / "bucket"
 
 def parse_repo_url(url):
     """解析仓库 URL，返回 (platform, owner, repo)"""
-    url = url.rstrip("/").rstrip(".git")
+    url = url.rstrip("/")
+    if url.endswith(".git"):
+        url = url[:-4]
     for platform, host in [("github", r"github\.com"), ("gitee", r"gitee\.com")]:
         m = re.match(rf"https?://{host}/([^/]+)/([^/]+?)$", url)
         if m:
