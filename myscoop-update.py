@@ -118,6 +118,10 @@ def score_asset(name):
         # 有 setup 字样的是安装包，扣分
         if "setup" in lower or "install" in lower:
             score -= 5
+    # MSI 保留但降低优先级，避免 Scoop 自动解包执行完整安装到系统
+    # 如需恢复 MSI 正常优先级，删除下面两行即可
+    elif name.endswith(".msi"):
+        score -= 10
     # x64 优先
     if "x64" in lower or "64bit" in lower or "amd64" in lower:
         score += 2
@@ -291,7 +295,26 @@ def add_manifest(github_url, app_name=None):
     best_asset, _ = win_assets[0]
     best_name = best_asset["name"]
 
-    if best_name.endswith(".exe"):
+    if best_name.endswith(".msi"):
+        # MSI 文件：禁止 Scoop 自动解包执行完整安装到系统
+        # 使用 lessmsi 提取到 scoop 目录，或仅保留 MSI 文件不安装
+        # 如需恢复 MSI 自动安装行为，删除此分支，让脚本走默认流程即可
+        print("[MSI] 检测到 MSI 安装包，将使用 lessmsi 提取（非系统安装）")
+        manifest["depends"] = "lessmsi"
+        manifest["installer"] = {
+            "script": [
+                "Push-Location \"$dir\"",
+                f"lessmsi xo \"{best_name}\"",
+                "# lessmsi 提取后需手动确认 ProductName/SourceDir/AppName 路径",
+                "# 示例: Get-ChildItem \".\\ProductName\\SourceDir\\AppName\\*\" -Recurse | Move-Item -Destination \"$dir\" -Force",
+                "# Remove-Item \".\\ProductName\" -Recurse -Force -ErrorAction SilentlyContinue",
+                f"Remove-Item \"{best_name}\" -Force -ErrorAction SilentlyContinue",
+                "Pop-Location"
+            ]
+        }
+        manifest["notes"] = "MSI 安装包，使用 lessmsi 提取。请确认 lessmsi 提取后的目录结构并更新 installer.script。"
+        print(f"[提示] MSI 格式已配置 lessmsi 提取，需手动确认目录结构后取消注释脚本中的路径行")
+    elif best_name.endswith(".exe"):
         exe_name = best_name
         # 去掉版本号得到更通用的名字（用于 bin/shortcuts）
         clean_name = re.sub(r"[-_]v?[\d]+(?:\.[\d]+)+", "", best_name)
