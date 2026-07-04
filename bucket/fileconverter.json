@@ -5,10 +5,8 @@
     "license": "GPL-3.0",
     "url": "https://github.com/Tichau/FileConverter/releases/download/v2.2/FileConverter-2.2-x64-setup.msi",
     "hash": "sha256:78bb9755b35a94e59a72f299b6b63b5da472deb5c2b03ce016e5fe9f116a3554",
-    "checkver": {
-        "github": "https://github.com/Tichau/FileConverter"
+    "installer": {
+        "script": "Start-Process \"$dir\\FileConverter-2.2-x64-setup.msi\""
     },
-    "autoupdate": {
-        "url": "https://github.com/Tichau/FileConverter/releases/download/v$version/FileConverter-$version-x64-setup.msi"
-    }
+    "notes": "MSI 手动安装包，scoop install 下载后自动启动，用户手动选择安装目录。"
 }

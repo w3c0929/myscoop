@@ -296,11 +296,14 @@ def add_manifest(github_url, app_name=None):
     best_name = best_asset["name"]
 
     if best_name.endswith(".msi"):
-        # MSI 手动安装：仅下载到 scoop 目录，post_install 自动启动让用户手动执行安装
-        # 不设 bin/shortcuts/checkver/autoupdate，安装目标由用户自己选（非 scoop 目录）
+        # MSI 手动安装：仅下载不自动解包，installer.script 替代默认 msi 提取
+        # 不设 bin/shortcuts/checkver/autoupdate，用户自行选择安装目录（非 scoop 目录）
+        # 注意：必须用 installer.script 而非 post_install，否则 Scoop 会用 msiexec /a 自动解包
         # 如需恢复 Scoop 默认 MSI 自动解包行为，删除此分支即可
         print("[MSI] 检测到 MSI 安装包，将使用手动安装模式（仅下载 + 自动启动）")
-        manifest["post_install"] = f"Start-Process \"$dir\\{best_name}\""
+        manifest["installer"] = {
+            "script": f"Start-Process \"$dir\\{best_name}\""
+        }
         # 移除 checkver/autoupdate（手动安装不需要自动更新）
         if "checkver" in manifest:
             del manifest["checkver"]
