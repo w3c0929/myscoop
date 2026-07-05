@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **92** 款 Windows 软件，其中 **79** 款为本地维护（自托管 Release），**13** 款引用第三方官方 Release。
+> 共收录 **93** 款 Windows 软件，其中 **80** 款为本地维护（自托管 Release），**13** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -89,6 +89,7 @@
 | 77 | Athena-A 汉化版 — 软件本地化翻译工具 | `scoop install athena-loc` | 7z 便携解压即用 | 4.13 |
 | 78 | 软媒PCMaster — 系统工具合集 | `scoop install pcmaster` | zip 便携解压即用 | 1.0 |
 | 79 | BT种子转磁力链工具 — BT种子转磁力链接 | `scoop install btseed-magnet` | zip 便携解压即用 | 1.0 |
+| 80 | 卡卡字幕助手 VideoCaptioner — AI视频字幕生成工具 | `scoop install video-captioner` | 单 exe 手动安装 | 1.3.3 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -682,7 +683,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 92 个）
+├── bucket/        ← 所有 manifest JSON（共 93 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -745,6 +746,7 @@ myscoop/
 │   ├── athena-loc.json                   (模式2：7z 便携解压即用)
 │   ├── pcmaster.json                     (模式2：zip 便携解压即用)
 │   ├── btseed-magnet.json                (模式2：zip 便携解压即用)
+│   ├── video-captioner.json              (模式6：单 exe 手动安装)
 │   ├── getdict.json                       (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/

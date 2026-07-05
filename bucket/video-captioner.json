@@ -1,0 +1,9 @@
+{
+    "version": "1.3.3",
+    "description": "VideoCaptioner - AI-powered video subtitle generation tool",
+    "homepage": "https://github.com/w3c0929/myscoop",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.3.3-video-captioner/video-captioner-1.3.3.exe",
+    "hash": "sha256:7aee706e8e99921d879d4b088c94e025e7f13868b06de09ad7d69870102ac8f1",
+    "post_install": "Start-Process \"$dir\\video-captioner-1.3.3.exe\""
+}
