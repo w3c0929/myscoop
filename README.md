@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **94** 款 Windows 软件，其中 **80** 款为本地维护（自托管 Release），**14** 款引用第三方官方 Release。
+> 共收录 **95** 款 Windows 软件，其中 **80** 款为本地维护（自托管 Release），**15** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -99,16 +99,17 @@
 | 2 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
 | 3 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral-notepaper` | 单 exe 官方 release | 1.1.0 |
 | 4 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 |
-| 5 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.2 |
-| 6 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry-studio` | portable exe 官方 release | 1.9.11 |
+| 5 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.3 |
+| 6 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry-studio` | portable exe 官方 release | 1.9.12 |
 | 7 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 单 exe 官方 release | 0.4.5 |
 | 8 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.3 |
 | 9 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install embytolocalplayer` | zip 官方 release | 2025.11.13 |
 | 10 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | zip 官方 release | 5.4.2 |
 | 11 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconverter` | MSI 官方 release | 2.2 |
-| 12 | [tokenicode-deepseek-alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode-deepseek-alpha` | zip 官方 release | 0.10.4-alpha.1 |
+| 12 | [tokenicode-deepseek-alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode-deepseek-alpha` | zip 官方 release | 0.10.12-alpha.1 |
 | 13 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.24.11321.0 |
 | 14 | [MSST-GUI](https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI) — 音乐源分离推理工具 | `scoop install music-source-separation-training-gui` | 单 exe 中文版 | 1.4.0 |
+| 15 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.27.0 |
 
 ## 快速开始（用户）
 
@@ -749,6 +750,7 @@ myscoop/
 │   ├── btseed-magnet.json                (模式2：zip 便携解压即用)
 │   ├── video-captioner.json              (模式6：单 exe 手动安装)
 │   ├── music-source-separation-training-gui.json (模式1：单 exe 中文版)
+│   ├── comfyui.json                     (模式1：portable 7z 官方 release)
 │   ├── getdict.json                       (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
