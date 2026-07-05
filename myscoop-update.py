@@ -154,6 +154,19 @@ def score_asset(name):
     # 中文版优先（_zh、-zh、chs、cn）
     if re.search(r'[._\-]zh[._\-]|_zh$|-zh$|[._\-]chs[._\-]|[._\-]cn[._\-]', lower):
         score += 3
+    # GPU 优先：NVIDIA > AMD > Intel
+    has_nvidia = re.search(r'[._\-]nvidia|nvidia', lower)
+    has_cuda_ver = re.search(r'[._\-]cu\d{2,3}|cuda\d', lower)
+    has_amd = re.search(r'[._\-]amd[._\-]|rocm|radeon', lower)
+    has_intel = re.search(r'[._\-]intel[._\-]|intel', lower)
+    if has_nvidia and not has_cuda_ver:
+        score += 8  # NVIDIA 通用版最高优先
+    elif has_cuda_ver:
+        score += 6  # NVIDIA 指定 CUDA 版本
+    elif has_amd:
+        score += 4  # AMD GPU
+    elif has_intel:
+        score += 0  # Intel（不额外加分，排在 GPU 之后）
     # x64 优先
     if "x64" in lower or "64bit" in lower or "amd64" in lower:
         score += 2
