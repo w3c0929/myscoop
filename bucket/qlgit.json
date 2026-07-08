@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0",
+    "description": ".git folder info: branch, remote, HEAD commit, recent activity",
+    "homepage": "https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer",
+    "license": "NOASSERTION",
+    "checkver": {
+        "github": "https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer"
+    },
+    "url": "https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer/releases/download/v1.0.0/QuickLook.Plugin.GitFolderViewer-1.0.0.qlplugin",
+    "hash": "sha256:26d3adcebc4dd309a03f24e28161ba53e62f69ff22c811a17b5854b699048eab",
+    "autoupdate": {
+        "url": "https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer/releases/download/v$version/QuickLook.Plugin.GitFolderViewer-$version.qlplugin"
+    },
+    "post_install": "Start-Process \"$dir\\QuickLook.Plugin.GitFolderViewer-1.0.0.qlplugin\""
+}

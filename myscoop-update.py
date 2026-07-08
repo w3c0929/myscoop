@@ -373,6 +373,10 @@ def add_manifest(repo_url, app_name=None):
         manifest["bin"] = exe_name
         manifest["shortcuts"] = [[exe_name, repo]]
         print(f"bin: {exe_name}")
+    elif best_name.endswith(".qlplugin"):
+        # .qlplugin 插件：下载后自启动，用户手动确认安装
+        manifest["post_install"] = f"Start-Process \"$dir\\{best_name}\""
+        print(f"[qlplugin] 将添加 post_install 自启动: {best_name}")
     elif best_name.endswith((".zip", ".7z")):
         # 无法确定内部 exe 名，跳过 bin/shortcuts
         manifest["notes"] = "请手动添加 bin 和 shortcuts，或运行脚本后补充。"

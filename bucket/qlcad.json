@@ -1,0 +1,15 @@
+{
+    "version": "1",
+    "description": "This plugin allows QuickLook to preview CAD file formats.",
+    "homepage": "https://github.com/emako/QuickLook.Plugin.CADImport",
+    "license": "GPL-3.0",
+    "checkver": {
+        "github": "https://github.com/emako/QuickLook.Plugin.CADImport"
+    },
+    "url": "https://github.com/emako/QuickLook.Plugin.CADImport/releases/download/1/QuickLook.Plugin.CADImport.qlplugin",
+    "hash": "sha256:da922e2c846625dc2ef972189db85edfc28f1ed42bb22936f886e749a22d6fdc",
+    "autoupdate": {
+        "url": "https://github.com/emako/QuickLook.Plugin.CADImport/releases/download/$version/QuickLook.Plugin.CADImport.qlplugin"
+    },
+    "post_install": "Start-Process \"$dir\\QuickLook.Plugin.CADImport.qlplugin\""
+}

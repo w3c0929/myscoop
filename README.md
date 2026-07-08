@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **95** 款 Windows 软件，其中 **80** 款为本地维护（自托管 Release），**15** 款引用第三方官方 Release。
+> 共收录 **98** 款 Windows 软件，其中 **80** 款为本地维护（自托管 Release），**18** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -110,6 +110,9 @@
 | 13 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.24.11321.0 |
 | 14 | [MSST-GUI](https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI) — 音乐源分离推理工具 | `scoop install music-source-separation-training-gui` | 单 exe 中文版 | 1.4.0 |
 | 15 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.27.0 |
+| 16 | [QuickLook CAD 插件](https://github.com/emako/QuickLook.Plugin.CADImport) — 预览 CAD 文件格式 | `scoop install qlcad` | qlplugin 官方 release | 1 |
+| 17 | [QuickLook Office 插件](https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer) — 预览 Word/Excel/PPT 文件 | `scoop install qloffice` | qlplugin 官方 release | 6 |
+| 18 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.0 |
 
 ## 快速开始（用户）
 
@@ -685,7 +688,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 94 个）
+├── bucket/        ← 所有 manifest JSON（共 98 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -751,11 +754,19 @@ myscoop/
 │   ├── video-captioner.json              (模式6：单 exe 手动安装)
 │   ├── music-source-separation-training-gui.json (模式1：单 exe 中文版)
 │   ├── comfyui.json                     (模式1：portable 7z 官方 release)
+│   ├── qlcad.json                      (qlplugin 自启动安装)
+│   ├── qloffice.json                   (qlplugin 自启动安装)
+│   ├── qlgit.json                      (qlplugin 自启动安装)
 │   ├── getdict.json                       (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       ├── SKILL.md                 ← AI 自动收录技能
 │       └── progress.md              ← 项目进展
 ├── myscoop-update.py                ← 免下载自动更新脚本
+├── Scoop工具箱.ps1                   ← Scoop 安装/备份/恢复工具
+├── cd-comfyui.bat                   ← 启动 ComfyUI（HF 镜像）
+├── cd-models.bat                    ← 切换到 llama.cpp 模型目录
+├── down-node.bat                    ← ComfyUI 插件批量安装
+├── symlink.bat                      ← 创建 .bat 到 shims 的符号链接
 └── README.md                        ← 此文件
 ```
