@@ -607,6 +607,23 @@ scoop checkver <appname> --update
 2. 如果 7-Zip 不行，用 `innounp` 解包 Inno Setup 安装包
 3. 实在不行才考虑用安装参数静默安装（不推荐，Scoop 不应静默执行安装包）
 
+### Q: zip 内文件名含中文，解压后乱码/找不到文件？
+
+Windows 下 zip 的中文文件名在 Scoop 解压后可能编码损坏，导致 `bin`/`shortcuts` 找不到文件。解决方案：用 `installer.script` 通配匹配并重命名为 ASCII 文件名：
+
+```json
+"installer": {
+    "script": [
+        "$exe = Get-ChildItem \"$dir\" -Filter '*-win-portable.exe' | Select-Object -First 1",
+        "if ($exe) { Rename-Item -Path $exe.FullName -NewName 'app-name.exe' }"
+    ]
+},
+"bin": "app-name.exe",
+"shortcuts": [["app-name.exe", "中文显示名称"]]
+```
+
+> `installer.script` 在 Scoop 解压后、shim 创建前执行，此时重命名有效。用 `-Filter` 通配避开乱码文件名。示例：gzh-formatter。
+
 ### Q: 需要额外依赖怎么办？
 
 ```json

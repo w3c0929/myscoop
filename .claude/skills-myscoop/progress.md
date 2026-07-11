@@ -56,6 +56,23 @@ GitHub: https://github.com/w3c0929/myscoop
 - 不设 bin/shortcuts/checkver/autoupdate
 - 示例：fileconverter
 
+### 中文文件名编码问题（重要）
+
+Windows 下 zip 包内中文文件名在 Scoop 解压后会出现编码损坏（乱码），导致 `bin`/`shortcuts` 找不到文件。**解决方案**：用 `installer.script` 在解压后通过通配匹配 exe 并重命名为 ASCII 名称。
+
+```json
+"installer": {
+    "script": [
+        "$exe = Get-ChildItem \"$dir\" -Filter '*-win-portable.exe' | Select-Object -First 1",
+        "if ($exe) { Rename-Item -Path $exe.FullName -NewName 'app-name.exe' }"
+    ]
+},
+"bin": "app-name.exe",
+"shortcuts": [["app-name.exe", "中文显示名称"]]
+```
+
+> `installer.script` 在 Scoop 解压后、shim 创建前执行。示例：gzh-formatter（公众号排版器）。
+
 ## 常用命令
 
 ```bash
