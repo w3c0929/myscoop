@@ -5,6 +5,5 @@
     "license": {"identifier": "Freeware"},
     "url": "https://github.com/w3c0929/myscoop/releases/download/v3.3.0/GZHFormatter-3.3.0-portable.zip",
     "hash": "sha256:f4e46498e10158948d14604fad209072f4f63a1962959cd92b0198a06c4febb6",
-    "bin": "公众号排版器-3.3.0-win-portable.exe",
     "shortcuts": [["公众号排版器-3.3.0-win-portable.exe", "公众号排版器"]]
 }
