@@ -1,0 +1,21 @@
+{
+    "version": "2.0",
+    "description": "💾 Windows磁盘迁移工具Pro - 智能扫描、批量迁移、符号链接 | Professional Windows Disk Space Management Tool",
+    "homepage": "https://github.com/bjfwan/windows-disk-tool",
+    "license": "unknown",
+    "checkver": {
+        "github": "https://github.com/bjfwan/windows-disk-tool"
+    },
+    "url": "https://github.com/bjfwan/windows-disk-tool/releases/download/v2.0/DiskMigrationToolPro_v2.0.exe",
+    "hash": "sha256:1ed0b89e531e781d6fd1287d680bb8a1070c8d6eee36443f26ecd1d01f4f4800",
+    "autoupdate": {
+        "url": "https://github.com/bjfwan/windows-disk-tool/releases/download/v$version/DiskMigrationToolPro_v$version.exe"
+    },
+    "bin": "DiskMigrationToolPro_v2.0.exe",
+    "shortcuts": [
+        [
+            "DiskMigrationToolPro_v2.0.exe",
+            "windows-disk-tool"
+        ]
+    ]
+}
