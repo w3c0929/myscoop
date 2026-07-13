@@ -1,10 +1,10 @@
 {
-    "version": "3.7.2",
+    "version": "3.7.3",
     "description": "GZH Formatter - WeChat Official Account article formatting tool with templates",
     "homepage": "https://github.com/w3c0929/myscoop",
     "license": {"identifier": "Freeware"},
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v3.7.2/gzh-formatter-3.7.2.exe",
-    "hash": "sha256:ad26be2e6d9f6b79319917887749ee8ffcb1350ab59e48e7c9846cba95aca944",
-    "bin": "gzh-formatter-3.7.2.exe",
-    "shortcuts": [["gzh-formatter-3.7.2.exe", "公众号排版器"]]
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v3.7.3/gzh-formatter-3.7.3.exe",
+    "hash": "sha256:d482cc1b85b846e98417a72cccaf3987804e0cd016d2ffb2fafe30e27bf4532f",
+    "bin": "gzh-formatter-3.7.3.exe",
+    "shortcuts": [["gzh-formatter-3.7.3.exe", "公众号排版器"]]
 }

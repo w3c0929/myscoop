@@ -92,7 +92,7 @@
 | 80 | 卡卡字幕助手 VideoCaptioner — AI视频字幕生成工具 | `scoop install video-captioner` | 单 exe 手动安装 | 1.3.3 |
 | 81 | HCSStudio — 汉化工具 | `scoop install hcsstudio` | 单 exe 手动安装 | 1.0.260708 |
 | 82 | Cloudflare WARP — 网络加速与安全工具 | `scoop install cfwarp` | MSI 手动安装 | 2026.6.850.0 |
-| 83 | 公众号排版器 — 微信公众号文章排版工具 | `scoop install gzh-formatter` | 单 exe 便携 | 3.7.2 |
+| 83 | 公众号排版器 — 微信公众号文章排版工具 | `scoop install gzh-formatter` | 单 exe 便携 | 3.7.3 |
 
 ### 第三方官方（引用原项目 Release）
 
