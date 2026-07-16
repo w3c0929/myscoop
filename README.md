@@ -21,7 +21,7 @@
 | 9 | [2345看图王](https://pic.2345.cc/) — 图片查看编辑工具 | `scoop install 2345pic` | portable zip | 10.8.0.9683 |
 | 10 | [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端 | `scoop install apollo` | 单 exe 手动安装 | 0.4.6 |
 | 11 | [KeyCastOW](https://github.com/brookhong/KeyCastOW) — 屏幕按键显示工具 | `scoop install keycastow` | zip 便携+自动启动 | 1.0 |
-| 12 | [搜狗拼音](https://pinyin.sogou.com/) — 中文拼音输入法 v9.0 | `scoop install sougoupy` | 单 exe 手动安装 | 9.0 |
+| 12 | [搜狗拼音](https://pinyin.sogou.com/) — 中文拼音输入法去广告精简优化版 | `scoop install sougoupy` | 单 exe 手动安装 | 16.6.0.4385 |
 | 13 | [UU远程](https://uuyc.163.com/) — 网易远程桌面控制 | `scoop install uuyc` | 单 exe 手动安装 | 4.30.1 |
 | 14 | [TinyTask](https://www.tinytask.net/) — 极简宏录制自动化 | `scoop install tinytask` | 单 exe 便携 | 1.0 |
 | 15 | [360宽带测速](https://www.360.cn/) — 网络测速工具 | `scoop install 360bwtest` | 单 exe 便携 | 1.0 |

@@ -1,12 +1,12 @@
 {
-    "version": "9.0",
-    "description": "Sogou Pinyin - popular Chinese pinyin input method (v9.0)",
+    "version": "16.6.0.4385",
+    "description": "Sogou Pinyin - popular Chinese pinyin input method (de-bloated optimized edition)",
     "homepage": "https://pinyin.sogou.com/",
     "license": {
         "identifier": "Freeware",
         "url": "https://pinyin.sogou.com/license.html"
     },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v9.0/sougou-v9.0.exe",
-    "hash": "sha256:a0871b0c3587d8191ff9366b55907a2934e30f36295544882942ebfac8d87d3a",
-    "post_install": "Start-Process \"$dir\\sougou-v9.0.exe\""
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v16.6.0.4385/SogouPy-16.6.0.4385.exe",
+    "hash": "sha256:f047aa114d2dd3a0a754a262cd43314645590be28062b1558aa83163b7b88897",
+    "post_install": "Start-Process \"$dir\\SogouPy-16.6.0.4385.exe\""
 }
