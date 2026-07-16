@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **102** 款 Windows 软件，其中 **83** 款为本地维护（自托管 Release），**19** 款引用第三方官方 Release。
+> 共收录 **103** 款 Windows 软件，其中 **84** 款为本地维护（自托管 Release），**19** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -93,6 +93,7 @@
 | 81 | HCSStudio — 汉化工具 | `scoop install hcsstudio` | 单 exe 手动安装 | 1.0.260708 |
 | 82 | Cloudflare WARP — 网络加速与安全工具 | `scoop install cfwarp` | MSI 手动安装 | 2026.6.850.0 |
 | 83 | 公众号排版器 — 微信公众号文章排版工具 | `scoop install gzh-formatter` | 单 exe 便携 | 3.7.3 |
+| 84 | WPS Office — 办公套件（文字/表格/演示） | `scoop install wps` | 单 exe 手动安装 | 26899 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -709,7 +710,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 102 个）
+├── bucket/        ← 所有 manifest JSON（共 103 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -776,6 +777,7 @@ myscoop/
 │   ├── hcsstudio.json                   (模式6：单 exe 手动安装)
 │   ├── cfwarp.json                      (模式7：MSI 手动安装)
 │   ├── gzh-formatter.json               (模式2：单 exe 便携)
+│   ├── wps.json                         (模式6：单 exe 手动安装)
 │   ├── music-source-separation-training-gui.json (模式1：单 exe 中文版)
 │   ├── comfyui.json                     (模式1：portable 7z 官方 release)
 │   ├── qlcad.json                      (qlplugin 自启动安装)
