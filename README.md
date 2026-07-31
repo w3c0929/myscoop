@@ -88,7 +88,7 @@
 | 76 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具 | `scoop install mykeymap` | zip 便携解压即用 | 2.0-beta33 |
 | 77 | Athena-A 汉化版 — 软件本地化翻译工具 | `scoop install athena-loc` | 7z 便携解压即用 | 4.13 |
 | 78 | 软媒PCMaster — 系统工具合集 | `scoop install pcmaster` | zip 便携解压即用 | 1.0 |
-| 79 | BT种子转磁力链工具 — BT种子转磁力链接 | `scoop install btseed-magnet` | zip 便携解压即用 | 1.0 |
+| 79 | BT种子转磁力链工具 — BT种子转磁力链接 | `scoop install btseed` | zip 便携解压即用 | 1.0 |
 | 80 | 卡卡字幕助手 VideoCaptioner — AI视频字幕生成工具 | `scoop install video-captioner` | 单 exe 手动安装 | 1.3.3 |
 | 81 | HCSStudio — 汉化工具 | `scoop install hcsstudio` | 单 exe 手动安装 | 1.0.260708 |
 | 82 | Cloudflare WARP — 网络加速与安全工具 | `scoop install cfwarp` | MSI 手动安装 | 2026.6.850.0 |
@@ -773,7 +773,7 @@ myscoop/
 │   ├── vs-buildtools.json                 (模式6：单 exe 手动安装)
 │   ├── athena-loc.json                   (模式2：7z 便携解压即用)
 │   ├── pcmaster.json                     (模式2：zip 便携解压即用)
-│   ├── btseed-magnet.json                (模式2：zip 便携解压即用)
+│   ├── btseed.json                       (模式2：zip 便携解压即用)
 │   ├── video-captioner.json              (模式6：单 exe 手动安装)
 │   ├── hcsstudio.json                   (模式6：单 exe 手动安装)
 │   ├── cfwarp.json                      (模式7：MSI 手动安装)
