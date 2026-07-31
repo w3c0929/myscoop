@@ -4,8 +4,13 @@
     "homepage": "https://github.com/w3c0929/myscoop",
     "license": {"identifier": "Freeware"},
     "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0-btseed/btseed-magnet-1.0.zip",
-    "hash": "sha256:16ed11362b2675b91fe48cf366ac527c8ff719e358b1355dc4346ba310d8deef",
-    "extract_dir": "BT种子转磁力链工具\\BT种子转磁力链工具",
-    "bin": "BT种子转磁力链工具.exe",
-    "shortcuts": [["BT种子转磁力链工具.exe", "BT种子转磁力链工具"]]
+    "hash": "sha256:9d1b477f299cbe8013a504015bc5a33e7fe80712828e03508c64f38ce6ae4a9f",
+    "installer": {
+        "script": [
+            "$exe = Get-ChildItem \"$dir\" -Filter '*.exe' | Select-Object -First 1",
+            "if ($exe) { Rename-Item -Path $exe.FullName -NewName 'btseed-magnet.exe' }"
+        ]
+    },
+    "bin": "btseed-magnet.exe",
+    "shortcuts": [["btseed-magnet.exe", "BT种子转磁力链工具"]]
 }

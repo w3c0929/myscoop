@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **103** 款 Windows 软件，其中 **84** 款为本地维护（自托管 Release），**19** 款引用第三方官方 Release。
+> 共收录 **104** 款 Windows 软件，其中 **84** 款为本地维护（自托管 Release），**20** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -118,6 +118,7 @@
 | 17 | [QuickLook Office 插件](https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer) — 预览 Word/Excel/PPT 文件 | `scoop install qloffice` | qlplugin 官方 release | 6 |
 | 18 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.0 |
 | 19 | [Windows磁盘迁移工具](https://github.com/bjfwan/windows-disk-tool) — 智能扫描、批量迁移、符号链接 | `scoop install windisktool` | 单 exe 官方 release | 2.0 |
+| 20 | [Keyviz](https://github.com/mulaRahul/keyviz) — 键盘/鼠标操作实时可视化 | `scoop install keyviz` | MSI 官方 release | 2.1.1 |
 
 ## 快速开始（用户）
 
@@ -710,7 +711,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 103 个）
+├── bucket/        ← 所有 manifest JSON（共 104 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -784,6 +785,7 @@ myscoop/
 │   ├── qloffice.json                   (qlplugin 自启动安装)
 │   ├── qlgit.json                      (qlplugin 自启动安装)
 │   ├── windisktool.json                 (模式1：单 exe 官方 release)
+│   ├── keyviz.json                      (模式7：MSI 手动安装)
 │   ├── getdict.json                       (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/

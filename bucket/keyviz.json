@@ -1,0 +1,16 @@
+{
+    "version": "2.1.1",
+    "description": "Keyviz is a free and open-source tool to visualize your keystrokes and mouse actions in real-time.",
+    "homepage": "https://keyviz.org",
+    "license": "GPL-3.0",
+    "url": "https://github.com/mulaRahul/keyviz/releases/download/v2.1.1/keyviz_2.1.1_windows.msi",
+    "hash": "sha256:b58263eb3be44cbba6c5f7518a63bcf7ae31396493dfc1ff143677e7ab710b3a",
+    "pre_install": [
+        "$appname = Split-Path (Split-Path $dir -Parent) -Leaf",
+        "$cachedir = $dir -replace '\\\\apps\\\\.*$', '\\cache'",
+        "$msi = Get-ChildItem $cachedir -Filter \"$appname#*.msi\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+        "if ($msi) { Copy-Item $msi.FullName \"$dir\\setup.msi\" }"
+    ],
+    "post_install": "Start-Process \"$dir\\setup.msi\"",
+    "notes": "MSI 手动安装包，scoop install 下载后自动启动，用户手动选择安装目录。"
+}
