@@ -10,7 +10,7 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 
 GitHub: https://github.com/w3c0929/myscoop
 
-## 当前状态（截至 2026-07-09）
+## 当前状态（截至 2026-08-06）
 
 - **收录软件总数**: 104 款
 - **本地维护（自托管 Release）**: 84 款
@@ -34,18 +34,18 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ### 模式 2：单 exe / zip 便携（自托管）
 - 本地文件上传到 GitHub Release
-- 示例：windowsclear, tinytask, 360bwtest, btsou, hibituninstaller
+- 示例：windowsclear, tinytask, 360bwtest, btsou, hibituninstaller, gzh-formatter（单 exe 便携）, bcompare（汉化便携 zip）
 
 ### 模式 5：安装器解包/静默安装 → 自托管
 - NSIS: `7z l file.exe | grep "Type = 7z"` → 7z x 直接提取
 - Inno Setup: innounp 解包 或 /VERYSILENT 静默安装
 - MSI: lessmsi 解包 或 Install-Tickeys 类直接上传
-- 示例：uninstalltool, bcompare, termius, 2345pic, gstarcad
+- 示例：uninstalltool, termius, 2345pic, gstarcad
 
 ### 模式 6：单 exe 手动安装
 - exe 直传 GitHub Release，post_install 自动启动
 - 不设 bin/shortcuts/checkver/autoupdate
-- 示例：apollo, iobit, idm, bandizip6, pixpin 等
+- 示例：apollo, iobit, idm, bandizip6, pixpin, hcsstudio, wps, sougoupy 等
 
 ### 模式 7：MSI 手动安装
 - MSI 直引上游 GitHub Release
@@ -54,7 +54,14 @@ GitHub: https://github.com/w3c0929/myscoop
 - Scoop 缓存文件已重命名为 `{app}#{ver}#{hash}.msi`，需用 `{appname}#*.msi` 通配符查找
 - 缓存路径通过 `$dir -replace '\\apps\\.*$', '\\cache'` 推导
 - 不设 bin/shortcuts/checkver/autoupdate
-- 示例：fileconverter
+- 示例：fileconverter, cfwarp, keyviz
+
+### 模式 8：qlplugin 插件自启动安装
+- .qlplugin 文件直引上游 GitHub Release（或自托管）
+- post_install 自动打开文件，用户手动确认安装到 QuickLook
+- 设置 checkver + autoupdate
+- `myscoop-update.py --add` 已支持 .qlplugin 自动生成 post_install
+- 示例：qlcad, qloffice, qlgit
 
 ### 中文文件名编码问题（重要）
 
@@ -71,7 +78,7 @@ Windows 下 zip 包内中文文件名在 Scoop 解压后会出现编码损坏（
 "shortcuts": [["app-name.exe", "中文显示名称"]]
 ```
 
-> `installer.script` 在 Scoop 解压后、shim 创建前执行。示例：gzh-formatter（公众号排版器）。
+> `installer.script` 在 Scoop 解压后、shim 创建前执行。示例：btseed（BT种子转磁力链工具）。
 
 ## 常用命令
 
@@ -115,7 +122,7 @@ scoop cat myscoop/appname
 ## 新会话启动指南
 
 1. 告诉 AI：`/skills-myscoop` 加载收录技能
-2. 提及当前项目路径：`D:\scoop\buckets\myscoop`
+2. 当前项目路径：`E:\09.同步\06.配置\myscoop`
 3. 上传新软件：把文件放到该目录下，告诉 AI 文件名和类型
 4. 阅读 `SKILL.md` 了解完整制作流程
 5. 阅读 `README.md` 查看已收录软件列表
