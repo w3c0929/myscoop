@@ -242,13 +242,15 @@ innounp -x -d_output Setup.exe
 ls _output/{app}/
 ```
 
-> **组装便携目录（模仿安装器行为，bcompare 方式）**：解包出的 `,1/`,2 后缀文件是 32/64 位安装变体。打包前：
-> - 保留全部文件（,1/,2 对 + 其他组件）
+> **组装便携目录（模仿安装器行为，bcompare 方式）**：
+> - ⚠️ **不要保留 `,1/,2` 后缀变体文件**！它们是安装器的 32/64 位源文件，安装器只输出无后缀的最终文件（看 install_script.iss 的 DestName 确认）。保留会导致目录错乱
 > - 复制 64 位主程序为无后缀名：`cp "BCompare,2.exe" BCompare.exe`（安装器在 64 位系统会这样做）
-> - 复制对应汉化翻译：`cp "BCompare,2.tr" BCompare.tr`
-> - 加入注册文件（如 BC5Key.txt，可从旧版沿用），程序启动时读取
+> - 复制对应汉化翻译：`cp "BCompare,2.tr" BCompare.tr`；其余 64 位文件同理（7z,2.dll→7z.dll 等）
+> - 加入注册文件（BC5Key.txt），程序启动时读取；若有汉化 DLL（version.dll）一并放入
 > - 保留 Patch.exe 等辅助程序
-> - 示例：bcompare 5.2.5.32528（48MB 完整便携包）
+> - ⚠️ `7z a` 到已存在 zip 是**追加不是覆盖**，打包前必须删除旧 zip，否则内容混合
+> - 打包后验证：`7z l zip | grep -c ",1\.\|,2\."` 应为 0
+> - 示例：bcompare 5.2.5.32528（21MB，19 文件含 BC5Key.txt + version.dll）
 
 ```bash
 # 从 {app} 内打包
@@ -256,7 +258,7 @@ cd _output/{app} && 7z a -tzip ../../app-portable.zip * -r -mx9
 certutil -hashfile ../../app-portable.zip SHA256
 ```
 
-> 注意：Inno Setup 7.0+（如部分新汉化补丁）innounp 不支持（"This is not a supported version"），需改用静默安装或 innoextract。
+> **注册/汉化补丁获取**：注册信息常在独立补丁安装器里（如 BCompare-5.2.5_汉化补丁.exe）。Inno 7.0+ innounp/innoextract 均无法解包（"not supported version"），只能**运行 GUI 安装**，从安装目录提取注册文件（BC5Key.txt）+ 汉化 DLL（version.dll）。也可请求用户自行安装汉化后打包。
 
 5. **加密 Inno Setup 兜底流程**（密码破解失败时）：
 

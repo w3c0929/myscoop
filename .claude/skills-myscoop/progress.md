@@ -54,23 +54,30 @@ python3 -c "print('Inno' if b'Inno Setup' in open('Setup.exe','rb').read() else 
 # 2. innounp 解包（输出到 {app} 目录 = 完整程序集）
 innounp -x -d_output "Setup.exe"
 
-# 3. 组装便携目录（模仿安装器行为）：
-#    - 保留所有解包文件（含 ,1/,2 架构对）
+# 3. 组装便携目录（模仿安装器行为，看 install_script.iss 确认）：
+#    - 只保留安装器最终输出的文件（无 ,1/,2 后缀变体！）
 #    - 复制 64 位主程序为无后缀名：cp "BCompare,2.exe" BCompare.exe
 #    - 复制 64 位汉化翻译：cp "BCompare,2.tr" BCompare.tr
-#    - 加入注册文件（BC5Key.txt，可从旧版沿用）
-#    - 保留 Patch.exe 等辅助程序
+#    - 其余 64 位文件同理：7z,2.dll→7z.dll、PdfToText,2.exe→PdfToText.exe 等
+#    - 通用文件直接保留（BCClipboard/BComp/BCShellEx/Patch.exe 等）
 
 # 4. 打包 + 计算 hash
 7z a -tzip app-portable.zip * -r -mx9
 certutil -hashfile app-portable.zip SHA256
 ```
 
-要点：
-- Inno 6.x 可解包；Inno 7.0+（如部分新补丁）innounp 不支持，需换静默安装
-- `,1/`,2 后缀文件是 32/64 位安装变体，便携包保留全部并另复制一份 64 位为无后缀名（与安装后目录一致）
-- 注册文件（BC5Key.txt）必须放程序目录，程序启动时读取
-- 示例：bcompare（5.2.5.32528 汉化便携版）
+**关键要点（踩坑教训）**：
+- ⚠️ **不要保留 `,1/,2` 后缀变体文件**！它们只是安装器的 32/64 位源文件，安装器只输出无后缀的最终文件。保留会导致目录错乱（bcompare 5.2.5 教训）
+- ⚠️ **7z a 到已存在 zip 是追加不是覆盖**！打包前必须删除旧 zip，否则新旧内容混合（bcompare 混合包教训）
+- 打包后必须验证：`7z l zip | grep -c ",1\.\|,2\."` 应为 0
+- Inno 6.x 可解包；**Inno 7.0+ innounp/innoextract 均不支持**（报 "not supported version"）
+
+**注册/汉化补丁获取**（注册信息常在独立补丁安装器里）：
+- 补丁安装器（如 BCompare-5.2.5_汉化补丁.exe）若无法解包，只能**运行 GUI 安装**提取：
+  - 运行补丁安装器 → 安装到 BCompare 目录（或临时目录）
+  - 从安装目录提取：注册文件（BC5Key.txt）+ 汉化 DLL（version.dll）等
+- 最终便携包必须包含：程序文件 + 注册文件（BC5Key.txt）+ 汉化 DLL（version.dll，若存在）
+- 示例：bcompare（5.2.5.32528 汉化便携版，21MB：19 文件含 BC5Key.txt + version.dll）
 
 ### 模式 6：单 exe 手动安装
 - exe 直传 GitHub Release，post_install 自动启动
