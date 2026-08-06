@@ -34,7 +34,7 @@
 | 22 | [WinMTR](https://github.com/White-Tiger/WinMTR) — 网络诊断 Ping+Traceroute | `scoop install winmtr` | zip 便携解压即用 | 0.9.2 |
 | 23 | NetworkFixTool — 网络修复工具 | `scoop install networkfixtool` | 单 exe 便携 | 1.0 |
 | 24 | 系统常用功能助手 — Windows 系统工具箱 | `scoop install syshelper` | 单 exe 便携 | 3.0 |
-| 25 | [DropIt](http://www.dropitproject.com/) — 文件自动分类处理 | `scoop install dropit` | portable zip | 8.5.1 |
+| 25 | [DropIt](http://www.dropitproject.com/) — 文件自动分类处理 | `scoop install dropit` | portable zip | 8.5.2 |
 | 26 | [GstarCAD Pro 2022](https://www.gstarcad.net/) — DWG 兼容 CAD | `scoop install gstarcad` | portable zip | 2022 |
 | 27 | 静音移除工具 — 音视频静音段自动删除 | `scoop install cutsilence` | zip 便携解压即用 | 1.0 |
 | 28 | [录音精灵](https://www.apowersoft.cn/streaming-audio-recorder) — 声卡录音工具 | `scoop install audio-recorder` | portable zip | 4.2.3 |
