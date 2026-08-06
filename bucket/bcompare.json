@@ -7,7 +7,7 @@
         "url": "https://www.scootersoftware.com/license"
     },
     "url": "https://github.com/w3c0929/myscoop/releases/download/v5.2.5.32528/BCompare-5.2.5.32528-portable.zip",
-    "hash": "sha256:bfc6bcf54f90061a1dfd349018cbfa1ed46e207129b3ba120789af4b682cbe4f",
+    "hash": "sha256:f645fac5e8f0911118e418bd2d88487ccc6887025646c7d1005355161b82009b",
     "bin": [
         "BCompare.exe",
         "BComp.exe"
