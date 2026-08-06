@@ -22,7 +22,7 @@ GitHub: https://github.com/w3c0929/myscoop
 
 1. **Release 命名规范**：包名（文件名）必须英文 → 标题中英结合 → 描述纯中文
 2. **git commit 信息必须用中文**
-3. **收录新软件后，提交前必须同步更新 README.md 和 SKILL.md**
+3. **每次制作/更新后，提交前必须同步更新 README.md、progress.md（本项目进展）和 SKILL.md**
 4. **Hash 获取优先使用 GitHub API**：GitHub Release API 返回的每个 asset 包含 `digest: sha256:xxx` 字段，可直接读取无需下载文件。仅在 API 不可用时才下载计算。
 
 ## 标准处理流程
