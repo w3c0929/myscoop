@@ -125,7 +125,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* ee3f248 (HEAD -> main) progress.md 全面校对更新
+* 473a60e (HEAD -> main) BCompare 重新制作：完整汉化便携包
+* 0ab7efa progress.md 新增提交历史章节
+* ee3f248 progress.md 全面校对更新
 * 9f66ed2 规则更新：每次制作后必须同步更新 progress.md
 * 4eebed6 (origin/main, origin/HEAD) SKILL.md 新增规则：禁止敏感字样
 * 61cd256 BCompare 更新至 5.2.5.32528 汉化便携版
