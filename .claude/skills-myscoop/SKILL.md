@@ -472,3 +472,4 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
 8. **Hash 优先使用 GitHub API digest**：`curl -s api.github.com/repos/{o}/{r}/releases/latest` 直接读取 asset 的 `digest: sha256:xxx`，无需下载。仅 API 不可用时才下载计算
 9. **manifest 提交前必须验证**，确保 scoop 能正确解析
 10. **Release 命名规范（本地维护 manifest）**：**包名（文件名）必须用英文**（中文会导致 URL 下载失败）；**标题必须中英结合**（如"压缩工具 Bandizip 6.18"）；**描述必须纯中文**。本地维护 manifest 中 `description` 用英文，`shortcuts` 名称用中文。**第三方官方 manifest 不需要处理此规则**，保持上游原样不动。
+11. **禁止敏感字样**：git commit 信息、Release 标题/描述、manifest description、README 等所有对外文本**不得出现"破解"等敏感字样**。涉及此类版本时用中性词替代（如"汉化版"、"精简优化版"、"便携版"）。
