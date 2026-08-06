@@ -161,7 +161,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* ec9d185 (HEAD -> main) BCompare 更新：使用汉化完成的便携包
+* 78e21e2 (HEAD -> main) 文档更新：模式 5b 补充补丁获取与打包教训
+* 59c5303 progress.md 更新提交历史
+* ec9d185 BCompare 更新：使用汉化完成的便携包
 * b95fb3a progress.md 更新提交历史
 * ee16765 BCompare 修复：按安装器行为组装纯净便携包
 * b125b3d progress.md 更新提交历史
