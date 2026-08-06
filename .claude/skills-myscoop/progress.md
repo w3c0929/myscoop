@@ -43,6 +43,35 @@ GitHub: https://github.com/w3c0929/myscoop
 - MSI: lessmsi 解包 或 Install-Tickeys 类直接上传
 - 示例：uninstalltool, termius, 2345pic, gstarcad
 
+#### 模式 5b：Inno Setup 解包组装完整便携目录（bcompare 汉化版方式）
+
+汉化/破解安装器通常是 Inno Setup，直接解包可得完整程序集，组装便携目录：
+
+```bash
+# 1. 检测 Inno Setup（7z 打不开的 exe 用字符串特征确认）
+python3 -c "print('Inno' if b'Inno Setup' in open('Setup.exe','rb').read() else 'other')"
+
+# 2. innounp 解包（输出到 {app} 目录 = 完整程序集）
+innounp -x -d_output "Setup.exe"
+
+# 3. 组装便携目录（模仿安装器行为）：
+#    - 保留所有解包文件（含 ,1/,2 架构对）
+#    - 复制 64 位主程序为无后缀名：cp "BCompare,2.exe" BCompare.exe
+#    - 复制 64 位汉化翻译：cp "BCompare,2.tr" BCompare.tr
+#    - 加入注册文件（BC5Key.txt，可从旧版沿用）
+#    - 保留 Patch.exe 等辅助程序
+
+# 4. 打包 + 计算 hash
+7z a -tzip app-portable.zip * -r -mx9
+certutil -hashfile app-portable.zip SHA256
+```
+
+要点：
+- Inno 6.x 可解包；Inno 7.0+（如部分新补丁）innounp 不支持，需换静默安装
+- `,1/`,2 后缀文件是 32/64 位安装变体，便携包保留全部并另复制一份 64 位为无后缀名（与安装后目录一致）
+- 注册文件（BC5Key.txt）必须放程序目录，程序启动时读取
+- 示例：bcompare（5.2.5.32528 汉化便携版）
+
 ### 模式 6：单 exe 手动安装
 - exe 直传 GitHub Release，post_install 自动启动
 - 不设 bin/shortcuts/checkver/autoupdate

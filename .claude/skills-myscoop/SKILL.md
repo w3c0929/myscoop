@@ -240,10 +240,23 @@ scoop install innounp
 # 解包（文件通常在 {app}/ 子目录）
 innounp -x -d_output Setup.exe
 ls _output/{app}/
+```
+
+> **组装便携目录（模仿安装器行为，bcompare 方式）**：解包出的 `,1/`,2 后缀文件是 32/64 位安装变体。打包前：
+> - 保留全部文件（,1/,2 对 + 其他组件）
+> - 复制 64 位主程序为无后缀名：`cp "BCompare,2.exe" BCompare.exe`（安装器在 64 位系统会这样做）
+> - 复制对应汉化翻译：`cp "BCompare,2.tr" BCompare.tr`
+> - 加入注册文件（如 BC5Key.txt，可从旧版沿用），程序启动时读取
+> - 保留 Patch.exe 等辅助程序
+> - 示例：bcompare 5.2.5.32528（48MB 完整便携包）
+
+```bash
 # 从 {app} 内打包
 cd _output/{app} && 7z a -tzip ../../app-portable.zip * -r -mx9
 certutil -hashfile ../../app-portable.zip SHA256
 ```
+
+> 注意：Inno Setup 7.0+（如部分新汉化补丁）innounp 不支持（"This is not a supported version"），需改用静默安装或 innoextract。
 
 5. **加密 Inno Setup 兜底流程**（密码破解失败时）：
 
