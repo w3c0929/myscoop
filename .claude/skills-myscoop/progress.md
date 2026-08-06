@@ -154,7 +154,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* c661315 (HEAD -> main) 文档新增模式 5b：Inno 解包组装完整便携目录
+* ee16765 (HEAD -> main) BCompare 修复：按安装器行为组装纯净便携包
+* b125b3d progress.md 更新提交历史
+* c661315 文档新增模式 5b：Inno 解包组装完整便携目录
 * aff6793 progress.md 更新提交历史
 * 473a60e BCompare 重新制作：完整汉化便携包
 * 0ab7efa progress.md 新增提交历史章节
