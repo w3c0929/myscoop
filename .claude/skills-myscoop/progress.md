@@ -161,8 +161,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 6692dde (HEAD -> main) EasyTSHARK 改为便携 zip 版：解压即用
-* 07948af (origin/main, origin/HEAD) progress.md 更新提交历史
+* 4469fe5 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 6692dde EasyTSHARK 改为便携 zip 版：解压即用
+* 07948af progress.md 更新提交历史
 * b82be8e progress.md 更新提交历史
 * 488a928 progress.md 更新提交历史
 * b21de0d 收录 EasyTSHARK 1.0.2 网络抓包分析工具（单 exe 手动安装）
