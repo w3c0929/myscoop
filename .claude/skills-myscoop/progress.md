@@ -82,7 +82,7 @@ certutil -hashfile app-portable.zip SHA256
 ### 模式 6：单 exe 手动安装
 - exe 直传 GitHub Release，post_install 自动启动
 - 不设 bin/shortcuts/checkver/autoupdate
-- 示例：apollo, iobit, idm, bandizip6, pixpin, hcsstudio, wps, sougoupy 等
+- 示例：apollo, iobit, idm, bandizip6, pixpin, hcsstudio, wps, sougoupy, easytshark 等
 
 ### 模式 7：MSI 手动安装
 - MSI 直引上游 GitHub Release
@@ -161,8 +161,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 8ebcf62 (HEAD -> main) DropIt 更新至 8.5.2 便携版
-* 9370ae6 progress.md 更新提交历史
+* b21de0d (HEAD -> main) 收录 EasyTSHARK 1.0.2 网络抓包分析工具（单 exe 手动安装）
+* cdc1995 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 8ebcf62 DropIt 更新至 8.5.2 便携版
 * 8f1ae9f BCompare 更新：重新上传去除个人信息的便携包
 * 16b3ef0 progress.md 更新提交历史
 * 78e21e2 文档更新：模式 5b 补充补丁获取与打包教训
