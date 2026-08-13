@@ -161,7 +161,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* b21de0d (HEAD -> main) 收录 EasyTSHARK 1.0.2 网络抓包分析工具（单 exe 手动安装）
+* 488a928 (HEAD -> main) progress.md 更新提交历史
+* b21de0d 收录 EasyTSHARK 1.0.2 网络抓包分析工具（单 exe 手动安装）
 * cdc1995 (origin/main, origin/HEAD) progress.md 更新提交历史
 * 8ebcf62 DropIt 更新至 8.5.2 便携版
 * 8f1ae9f BCompare 更新：重新上传去除个人信息的便携包
