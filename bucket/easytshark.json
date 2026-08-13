@@ -3,8 +3,10 @@
     "description": "EasyTSHARK - Lightweight desktop network packet capture and analysis tool based on Wireshark/Tshark kernel",
     "homepage": "https://github.com/xuanyuanzhifeng/easytshark",
     "license": "Apache-2.0",
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.2/easytshark-1.0.2.exe",
-    "hash": "sha256:84ae1e1a0a69e092cd2c9841006b85332aa1426cb22ebc0844007bbf3c1b2bc7",
-    "post_install": "Start-Process \"$dir\\easytshark-1.0.2.exe\"",
-    "notes": "EasyTSHARK 手动安装包，scoop install 下载后自动启动，用户手动安装。v1.0.2 起不再内置 Wireshark，需自行安装 Wireshark 4.2+ 以提供 tshark 能力。"
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.2/EasyTshark-Portable-1.0.2.zip",
+    "hash": "sha256:4c9e09ddba2bb2211f20946d87d0c333b67e2c396d4f0d8bc35e1ab95573628c",
+    "bin": "easytshark.exe",
+    "shortcuts": [
+        ["easytshark.exe", "EasyTSHARK 网络抓包分析"]
+    ]
 }

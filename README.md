@@ -94,7 +94,7 @@
 | 82 | Cloudflare WARP — 网络加速与安全工具 | `scoop install cfwarp` | MSI 手动安装 | 2026.6.850.0 |
 | 83 | 公众号排版器 — 微信公众号文章排版工具 | `scoop install gzh-formatter` | 单 exe 便携 | 3.7.3 |
 | 84 | WPS Office — 办公套件（文字/表格/演示） | `scoop install wps` | 单 exe 手动安装 | 26899 |
-| 85 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | 单 exe 手动安装 | 1.0.2 |
+| 85 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -788,7 +788,7 @@ myscoop/
 │   ├── windisktool.json                 (模式1：单 exe 官方 release)
 │   ├── keyviz.json                      (模式7：MSI 手动安装)
 │   ├── getdict.json                       (模式6：单 exe 手动安装)
-│   ├── easytshark.json                    (模式6：单 exe 手动安装)
+│   ├── easytshark.json                    (模式2：zip 便携解压即用)
 ├── .claude/
 │   └── skills-myscoop/
 │       ├── SKILL.md                 ← AI 自动收录技能
