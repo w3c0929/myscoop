@@ -161,8 +161,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* b8024dc (HEAD -> main) DropIt 更新：重新上传便携包
-* 37b2f72 (origin/main, origin/HEAD) progress.md 更新提交历史
+* bdf9491 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* b8024dc DropIt 更新：重新上传便携包
+* 37b2f72 progress.md 更新提交历史
 * 4469fe5 progress.md 更新提交历史
 * 6692dde EasyTSHARK 改为便携 zip 版：解压即用
 * 07948af progress.md 更新提交历史
