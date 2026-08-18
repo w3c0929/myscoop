@@ -10,10 +10,10 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 
 GitHub: https://github.com/w3c0929/myscoop
 
-## 当前状态（截至 2026-08-14）
+## 当前状态（截至 2026-08-19）
 
-- **收录软件总数**: 105 款
-- **本地维护（自托管 Release）**: 85 款
+- **收录软件总数**: 106 款
+- **本地维护（自托管 Release）**: 86 款
 - **第三方官方（引用原项目 Release）**: 20 款
 
 不包含上下文提到的草稿软件。
@@ -82,7 +82,7 @@ certutil -hashfile app-portable.zip SHA256
 ### 模式 6：单 exe 手动安装
 - exe 直传 GitHub Release，post_install 自动启动
 - 不设 bin/shortcuts/checkver/autoupdate
-- 示例：apollo, iobit, idm, bandizip6, pixpin, hcsstudio, wps, sougoupy, easytshark 等
+- 示例：apollo, iobit, idm, bandizip6, pixpin, hcsstudio, wps, sougoupy, easytshark, deskbox 等
 
 ### 模式 7：MSI 手动安装
 - MSI 直引上游 GitHub Release

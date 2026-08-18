@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **105** 款 Windows 软件，其中 **85** 款为本地维护（自托管 Release），**20** 款引用第三方官方 Release。
+> 共收录 **106** 款 Windows 软件，其中 **86** 款为本地维护（自托管 Release），**20** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -95,6 +95,7 @@
 | 83 | 公众号排版器 — 微信公众号文章排版工具 | `scoop install gzh-formatter` | 单 exe 便携 | 3.7.3 |
 | 84 | WPS Office — 办公套件（文字/表格/演示） | `scoop install wps` | 单 exe 手动安装 | 26899 |
 | 85 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 |
+| 86 | [DeskBox](https://github.com/Tianyu199509/DeskBox) — 桌面整理工具（WinUI 3 原生小组件） | `scoop install deskbox` | 单 exe 手动安装 | 1.4.2 |
 
 ### 第三方官方（引用原项目 Release）
 
@@ -712,7 +713,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 105 个）
+├── bucket/        ← 所有 manifest JSON（共 106 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -789,6 +790,9 @@ myscoop/
 │   ├── keyviz.json                      (模式7：MSI 手动安装)
 │   ├── getdict.json                       (模式6：单 exe 手动安装)
 │   ├── easytshark.json                    (模式2：zip 便携解压即用)
+│   ├── deskbox.json                       (模式6：单 exe 手动安装)
+│   ├── deskbox.json                       (模式6：单 exe 手动安装)
+│   ├── deskbox.json                       (模式6：单 exe 手动安装)
 ├── .claude/
 │   └── skills-myscoop/
 │       ├── SKILL.md                 ← AI 自动收录技能

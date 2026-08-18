@@ -1,0 +1,10 @@
+{
+    "version": "1.4.2",
+    "description": "DeskBox - Free open-source Windows desktop organizer with native-feeling WinUI 3 widgets",
+    "homepage": "https://github.com/Tianyu199509/DeskBox",
+    "license": "GPL-3.0",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.4.2/deskbox-1.4.2.exe",
+    "hash": "sha256:da841758893887534f2791d28d06f5caa0541ec44d2eeca8308f1205b37eb914",
+    "post_install": "Start-Process \"$dir\\deskbox-1.4.2.exe\"",
+    "notes": "DeskBox 手动安装包，scoop install 下载后自动启动，用户手动完成安装向导。"
+}
