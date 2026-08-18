@@ -1,13 +1,13 @@
 {
-    "version": "0.27.0",
+    "version": "0.33.1",
     "description": "The most powerful and modular diffusion model GUI, api and backend with a graph/nodes interface.",
     "homepage": "https://www.comfy.org/",
     "license": "GPL-3.0",
     "checkver": {
         "github": "https://github.com/Comfy-Org/ComfyUI"
     },
-    "url": "https://github.com/Comfy-Org/ComfyUI/releases/download/v0.27.0/ComfyUI_windows_portable_nvidia.7z",
-    "hash": "sha256:d27cafec26ecf244c59420fc1e4636ebb880f72cf6aa5ae76765b57d99c500d1",
+    "url": "https://github.com/Comfy-Org/ComfyUI/releases/download/v0.33.1/ComfyUI_windows_portable_nvidia.7z",
+    "hash": "sha256:4a221588979b96b8244e0e50b2edca03af732acae1deba69d60aa3b4d60b9dba",
     "autoupdate": {
         "url": "https://github.com/Comfy-Org/ComfyUI/releases/download/v$version/ComfyUI_windows_portable_nvidia.7z"
     },

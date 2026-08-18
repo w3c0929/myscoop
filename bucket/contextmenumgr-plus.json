@@ -1,20 +1,20 @@
 {
-    "version": "1.7.1",
+    "version": "1.7.4",
     "description": "A Windows context menu management tool that helps users review and clean up right-click menu items",
     "homepage": "https://github.com/PLFJY/ContextMenuMgr",
     "license": "GPL-3.0",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.1/ContextMenuMgrPlus-1.7.1-x64-self-contained-portable.zip",
-            "hash": "sha256:af4d4963a7cb0d8ea172f45c972460c6284bdc3b48d6db8b9cd8ef0f8e2bbd5e"
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.4/ContextMenuMgrPlus-1.7.4-x64-self-contained-portable.zip",
+            "hash": "sha256:97066e259e45a2583f62471dcc97aa0197cd884e974896481b1f14f730de242b"
         },
         "32bit": {
-            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.1/ContextMenuMgrPlus-1.7.1-x86-self-contained-portable.zip",
-            "hash": "sha256:24f23886aaa66ca3d07366cfda1f6788748cc3551001aae466c50bd688dbf13f"
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.4/ContextMenuMgrPlus-1.7.4-x86-self-contained-portable.zip",
+            "hash": "sha256:4010dfc9fb74128e3ec92021f31488c5772d9b53543901375edd667f7da9fc50"
         },
         "arm64": {
-            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.1/ContextMenuMgrPlus-1.7.1-arm64-self-contained-portable.zip",
-            "hash": "sha256:fbab76efb13ef9065f090c91dee31fd7e3a9cfcbb510f37821e321f253153396"
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.4/ContextMenuMgrPlus-1.7.4-arm64-self-contained-portable.zip",
+            "hash": "sha256:5f119fe8c278529055589c01dec7631d4b8c1a79522b390417bd1784f11175dc"
         }
     },
     "bin": "ContextMenuManagerPlus.exe",

@@ -1,10 +1,10 @@
 {
-    "version": "1.9.12",
+    "version": "2.0.7",
     "description": "AI productivity studio with smart chat, autonomous agents, and 300+ assistants. Unified access to frontier LLMs",
     "homepage": "https://cherryai.com",
     "license": "AGPL-3.0",
-    "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.9.12/Cherry-Studio-1.9.12-x64-portable.exe",
-    "hash": "sha256:371410d1d5d4a1ba392a23c913819fa44d2c3da045fd5400f162efc9d2fa4c01",
+    "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.0.7/Cherry-Studio-2.0.7-x64-portable.exe",
+    "hash": "sha256:d127a2aadd622598a4a54ed462511ea64a5f317c4e52c60d079bb24685723c76",
     "pre_install": "Move-Item \"$dir\\Cherry-Studio-$version-x64-portable.exe\" \"$dir\\cherry-studio.exe\" -Force",
     "bin": "cherry-studio.exe",
     "shortcuts": [

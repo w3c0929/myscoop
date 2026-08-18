@@ -1,10 +1,10 @@
 {
-    "version": "1.2.3",
+    "version": "1.2.6",
     "description": "Amcfy Music Player - Subsonic/Navidrome/Emby/Jellyfin client",
     "homepage": "https://github.com/amcfy-music/amcfy-music",
     "license": "MIT",
-    "url": "https://github.com/amcfy-music/amcfy-music/releases/download/1.2.2/Amcfy.Music_1.2.3.10001-windows.zip",
-    "hash": "sha256:d4af15a007a459d4632aca7525deac9aaedbb85c9c8ef87e4a7349a3d51dc947",
+    "url": "https://github.com/amcfy-music/amcfy-music/releases/download/1.2.6/Amcfy.Music_1.2.6-windows.zip",
+    "hash": "sha256:0a0600421c94eb32208920edb8a3a308a2ca9aba8279028a1f6c669ed052a988",
     "pre_install": "Get-ChildItem \"$dir\" -Filter 'Amcfy Music*.exe' | Move-Item -Destination \"$dir\\Amcfy Music.exe\" -Force",
     "bin": "Amcfy Music.exe",
     "shortcuts": [

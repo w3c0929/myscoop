@@ -1,20 +1,20 @@
 {
-    "version": "1.24.11321.0",
+    "version": "1.24.11911.0",
     "description": "The new Windows Terminal and the original Windows console host, all in the same place!",
     "homepage": "https://github.com/microsoft/terminal",
     "license": "MIT",
     "architecture": {
         "32bit": {
-            "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11321.0/Microsoft.WindowsTerminal_1.24.11321.0_x86.zip",
-            "hash": "sha256:5d1619a5031747719b8711ea13350ff428730a596029a9de57a6d6b31448d0e5"
+            "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11911.0/Microsoft.WindowsTerminal_1.24.11911.0_x86.zip",
+            "hash": "sha256:d3915f02b916f2823b96b4463914a6f7c73075051d65125eaec137f4aca9c1fd"
         },
         "64bit": {
-            "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11321.0/Microsoft.WindowsTerminal_1.24.11321.0_x64.zip",
-            "hash": "sha256:7caef554147e5498ed1becdca73cdedb79fbc81f89032e46ae9b095c53433812"
+            "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11911.0/Microsoft.WindowsTerminal_1.24.11911.0_x64.zip",
+            "hash": "sha256:7691efeb71c8dd0b95536c84e366fa4cf809a42c534912f9cefa1056534383bd"
         },
         "arm64": {
-            "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11321.0/Microsoft.WindowsTerminal_1.24.11321.0_arm64.zip",
-            "hash": "sha256:e69c80df105fa54cf286f17ee301c586ab81bc0b1461c229c450a8666ef31480"
+            "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11911.0/Microsoft.WindowsTerminal_1.24.11911.0_arm64.zip",
+            "hash": "sha256:d794a881d4b4e151d79366fac85d1cbe7e21e90fa69f4157796377c13f1ea844"
         }
     },
     "checkver": {
