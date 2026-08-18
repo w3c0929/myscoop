@@ -1,0 +1,12 @@
+{
+    "version": "2.4.0",
+    "description": "Microsoft Windows App Runtime (WindowsAppSDK) - required runtime for WinUI/WinAppSDK desktop apps",
+    "homepage": "https://learn.microsoft.com/windows/apps/windows-app-sdk/",
+    "license": {
+        "identifier": "Proprietary"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v2.4.0/windowsappruntime-2.4.0.exe",
+    "hash": "sha256:851c35b0b0a59ce4c55f9171f601193322fc3413143b0dc3390ea11e14cfa7fc",
+    "post_install": "Start-Process \"$dir\\windowsappruntime-2.4.0.exe\"",
+    "notes": "Windows App Runtime 手动安装包，scoop install 下载后自动启动，用户手动完成安装向导。"
+}
