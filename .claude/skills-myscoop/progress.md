@@ -161,7 +161,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* aef6e0e (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 85ccc5a (HEAD -> main) SKILL.md 规则新增：下载优先使用系统自带 curl.exe -L
+* 39c2d8f (origin/main, origin/HEAD) progress.md 更新提交历史
+* aef6e0e progress.md 更新提交历史
 * 4a9f145 收录 Windows App Runtime 2.4.0 运行时（单 exe 手动安装）+ 修复 README 重复行
 * c613d56 progress.md 更新提交历史
 * fa95caf progress.md 更新提交历史
