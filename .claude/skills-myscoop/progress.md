@@ -161,7 +161,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* fa95caf (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 4a9f145 (HEAD -> main) 收录 Windows App Runtime 2.4.0 运行时（单 exe 手动安装）+ 修复 README 重复行
+* c613d56 (origin/main, origin/HEAD) progress.md 更新提交历史
+* fa95caf progress.md 更新提交历史
 * df9f19d SKILL.md 新增链接类型自动判断与下载链接强制确认约定
 * af59e99 progress.md 更新提交历史
 * d05e530 progress.md 更新提交历史
