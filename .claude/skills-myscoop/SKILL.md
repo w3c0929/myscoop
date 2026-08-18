@@ -523,3 +523,12 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
 11. **禁止敏感字样**：git commit 信息、Release 标题/描述、manifest description、README 等所有对外文本**不得出现"破解"等敏感字样**。涉及此类版本时用中性词替代（如"汉化版"、"精简优化版"、"便携版"）。
 12. **每次制作/更新完成后**，提交前必须同步更新 `README.md`、`.claude/skills-myscoop/progress.md`（项目进展，含收录总数/版本）和 SKILL.md。
 13. **每次提交完成后**，运行 `git log --oneline --decorate --graph`，将完整输出更新到 `progress.md` 的"提交历史"章节。
+14. **下载方式优先用 `curl.exe -L`**：Windows 系统自带 `C:\Windows\System32\curl.exe`（Win10 1803+），无需安装、无需额外工具。下载文件一律使用：
+    ```powershell
+    curl.exe -L -o "文件名" "下载地址"
+    ```
+    - **必须写 `curl.exe`**（不能写 `curl`）：PowerShell 中 `curl` 是 `Invoke-WebRequest` 的别名，行为不同、不支持 `-L -o` 参数
+    - `-L` 必须带：自动跟随重定向（aka.ms / GitHub / lanzou 等短链都会 302）
+    - `-o` 指定本地保存文件名，保持文件名与 Release 包名一致（英文）
+    - 下载完成后用 `certutil -hashfile 文件 SHA256` 计算哈希（同为系统自带）
+    - 仅在 curl.exe 不可用时（如旧版系统）才退化为其他下载方式
