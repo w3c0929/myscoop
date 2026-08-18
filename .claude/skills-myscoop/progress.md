@@ -161,7 +161,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* d05e530 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* df9f19d (HEAD -> main) SKILL.md 新增链接类型自动判断与下载链接强制确认约定
+* af59e99 (origin/main, origin/HEAD) progress.md 更新提交历史
+* d05e530 progress.md 更新提交历史
 * acb1175 收录 DeskBox 1.4.2 桌面整理工具（单 exe 手动安装）
 * 9271550 progress.md 更新提交历史
 * 3064a64 progress.md 更新提交历史
