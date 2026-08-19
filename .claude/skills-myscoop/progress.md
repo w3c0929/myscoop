@@ -161,7 +161,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 2f3deec (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 3e4f71a (HEAD -> main, origin/main, origin/HEAD) 收录 Sublime Text 4207 便携版：与 4200 并存安装
+* 2f3deec progress.md 更新提交历史
 * b851a91 移除桌面整理工具 DeskBox：删除 manifest、Release 及文档引用
 * 239a4cf progress.md 更新提交历史
 * ff87361 DropIt 更新：重新上传重新编译的 x64 便携包
