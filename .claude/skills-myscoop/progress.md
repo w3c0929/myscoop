@@ -12,8 +12,8 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-08-19）
 
-- **收录软件总数**: 106 款
-- **本地维护（自托管 Release）**: 86 款
+- **收录软件总数**: 107 款
+- **本地维护（自托管 Release）**: 87 款
 - **第三方官方（引用原项目 Release）**: 20 款
 
 不包含上下文提到的草稿软件。
@@ -161,7 +161,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* b851a91 (HEAD -> main, origin/main, origin/HEAD) 移除桌面整理工具 DeskBox：删除 manifest、Release 及文档引用
+* 2f3deec (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* b851a91 移除桌面整理工具 DeskBox：删除 manifest、Release 及文档引用
 * 239a4cf progress.md 更新提交历史
 * ff87361 DropIt 更新：重新上传重新编译的 x64 便携包
 * 3a4fae4 progress.md 更新提交历史
