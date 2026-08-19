@@ -161,7 +161,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* b596602 (HEAD -> main, origin/main, origin/HEAD) sublime-text 多版本资产合并为单个 release vSublimeText，url 指向固定 tag
+* e7191d4 (HEAD -> main, origin/main, origin/HEAD) README 快速开始新增多版本软件指定版本安装说明
+* b596602 sublime-text 多版本资产合并为单个 release vSublimeText，url 指向固定 tag
 * 330bd03 修复 sublime-text 版本化安装：url 改硬编码，仅 autoupdate 保留版本模板
 * 9bed052 progress.md 更新提交历史
 * 4aab0db Sublime Text 改版本化安装：合并 4200/4207 为单 manifest 模板 URL
