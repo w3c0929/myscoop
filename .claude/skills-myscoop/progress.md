@@ -161,7 +161,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 3324af9 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 4aab0db (HEAD -> main, origin/main, origin/HEAD) Sublime Text 改版本化安装：合并 4200/4207 为单 manifest 模板 URL
+* 3324af9 progress.md 更新提交历史
 * 3e4f71a 收录 Sublime Text 4207 便携版：与 4200 并存安装
 * 2f3deec (tag: vSublimeText4207) progress.md 更新提交历史
 * b851a91 移除桌面整理工具 DeskBox：删除 manifest、Release 及文档引用
