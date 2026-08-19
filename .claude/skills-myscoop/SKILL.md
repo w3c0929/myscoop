@@ -514,7 +514,7 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
 2. **优先 self-contained**（自带运行时），少用 framework-dependent（需额外依赖）
 3. **Hash 格式固定**：`sha256:xxxx`（全小写）
 4. **版本号去 v 前缀**：tag `v1.2.3` → version `1.2.3`
-5. **autoupdate 中的 URL**：tag 部分用 `v$version`（如果 tag 带 v），文件名部分用 `$version`
+5. **autoupdate 中的 URL**：tag 部分用 `v$version`（如果 tag 带 v），文件名部分用 `$version`（单版本、每版本独立 release 的情形）。**多版本共用一个 release 的情形见规则 15**
 6. **autoupdate hash 规则**：**不要用 `$url.sha256`**（大部分项目不提供 `.sha256` 文件）。不写 hash 规则时 `checkver -u` 会自动下载计算。如果项目提供 `checksums.txt`，用 `"hash": { "url": "$baseurl/checksums.txt" }` 放在 autoupdate 顶层
 7. **description 用英文**，保持国际通用性
 8. **Hash 优先使用 GitHub API digest**：`curl -s api.github.com/repos/{o}/{r}/releases/latest` 直接读取 asset 的 `digest: sha256:xxx`，无需下载。仅 API 不可用时才下载计算
@@ -532,3 +532,9 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
     - `-o` 指定本地保存文件名，保持文件名与 Release 包名一致（英文）
     - 下载完成后用 `certutil -hashfile 文件 SHA256` 计算哈希（同为系统自带）
     - 仅在 curl.exe 不可用时（如旧版系统）才退化为其他下载方式
+15. **多版本软件资产（自托管）**：同一软件需保留多个历史版本时，**用一个 release（固定 tag）下挂多个资产**（文件名含版本号区分，如 `sublime-text-4200-x64.zip`、`sublime-text-4207-x64.zip`），**不要**每版本各建一个 release。
+    - manifest 的 `version` 固定为**默认（最新）版本**；`url`/`hash` 字段**硬编码默认版本的具体地址**，**不要**在 `url` 里写 `$version`——Scoop 普通安装不会替换它，会直接 404
+    - `autoupdate.url` 中 **tag 固定**，仅文件名部分用 `$version` 模板（供 Scoop 动态生成其他版本）
+    - 安装默认版：`scoop install myscoop/<app>`；指定版本：`scoop install myscoop/<app>@<版本>`（触发 autoupdate 即时生成用户 manifest，hash 自动用 GitHub digest：`7218ed7e... using Github Mode`）；切换已装版本：`scoop reset myscoop/<app>@<版本>`
+    - 搜索工具（`scoop search` / `scoop-search`）只显示 manifest 的默认版本，`@版本` 备份在运行时才生成、搜索不可见——必须在 README 标注多版本及 `@版本` 用法，否则用户不知道还存在其他版本
+    - 示例：Sublime Text（`sublime-text.json`，release `vSublimeText` 下挂 4200 / 4207 两个资产）
