@@ -12,8 +12,8 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-08-19）
 
-- **收录软件总数**: 107 款
-- **本地维护（自托管 Release）**: 87 款
+- **收录软件总数**: 106 款
+- **本地维护（自托管 Release）**: 86 款
 - **第三方官方（引用原项目 Release）**: 20 款
 
 不包含上下文提到的草稿软件。
@@ -161,8 +161,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 3e4f71a (HEAD -> main, origin/main, origin/HEAD) 收录 Sublime Text 4207 便携版：与 4200 并存安装
-* 2f3deec progress.md 更新提交历史
+* 3324af9 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 3e4f71a 收录 Sublime Text 4207 便携版：与 4200 并存安装
+* 2f3deec (tag: vSublimeText4207) progress.md 更新提交历史
 * b851a91 移除桌面整理工具 DeskBox：删除 manifest、Release 及文档引用
 * 239a4cf progress.md 更新提交历史
 * ff87361 DropIt 更新：重新上传重新编译的 x64 便携包

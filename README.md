@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **107** 款 Windows 软件，其中 **87** 款为本地维护（自托管 Release），**20** 款引用第三方官方 Release。
+> 共收录 **106** 款 Windows 软件，其中 **86** 款为本地维护（自托管 Release），**20** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -58,8 +58,8 @@
 | 46 | 五金工具 — 五金计算工具 | `scoop install wujin` | 单 exe 手动安装 | 1.0 |
 | 47 | [GoldenDict](https://github.com/goldendict/goldendict) — 离线词典翻译工具 | `scoop install goldendict` | zip 便携解压即用 | 1.0 |
 | 48 | PointerStick — 屏幕教鞭教学工具 | `scoop install pointerstick` | zip 便携解压即用 | 1.0 |
-| 49 | [Sublime Text 4200](https://www.sublimetext.com/) — 代码编辑器 x64 | `scoop install sublime-text` | zip 便携解压即用 | 4200 |
-| 50 | [Sublime Text 4207](https://www.sublimetext.com/) — 代码编辑器 x64 | `scoop install sublime-text-4207` | zip 便携解压即用 | 50 |
+| 49 | [Sublime Text](https://www.sublimetext.com/) — 代码编辑器 x64 | `scoop install sublime-text@4200/@4207` | zip 便携解压即用 | 4200 / 4207 |
+| 50 |
 | 51 |
 | 52 |
 | 53 |
@@ -96,7 +96,6 @@
 | 84 |
 | 85 |
 | 86 |
-| 87 |
 
 ### 第三方官方（引用原项目 Release）
 

@@ -1,10 +1,13 @@
 {
-    "version": "4200",
+    "version": "4207",
     "description": "Sublime Text - sophisticated text editor for code, markup and prose",
     "homepage": "https://www.sublimetext.com/",
     "license": {"identifier": "Proprietary"},
-    "url": "https://github.com/w3c0929/myscoop/releases/download/vSublimeText4200/sublime-text-4200-x64.zip",
-    "hash": "sha256:7218ed7e242b0b0174f0a2b71b84cf1a4c5159c53669af26fe0e03c0661a5ec6",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vSublimeText$version/sublime-text-$version-x64.zip",
+    "hash": "sha256:68a1bfd9f3290c22a0ce5ada4b706ba3ff146b6eb1b8cff06b26f1c705948e6b",
     "bin": "sublime_text.exe",
-    "shortcuts": [["sublime_text.exe", "Sublime Text 4200"]]
+    "shortcuts": [["sublime_text.exe", "Sublime Text"]],
+    "autoupdate": {
+        "url": "https://github.com/w3c0929/myscoop/releases/download/vSublimeText$version/sublime-text-$version-x64.zip"
+    }
 }
