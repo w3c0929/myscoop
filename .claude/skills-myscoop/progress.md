@@ -161,7 +161,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 239a4cf (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* b851a91 (HEAD -> main, origin/main, origin/HEAD) 移除桌面整理工具 DeskBox：删除 manifest、Release 及文档引用
+* 239a4cf progress.md 更新提交历史
 * ff87361 DropIt 更新：重新上传重新编译的 x64 便携包
 * 3a4fae4 progress.md 更新提交历史
 * 52d4313 DropIt 更新：重新上传重新编译的 x64 便携包
