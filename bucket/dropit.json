@@ -4,7 +4,7 @@
     "homepage": "http://www.dropitproject.com/",
     "license": "GPL-2.0",
     "url": "https://github.com/w3c0929/myscoop/releases/download/v8.5.2/DropIt_v8.5.2_x64_Portable.zip",
-    "hash": "sha256:28060a439aa0dbf3f8011f057ce45d6e72f19b5324db1c8536e3dfb9e0a1cb99",
+    "hash": "sha256:a1de85093653cb29823305b87e733a59837a3ba0675a644e4aeff0ffe9d0a16f",
     "bin": "DropIt.exe",
     "shortcuts": [
         [

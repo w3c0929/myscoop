@@ -161,7 +161,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* a1da3ee (HEAD -> main, origin/main, origin/HEAD) DropIt 更新：重新上传扁平结构便携包并更新 hash
+* 8c70af5 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* a1da3ee DropIt 更新：重新上传扁平结构便携包并更新 hash
 * b5e2aee 第三方更新
 * e02f808 progress.md 更新提交历史
 * 5c64431 progress.md 更新提交历史
