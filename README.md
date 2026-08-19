@@ -144,6 +144,12 @@ scoop install windowsclear
 scoop install myscoop/contextmenumgr-plus
 ```
 
+> **多版本软件（如 Sublime Text）**：默认安装最新版（4207）；需旧版时用 `@版本号` 指定，例如：
+> ```powershell
+> scoop install myscoop/sublime-text@4200   # 指定安装旧版 4200
+> ```
+> 同一软件的各版本共存时，用 `scoop reset myscoop/sublime-text@4200` / `@4207` 切换当前版本。
+
 ### 3. 更新软件
 
 ```powershell
