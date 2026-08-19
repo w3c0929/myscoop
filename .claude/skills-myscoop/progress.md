@@ -161,18 +161,20 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 5c64431 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* b5e2aee (HEAD -> main, origin/main, origin/HEAD) 第三方更新
+* e02f808 progress.md 更新提交历史
+* 5c64431 progress.md 更新提交历史
 * 85ccc5a SKILL.md 规则新增：下载优先使用系统自带 curl.exe -L
 * 39c2d8f progress.md 更新提交历史
 * aef6e0e progress.md 更新提交历史
 * 4a9f145 收录 Windows App Runtime 2.4.0 运行时（单 exe 手动安装）+ 修复 README 重复行
-* c613d56 progress.md 更新提交历史
+* c613d56 (tag: v2.4.0) progress.md 更新提交历史
 * fa95caf progress.md 更新提交历史
 * df9f19d SKILL.md 新增链接类型自动判断与下载链接强制确认约定
 * af59e99 progress.md 更新提交历史
 * d05e530 progress.md 更新提交历史
 * acb1175 收录 DeskBox 1.4.2 桌面整理工具（单 exe 手动安装）
-* 9271550 progress.md 更新提交历史
+* 9271550 (tag: v1.4.2) progress.md 更新提交历史
 * 3064a64 progress.md 更新提交历史
 * 8dfbe5e DropIt 更新：再次重新上传修改源码后的便携包
 * ebaaa5c progress.md 更新提交历史
@@ -188,8 +190,9 @@ scoop cat myscoop/appname
 * b82be8e progress.md 更新提交历史
 * 488a928 progress.md 更新提交历史
 * b21de0d 收录 EasyTSHARK 1.0.2 网络抓包分析工具（单 exe 手动安装）
-* cdc1995 progress.md 更新提交历史
+* cdc1995 (tag: v1.0.2) progress.md 更新提交历史
 * 8ebcf62 DropIt 更新至 8.5.2 便携版
+* 9370ae6 (tag: v8.5.2) progress.md 更新提交历史
 * 8f1ae9f BCompare 更新：重新上传去除个人信息的便携包
 * 16b3ef0 progress.md 更新提交历史
 * 78e21e2 文档更新：模式 5b 补充补丁获取与打包教训
@@ -204,7 +207,7 @@ scoop cat myscoop/appname
 * 0ab7efa progress.md 新增提交历史章节
 * ee3f248 progress.md 全面校对更新
 * 9f66ed2 规则更新：每次制作后必须同步更新 progress.md
-* 4eebed6 (origin/main, origin/HEAD) SKILL.md 新增规则：禁止敏感字样
+* 4eebed6 SKILL.md 新增规则：禁止敏感字样
 * 61cd256 BCompare 更新至 5.2.5.32528 汉化便携版
 * 4074f0a (tag: v5.2.5.32528) btseed-magnet 重命名为 btseed
 * 5b0d9f3 新增 Keyviz 按键可视化 + 更新 BT种子转磁力链工具
