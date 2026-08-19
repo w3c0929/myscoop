@@ -59,43 +59,43 @@
 | 47 | [GoldenDict](https://github.com/goldendict/goldendict) — 离线词典翻译工具 | `scoop install goldendict` | zip 便携解压即用 | 1.0 |
 | 48 | PointerStick — 屏幕教鞭教学工具 | `scoop install pointerstick` | zip 便携解压即用 | 1.0 |
 | 49 | [Sublime Text](https://www.sublimetext.com/) — 代码编辑器 x64 | `scoop install sublime-text@4200/@4207` | zip 便携解压即用 | 4200 / 4207 |
-| 50 |
-| 51 |
-| 52 |
-| 53 |
-| 54 |
-| 55 |
-| 56 |
-| 57 |
-| 58 |
-| 59 |
-| 60 |
-| 61 |
-| 62 |
-| 63 |
-| 64 |
-| 65 |
-| 66 |
-| 67 |
-| 68 |
-| 69 |
-| 70 |
-| 71 |
-| 72 |
-| 73 |
-| 74 |
-| 75 |
-| 76 |
-| 77 |
-| 78 |
-| 79 |
-| 80 |
-| 81 |
-| 82 |
-| 83 |
-| 84 |
-| 85 |
-| 86 |
+| 50 | Epic Pen — 屏幕标注白板教学工具 | `scoop install epicpen` | portable zip | 3.7.31 |
+| 51 | Tickeys — 机械键盘打字音效 | `scoop install tickeys` | MSI 手动安装 | 1.2.0 |
+| 52 | [Anytxt](https://anytxt.net/) — 图片文字搜索 OCR 工具 | `scoop install anytxt` | 单 exe 手动安装 | 1.3.1952 |
+| 53 | Studio One Pro 7.1 — 音乐制作 DAW | `scoop install studio-one` | portable zip | 7.1 |
+| 54 | VAM 翻译密钥 — Virt-A-Mate 翻译资源包 | `scoop install vam-resource` | zip 资源包 | 1.22 |
+| 55 | BeatEdit Pr — Premiere 节拍编辑插件汉化版 | `scoop install beatedit` | zip 插件包 | 2.1.003 |
+| 56 | MdxBuilder — 字典制作转换工具 | `scoop install mdxbuilder` | zip 便携解压即用 | 3.0 |
+| 57 | 禁用 Xbox GameBar — 弹窗禁用脚本 | `scoop install disable-gamebar` | zip 脚本 | 1.0 |
+| 58 | ChromeSetup — Google Chrome 安装器 | `scoop install chromesetup` | 单 exe 手动安装 | 147.0.7703.0 |
+| 59 | WCAP — Windows 屏幕录制工具 | `scoop install wcap` | zip 便携解压即用 | 1.0 |
+| 60 | MusicTag — 音乐标签编辑工具 | `scoop install musictag` | 7z 便携解压即用 | 1.0.9.0 |
+| 61 | miaomi — 喵咪客户端 | `scoop install miaomi` | 单 exe 手动安装 | 2.4.5 |
+| 62 | Bandicam — 班班录屏，高性能屏幕录制 | `scoop install bandicam` | 7z 便携解压即用 | 8.2.2.2531 |
+| 63 | VP9 视频解码器 — Windows VP9 视频编解码扩展 | `scoop install vp9-video-extensions` | Appx 手动安装 | 1.0.50481.0 |
+| 64 | Edge WebView2 运行时 — 现代 Windows 应用必备组件 | `scoop install webview2-runtime` | 单 exe 手动安装 | 1.3.213.7 |
+| 65 | HardLinkShellExt — Windows 软硬链接 Shell 扩展工具 | `scoop install hardlinkshellext` | 单 exe 手动安装 | 3.9.3.5 |
+| 66 | UltraISO Premium — 软碟通光盘映像制作编辑转换工具 | `scoop install ultraiso` | 单 exe 手动安装 | 9.7.0 |
+| 67 | [EdgeBlock](https://www.sordum.org/edge-blocker/) — Edge 浏览器禁用/启用工具 | `scoop install edgeblock` | zip 便携解压即用 | 2.0 |
+| 68 | DingTalk Downloader — 钉钉下载工具 | `scoop install dingtalk-downloader` | 单 exe 手动安装 | 1.0.0.10 |
+| 69 | HiPC — 电脑助手远程控制工具 | `scoop install hipc` | 单 exe 手动安装 | 5.6.6.174a |
+| 70 | QQ — 腾讯即时通讯客户端 | `scoop install qq` | 单 exe 手动安装 | 9.9.31 |
+| 71 | 微信 WeChat — 腾讯社交聊天应用 | `scoop install wechat` | 单 exe 手动安装 | 4.1.11 |
+| 72 | 企业微信 WeCom — 腾讯企业通讯平台 | `scoop install wecom` | 单 exe 手动安装 | 5.0.9.6029 |
+| 73 | waifu2x-caffe — 图片无损放大超分辨率工具 | `scoop install waifu2x-caffe` | zip 便携解压即用 | 1.0 |
+| 74 | Visual Studio BuildTools — VS 2026 生成工具安装器 | `scoop install vs-buildtools` | 单 exe 手动安装 | 18.7.11925.98 |
+| 75 | GetDict — 字典转化工具，字典格式编码转换 | `scoop install getdict` | 单 exe 手动安装 | 1.0 |
+| 76 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具 | `scoop install mykeymap` | zip 便携解压即用 | 2.0-beta33 |
+| 77 | Athena-A 汉化版 — 软件本地化翻译工具 | `scoop install athena-loc` | 7z 便携解压即用 | 4.13 |
+| 78 | 软媒PCMaster — 系统工具合集 | `scoop install pcmaster` | zip 便携解压即用 | 1.0 |
+| 79 | BT种子转磁力链工具 — BT种子转磁力链接 | `scoop install btseed` | zip 便携解压即用 | 1.0 |
+| 80 | 卡卡字幕助手 VideoCaptioner — AI视频字幕生成工具 | `scoop install video-captioner` | 单 exe 手动安装 | 1.3.3 |
+| 81 | HCSStudio — 汉化工具 | `scoop install hcsstudio` | 单 exe 手动安装 | 1.0.260708 |
+| 82 | Cloudflare WARP — 网络加速与安全工具 | `scoop install cfwarp` | MSI 手动安装 | 2026.6.850.0 |
+| 83 | 公众号排版器 — 微信公众号文章排版工具 | `scoop install gzh-formatter` | 单 exe 便携 | 3.7.3 |
+| 84 | WPS Office — 办公套件（文字/表格/演示） | `scoop install wps` | 单 exe 手动安装 | 26899 |
+| 85 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 |
+| 86 | [Windows App Runtime](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时（WinUI/WinAppSDK 应用依赖） | `scoop install windowsappruntime` | 单 exe 手动安装 | 2.4.0 |
 
 ### 第三方官方（引用原项目 Release）
 
