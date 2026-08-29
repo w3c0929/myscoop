@@ -538,3 +538,4 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
     - 安装默认版：`scoop install myscoop/<app>`；指定版本：`scoop install myscoop/<app>@<版本>`（触发 autoupdate 即时生成用户 manifest，hash 自动用 GitHub digest：`7218ed7e... using Github Mode`）；切换已装版本：`scoop reset myscoop/<app>@<版本>`
     - 搜索工具（`scoop search` / `scoop-search`）只显示 manifest 的默认版本，`@版本` 备份在运行时才生成、搜索不可见——必须在 README 标注多版本及 `@版本` 用法，否则用户不知道还存在其他版本
     - 示例：Sublime Text（`sublime-text.json`，release `vSublimeText` 下挂 4200 / 4207 两个资产）
+16. **改动文件必须全部提交推送**：任务中凡**内容发生改动的需提交文件**（manifest、README.md、progress.md、SKILL.md、LICENSE 等仓库内跟踪文件）一律 `git add` + `git commit` + `git push` 提交推送，**不得遗留未提交改动**；即使该改动与本任务无关（如历史遗留的各种文件改动），只要其内容已变也一并提交推送。未跟踪文件（如 portable zip 等发布资产、临时文件）不在此列。
