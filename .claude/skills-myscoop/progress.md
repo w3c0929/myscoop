@@ -12,8 +12,8 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-08-19）
 
-- **收录软件总数**: 106 款
-- **本地维护（自托管 Release）**: 86 款
+- **收录软件总数**: 107 款
+- **本地维护（自托管 Release）**: 87 款
 - **第三方官方（引用原项目 Release）**: 20 款
 
 不包含上下文提到的草稿软件。
@@ -36,7 +36,7 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ### 模式 2：单 exe / zip 便携（自托管）
 - 本地文件上传到 GitHub Release
-- 示例：windowsclear, tinytask, 360bwtest, btsou, hibituninstaller, gzh-formatter（单 exe 便携）, bcompare（汉化便携 zip）, easytshark（便携 zip）
+- 示例：windowsclear, tinytask, 360bwtest, btsou, hibituninstaller, gzh-formatter（单 exe 便携）, bcompare（汉化便携 zip）, easytshark（便携 zip）, switchhosts（便携 zip）
 
 ### 模式 5：安装器解包/静默安装 → 自托管
 - NSIS: `7z l file.exe | grep "Type = 7z"` → 7z x 直接提取
