@@ -1,0 +1,219 @@
+function manifest_path($app, $bucket) {
+    (Get-ChildItem (Find-BucketDirectory $bucket) -Filter "$(sanitary_path $app).json" -Recurse).FullName
+}
+
+function parse_json($path) {
+    if ($null -eq $path -or !(Test-Path $path)) { return $null }
+    try {
+        Get-Content $path -Raw -Encoding UTF8 | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        warn "Error parsing JSON at '$path'."
+    }
+}
+
+function url_manifest($url) {
+    $str = $null
+    try {
+        $wc = New-Object Net.Webclient
+        $wc.Headers.Add('User-Agent', (Get-UserAgent))
+        $data = $wc.DownloadData($url)
+        $str = (Get-Encoding($wc)).GetString($data)
+    } catch [system.management.automation.methodinvocationexception] {
+        warn "error: $($_.exception.innerexception.message)"
+    } catch {
+        throw
+    }
+    if (!$str) { return $null }
+    try {
+        $str | ConvertFrom-Json -ErrorAction Stop
+    } catch {
+        warn "Error parsing JSON at '$url'."
+    }
+}
+
+# ==================== 修改后的 Get-Manifest（支持 bucketlist 优先级） ====================
+function Get-Manifest($app) {
+    $bucket, $manifest, $url = $null
+    $app = $app.TrimStart('/')
+    # check if app is a URL or UNC path
+    if ($app -match '^(ht|f)tps?://|\\\\') {
+        $url = $app
+        $app = appname_from_url $url
+        $manifest = url_manifest $url
+    } else {
+        # Check if the manifest is already installed
+        if (installed $app) {
+            $global = installed $app $true
+            $ver = Select-CurrentVersion -AppName $app -Global:$global
+            if (!$ver) {
+                $app, $bucket, $ver = parse_app $app
+                $ver = Select-CurrentVersion -AppName $app -Global:$global
+            }
+            $install_info_path = "$(versiondir $app $ver $global)\install.json"
+            if (Test-Path $install_info_path) {
+                $install_info = parse_json $install_info_path
+                $bucket = $install_info.bucket
+                if (!$bucket) {
+                    $url = $install_info.url
+                    if ($url -match '^(ht|f)tps?://|\\\\') {
+                        $manifest = url_manifest $url
+                    }
+                    if (!$manifest) {
+                        if (Test-Path $url) {
+                            $manifest = parse_json $url
+                        } else {
+                            # Fallback to installed manifest
+                            $manifest = installed_manifest $app $ver $global
+                        }
+                    }
+                } else {
+                    $manifest = manifest $app $bucket
+                    if (!$manifest) {
+                        $deprecated_dir = (Find-BucketDirectory -Name $bucket -Root) + '\deprecated'
+                        $manifest = parse_json (Get-ChildItem $deprecated_dir -Filter "$(sanitary_path $app).json" -Recurse).FullName
+                    }
+                }
+            }
+        } else {
+            $app, $bucket, $version = parse_app $app
+            if ($bucket) {
+                $manifest = manifest $app $bucket
+            } else {
+                $matched_buckets = @()
+                # ========== bucketlist 补丁开始 ==========
+                $buckets = Get-LocalBucket
+                $bucketPriority = get_config 'bucketlist'
+                if ($bucketPriority -and $bucketPriority -is [array]) {
+                    $ordered = @()
+                    foreach($name in $bucketPriority) {
+                        $b = $buckets | Where-Object { $_ -eq $name }   # 修复不可见连字符
+                        if($b) { $ordered += $b }
+                    }
+                    $others = $buckets | Where-Object { $_ -notin $ordered }
+                    $buckets = $ordered + $others
+                }
+                # ========== bucketlist 补丁结束 ==========
+                foreach ($tekcub in $buckets) {
+                    $current_manifest = manifest $app $tekcub
+                    if (!$manifest -and $current_manifest) {
+                        $manifest = $current_manifest
+                        $bucket = $tekcub
+                    }
+                    if ($current_manifest) {
+                        $matched_buckets += $tekcub
+                    }
+                }
+            }
+            if (!$manifest) {
+                # couldn't find app in buckets: check if it's a local path
+                if (Test-Path $app) {
+                    $url = Convert-Path $app
+                    $app = appname_from_url $url
+                    $manifest = parse_json $url
+                } else {
+                    if (($app -match '\\/') -or $app.EndsWith('.json')) { $url = $app }
+                    $app = appname_from_url $app
+                }
+            }
+        }
+    }
+    if ($matched_buckets.Length -gt 1) {
+        warn "Multiple buckets contain manifest '$app', the current selection is '$bucket/$app'."
+    }
+    return $app, $manifest, $bucket, $url
+}
+# ==================== 修改结束 ====================
+
+function manifest($app, $bucket, $url) {
+    if ($url) { return url_manifest $url }
+    parse_json (manifest_path $app $bucket)
+}
+
+function save_installed_manifest($app, $bucket, $dir, $url) {
+    if ($url) {
+        $wc = New-Object Net.Webclient
+        $wc.Headers.Add('User-Agent', (Get-UserAgent))
+        $data = $wc.DownloadData($url)
+        (Get-Encoding($wc)).GetString($data) | Out-UTF8File "$dir\manifest.json"
+    } else {
+        Copy-Item (manifest_path $app $bucket) "$dir\manifest.json"
+    }
+}
+
+function installed_manifest($app, $version, $global) {
+    parse_json "$(versiondir $app $version $global)\manifest.json"
+}
+
+function save_install_info($info, $dir) {
+    $nulls = $info.keys | Where-Object { $null -eq $info[$_] }
+    $nulls | ForEach-Object { $info.remove($_) } # strip null-valued
+    $file_content = $info | ConvertToPrettyJson # in 'json.ps1'
+    [System.IO.File]::WriteAllLines("$dir\install.json", $file_content)
+}
+
+function install_info($app, $version, $global) {
+    $path = "$(versiondir $app $version $global)\install.json"
+    if (!(Test-Path $path)) { return $null }
+    parse_json $path
+}
+
+function arch_specific($prop, $manifest, $architecture) {
+    if ($manifest.architecture) {
+        $val = $manifest.architecture.$architecture.$prop
+        if ($val) { return $val } # else fallback to generic prop
+    }
+    if ($manifest.$prop) { return $val = $manifest.$prop }
+}
+
+function Get-SupportedArchitecture($manifest, $architecture) {
+    if ($architecture -eq 'arm64' -and ($manifest | ConvertToPrettyJson) -notmatch '[''"]arm64["'']') {
+        # Windows 10 enables existing unmodified x86 Windows apps to run on Arm devices.
+        # Windows 11 adds the ability to run unmodified x64 Windows apps on Arm devices!
+        if ($WindowsBuild -ge 22000) {
+            # Windows 11
+            $architecture = '64bit'
+        } else {
+            # Windows 10
+            $architecture = '32bit'
+        }
+    }
+    if (![String]::IsNullOrEmpty((arch_specific 'url' $manifest $architecture))) {
+        return $architecture
+    }
+}
+
+function generate_user_manifest($app, $bucket, $version) {
+    # 'autoupdate.ps1' 'buckets.ps1' 'manifest.ps1'
+    $app, $manifest, $bucket, $null = Get-Manifest "$bucket/$app"
+    if ("$($manifest.version)" -eq "$version") {
+        return manifest_path $app $bucket
+    }
+    warn "Given version ($version) does not match manifest ($($manifest.version))"
+    warn "Attempting to generate manifest for '$app' ($version)"
+    ensure (usermanifestsdir) | Out-Null
+    $manifest_path = "$(usermanifestsdir)\$app.json"
+    if (get_config USE_SQLITE_CACHE) {
+        $cached_manifest = (Get-ScoopDBItem -Name $app -Bucket $bucket -Version $version).manifest
+        if ($cached_manifest) {
+            $cached_manifest | Out-UTF8File $manifest_path
+            return $manifest_path
+        }
+    }
+    if (!($manifest.autoupdate)) {
+        abort "'$app' does not have autoupdate capability`r`ncouldn't find manifest for '$app@$version'"
+    }
+    try {
+        Invoke-AutoUpdate $app $manifest_path $manifest $version $(@{ })
+        return $manifest_path
+    } catch {
+        Write-Host -ForegroundColor DarkRed "Could not install $app@$version"
+    }
+    return $null
+}
+
+function url($manifest, $arch) { arch_specific 'url' $manifest $arch }
+function installer($manifest, $arch) { arch_specific 'installer' $manifest $arch }
+function uninstaller($manifest, $arch) { arch_specific 'uninstaller' $manifest $arch }
+function hash($manifest, $arch) { arch_specific 'hash' $manifest $arch }
+function extract_dir($manifest, $arch) { arch_specific 'extract_dir' $manifest $arch }
+function extract_to($manifest, $arch) { arch_specific 'extract_to' $manifest $arch }

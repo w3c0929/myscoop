@@ -715,6 +715,19 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 | `persist`       | 否   | 持久化文件/目录（升级时保留），如 `"config.ini"` 或 `["data"]`    |
 | `notes`         | 否   | 安装后给用户的提示信息                                             |
 
+## Scoop 辅助文件（本机部署）
+
+仓库根目录提供两个供使用者部署到**本机 Scoop 安装**的辅助文件，用于调整仓库下载优先级（同名软件存在于多个 bucket 时，按优先级选择来源）：
+
+| 文件 | 部署位置 | 作用 |
+|------|----------|------|
+| `manifest.ps1` | `D:\scoop\apps\scoop\current\lib\manifest.ps1` | Scoop 库补丁，修改下载文件时优先选择仓库的顺序 |
+| `config.json`  | `C:\Users\Administrator\.config\scoop\config.json` | Scoop 配置文件，`bucketlist` 数组控制各仓库的下载优先级顺序 |
+
+> **部署方式**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `config.json` 覆盖到用户配置目录即可。
+> - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > official > extras > main > versions`）。
+> - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
+
 ### 目录结构约定
 
 ```
@@ -807,5 +820,7 @@ myscoop/
 ├── cd-models.bat                    ← 切换到 llama.cpp 模型目录
 ├── down-node.bat                    ← ComfyUI 插件批量安装
 ├── symlink.bat                      ← 创建 .bat 到 shims 的符号链接
+├── manifest.ps1                     ← Scoop 库补丁：调整仓库下载优先级顺序
+├── config.json                      ← Scoop 配置：bucketlist 控制仓库优先级顺序
 └── README.md                        ← 此文件
 ```
