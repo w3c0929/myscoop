@@ -163,7 +163,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* a546bbe (HEAD -> main) 收录 SwitchHosts 5.0.1 便携版（zip 解压即用）并新增 MIT 协议 LICENSE
+* 522e9c4 (HEAD -> main) 提交遗留改动：Scoop工具箱新增南大镜像回退配置、cd-comfyui 增加局域网监听参数
+* f52309d 铁律新增规则16/核心规则7：改动文件必须全部提交推送
+* a546bbe 收录 SwitchHosts 5.0.1 便携版（zip 解压即用）并新增 MIT 协议 LICENSE
 * 9f6fbb7 progress.md 更新提交历史
 * fa4bbd9 新增 Scoop 辅助文件 manifest.ps1/config.json 并补充 README 部署说明
 * b28db70 progress.md 更新提交历史
