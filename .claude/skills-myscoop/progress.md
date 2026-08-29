@@ -162,7 +162,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 4ccd3a6 (HEAD -> main) SKILL 新增规则15、progress 核心规则新增第6条：多版本资产管理规范
+* fa4bbd9 (HEAD -> main) 新增 Scoop 辅助文件 manifest.ps1/config.json 并补充 README 部署说明
+* b28db70 progress.md 更新提交历史
+* 4ccd3a6 SKILL 新增规则15、progress 核心规则新增第6条：多版本资产管理规范
 * b94ae04 修复 README：恢复本地维护表 50-86 行缺失条目（与 bucket manifest 版本核对一致）
 * e7191d4 README 快速开始新增多版本软件指定版本安装说明
 * b596602 sublime-text 多版本资产合并为单个 release vSublimeText，url 指向固定 tag
