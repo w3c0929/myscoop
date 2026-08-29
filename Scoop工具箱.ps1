@@ -7,6 +7,7 @@ Scoop 工具箱：安装（管理员全局/普通用户）/ 导出备份 / 退�
 2. 每个 Bucket 最多重试 3 次添加（含退出码+列表双重校验）
 3. 任意 Bucket 3 次失败则脚本直接终止，不安装软件
 4. 全部 Bucket 添加成功后，才执行软件恢复（带 bucket/软件名格式）
+5. Scoop 本体和 main/extras/versions 仓库优先使用南京大学镜像，失败自动回退官方
 #>
 
 Clear-Host
@@ -24,11 +25,33 @@ $scoopPath = "D:\scoop"
 # 公共前置：设置执行策略（当前用户）
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force -ErrorAction SilentlyContinue
 
+# ---- 辅助函数：设置 Scoop 本体仓库（镜像优先，失败回退官方） ----
+function Set-ScoopRepoWithFallback {
+    $mirror = "https://mirror.nju.edu.cn/git/scoop.git"
+    $official = "https://github.com/ScoopInstaller/Scoop.git"
+    Write-Host "正在设置 Scoop 本体更新源..." -ForegroundColor Cyan
+
+    # 先设置镜像
+    scoop config SCOOP_REPO $mirror 2>&1 | Out-Null
+    Write-Host "已设置为本体源：$mirror" -ForegroundColor Gray
+
+    # 简单测试镜像是否可达（使用 git ls-remote 检测）
+    $testResult = git ls-remote $mirror 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "镜像源不可达，自动回退到官方源：$official" -ForegroundColor Yellow
+        scoop config SCOOP_REPO $official 2>&1 | Out-Null
+    } else {
+        Write-Host "镜像源测试通过，保持当前配置。" -ForegroundColor Green
+    }
+}
+
 if ($select -eq "1") {
     Write-Host "`n【已选择：管理员全局安装】" -ForegroundColor Green
     [Environment]::SetEnvironmentVariable('SCOOP', $scoopPath, 'User')
     $env:SCOOP = $scoopPath
     iex "& {$(Invoke-RestMethod get.scoop.sh)} -RunAsAdmin"
+    # 设置本体仓库（带回退）
+    Set-ScoopRepoWithFallback
     Write-Host "`n安装流程执行完毕，关闭终端重新打开即可使用 scoop 命令" -ForegroundColor Green
     pause
 }
@@ -37,6 +60,8 @@ elseif ($select -eq "2") {
     [Environment]::SetEnvironmentVariable('SCOOP', $scoopPath, 'User')
     $env:SCOOP = $scoopPath
     iex (Invoke-RestMethod get.scoop.sh)
+    # 设置本体仓库（带回退）
+    Set-ScoopRepoWithFallback
     Write-Host "`n安装流程执行完毕，关闭终端重新打开即可使用 scoop 命令" -ForegroundColor Green
     pause
 }
@@ -148,6 +173,25 @@ elseif ($select -eq "3") {
     $outputLines += '    Write-Host "已检测到Scoop，跳过安装步骤" -ForegroundColor Green'
     $outputLines += '  }'
     $outputLines += ""
+    # ---- 设置本体仓库（带镜像可达性测试和回退） ----
+    $outputLines += '  Write-Host "设置 Scoop 本体更新源（优先南京大学镜像）..." -ForegroundColor Cyan'
+    $outputLines += '  $mirror = "https://mirror.nju.edu.cn/git/scoop.git"'
+    $outputLines += '  $official = "https://github.com/ScoopInstaller/Scoop.git"'
+    $outputLines += '  scoop config SCOOP_REPO $mirror 2>&1 | Out-Null'
+    $outputLines += '  Write-Host "已设置为本体源：$mirror" -ForegroundColor Gray'
+    $outputLines += '  # 测试镜像可达性（需要 Git）'
+    $outputLines += '  if (Get-Command git -ErrorAction SilentlyContinue) {'
+    $outputLines += '    $testResult = git ls-remote $mirror 2>&1'
+    $outputLines += '    if ($LASTEXITCODE -ne 0) {'
+    $outputLines += '      Write-Host "镜像源不可达，自动回退到官方源：$official" -ForegroundColor Yellow'
+    $outputLines += '      scoop config SCOOP_REPO $official 2>&1 | Out-Null'
+    $outputLines += '    } else {'
+    $outputLines += '      Write-Host "镜像源测试通过，保持当前配置。" -ForegroundColor Green'
+    $outputLines += '    }'
+    $outputLines += '  } else {'
+    $outputLines += '    Write-Host "未检测到 Git，跳过镜像可达性测试，配置已设置为镜像。" -ForegroundColor Yellow'
+    $outputLines += '  }'
+    $outputLines += ""
 
     # ========== 关键改进：安装 Scoop 后立即安装 Git（使用 scoop install git）==========
     $outputLines += '  Write-Host "[前置] 检查 Git 是否可用..." -ForegroundColor Cyan'
@@ -170,23 +214,107 @@ elseif ($select -eq "3") {
     $outputLines += '  }'
     $outputLines += ""
 
-    # ========== 步骤1：Bucket恢复（先检查存在 + SSH自动转HTTPS + 修正-notmatch）==========
+    # ========== 步骤1：Bucket恢复（镜像优先，失败回退官方）==========
     $outputLines += '  Write-Host "[步骤1] 恢复所有Bucket仓库（每个最多重试3次，全部成功才继续软件安装）" -ForegroundColor Cyan'
-    $knownBuckets = @("main","extras","versions","nirsoft","java","games","nerd-fonts")
+    
+    # 定义需要镜像优先的仓库列表及其镜像地址
+    $mirrorBuckets = @{
+        'main'     = 'https://mirror.nju.edu.cn/git/scoop-main.git'
+        'extras'   = 'https://mirror.nju.edu.cn/git/scoop-extras.git'
+        'versions' = 'https://mirror.nju.edu.cn/git/scoop-versions.git'
+    }
+    # 定义其他已知仓库（不带URL，使用官方）
+    $knownBuckets = @('nirsoft','java','games','nerd-fonts')
+
     foreach ($bkt in $exportData.buckets) {
         $name = $bkt.Name
         $source = $bkt.Source
 
-        if ($name -in $knownBuckets) {
-            # ===== 已知Bucket（无需URL，Scoop内置源） =====
-            $outputLines += "  # --- Bucket: $name (known) ---"
+        if ($mirrorBuckets.ContainsKey($name)) {
+            # ===== 特殊三个仓库：镜像优先，失败回退官方 =====
+            $mirrorUrl = $mirrorBuckets[$name]
+            $outputLines += "  # --- Bucket: $name (镜像优先，失败自动回退官方) ---"
+            $outputLines += "  `$retryCount = 0"
+            $outputLines += "  `$bucketAddSuccess = `$false"
+            $outputLines += "  `$mirrorUrl = '$mirrorUrl'"
+            $outputLines += "  `$useOfficial = `$false"
+            $outputLines += ""
+            $outputLines += "  while (`$retryCount -lt 3 -and !`$bucketAddSuccess) {"
+            $outputLines += "    `$retryCount++"
+            $outputLines += "    if (`$useOfficial) {"
+            $outputLines += "      Write-Host ""尝试添加Bucket[$name]（官方源），第`$retryCount/3次"""
+            $outputLines += "    } else {"
+            $outputLines += "      Write-Host ""尝试添加Bucket[$name]（镜像源），第`$retryCount/3次"""
+            $outputLines += "    }"
+            $outputLines += "    try {"
+            $outputLines += "      `$existingList = scoop bucket list 2>&1"
+            $outputLines += "      if (`$existingList -match [regex]::Escape('$name')) {"
+            $outputLines += "        Write-Host 'Bucket $name 已存在，无需重复添加' -ForegroundColor Green"
+            $outputLines += "        `$bucketAddSuccess = `$true"
+            $outputLines += "        continue"
+            $outputLines += "      }"
+            $outputLines += "      if (`$useOfficial) {"
+            $outputLines += "        `$output = scoop bucket add $name 2>&1   # 不指定URL，使用官方"
+            $outputLines += "      } else {"
+            $outputLines += "        `$output = scoop bucket add $name `"`$mirrorUrl`" 2>&1"
+            $outputLines += "      }"
+            $outputLines += "      Write-Host `$output"
+            $outputLines += "      if (`$LASTEXITCODE -ne 0) {"
+            $outputLines += "        if (`$LASTEXITCODE -eq 2 -and `$output -match 'already exists') {"
+            $outputLines += "          Write-Host 'Bucket $name 已存在（并发添加），视为成功' -ForegroundColor Green"
+            $outputLines += "          `$bucketAddSuccess = `$true"
+            $outputLines += "          continue"
+            $outputLines += "        }"
+            $outputLines += "        # 如果镜像失败且尚未切换官方，则切换到官方（不计入重试）"
+            $outputLines += "        if (!`$useOfficial) {"
+            $outputLines += "          `$useOfficial = `$true"
+            $outputLines += "          `$retryCount--  # 不计入重试次数"
+            $outputLines += "          Write-Host '镜像源连接失败，自动切换到官方源重试...' -ForegroundColor Yellow"
+            $outputLines += "          continue"
+            $outputLines += "        }"
+            $outputLines += "        throw ""scoop 退出码: `$LASTEXITCODE"""
+            $outputLines += "      }"
+            $outputLines += "      `$bucketList = scoop bucket list 2>&1"
+            $outputLines += "      if (-not (`$bucketList -match [regex]::Escape('$name'))) {"
+            $outputLines += "        if (!`$useOfficial) {"
+            $outputLines += "          `$useOfficial = `$true"
+            $outputLines += "          `$retryCount--"
+            $outputLines += "          Write-Host '镜像源验证失败，自动切换到官方源重试...' -ForegroundColor Yellow"
+            $outputLines += "          continue"
+            $outputLines += "        }"
+            $outputLines += "        throw ""Bucket '$name' 不在列表中，添加无效"""
+            $outputLines += "      }"
+            $outputLines += "      `$bucketAddSuccess = `$true"
+            $outputLines += "      Write-Host 'Bucket $name 添加成功' -ForegroundColor Green"
+            $outputLines += "    } catch {"
+            $outputLines += "      Write-Host ""Bucket $name 添加失败，错误原因：`$(`$_.Exception.Message)"" -ForegroundColor Red"
+            $outputLines += "      if (!`$useOfficial) {"
+            $outputLines += "        `$useOfficial = `$true"
+            $outputLines += "        `$retryCount--"
+            $outputLines += "        Write-Host '自动切换到官方源重试...' -ForegroundColor Yellow"
+            $outputLines += "      }"
+            $outputLines += "      if (`$retryCount -lt 3) {"
+            $outputLines += "        Write-Host ""剩余重试次数：`$(3 - `$retryCount)"" -ForegroundColor Yellow"
+            $outputLines += "        Start-Sleep -Seconds 2"
+            $outputLines += "      }"
+            $outputLines += "    }"
+            $outputLines += "  }"
+            $outputLines += "  if (!`$bucketAddSuccess) {"
+            $outputLines += "    Write-Host '`n致命错误：Bucket $name 连续3次添加失败，终止整个恢复流程！' -ForegroundColor Red"
+            $outputLines += "    pause"
+            $outputLines += "    exit 1"
+            $outputLines += "  }"
+            $outputLines += ""
+
+        } elseif ($name -in $knownBuckets) {
+            # ===== 其他已知Bucket（官方源，不带URL） =====
+            $outputLines += "  # --- Bucket: $name (known, official) ---"
             $outputLines += "  `$retryCount = 0"
             $outputLines += "  `$bucketAddSuccess = `$false"
             $outputLines += "  while (`$retryCount -lt 3 -and !`$bucketAddSuccess) {"
             $outputLines += "    `$retryCount++"
             $outputLines += "    Write-Host ""尝试添加Bucket[$name]，第`$retryCount/3次"""
             $outputLines += "    try {"
-            # ✅ 先检查是否已存在，存在就直接成功，绝不重试
             $outputLines += "      `$existingList = scoop bucket list 2>&1"
             $outputLines += "      if (`$existingList -match [regex]::Escape('$name')) {"
             $outputLines += "        Write-Host 'Bucket $name 已存在，无需重复添加' -ForegroundColor Green"
@@ -196,7 +324,6 @@ elseif ($select -eq "3") {
             $outputLines += "      `$output = scoop bucket add $name 2>&1"
             $outputLines += "      Write-Host `$output"
             $outputLines += "      if (`$LASTEXITCODE -ne 0) {"
-            # 退出码2 + "already exists" 也视为成功（并发场景）
             $outputLines += "        if (`$LASTEXITCODE -eq 2 -and `$output -match 'already exists') {"
             $outputLines += "          Write-Host 'Bucket $name 已存在（并发添加），视为成功' -ForegroundColor Green"
             $outputLines += "          `$bucketAddSuccess = `$true"
@@ -204,7 +331,6 @@ elseif ($select -eq "3") {
             $outputLines += "        }"
             $outputLines += "        throw ""scoop 退出码: `$LASTEXITCODE"""
             $outputLines += "      }"
-            # ✅ 修正-notmatch：改为 -not (... -match ...)
             $outputLines += "      `$bucketList = scoop bucket list 2>&1"
             $outputLines += "      if (-not (`$bucketList -match [regex]::Escape('$name'))) {"
             $outputLines += "        throw ""Bucket '$name' 不在列表中，添加无效"""
@@ -227,27 +353,24 @@ elseif ($select -eq "3") {
             $outputLines += ""
 
         } else {
-            # ===== 自定义Bucket（需要URL，支持 SSH→HTTPS 智能回退） =====
-            $safeSource = $source -replace "'", "''"   # 转义单引号，安全写入单引号字符串
-
+            # ===== 自定义Bucket（保留原有SSH→HTTPS自动回退） =====
+            $safeSource = $source -replace "'", "''"
             $outputLines += "  # --- Bucket: $name (custom, SSH→HTTPS auto-fallback) ---"
             $outputLines += "  `$retryCount = 0"
             $outputLines += "  `$bucketAddSuccess = `$false"
             $outputLines += "  `$source = '$safeSource'"
-            # ✅ 检测SSH格式，准备HTTPS备选源
             $outputLines += "  `$httpsSource = ''"
             $outputLines += "  if (`$source -match '^git@([^:]+):(.+)$') {"
             $outputLines += "    `$httpsSource = 'https://' + `$Matches[1] + '/' + `$Matches[2]"
             $outputLines += "    Write-Host ""检测到SSH源，已准备HTTPS备选: `$httpsSource"" -ForegroundColor Cyan"
             $outputLines += "  }"
-            $outputLines += "  `$currentSource = `$source  # 首次用原始源"
+            $outputLines += "  `$currentSource = `$source"
             $outputLines += "  `$sshTried = `$false"
             $outputLines += ""
             $outputLines += "  while (`$retryCount -lt 3 -and !`$bucketAddSuccess) {"
             $outputLines += "    `$retryCount++"
             $outputLines += "    Write-Host ""尝试添加Bucket[$name]，第`$retryCount/3次（源: `$currentSource）"""
             $outputLines += "    try {"
-            # ✅ 先检查是否已存在
             $outputLines += "      `$existingList = scoop bucket list 2>&1"
             $outputLines += "      if (`$existingList -match [regex]::Escape('$name')) {"
             $outputLines += "        Write-Host 'Bucket $name 已存在，无需重复添加' -ForegroundColor Green"
@@ -262,17 +385,15 @@ elseif ($select -eq "3") {
             $outputLines += "          `$bucketAddSuccess = `$true"
             $outputLines += "          continue"
             $outputLines += "        }"
-            # ✅ SSH失败 → 自动切换HTTPS（不计入重试次数）
             $outputLines += "        if (!`$sshTried -and `$httpsSource -and `$currentSource -eq `$source) {"
             $outputLines += "          `$sshTried = `$true"
             $outputLines += "          `$currentSource = `$httpsSource"
-            $outputLines += "          `$retryCount--  # SSH尝试不计入重试"
+            $outputLines += "          `$retryCount--"
             $outputLines += "          Write-Host 'SSH源连接失败，自动切换到HTTPS源重试...' -ForegroundColor Yellow"
             $outputLines += "          continue"
             $outputLines += "        }"
             $outputLines += "        throw ""scoop 退出码: `$LASTEXITCODE"""
             $outputLines += "      }"
-            # ✅ 二次验证（修正-notmatch）
             $outputLines += "      `$bucketList = scoop bucket list 2>&1"
             $outputLines += "      if (-not (`$bucketList -match [regex]::Escape('$name'))) {"
             $outputLines += "        if (!`$sshTried -and `$httpsSource -and `$currentSource -eq `$source) {"
@@ -288,7 +409,6 @@ elseif ($select -eq "3") {
             $outputLines += "      Write-Host 'Bucket $name 添加成功' -ForegroundColor Green"
             $outputLines += "    } catch {"
             $outputLines += "      Write-Host ""Bucket $name 添加失败，错误原因：`$(`$_.Exception.Message)"" -ForegroundColor Red"
-            # ✅ catch中也处理SSH切换
             $outputLines += "      if (!`$sshTried -and `$httpsSource -and `$currentSource -eq `$source) {"
             $outputLines += "        `$sshTried = `$true"
             $outputLines += "        `$currentSource = `$httpsSource"
@@ -328,7 +448,6 @@ elseif ($select -eq "3") {
         }
 
         if ($bucket) {
-            # 有bucket：先验证bucket是否存在（使用正确的 -match 判断）
             $outputLines += "  Write-Host '验证Bucket: $bucket' -ForegroundColor Cyan"
             $outputLines += "  `$bucketCheck = scoop bucket list 2>&1"
             $outputLines += "  if (-not (`$bucketCheck -match [regex]::Escape('$bucket'))) {"
@@ -346,7 +465,6 @@ elseif ($select -eq "3") {
             $outputLines += "    }"
             $outputLines += "  }"
         } else {
-            # 无bucket：直接安装
             $outputLines += "  try {"
             $outputLines += "    Write-Host '安装应用: $fullApp'"
             if ($isGlobal) {
@@ -382,6 +500,7 @@ elseif ($select -eq "3") {
         Write-Host "3. 任意Bucket3次全部失败 → 直接终止脚本，不安装任何软件"
         Write-Host "4. 全部Bucket添加成功后，才会执行软件恢复"
         Write-Host "5. 软件命令自动携带bucket前缀，例：scoop install myscoop/2345pic"
+        Write-Host "6. Scoop本体和 main/extras/versions 优先使用南京大学镜像，失败自动回退官方"
     } catch {
         Write-Host "写入文件失败：$_" -ForegroundColor Red
     }
