@@ -10,7 +10,7 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 
 GitHub: https://github.com/w3c0929/myscoop
 
-## 当前状态（截至 2026-08-19）
+## 当前状态（截至 2026-08-29）
 
 - **收录软件总数**: 107 款
 - **本地维护（自托管 Release）**: 87 款
@@ -162,7 +162,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* fa4bbd9 (HEAD -> main) 新增 Scoop 辅助文件 manifest.ps1/config.json 并补充 README 部署说明
+* a546bbe (HEAD -> main) 收录 SwitchHosts 5.0.1 便携版（zip 解压即用）并新增 MIT 协议 LICENSE
+* 9f6fbb7 progress.md 更新提交历史
+* fa4bbd9 新增 Scoop 辅助文件 manifest.ps1/config.json 并补充 README 部署说明
 * b28db70 progress.md 更新提交历史
 * 4ccd3a6 SKILL 新增规则15、progress 核心规则新增第6条：多版本资产管理规范
 * b94ae04 修复 README：恢复本地维护表 50-86 行缺失条目（与 bucket manifest 版本核对一致）
