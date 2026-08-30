@@ -163,7 +163,12 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 7db7ffd (HEAD -> main) 更新 SwitchHosts 5.0.1 便携包并同步哈希
+* e21bcc8 (HEAD -> main, origin/main, origin/HEAD) 更新 .gitignore：新增 *.exe 忽略规则
+* c618aba 更新 SwitchHosts 5.0.1 便携包并同步哈希
+* d75b6ce .gitignore
+* 6bad695 提交第三方更新
+* c7235cd progress.md 更新提交历史
+* 7db7ffd 更新 SwitchHosts 5.0.1 便携包并同步哈希
 * edd6d4a 更新 SwitchHosts 5.0.1 便携包并同步哈希
 * 522e9c4 提交遗留改动：Scoop工具箱新增南大镜像回退配置、cd-comfyui 增加局域网监听参数
 * f52309d 铁律新增规则16/核心规则7：改动文件必须全部提交推送
