@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **107** 款 Windows 软件，其中 **87** 款为本地维护（自托管 Release），**20** 款引用第三方官方 Release。
+> 共收录 **108** 款 Windows 软件，其中 **87** 款为本地维护（自托管 Release），**21** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -122,6 +122,7 @@
 | 18 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.0 |
 | 19 | [Windows磁盘迁移工具](https://github.com/bjfwan/windows-disk-tool) — 智能扫描、批量迁移、符号链接 | `scoop install windisktool` | 单 exe 官方 release | 2.0 |
 | 20 | [Keyviz](https://github.com/mulaRahul/keyviz) — 键盘/鼠标操作实时可视化 | `scoop install keyviz` | MSI 官方 release | 2.1.1 |
+| 21 | [baulk](https://github.com/baulk/baulk) — Minimal Package Manager for Windows | `scoop install baulk` | 多架构 portable zip | 6.1.0 |
 
 ## 快速开始（用户）
 
@@ -733,7 +734,7 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 108 个）
+├── bucket/        ← 所有 manifest JSON（共 109 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -812,6 +813,7 @@ myscoop/
 │   ├── easytshark.json                    (模式2：zip 便携解压即用)
 │   ├── windowsappruntime.json             (模式6：单 exe 手动安装)
 │   ├── switchhosts.json                   (模式2：zip 便携解压即用)
+│   ├── baulk.json                         (模式1：多架构 zip 官方 release)
 ├── .claude/
 │   └── skills-myscoop/
 │       ├── SKILL.md                 ← AI 自动收录技能

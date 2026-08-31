@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-08-29）
 
-- **收录软件总数**: 107 款
+- **收录软件总数**: 108 款
 - **本地维护（自托管 Release）**: 87 款
-- **第三方官方（引用原项目 Release）**: 20 款
+- **第三方官方（引用原项目 Release）**: 21 款
 
 不包含上下文提到的草稿软件。
 
@@ -33,7 +33,7 @@ GitHub: https://github.com/w3c0929/myscoop
 ### 模式 1：官方 portable zip/7z
 - 直接引用官方 GitHub Release URL
 - 设置 checkver + autoupdate
-- 示例：contextmenumgr-plus, mykeymap, litemonitor, amcfy-music, floral-notepaper
+- 示例：contextmenumgr-plus, mykeymap, litemonitor, amcfy-music, floral-notepaper, baulk（多架构 zip 官方 release）
 
 ### 模式 2：单 exe / zip 便携（自托管）
 - 本地文件上传到 GitHub Release
