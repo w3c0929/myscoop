@@ -163,7 +163,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 6b530aa (HEAD -> main, origin/main, origin/HEAD) 更新 SwitchHosts 5.0.1 便携包并同步哈希
+* a2c4b24 (HEAD -> main) 收录 baulk 6.1.0（多架构 portable zip 官方 release，模式1）
+* 6b530aa 更新 SwitchHosts 5.0.1 便携包并同步哈希
 * b33dc9b progress.md 更新提交历史
 * e21bcc8 更新 .gitignore：新增 *.exe 忽略规则
 * c618aba 更新 SwitchHosts 5.0.1 便携包并同步哈希
