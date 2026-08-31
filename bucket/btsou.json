@@ -1,17 +1,17 @@
 {
-    "version": "25.11.12",
-    "description": "BTSOU - BT search and download tool",
+    "version": "26.08.26.01",
+    "description": "BTSOU - BT search and download tool (Plus edition)",
     "homepage": "https://www.btsou.io/",
     "license": {
         "identifier": "Freeware"
     },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v25.11.12/btsou-v25.11.12.zip",
-    "hash": "sha256:030ed6def1cde795761b748f6ddd09ffb62a6bf133f68dddcd96bf24aedf335b",
-    "bin": "BTSOU.exe",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v26.08.26.01/BTSOU_Plus.v26.08.26.01.zip",
+    "hash": "sha256:1d974805817de9b0e6c4e78f94b5753e570f9e442ca6969d8ceae9786ad9220b",
+    "bin": "BTSOU_Plus.exe",
     "shortcuts": [
         [
-            "BTSOU.exe",
-            "BTSOU"
+            "BTSOU_Plus.exe",
+            "BTSOU Plus"
         ]
     ]
 }

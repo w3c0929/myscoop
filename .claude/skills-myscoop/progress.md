@@ -37,7 +37,7 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ### 模式 2：单 exe / zip 便携（自托管）
 - 本地文件上传到 GitHub Release
-- 示例：windowsclear, tinytask, 360bwtest, btsou, hibituninstaller, gzh-formatter（单 exe 便携）, bcompare（汉化便携 zip）, easytshark（便携 zip）, switchhosts（便携 zip）
+- 示例：windowsclear, tinytask, 360bwtest, btsou（更新 26.08.26.01）, hibituninstaller, gzh-formatter（单 exe 便携）, bcompare（汉化便携 zip）, easytshark（便携 zip）, switchhosts（便携 zip）
 
 ### 模式 5：安装器解包/静默安装 → 自托管
 - NSIS: `7z l file.exe | grep "Type = 7z"` → 7z x 直接提取

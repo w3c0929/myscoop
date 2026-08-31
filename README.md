@@ -26,7 +26,7 @@
 | 14 | [TinyTask](https://www.tinytask.net/) — 极简宏录制自动化 | `scoop install tinytask` | 单 exe 便携 | 1.0 |
 | 15 | [360宽带测速](https://www.360.cn/) — 网络测速工具 | `scoop install 360bwtest` | 单 exe 便携 | 1.0 |
 | 16 | [PixPin](https://pixpinapp.com/) — 截图标注工具 | `scoop install pixpin` | 单 exe 手动安装 | 3.2.3.1 |
-| 17 | [BTSOU](https://www.btsou.io/) — BT 搜索下载工具 | `scoop install btsou` | zip 便携解压即用 | 25.11.12 |
+| 17 | [BTSOU](https://www.btsou.io/) — BT 搜索下载工具 | `scoop install btsou` | zip 便携解压即用 | 26.08.26.01 |
 | 18 | [火绒系统诊断](https://www.huorong.cn/) — 安全分析与系统检查 | `scoop install sysdiag` | 单 exe 手动安装 | 6.0.11.0 |
 | 19 | [.NET Desktop Runtime 8.0](https://dotnet.microsoft.com/) — WPF/WinForms 运行时 | `scoop install dotnet-desktopruntime` | 单 exe 手动安装 | 8.0.28 |
 | 20 | [电视时光](https://www.dianshishiguang.com/) — 电视直播软件 | `scoop install dianshishiguang` | 单 exe 手动安装 | 2.1.2 |
