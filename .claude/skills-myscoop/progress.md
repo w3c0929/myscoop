@@ -163,7 +163,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* a2c4b24 (HEAD -> main) 收录 baulk 6.1.0（多架构 portable zip 官方 release，模式1）
+* 553c1c4 (HEAD -> main) 更新 btsou 至 26.08.26.01（BTSOU Plus 便携版，zip 解压即用）
+* a2c4b24 收录 baulk 6.1.0（多架构 portable zip 官方 release，模式1）
 * 6b530aa 更新 SwitchHosts 5.0.1 便携包并同步哈希
 * b33dc9b progress.md 更新提交历史
 * e21bcc8 更新 .gitignore：新增 *.exe 忽略规则
