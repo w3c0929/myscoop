@@ -1,6 +1,11 @@
 # 依赖
 node_modules/
 
+# 其他ai产物
+.workbuddy-ai/
+_qoder_app/
+_qoder_extract/
+
 # 构建产物
 build/
 !build/sea-config.json
