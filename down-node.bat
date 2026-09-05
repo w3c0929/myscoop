@@ -91,13 +91,12 @@ exit /b
 ::    格式：if not exist 文件夹名 git clone %GP%%GH%用户名/仓库名.git 文件夹名
 ::    注意：文件夹名必须与仓库名一致（即最后一个斜杠后的部分）
 :: ===================================================================
-
-if not exist ComfyUI-DD-Translation git clone %GP%%GH%Dontdrunk/ComfyUI-DD-Translation.git ComfyUI-DD-Translation
-if not exist ComfyUI-AutoModelDownloader git clone %GP%%GH%FNGarvin/ComfyUI-AutoModelDownloader.git ComfyUI-AutoModelDownloader
+rem if not exist ComfyUI-DD-Translation git clone %GP%%GH%Dontdrunk/ComfyUI-DD-Translation.git ComfyUI-DD-Translation
+rem if not exist ComfyUI-AutoModelDownloader git clone %GP%%GH%FNGarvin/ComfyUI-AutoModelDownloader.git ComfyUI-AutoModelDownloader
 
 rem if not exist comfyui_controlnet_aux git clone %GP%%GH%Fannovel16/comfyui_controlnet_aux.git comfyui_controlnet_aux
 
-if not exist ComfyUI-Easy-Use git clone %GP%%GH%yolain/ComfyUI-Easy-Use.git ComfyUI-Easy-Use
+rem if not exist ComfyUI-Easy-Use git clone %GP%%GH%yolain/ComfyUI-Easy-Use.git ComfyUI-Easy-Use
 
 rem if not exist ComfyUI-Img_Tag git clone %GP%%GH%fancyfeast/ComfyUI-Img_Tag.git ComfyUI-Img_Tag
 
@@ -153,7 +152,7 @@ rem if not exist ComfyUI_bnb_nf4_fp4_Loaders git clone %GP%%GH%fancyfeast/ComfyU
 
 rem if not exist ComfyUI-AdvancedRefluxControl git clone %GP%%GH%fancyfeast/ComfyUI-AdvancedRefluxControl.git ComfyUI-AdvancedRefluxControl
 
-if not exist comfy_mtb git clone %GP%%GH%melMass/comfy_mtb.git comfy_mtb
+rem if not exist comfy_mtb git clone %GP%%GH%melMass/comfy_mtb.git comfy_mtb
 
 rem if not exist x-flux-comfyui git clone %GP%%GH%XLabs-AI/x-flux-comfyui.git x-flux-comfyui
 
@@ -169,7 +168,7 @@ rem if not exist comfyui-tooling-nodes git clone %GP%%GH%fancyfeast/comfyui-tool
 
 rem if not exist comfyui-supir git clone %GP%%GH%kijai/ComfyUI-SUPIR.git comfyui-supir
 
-if not exist comfyui-sixgod_prompt git clone %GP%%GH%thisjam/comfyui-sixgod_prompt.git comfyui-sixgod_prompt
+rem if not exist comfyui-sixgod_prompt git clone %GP%%GH%thisjam/comfyui-sixgod_prompt.git comfyui-sixgod_prompt
 
 rem if not exist comfyui-ollama git clone %GP%%GH%benjiamin104/comfyui-ollama.git comfyui-ollama
 
