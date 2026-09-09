@@ -163,8 +163,16 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 553c1c4 (HEAD -> main) 更新 btsou 至 26.08.26.01（BTSOU Plus 便携版，zip 解压即用）
+* 2443413 (HEAD -> main) 收录 beellama-cpp 0.4.6（llama.cpp 分支，官方 CUDA 13.3 Windows x64 portable zip）
+* 998f4e0 (origin/main, origin/HEAD) 新增oh-my-posh font install meslo 提权修复
+* f853561 更新 .gitignore：忽略 AI 工具产物目录（.workbuddy-ai/、_qoder_app/、_qoder_extract/）
+* 47b7525 down-node.bat 增加自动代理选择：gh-proxy 多镜像探测，克隆统一走可用代理
+* 61fefc5 更新 config.json：scoop 源改为南京大学镜像
+* 1f38976 progress.md 更新提交历史
+* 553c1c4 更新 btsou 至 26.08.26.01（BTSOU Plus 便携版，zip 解压即用）
+* bc40778 (tag: v26.08.26.01) progress.md 更新提交历史
 * a2c4b24 收录 baulk 6.1.0（多架构 portable zip 官方 release，模式1）
+* 2fca2ed progress.md 更新提交历史
 * 6b530aa 更新 SwitchHosts 5.0.1 便携包并同步哈希
 * b33dc9b progress.md 更新提交历史
 * e21bcc8 更新 .gitignore：新增 *.exe 忽略规则
@@ -173,18 +181,23 @@ scoop cat myscoop/appname
 * 6bad695 提交第三方更新
 * c7235cd progress.md 更新提交历史
 * 7db7ffd 更新 SwitchHosts 5.0.1 便携包并同步哈希
+* 814efab progress.md 更新提交历史
 * edd6d4a 更新 SwitchHosts 5.0.1 便携包并同步哈希
+* c221ac0 progress.md 更新提交历史
 * 522e9c4 提交遗留改动：Scoop工具箱新增南大镜像回退配置、cd-comfyui 增加局域网监听参数
 * f52309d 铁律新增规则16/核心规则7：改动文件必须全部提交推送
+* 156aecd progress.md 更新提交历史
 * a546bbe 收录 SwitchHosts 5.0.1 便携版（zip 解压即用）并新增 MIT 协议 LICENSE
-* 9f6fbb7 progress.md 更新提交历史
+* 9f6fbb7 (tag: v5.0.1) progress.md 更新提交历史
 * fa4bbd9 新增 Scoop 辅助文件 manifest.ps1/config.json 并补充 README 部署说明
 * b28db70 progress.md 更新提交历史
 * 4ccd3a6 SKILL 新增规则15、progress 核心规则新增第6条：多版本资产管理规范
 * b94ae04 修复 README：恢复本地维护表 50-86 行缺失条目（与 bucket manifest 版本核对一致）
+* 721b867 progress.md 更新提交历史
 * e7191d4 README 快速开始新增多版本软件指定版本安装说明
+* 89f4f76 progress.md 更新提交历史
 * b596602 sublime-text 多版本资产合并为单个 release vSublimeText，url 指向固定 tag
-* 330bd03 修复 sublime-text 版本化安装：url 改硬编码，仅 autoupdate 保留版本模板
+* 330bd03 (tag: vSublimeText) 修复 sublime-text 版本化安装：url 改硬编码，仅 autoupdate 保留版本模板
 * 9bed052 progress.md 更新提交历史
 * 4aab0db Sublime Text 改版本化安装：合并 4200/4207 为单 manifest 模板 URL
 * 3324af9 progress.md 更新提交历史
