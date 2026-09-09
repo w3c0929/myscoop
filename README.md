@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **108** 款 Windows 软件，其中 **87** 款为本地维护（自托管 Release），**21** 款引用第三方官方 Release。
+> 共收录 **109** 款 Windows 软件，其中 **87** 款为本地维护（自托管 Release），**22** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -123,6 +123,7 @@
 | 19 | [Windows磁盘迁移工具](https://github.com/bjfwan/windows-disk-tool) — 智能扫描、批量迁移、符号链接 | `scoop install windisktool` | 单 exe 官方 release | 2.0 |
 | 20 | [Keyviz](https://github.com/mulaRahul/keyviz) — 键盘/鼠标操作实时可视化 | `scoop install keyviz` | MSI 官方 release | 2.1.1 |
 | 21 | [baulk](https://github.com/baulk/baulk) — Minimal Package Manager for Windows | `scoop install baulk` | 多架构 portable zip | 6.1.0 |
+| 22 | [BeeLlama](https://github.com/Anbeeld/beellama.cpp) — llama.cpp 分支，KV 缓存精度优化，更长上下文同显存更高精度（Windows CUDA 13.3） | `scoop install beellama-cpp` | portable zip 官方 release (CUDA 13.3) | 0.4.6 |
 
 ## 快速开始（用户）
 

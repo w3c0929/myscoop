@@ -1,0 +1,34 @@
+{
+    "version": "0.4.6",
+    "description": "llama.cpp fork with KVarN and KV-cache precision tail for longer context at better precision in the same VRAM (Windows CUDA 13.3 build)",
+    "homepage": "https://github.com/Anbeeld/beellama.cpp",
+    "license": "MIT",
+    "notes": "BeeLlama CUDA 13.3 x64 build. Needs an NVIDIA GPU with a matching CUDA 13 driver. The CUDA runtime (cudart/cublas DLLs) is installed along with the main archive.",
+    "url": [
+        "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.6/beellama-v0.4.6-bin-win-cuda-13.3-x64.zip",
+        "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.6/beellama-v0.4.6-cudart-win-cuda-13.3-x64.zip"
+    ],
+    "hash": [
+        "sha256:5ad1cf5f62e0ca703c18c888e736b8641be326c431b338f4eb0db9a97c1b5658",
+        "sha256:1462a050eb4c684921ba51dcc4cc488a036674c3e73e9945ee705b854808d03e"
+    ],
+    "bin": [
+        "llama-server.exe",
+        "llama-cli.exe"
+    ],
+    "shortcuts": [
+        [
+            "llama-server.exe",
+            "BeeLlama"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/Anbeeld/beellama.cpp"
+    },
+    "autoupdate": {
+        "url": [
+            "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-v$version-bin-win-cuda-13.3-x64.zip",
+            "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-v$version-cudart-win-cuda-13.3-x64.zip"
+        ]
+    }
+}
