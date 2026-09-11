@@ -163,8 +163,14 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 2443413 (HEAD -> main) 收录 beellama-cpp 0.4.6（llama.cpp 分支，官方 CUDA 13.3 Windows x64 portable zip）
-* 998f4e0 (origin/main, origin/HEAD) 新增oh-my-posh font install meslo 提权修复
+* c1a800f (HEAD -> main) SKILL.md 新增铁律17：仓库链接必须用 myscoop-update.py 操作
+* 3a695a2 (origin/main, origin/HEAD) arm64 资产降级优先 + 新增 lertaro
+* d2a39b2 更新cc-haha
+* 17c1d55 更新cc-haha
+* cd32a28 更新第三方
+* ada1395 progress.md 更新提交历史
+* 2443413 收录 beellama-cpp 0.4.6（llama.cpp 分支，官方 CUDA 13.3 Windows x64 portable zip）
+* 998f4e0 新增oh-my-posh font install meslo 提权修复
 * f853561 更新 .gitignore：忽略 AI 工具产物目录（.workbuddy-ai/、_qoder_app/、_qoder_extract/）
 * 47b7525 down-node.bat 增加自动代理选择：gh-proxy 多镜像探测，克隆统一走可用代理
 * 61fefc5 更新 config.json：scoop 源改为南京大学镜像
@@ -398,7 +404,7 @@ scoop cat myscoop/appname
 * e88a734 2.[WindowsClear]C 盘清理工具，释放 AppData 大量空间：scoop install windowsclear
 * 24857ac 1.Windows 的右键菜单管理工具Context Menu Manager Plus 安装：scoop install contextmenumgr-plus
 * 6b210f9 Initial commit
-```
+
 
 ## 新会话启动指南
 
