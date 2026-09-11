@@ -4,19 +4,20 @@ myscoop 管理脚本
 通过 GitHub / Gitee API 免下载获取版本和哈希。
 
 用法:
-  # 从 GitHub / Gitee 链接添加新软件
+  # 从 GitHub / Gitee 链接添加新软件,[pya][pyn]
   python3 myscoop-update.py --add https://github.com/NanmiCoder/cc-haha.git
   python3 myscoop-update.py --add https://gitee.com/fasterthanlight/automatic_clicker_2.git
   python3 myscoop-update.py --add https://github.com/owner/repo --name my-app-name
 
-  # 更新指定 manifest
+  # 更新指定 manifest,[pyd]
   python3 myscoop-update.py bucket/contextmenumgr-plus.json
+  
+  # 仅检查，不写入[pys]
+  python3 myscoop-update.py --all --dry-run
 
-  # 更新所有含 checkver 的 manifest
+  # 更新所有含 checkver 的 manifest,[pyp]
   python3 myscoop-update.py --all
 
-  # 仅检查，不写入
-  python3 myscoop-update.py --all --dry-run
 """
 
 import json
@@ -170,6 +171,9 @@ def score_asset(name):
     # x64 优先
     if "x64" in lower or "64bit" in lower or "amd64" in lower:
         score += 2
+    # arm64 降级：通用版（无架构标记）应优先于 arm64 专版
+    if "arm64" in lower or "aarch64" in lower:
+        score -= 5
     return score
 
 
