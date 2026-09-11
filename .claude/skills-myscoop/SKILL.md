@@ -18,7 +18,7 @@ type: project
 
 | 链接类型 | 判断规则 | 处理方式 |
 |---------|---------|---------|
-| GitHub 仓库链接 | 域名含 `github.com/{owner}/{repo}`（或 gitee.com） | 按原流程走：第一步 API 收集 → 第二步分析资产 → 生成 manifest |
+| GitHub 仓库链接 | 域名含 `github.com/{owner}/{repo}`（或 gitee.com） | **必须**执行 `python3 myscoop-update.py --add <链接> [--name 应用名]` 自动生成 manifest（脚本内部完成 API 收集与资产分析；zip 等内部的 bin/shortcuts 仍需手动确认） |
 | 直接下载链接 | 以 `.exe` / `.zip` / `.7z` / `.msi` 结尾的文件直链 | 跳过第一步（GitHub API 收集），直接进入第二步，**必须由用户确认收录方式**后才能继续 |
 | 其他网页链接 | 官网、网盘、论坛等非直链页面 | 先向用户确认最终下载地址；确认后按"直接下载链接"处理 |
 
@@ -539,3 +539,4 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
     - 搜索工具（`scoop search` / `scoop-search`）只显示 manifest 的默认版本，`@版本` 备份在运行时才生成、搜索不可见——必须在 README 标注多版本及 `@版本` 用法，否则用户不知道还存在其他版本
     - 示例：Sublime Text（`sublime-text.json`，release `vSublimeText` 下挂 4200 / 4207 两个资产）
 16. **改动文件必须全部提交推送**：任务中凡**内容发生改动的需提交文件**（manifest、README.md、progress.md、SKILL.md、LICENSE 等仓库内跟踪文件）一律 `git add` + `git commit` + `git push` 提交推送，**不得遗留未提交改动**；即使该改动与本任务无关（如历史遗留的各种文件改动），只要其内容已变也一并提交推送。未跟踪文件（如 portable zip 等发布资产、临时文件）不在此列。
+17. **用户给出仓库链接时必须用脚本操作**：用户要求收录并提供 GitHub/Gitee **仓库链接**时（如 `https://github.com/NanmiCoder/cc-haha.git`、`https://gitee.com/fasterthanlight/automatic_clicker_2.git`，或 `https://github.com/owner/repo --name reponame` 指定应用名），**必须**使用 `python3 myscoop-update.py --add <链接> [--name 应用名]` 完成操作，**不得**绕过脚本手动 curl 查询 + 手写 manifest。脚本自动完成仓库信息获取、Windows 资产打分排序、架构检测、manifest 生成与 autoupdate 模板，产物为 `bucket/{应用名}.json`；仅当链接是**直接下载链接/网页链接**（非仓库链接）时才走手动流程。
