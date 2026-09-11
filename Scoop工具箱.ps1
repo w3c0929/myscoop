@@ -8,8 +8,10 @@ Scoop 工具箱：安装（管理员全局/普通用户）/ 导出备份 / 退�
 3. 任意 Bucket 3 次失败则脚本直接终止，不安装软件
 4. 全部 Bucket 添加成功后，才执行软件恢复（带 bucket/软件名格式）
 5. Scoop 本体和 main/extras/versions 仓库优先使用南京大学镜像，失败自动回退官方
+6. Scoop 安装使用子进程执行官方安装脚本（修复：避免脚本内部 exit 导致窗口闪退）
 #>
 
+try {
 Clear-Host
 Write-Host "==================== Scoop 工具箱 ====================" -ForegroundColor Cyan
 Write-Host "请选择操作："
@@ -22,8 +24,12 @@ $select = Read-Host "输入数字 1、2、3 或 4"
 
 $scoopPath = "D:\scoop"
 
-# 公共前置：设置执行策略（当前用户）
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force -ErrorAction SilentlyContinue
+# 公共前置：设置执行策略（当前用户）；被组策略/更高级别策略覆盖时仅提示，不中断
+try {
+    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force -ErrorAction Stop
+} catch {
+    Write-Host "注意：无法设置执行策略（可能被组策略或更高级别策略覆盖），继续执行..." -ForegroundColor Yellow
+}
 
 # ---- 辅助函数：设置 Scoop 本体仓库（镜像优先，失败回退官方） ----
 function Set-ScoopRepoWithFallback {
@@ -35,13 +41,49 @@ function Set-ScoopRepoWithFallback {
     scoop config SCOOP_REPO $mirror 2>&1 | Out-Null
     Write-Host "已设置为本体源：$mirror" -ForegroundColor Gray
 
-    # 简单测试镜像是否可达（使用 git ls-remote 检测）
-    $testResult = git ls-remote $mirror 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "镜像源不可达，自动回退到官方源：$official" -ForegroundColor Yellow
-        scoop config SCOOP_REPO $official 2>&1 | Out-Null
+    # 简单测试镜像是否可达（使用 git ls-remote 检测，需已安装 Git）
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        $testResult = git ls-remote $mirror 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "镜像源不可达，自动回退到官方源：$official" -ForegroundColor Yellow
+            scoop config SCOOP_REPO $official 2>&1 | Out-Null
+        } else {
+            Write-Host "镜像源测试通过，保持当前配置。" -ForegroundColor Green
+        }
     } else {
-        Write-Host "镜像源测试通过，保持当前配置。" -ForegroundColor Green
+        Write-Host "未检测到 Git，跳过镜像可达性测试。" -ForegroundColor Yellow
+    }
+}
+
+# ---- 修复：用子进程执行官方安装脚本，避免其内部 exit 导致闪退 ----
+function Invoke-ScoopInstaller {
+    param([switch]$RunAsAdmin)
+
+    Write-Host "正在下载 Scoop 安装脚本..." -ForegroundColor Cyan
+    try {
+        $installerContent = Invoke-RestMethod "https://get.scoop.sh"
+    } catch {
+        Write-Host "下载安装脚本失败：$_" -ForegroundColor Red
+        return
+    }
+
+    $tmpInstaller = Join-Path $env:TEMP ("scoop-installer-{0}.ps1" -f ([guid]::NewGuid().ToString('N')))
+    try {
+        [System.IO.File]::WriteAllText($tmpInstaller, $installerContent, (New-Object System.Text.UTF8Encoding $false))
+
+        $argList = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$tmpInstaller`"")
+        if ($RunAsAdmin) { $argList += "-RunAsAdmin" }
+
+        $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+        if ($RunAsAdmin -and -not $isAdmin) {
+            Write-Host "需要管理员权限，正在请求 UAC 提权..." -ForegroundColor Yellow
+            Start-Process -FilePath "powershell.exe" -ArgumentList $argList -Wait -Verb RunAs
+        } else {
+            Start-Process -FilePath "powershell.exe" -ArgumentList $argList -Wait -NoNewWindow
+        }
+    } finally {
+        Remove-Item $tmpInstaller -Force -ErrorAction SilentlyContinue
     }
 }
 
@@ -49,7 +91,10 @@ if ($select -eq "1") {
     Write-Host "`n【已选择：管理员全局安装】" -ForegroundColor Green
     [Environment]::SetEnvironmentVariable('SCOOP', $scoopPath, 'User')
     $env:SCOOP = $scoopPath
-    iex "& {$(Invoke-RestMethod get.scoop.sh)} -RunAsAdmin"
+    # 修复：子进程执行官方安装脚本（管理员全局模式）
+    Invoke-ScoopInstaller -RunAsAdmin
+    # 刷新 PATH，使 scoop 命令当前会话即可用
+    $env:PATH = [Environment]::GetEnvironmentVariable("PATH","User") + ";" + [Environment]::GetEnvironmentVariable("PATH","Machine")
     # 设置本体仓库（带回退）
     Set-ScoopRepoWithFallback
     Write-Host "`n安装流程执行完毕，关闭终端重新打开即可使用 scoop 命令" -ForegroundColor Green
@@ -59,7 +104,10 @@ elseif ($select -eq "2") {
     Write-Host "`n【已选择：普通用户安装】" -ForegroundColor Green
     [Environment]::SetEnvironmentVariable('SCOOP', $scoopPath, 'User')
     $env:SCOOP = $scoopPath
-    iex (Invoke-RestMethod get.scoop.sh)
+    # 修复：子进程执行官方安装脚本（普通用户模式）
+    Invoke-ScoopInstaller
+    # 刷新 PATH，使 scoop 命令当前会话即可用
+    $env:PATH = [Environment]::GetEnvironmentVariable("PATH","User") + ";" + [Environment]::GetEnvironmentVariable("PATH","Machine")
     # 设置本体仓库（带回退）
     Set-ScoopRepoWithFallback
     Write-Host "`n安装流程执行完毕，关闭终端重新打开即可使用 scoop 命令" -ForegroundColor Green
@@ -131,6 +179,39 @@ elseif ($select -eq "3") {
     $outputLines += '  Write-Host "==================== Scoop 恢复工具 ====================" -ForegroundColor Cyan'
     $outputLines += '  $scoopPath = "D:\scoop"'
     $outputLines += ""
+    # ---- 修复：生成的恢复脚本同样使用子进程执行官方安装脚本，避免内部 exit 闪退 ----
+    $outputLines += '  # ---- 修复：用子进程执行官方安装脚本，避免其内部 exit 导致闪退 ----'
+    $outputLines += '  function Invoke-ScoopInstaller {'
+    $outputLines += '    param([switch]$RunAsAdmin)'
+    $outputLines += ''
+    $outputLines += '    Write-Host "正在下载 Scoop 安装脚本..." -ForegroundColor Cyan'
+    $outputLines += '    try {'
+    $outputLines += '      $installerContent = Invoke-RestMethod "https://get.scoop.sh"'
+    $outputLines += '    } catch {'
+    $outputLines += '      Write-Host "下载安装脚本失败：$_" -ForegroundColor Red'
+    $outputLines += '      return'
+    $outputLines += '    }'
+    $outputLines += ''
+    $outputLines += '    $tmpInstaller = Join-Path $env:TEMP ("scoop-installer-{0}.ps1" -f ([guid]::NewGuid().ToString(''N'')))'
+    $outputLines += '    try {'
+    $outputLines += '      [System.IO.File]::WriteAllText($tmpInstaller, $installerContent, (New-Object System.Text.UTF8Encoding $false))'
+    $outputLines += ''
+    $outputLines += '      $argList = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$tmpInstaller`"")'
+    $outputLines += '      if ($RunAsAdmin) { $argList += "-RunAsAdmin" }'
+    $outputLines += ''
+    $outputLines += '      $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)'
+    $outputLines += ''
+    $outputLines += '      if ($RunAsAdmin -and -not $isAdmin) {'
+    $outputLines += '        Write-Host "需要管理员权限，正在请求 UAC 提权..." -ForegroundColor Yellow'
+    $outputLines += '        Start-Process -FilePath "powershell.exe" -ArgumentList $argList -Wait -Verb RunAs'
+    $outputLines += '      } else {'
+    $outputLines += '        Start-Process -FilePath "powershell.exe" -ArgumentList $argList -Wait -NoNewWindow'
+    $outputLines += '      }'
+    $outputLines += '    } finally {'
+    $outputLines += '      Remove-Item $tmpInstaller -Force -ErrorAction SilentlyContinue'
+    $outputLines += '    }'
+    $outputLines += '  }'
+    $outputLines += ''
     $outputLines += '  # 检测Scoop是否已安装'
     $outputLines += '  if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {'
     $outputLines += '    Write-Host "未检测到Scoop，请先选择安装模式：" -ForegroundColor Yellow'
@@ -144,14 +225,16 @@ elseif ($select -eq "3") {
     $outputLines += '      Write-Host "`n【已选择：管理员全局安装】" -ForegroundColor Green'
     $outputLines += '      [Environment]::SetEnvironmentVariable("SCOOP", $scoopPath, "User")'
     $outputLines += '      $env:SCOOP = $scoopPath'
-    $outputLines += '      iex "& {$(Invoke-RestMethod get.scoop.sh)} -RunAsAdmin"'
+    $outputLines += '      # 修复：子进程执行官方安装脚本（管理员全局模式）'
+    $outputLines += '      Invoke-ScoopInstaller -RunAsAdmin'
     $outputLines += '      $env:PATH = [Environment]::GetEnvironmentVariable("PATH","User") + ";" + [Environment]::GetEnvironmentVariable("PATH","Machine")'
     $outputLines += '    }'
     $outputLines += '    elseif ($installSelect -eq "2") {'
     $outputLines += '      Write-Host "`n【已选择：普通用户安装】" -ForegroundColor Green'
     $outputLines += '      [Environment]::SetEnvironmentVariable("SCOOP", $scoopPath, "User")'
     $outputLines += '      $env:SCOOP = $scoopPath'
-    $outputLines += '      iex (Invoke-RestMethod get.scoop.sh)'
+    $outputLines += '      # 修复：子进程执行官方安装脚本（普通用户模式）'
+    $outputLines += '      Invoke-ScoopInstaller'
     $outputLines += '      $env:PATH = [Environment]::GetEnvironmentVariable("PATH","User") + ";" + [Environment]::GetEnvironmentVariable("PATH","Machine")'
     $outputLines += '    }'
     $outputLines += '    elseif ($installSelect -eq "3") {'
@@ -501,6 +584,7 @@ elseif ($select -eq "3") {
         Write-Host "4. 全部Bucket添加成功后，才会执行软件恢复"
         Write-Host "5. 软件命令自动携带bucket前缀，例：scoop install myscoop/2345pic"
         Write-Host "6. Scoop本体和 main/extras/versions 优先使用南京大学镜像，失败自动回退官方"
+        Write-Host "7. Scoop安装采用子进程执行官方脚本（修复：避免内部exit导致窗口闪退）"
     } catch {
         Write-Host "写入文件失败：$_" -ForegroundColor Red
     }
@@ -515,4 +599,10 @@ else {
     Write-Host "输入错误，仅支持 1 / 2 / 3 / 4，脚本退出" -ForegroundColor Red
     pause
     exit 1
+}
+} catch {
+    Write-Host "`n脚本发生致命错误：$_" -ForegroundColor Red
+    Write-Host "错误堆栈：$($_.Exception.StackTrace)" -ForegroundColor DarkRed
+    Write-Host "按任意键退出窗口..."
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
