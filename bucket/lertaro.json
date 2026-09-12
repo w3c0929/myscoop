@@ -1,13 +1,13 @@
 {
-    "version": "5.5.8",
+    "version": "5.5.9",
     "description": "A modern, high-performance local file search and productivity tool for Windows. A sleek, customizable alternative to Everything and Listary built with C# WPF and NT Services, featuring instant NTFS MFT parsing, real-time USN monitoring, and plugin support.",
     "homepage": "https://lertaro.github.io",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/Lertaro/Lertaro"
     },
-    "url": "https://github.com/Lertaro/Lertaro/releases/download/v5.5.8/Lertaro-Portable.zip",
-    "hash": "sha256:669e5b0beb0b95687797d2dd2877e35a5975fc785d709f735cee63b3c69b2ca4",
+    "url": "https://github.com/Lertaro/Lertaro/releases/download/v5.5.9/Lertaro-Portable.zip",
+    "hash": "sha256:f74511d505f0dfd95364301f5ac6a7d32c73895d20681671c9a5152212a53ef7",
     "autoupdate": {
         "url": "https://github.com/Lertaro/Lertaro/releases/download/v$version/Lertaro-Portable.zip"
     },
