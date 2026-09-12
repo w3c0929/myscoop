@@ -7,7 +7,7 @@ Scoop 工具箱：安装（管理员全局/普通用户）/ 导出备份 / 退�
 2. 每个 Bucket 最多重试 3 次添加（含退出码+列表双重校验）
 3. 任意 Bucket 3 次失败则脚本直接终止，不安装软件
 4. 全部 Bucket 添加成功后，才执行软件恢复（带 bucket/软件名格式）
-5. Scoop 本体和 main/extras/versions 仓库优先使用南京大学镜像，失败自动回退官方
+5. Scoop 本体和 main/extras/versions 仓库优先使用南京大学镜像，失败自动回退官方；sysinternals 桶使用官方源（南大镜像无）
 6. Scoop 安装使用子进程执行官方安装脚本（修复：避免脚本内部 exit 导致窗口闪退）
 7. .ssh 权限自动体检：发现历史残留的无效权限（Everyone/旧机器SID）自动修复，无问题跳过
 #>
@@ -376,8 +376,8 @@ elseif ($select -eq "3") {
         'extras'   = 'https://mirror.nju.edu.cn/git/scoop-extras.git'
         'versions' = 'https://mirror.nju.edu.cn/git/scoop-versions.git'
     }
-    # 定义其他已知仓库（不带URL，使用官方）
-    $knownBuckets = @('nirsoft','java','games','nerd-fonts')
+    # 定义其他已知仓库（不带URL，使用官方；sysinternals 南大镜像无，走官方）
+    $knownBuckets = @('nirsoft','java','games','nerd-fonts','sysinternals')
 
     foreach ($bkt in $exportData.buckets) {
         $name = $bkt.Name
@@ -653,7 +653,7 @@ elseif ($select -eq "3") {
         Write-Host "3. 任意Bucket3次全部失败 → 直接终止脚本，不安装任何软件"
         Write-Host "4. 全部Bucket添加成功后，才会执行软件恢复"
         Write-Host "5. 软件命令自动携带bucket前缀，例：scoop install myscoop/2345pic"
-        Write-Host "6. Scoop本体和 main/extras/versions 优先使用南京大学镜像，失败自动回退官方"
+        Write-Host "6. Scoop本体和 main/extras/versions 优先使用南京大学镜像，失败自动回退官方；sysinternals 等其余桶使用官方源"
         Write-Host "7. Scoop安装采用子进程执行官方脚本（修复：避免内部exit导致窗口闪退）"
     } catch {
         Write-Host "写入文件失败：$_" -ForegroundColor Red
