@@ -106,7 +106,7 @@
 | 2 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
 | 3 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral-notepaper` | 单 exe 官方 release | 1.1.0 |
 | 4 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 |
-| 5 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.3 |
+| 5 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.11.10024 |
 | 6 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry-studio` | portable exe 官方 release | 1.9.12 |
 | 7 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 单 exe 官方 release | 0.4.5 |
 | 8 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.3 |

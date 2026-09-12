@@ -163,8 +163,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* bff98b7 (HEAD -> main) 修复工具箱闪退：恢复 UTF-8 BOM（5.1 无 BOM 按 ANSI 解析中文注释/字符串失败）
-* 2b0fbb6 (origin/main, origin/HEAD) progress.md 更新提交历史（修复代码块围栏）
+* ddd9817 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* bff98b7 修复工具箱闪退：恢复 UTF-8 BOM（5.1 无 BOM 按 ANSI 解析中文注释/字符串失败）
+* 2b0fbb6 progress.md 更新提交历史（修复代码块围栏）
 * dc881e8 cc-haha 0.6.2 补充 arm64 架构 + 修正 bin 版本号
 * 30ec066 工具箱新增 .ssh 权限自动体检
 * 682e44e 修复scoop工具箱
