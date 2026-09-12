@@ -163,8 +163,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 335a974 (HEAD -> main) 工具箱恢复脚本支持 sysinternals 桶（南大镜像无，使用官方源）
-* 1e545b9 (origin/main, origin/HEAD) amcfy-music 修复 URL 并升级 1.2.11.10024；同步 README 与提交历史
+* ad03c88 (HEAD -> main) config.json bucketlist 添加 sysinternals 优先级
+* cfc0baa (origin/main, origin/HEAD) 修复恢复脚本桶已存在判定：目录检测兜底 + already exists 容错不依赖退出码（兼容 sfsu 接管 scoop）
+* 31d78a9 progress.md 更新提交历史
+* 335a974 工具箱恢复脚本支持 sysinternals 桶（南大镜像无，使用官方源）
+* 1e545b9 amcfy-music 修复 URL 并升级 1.2.11.10024；同步 README 与提交历史
 * ddd9817 progress.md 更新提交历史
 * bff98b7 修复工具箱闪退：恢复 UTF-8 BOM（5.1 无 BOM 按 ANSI 解析中文注释/字符串失败）
 * 2b0fbb6 progress.md 更新提交历史（修复代码块围栏）
