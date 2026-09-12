@@ -1,20 +1,35 @@
 {
     "version": "0.6.2",
-    "description": "Claude Code 泄露源码 - 本地可运行版本，新增跨平台桌面端软件补齐Computer Use（附带核心模块解析）",
-    "homepage": "https://claudecode-haha.relakkesyang.org/",
-    "license": "NOASSERTION",
-    "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.6.2/Claude-Code-Haha-0.6.2-win-x64.exe",
-    "hash": "sha256:910a4b9f290388765dd58e112c316d7fdd5cccfac97b9b376dc8a50e955dc2d8",
+    "description": "Local-first cross-platform desktop workspace for Claude Code / agents: multi-agent, Git worktrees, code diffs, skill marketplace, multi-model, Computer Use, task-aware desktop pets, with WeChat, Feishu, DingTalk, Telegram, WhatsApp and H5 access.",
+    "homepage": "cchaha.ai",
+    "license": "MIT",
     "checkver": {
         "github": "https://github.com/NanmiCoder/cc-haha"
     },
-    "autoupdate": {
-        "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-x64.exe"
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.6.2/Claude-Code-Haha-0.6.2-win-x64.exe",
+            "hash": "sha256:910a4b9f290388765dd58e112c316d7fdd5cccfac97b9b376dc8a50e955dc2d8"
+        },
+        "arm64": {
+            "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.6.2/Claude-Code-Haha-0.6.2-win-arm64.exe",
+            "hash": "sha256:8cfcc73b8464a6794d43b676afb039a1b8f322b46bee121f2b7bad0f2d8b8b48"
+        }
     },
-    "bin": "Claude-Code-Haha-0.4.4-win-x64.exe",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-x64.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-arm64.exe"
+            }
+        }
+    },
+    "bin": "Claude-Code-Haha-0.6.2-win-x64.exe",
     "shortcuts": [
         [
-            "Claude-Code-Haha-0.4.4-win-x64.exe",
+            "Claude-Code-Haha-0.6.2-win-x64.exe",
             "cc-haha"
         ]
     ]
