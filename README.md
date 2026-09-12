@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **109** 款 Windows 软件，其中 **87** 款为本地维护（自托管 Release），**22** 款引用第三方官方 Release。
+> 共收录 **110** 款 Windows 软件，其中 **87** 款为本地维护（自托管 Release），**23** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -124,6 +124,7 @@
 | 20 | [Keyviz](https://github.com/mulaRahul/keyviz) — 键盘/鼠标操作实时可视化 | `scoop install keyviz` | MSI 官方 release | 2.1.1 |
 | 21 | [baulk](https://github.com/baulk/baulk) — Minimal Package Manager for Windows | `scoop install baulk` | 多架构 portable zip | 6.1.0 |
 | 22 | [BeeLlama](https://github.com/Anbeeld/beellama.cpp) — llama.cpp 分支，KV 缓存精度优化，更长上下文同显存更高精度（Windows CUDA 13.3） | `scoop install beellama-cpp` | portable zip 官方 release (CUDA 13.3) | 0.4.6 |
+| 23 | [Lertaro](https://github.com/Lertaro/Lertaro) — 本地文件搜索与生产力工具（Everything/Listary 替代品，C# WPF + NT 服务，NTFS MFT 解析与实时 USN 监控） | `scoop install lertaro` | portable zip 官方 release | 5.5.5 |
 
 ## 快速开始（用户）
 
@@ -728,14 +729,14 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 | `config.json`  | `C:\Users\Administrator\.config\scoop\config.json` | Scoop 配置文件，`bucketlist` 数组控制各仓库的下载优先级顺序 |
 
 > **部署方式**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `config.json` 覆盖到用户配置目录即可。
-> - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > official > extras > main > versions`）。
+> - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
 > - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
 
 ### 目录结构约定
 
 ```
 myscoop/
-├── bucket/        ← 所有 manifest JSON（共 109 个）
+├── bucket/        ← 所有 manifest JSON（共 110 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
