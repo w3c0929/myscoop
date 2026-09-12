@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 Scoop 工具箱：安装（管理员全局/普通用户）/ 导出备份 / 退出
 默认安装路径：D:\scoop
@@ -9,6 +9,7 @@ Scoop 工具箱：安装（管理员全局/普通用户）/ 导出备份 / 退�
 4. 全部 Bucket 添加成功后，才执行软件恢复（带 bucket/软件名格式）
 5. Scoop 本体和 main/extras/versions 仓库优先使用南京大学镜像，失败自动回退官方
 6. Scoop 安装使用子进程执行官方安装脚本（修复：避免脚本内部 exit 导致窗口闪退）
+7. .ssh 权限自动体检：发现历史残留的无效权限（Everyone/旧机器SID）自动修复，无问题跳过
 #>
 
 try {
@@ -86,6 +87,75 @@ function Invoke-ScoopInstaller {
         Remove-Item $tmpInstaller -Force -ErrorAction SilentlyContinue
     }
 }
+
+# ---- 前置体检：.ssh 权限自动检测修复（有问题才处理，无问题跳过） ----
+# OpenSSH（Windows 版）严格检查 ~/.ssh 文件权限；跨机器迁移会在 ACL 残留
+# 旧机器 Administrator SID（无法解析→UNKNOWN\UNKNOWN）甚至 Everyone，
+# 导致 gitoxide/OpenSSH 类工具连接 SSH 远程桶时被拒（Bad owner or permissions）。
+function Repair-SshPermissions {
+    param([string]$SshDir = (Join-Path $env:USERPROFILE ".ssh"))
+    if (!(Test-Path $SshDir)) { return }
+
+    $currentSid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    $okSids = @($currentSid, "S-1-5-18", "S-1-5-32-544")
+
+    function Get-BadSids([string]$path) {
+        $bad = @()
+        try {
+            foreach ($ace in (Get-Acl $path).Access) {
+                $sid = $null
+                try { $sid = $ace.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value } catch {}
+                if (-not $sid) { $bad += $ace.IdentityReference.Value }
+                elseif ($sid -notin $okSids) { $bad += $sid }
+            }
+        } catch {}
+        return $bad
+    }
+
+    function Repair-Acl([string]$path, [string[]]$badSids, [switch]$IsDir) {
+        $flag = ":(F)"
+        if ($IsDir) { $flag = ":(OI)(CI)(F)" }
+        try {
+            icacls $path /inheritance:r | Out-Null
+            foreach ($sid in ($badSids | Where-Object { $_ -match '^S-\d' } | Select-Object -Unique)) {
+                & icacls $path /remove:g "*$sid" 2>$null | Out-Null
+            }
+            icacls $path /grant:r "*${currentSid}$flag" "BUILTIN\Administrators$flag" "NT AUTHORITY\SYSTEM$flag" | Out-Null
+        } catch {
+            # 兜底：PowerShell ACL 重建
+            $acl = Get-Acl $path
+            $acl.SetAccessRuleProtection($true, $false)
+            foreach ($ace in @($acl.Access)) { $null = $acl.RemoveAccessRule($ace) }
+            $inherits = "None"
+            if ($IsDir) { $inherits = "ContainerInherit,ObjectInherit" }
+            $null = $acl.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule($currentSid, "FullControl", $inherits, "None", "Allow")))
+            $null = $acl.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("BUILTIN\Administrators", "FullControl", $inherits, "None", "Allow")))
+            $null = $acl.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule("NT AUTHORITY\SYSTEM", "FullControl", $inherits, "None", "Allow")))
+            Set-Acl -Path $path -AclObject $acl
+        }
+    }
+
+    $fixed = $false
+    $badDir = Get-BadSids $SshDir
+    if ($badDir.Count -gt 0) {
+        Write-Host "发现 .ssh 目录权限异常（$($badDir -join ', ')），正在修复..." -ForegroundColor Yellow
+        Repair-Acl $SshDir $badDir -IsDir
+        $fixed = $true
+    }
+    Get-ChildItem $SshDir -Force -File -ErrorAction SilentlyContinue | ForEach-Object {
+        $bad = Get-BadSids $_.FullName
+        if ($bad.Count -gt 0) {
+            Write-Host "发现 $($_.Name) 权限异常（$($bad -join ', ')），正在修复..." -ForegroundColor Yellow
+            Repair-Acl $_.FullName $bad
+            $fixed = $true
+        }
+    }
+    if ($fixed) { Write-Host "[.ssh] 权限修复完成" -ForegroundColor Green }
+    else { Write-Host "[.ssh] 权限正常，无需处理" -ForegroundColor Green }
+}
+
+Write-Host "`n[前置] 检查 .ssh 权限..." -ForegroundColor Cyan
+Repair-SshPermissions
 
 if ($select -eq "1") {
     Write-Host "`n【已选择：管理员全局安装】" -ForegroundColor Green
