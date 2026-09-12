@@ -163,7 +163,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* ddd9817 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 335a974 (HEAD -> main) 工具箱恢复脚本支持 sysinternals 桶（南大镜像无，使用官方源）
+* 1e545b9 (origin/main, origin/HEAD) amcfy-music 修复 URL 并升级 1.2.11.10024；同步 README 与提交历史
+* ddd9817 progress.md 更新提交历史
 * bff98b7 修复工具箱闪退：恢复 UTF-8 BOM（5.1 无 BOM 按 ANSI 解析中文注释/字符串失败）
 * 2b0fbb6 progress.md 更新提交历史（修复代码块围栏）
 * dc881e8 cc-haha 0.6.2 补充 arm64 架构 + 修正 bin 版本号
