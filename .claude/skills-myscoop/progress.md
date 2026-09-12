@@ -163,8 +163,12 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* c1a800f (HEAD -> main) SKILL.md 新增铁律17：仓库链接必须用 myscoop-update.py 操作
-* 3a695a2 (origin/main, origin/HEAD) arm64 资产降级优先 + 新增 lertaro
+* dc881e8 (HEAD -> main, origin/main, origin/HEAD) cc-haha 0.6.2 补充 arm64 架构 + 修正 bin 版本号
+* 30ec066 工具箱新增 .ssh 权限自动体检
+* 682e44e 修复scoop工具箱
+* fe9e267 progress.md 更新提交历史
+* c1a800f SKILL.md 新增铁律17：仓库链接必须用 myscoop-update.py 操作
+* 3a695a2 arm64 资产降级优先 + 新增 lertaro
 * d2a39b2 更新cc-haha
 * 17c1d55 更新cc-haha
 * cd32a28 更新第三方
@@ -404,7 +408,7 @@ scoop cat myscoop/appname
 * e88a734 2.[WindowsClear]C 盘清理工具，释放 AppData 大量空间：scoop install windowsclear
 * 24857ac 1.Windows 的右键菜单管理工具Context Menu Manager Plus 安装：scoop install contextmenumgr-plus
 * 6b210f9 Initial commit
-
+```
 
 ## 新会话启动指南
 
