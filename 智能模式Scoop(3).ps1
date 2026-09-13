@@ -10,9 +10,30 @@ Scoop 工具箱：安装（管理员全局/普通用户）/ 导出备份 / 退�
 5. Scoop 本体和 main/extras/versions 仓库优先使用南京大学镜像，失败自动回退官方；sysinternals 桶使用官方源（南大镜像无）
 6. Scoop 安装使用子进程执行官方安装脚本（修复：避免脚本内部 exit 导致窗口闪退）
 7. .ssh 权限自动体检：发现历史残留的无效权限（Everyone/旧机器SID）自动修复，无问题跳过
+8. 文件名预选：复制脚本改名为 自动更新Scoop(3).ps1 即直接执行第3项（(1)(2)(4)同理）；预选模式任务完成后自动退出，无括号时打开菜单并停留等待
 #>
 
+param(
+    [switch]$Menu  # 强制显示菜单（文件名预选模式下也能进入菜单操作）
+)
+# ╔═══════════════════════════════════════════════════════════════╗
+# ║                   自动更新Scoop 工具箱（模式选择）              ║
+# ╠═══════════════════════════════════════════════════════════════╣
+# ║ ① 文件名预选（最优先）：复制脚本改名，直接执行对应菜单项        ║
+# ║    自动更新Scoop(3).ps1 → 直接执行第3项「导出备份」             ║
+# ║    自动更新Scoop(1)(2)(4).ps1 → 同理                           ║
+# ║ ② 无括号（自动更新Scoop.ps1）→ 每次运行打开菜单面板手动选择    ║
+# ╚═══════════════════════════════════════════════════════════════╝
+# ---- 文件名预选：解析自身文件名括号中的菜单序号（如 自动更新Scoop(3).ps1） ----
+$preSelect = $null
+$scriptBaseName = [System.IO.Path]::GetFileNameWithoutExtension((Split-Path -Leaf $PSCommandPath))
+$fnameMatch = [regex]::Match($scriptBaseName, '[\(（]([^\(\)（）]*)[\)）]\s*$')
+if ($fnameMatch.Success) {
+    $fnameValue = $fnameMatch.Groups[1].Value.Trim()
+    if ($fnameValue -match '^[1-4]$') { $preSelect = $fnameValue }
+}
 try {
+
 Clear-Host
 Write-Host "==================== Scoop 工具箱 ====================" -ForegroundColor Cyan
 Write-Host "请选择操作："
@@ -21,7 +42,13 @@ Write-Host "2. 当前普通用户安装Scoop（仅本账号可用，无需管理
 Write-Host "3. 导出当前Scoop备份（Bucket + 已装软件，自动带bucket前缀）"
 Write-Host "4. 退出"
 Write-Host "======================================================" -ForegroundColor Cyan
-$select = Read-Host "输入数字 1、2、3 或 4"
+
+if ($null -ne $preSelect -and -not $Menu) {
+    Write-Host "`n【文件名预选】直接执行第 $preSelect 项" -ForegroundColor Cyan
+    $select = $preSelect
+} else {
+    $select = Read-Host "输入数字 1、2、3 或 4"
+}
 
 $scoopPath = "D:\scoop"
 
@@ -168,7 +195,7 @@ if ($select -eq "1") {
     # 设置本体仓库（带回退）
     Set-ScoopRepoWithFallback
     Write-Host "`n安装流程执行完毕，关闭终端重新打开即可使用 scoop 命令" -ForegroundColor Green
-    pause
+    if ($null -eq $preSelect) { pause }
 }
 elseif ($select -eq "2") {
     Write-Host "`n【已选择：普通用户安装】" -ForegroundColor Green
@@ -181,7 +208,7 @@ elseif ($select -eq "2") {
     # 设置本体仓库（带回退）
     Set-ScoopRepoWithFallback
     Write-Host "`n安装流程执行完毕，关闭终端重新打开即可使用 scoop 命令" -ForegroundColor Green
-    pause
+    if ($null -eq $preSelect) { pause }
 }
 elseif ($select -eq "3") {
     Write-Host "`n【已选择：导出Scoop备份，读取本地安装记录匹配Bucket】" -ForegroundColor Green
@@ -659,7 +686,7 @@ elseif ($select -eq "3") {
         Write-Host "写入文件失败：$_" -ForegroundColor Red
     }
 
-    pause
+    if ($null -eq $preSelect) { pause }
 }
 elseif ($select -eq "4") {
     Write-Host "`n【已选择：退出】" -ForegroundColor Yellow
