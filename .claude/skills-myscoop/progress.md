@@ -163,8 +163,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 735a6ae (HEAD -> main) 智能模式工具箱：文件名预选自动执行 + README 使用说明
-* bb24f35 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 2417bf8 (HEAD -> main) SwitchHosts 更新便携包 hash（用户修改版）
+* 390adc5 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 735a6ae 智能模式工具箱：文件名预选自动执行 + README 使用说明
+* bb24f35 progress.md 更新提交历史
 * bf420c3 升级 actions 版本（checkout@v5、setup-python@v6）消除 Node20 弃用警告
 * 0728448 progress.md 更新提交历史
 * 8408a5b 自动更新第三方软件
