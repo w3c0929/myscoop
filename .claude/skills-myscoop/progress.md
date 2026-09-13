@@ -163,8 +163,12 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 8896a49 (HEAD -> main) 文档同步：收录 110 款（新增 lertaro）+ bucketlist 顺序更新
-* c4c60d4 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 9c2f29d (HEAD -> main) 新增 GitHub Actions 每晚自动更新第三方软件
+* f6e7b1d (origin/main, origin/HEAD) 更新lertaro
+* 07c33aa 第三方更新
+* 66cc3eb progress.md 更新提交历史
+* 8896a49 文档同步：收录 110 款（新增 lertaro）+ bucketlist 顺序更新
+* c4c60d4 progress.md 更新提交历史
 * ad03c88 config.json bucketlist 添加 sysinternals 优先级
 * cfc0baa 修复恢复脚本桶已存在判定：目录检测兜底 + already exists 容错不依赖退出码（兼容 sfsu 接管 scoop）
 * 31d78a9 progress.md 更新提交历史
