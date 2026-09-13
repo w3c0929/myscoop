@@ -736,6 +736,8 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ```
 myscoop/
+├── .github/workflows/
+│   └── auto-update.yml             ← 每晚 1 点（北京时间）自动更新第三方软件
 ├── bucket/        ← 所有 manifest JSON（共 110 个）
 │   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用)
