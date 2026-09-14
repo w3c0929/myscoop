@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 3a7cba9 (HEAD -> main) 新增 tools/rebuild_progress.py：提交后重建 progress.md 提交历史（仓库内常驻）
-* e93740f (origin/main, origin/HEAD) progress.md 更新提交历史
+* 9dad447 (HEAD -> main) 更新 comfyui 相关脚本路径：适配 scoop 安装目录结构（cd-comfyui/down-node）
+* 7a43e9c (origin/main, origin/HEAD) progress.md 更新提交历史
+* 3a7cba9 新增 tools/rebuild_progress.py：提交后重建 progress.md 提交历史（仓库内常驻）
+* e93740f progress.md 更新提交历史
 * 9e857f6 pixpin 切换为第三方官方直链 3.5.5.1（移除自托管，改用官网下载页 checkver 自动更新）
 * b4370a7 myscoop-update.py 新增非 GitHub 直链/下载页/模板新增模式（自动 hash+Inno 检测+checkver/autoupdate）+ README 用法说明
 * f2ffc74 progress.md 更新提交历史
