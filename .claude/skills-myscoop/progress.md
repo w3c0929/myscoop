@@ -163,8 +163,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 3ff5b2d (HEAD -> main) beellama-cpp 恢复 CUDA 13.3 包：上游已修复为 511MB 完整包（含 llama 系列 exe），更新 hash
-* 93ba688 (origin/main, origin/HEAD) progress.md 更新提交历史
+* ad19807 (HEAD -> main) beellama-cpp 修正 autoupdate 模板：补齐文件名中的 v 前缀（与脚本生成一致，避免下版 404）
+* dbbfae5 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 3ff5b2d beellama-cpp 恢复 CUDA 13.3 包：上游已修复为 511MB 完整包（含 llama 系列 exe），更新 hash
+* 93ba688 progress.md 更新提交历史
 * c7ca677 补齐 zip/7z 类 bin/shortcuts/extract_dir（拆包实测）+ exe 类 autoupdate 模板；beellama 换 vulkan 包（CUDA 包无可执行文件）
 * 46860fd progress.md 更新提交历史
 * 91a6c40 第三方 23 款清理重建：7 款更名简短化（cherry/cmm-plus/etlp/fileconv/floral/msst-gui/tokenicode）+ 修复 CUDA 与版本 tie-break 评分 + 文档同步
