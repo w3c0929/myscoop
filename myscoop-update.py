@@ -58,8 +58,19 @@ def download_base(platform, owner, repo):
 
 
 def fetch_json(url):
-    """获取 JSON 数据"""
-    req = urllib.request.Request(url, headers={"User-Agent": "myscoop-updater"})
+    """获取 JSON 数据
+
+    可选认证：设置环境变量 GH_TOKEN 或 GITHUB_TOKEN 后，仅对 GitHub
+    官方 API（https://api.github.com/*）附加 Authorization 头，配额从
+    60 次/时提升到 5000 次/时；未设置时自动退回匿名请求。
+    绝不把 token 发给其他域名（Gitee / 镜像 / 代理 / 自定义 checkver.url），
+    防止公开仓库场景下 token 外泄。
+    """
+    headers = {"User-Agent": "myscoop-updater"}
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if token and url.startswith("https://api.github.com/"):
+        headers["Authorization"] = f"Bearer {token}"
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=30) as resp:
         return json.loads(resp.read().decode())
 
