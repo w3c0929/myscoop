@@ -108,16 +108,21 @@ def is_windows_asset(name):
     # 明确排除非 Windows 格式
     if any(m in lower for m in [".dmg", ".appimage", ".rpm", ".deb", ".apk"]):
         return False
+    # 排除源码包/校验与元数据文件
+    if name.lower().endswith((".tar", ".tar.gz", ".tar.xz", ".txt", ".json",
+                             ".md", ".sum", ".sha256", ".asc", ".list", ".html",
+                             ".yml", ".blockmap", ".sig")):
+        return False
     # 明确排除非 Windows 平台标识
     if re.search(r'[-.]mac(?:os)?[-.]', lower) or re.search(r'[-.]mac$', lower.rsplit('.', 1)[0] if '.' in lower else ''):
         return False
     if "darwin" in lower or "macos" in lower:
         return False
-    if "linux" in lower and "windows" not in lower:
+    if any(d in lower for d in ["linux", "ubuntu", "debian", "fedora", "centos",
+                                "freebsd", "openbsd", "netbsd", "archlinux",
+                                "manjaro", "gentoo", "rhel", "suse", "alpine"]):
         return False
     if "android" in lower or "ios" in lower:
-        return False
-    if name.endswith(".yml") or name.endswith(".blockmap"):
         return False
     return True
 
@@ -175,6 +180,24 @@ def score_asset(name):
     if "arm64" in lower or "aarch64" in lower:
         score -= 5
     return score
+
+
+def max_num(name):
+    """文件名中最大的数字（用于同分 tie-breaker：数字最大=最新）"""
+    nums = [int(x) for x in re.findall(r"\d+", name)]
+    return max(nums) if nums else 0
+
+
+def pick_asset(group):
+    """组内择优：score_asset 最高；同分取文件名数字最大（规则①）"""
+    best = None
+    bscore, bnum = -1 << 30, -1
+    for a in group:
+        sc = score_asset(a["name"])
+        nm = max_num(a["name"])
+        if sc > bscore or (sc == bscore and nm > bnum):
+            best, bscore, bnum = a, sc, nm
+    return best
 
 
 def generate_autoupdate_url(asset_name, tag, has_v_prefix, platform="github", owner=None, repo=None):
@@ -277,15 +300,10 @@ def add_manifest(repo_url, app_name=None):
         print(f"       digest: {digest}")
         print(f"       url: {a['browser_download_url']}")
 
-    # 检测是否为多架构
-    arch_assets = {}
+    # 按架构分组（64bit/32bit/arm64/通用），组内择优（规则①同分取数字最大）
+    arch_groups = {"64bit": [], "32bit": [], "arm64": [], "generic": []}
     for a, s in win_assets:
-        arch = detect_arch(a["name"])
-        if arch:
-            if arch not in arch_assets:
-                arch_assets[arch] = a
-            elif score_asset(a["name"]) > score_asset(arch_assets[arch]["name"]):
-                arch_assets[arch] = a
+        arch_groups[detect_arch(a["name"]) or "generic"].append(a)
 
     # 检查是否有提取目录
     # 无法下载检查，先提示
@@ -311,11 +329,20 @@ def add_manifest(repo_url, app_name=None):
     else:
         manifest["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
 
-    if len(arch_assets) >= 2:
-        print(f"检测到多架构: {list(arch_assets.keys())}")
+    # 候选架构：专用组优先；缺专用组时用通用组最优兜底（规则②）
+    generic_best = pick_asset(arch_groups["generic"]) if arch_groups["generic"] else None
+    arch_sel = {}
+    for arch in ("64bit", "32bit", "arm64"):
+        if arch_groups[arch]:
+            arch_sel[arch] = pick_asset(arch_groups[arch])
+        elif generic_best:
+            arch_sel[arch] = generic_best
+
+    if len(arch_sel) >= 2:
+        print(f"检测到多架构: {list(arch_sel.keys())}")
         manifest["architecture"] = {}
         au_arch = {}
-        for arch, a in sorted(arch_assets.items()):
+        for arch, a in sorted(arch_sel.items()):
             url = a["browser_download_url"]
             digest = a.get("digest", "")
             manifest["architecture"][arch] = {
@@ -330,7 +357,12 @@ def add_manifest(repo_url, app_name=None):
 
         manifest["autoupdate"] = {"architecture": au_arch}
     else:
-        best, best_score = win_assets[0]
+        if arch_sel:
+            best = list(arch_sel.values())[0]
+        elif generic_best:
+            best = generic_best
+        else:
+            best, _ = win_assets[0]
         url = best["browser_download_url"]
         digest = best.get("digest", "")
 
@@ -345,8 +377,13 @@ def add_manifest(repo_url, app_name=None):
 
         print(f"使用: {best['name']}")
 
-    # 添加 bin 和 shortcuts
-    best_asset, _ = win_assets[0]
+    # 添加 bin 和 shortcuts（与架构选择保持一致：多架构用 64bit 选定项）
+    if arch_sel:
+        best_asset = list(arch_sel.values())[0]
+    elif generic_best:
+        best_asset = generic_best
+    else:
+        best_asset, _ = win_assets[0]
     best_name = best_asset["name"]
 
     if best_name.endswith(".msi"):
@@ -462,6 +499,7 @@ def update_manifest(manifest_path, dry_run=False):
     au = manifest.get("autoupdate", {})
 
     if "architecture" in manifest:
+        to_del = []
         for arch in manifest["architecture"]:
             old_url = manifest["architecture"][arch]["url"]
             au_arch = au.get("architecture", {}).get(arch, {})
@@ -482,7 +520,18 @@ def update_manifest(manifest_path, dry_run=False):
                     manifest["architecture"][arch]["hash"] = digest2
                     print(f"    {arch}: {digest2[:16]}... (fallback)")
                 else:
-                    print(f"    [警告] {arch}: 无法匹配")
+                    to_del.append(arch)
+        # 规则③：上游缺失该架构资产 → 删除该架构块（该架构用户自动回退 64bit/通用包）
+        for arch in to_del:
+            print(f"    [删除架构] {arch}: 上游缺少该架构资产（规则③）")
+            del manifest["architecture"][arch]
+            if isinstance(au.get("architecture"), dict):
+                au["architecture"].pop(arch, None)
+        if not manifest["architecture"]:
+            del manifest["architecture"]
+            print("    [提示] architecture 块已清空，已整体移除")
+        elif len(manifest["architecture"]) == 1:
+            print("    [提示] 仅剩 1 个架构，可考虑转顶层 url")
     else:
         old_url = manifest["url"]
         au_url_template = au.get("url", old_url)
