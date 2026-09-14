@@ -9,29 +9,50 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.0.14/Cherry-Studio-CN-2.0.14-win-x64-portable.exe",
-            "hash": "sha256:1e9806c601b25723568b0df7dd4c64fe7e0ae399770ef1c958558c3605deab98"
+            "hash": "sha256:1e9806c601b25723568b0df7dd4c64fe7e0ae399770ef1c958558c3605deab98",
+            "bin": "Cherry-Studio-CN-2.0.14-win-x64-portable.exe",
+            "shortcuts": [
+                [
+                    "Cherry-Studio-CN-2.0.14-win-x64-portable.exe",
+                    "cherry-studio"
+                ]
+            ]
         },
         "arm64": {
             "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.0.14/Cherry-Studio-CN-2.0.14-win-arm64-portable.exe",
-            "hash": "sha256:a2944a5fcab9f5ffae2d816661419e50bfb4ef349e52b1292792800450deae51"
+            "hash": "sha256:a2944a5fcab9f5ffae2d816661419e50bfb4ef349e52b1292792800450deae51",
+            "bin": "Cherry-Studio-CN-2.0.14-win-arm64-portable.exe",
+            "shortcuts": [
+                [
+                    "Cherry-Studio-CN-2.0.14-win-arm64-portable.exe",
+                    "cherry-studio"
+                ]
+            ]
         }
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v$version/Cherry-Studio-CN-$version-win-x64-portable.exe"
+                "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v$version/Cherry-Studio-CN-$version-win-x64-portable.exe",
+                "bin": "Cherry-Studio-CN-$version-win-x64-portable.exe",
+                "shortcuts": [
+                    [
+                        "Cherry-Studio-CN-$version-win-x64-portable.exe",
+                        "cherry-studio"
+                    ]
+                ]
             },
             "arm64": {
-                "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v$version/Cherry-Studio-CN-$version-win-arm64-portable.exe"
+                "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v$version/Cherry-Studio-CN-$version-win-arm64-portable.exe",
+                "bin": "Cherry-Studio-CN-$version-win-arm64-portable.exe",
+                "shortcuts": [
+                    [
+                        "Cherry-Studio-CN-$version-win-arm64-portable.exe",
+                        "cherry-studio"
+                    ]
+                ]
             }
         }
     },
-    "bin": "Cherry-Studio-CN-2.0.14-win-x64-portable.exe",
-    "shortcuts": [
-        [
-            "Cherry-Studio-CN-2.0.14-win-x64-portable.exe",
-            "cherry-studio"
-        ]
-    ],
     "pre_install": "Move-Item \"$dir\\Cherry-Studio-$version-x64-portable.exe\" \"$dir\\cherry-studio.exe\" -Force"
 }

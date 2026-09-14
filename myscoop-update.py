@@ -455,6 +455,35 @@ def add_manifest(repo_url, app_name=None):
     return manifest_path_str
 
 
+def substitute_version(value, version):
+    """递归替换结构中的 $version 模板为实际版本号"""
+    if isinstance(value, str):
+        return value.replace("$version", version)
+    if isinstance(value, list):
+        return [substitute_version(v, version) for v in value]
+    if isinstance(value, dict):
+        return {k: substitute_version(v, version) for k, v in value.items()}
+    return value
+
+
+def sync_autoupdate_fields(au_block, target, version):
+    """把 autoupdate 块内除 url/hash/architecture/note 外的模板字段
+    （如 bin、shortcuts、extract_dir）替换 $version 后写回主清单对应位置，
+    与 scoop 官方 autoupdate 行为保持一致：仅同步主清单中已存在的字段；
+    note 在 scoop 中是特殊追加语义，不在此同步。"""
+    changed = []
+    for key in au_block:
+        if key in ("url", "hash", "architecture", "note"):
+            continue
+        if key not in target:
+            continue  # 与 scoop 一致：主清单没有该字段则不同步
+        new_val = substitute_version(au_block[key], version)
+        if target[key] != new_val:
+            target[key] = new_val
+            changed.append(key)
+    return changed
+
+
 def update_manifest(manifest_path, dry_run=False):
     """更新单个 manifest"""
     with open(manifest_path, "r", encoding="utf-8") as f:
@@ -544,6 +573,14 @@ def update_manifest(manifest_path, dry_run=False):
             print("    [提示] architecture 块已清空，已整体移除")
         elif len(manifest["architecture"]) == 1:
             print("    [提示] 仅剩 1 个架构，可考虑转顶层 url")
+
+        # 同步 autoupdate 模板字段（bin/shortcuts/extract_dir 等）到各架构块，
+        # 与 scoop 官方 autoupdate 的 arch_specific 行为一致
+        for arch in manifest.get("architecture", {}):
+            au_arch_block = au.get("architecture", {}).get(arch, {})
+            chg = sync_autoupdate_fields(au_arch_block, manifest["architecture"][arch], latest_version)
+            if chg:
+                print(f"    {arch} 同步: {', '.join(chg)}")
     else:
         old_url = manifest["url"]
         au_url_template = au.get("url", old_url)
@@ -564,6 +601,11 @@ def update_manifest(manifest_path, dry_run=False):
                 print(f"    hash: {digest2[:16]}... (fallback)")
             else:
                 print(f"    [警告] 无法匹配")
+
+        # 同步顶层 autoupdate 模板字段（bin/shortcuts/extract_dir 等）
+        chg = sync_autoupdate_fields(au, manifest, latest_version)
+        if chg:
+            print(f"    同步字段: {', '.join(chg)}")
 
     manifest["version"] = latest_version
 
