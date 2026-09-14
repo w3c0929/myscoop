@@ -163,8 +163,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* ad19807 (HEAD -> main) beellama-cpp 修正 autoupdate 模板：补齐文件名中的 v 前缀（与脚本生成一致，避免下版 404）
-* dbbfae5 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 9e857f6 (HEAD -> main, origin/main, origin/HEAD) pixpin 切换为第三方官方直链 3.5.5.1（移除自托管，改用官网下载页 checkver 自动更新）
+* b4370a7 myscoop-update.py 新增非 GitHub 直链/下载页/模板新增模式（自动 hash+Inno 检测+checkver/autoupdate）+ README 用法说明
+* f2ffc74 progress.md 更新提交历史
+* ad19807 beellama-cpp 修正 autoupdate 模板：补齐文件名中的 v 前缀（与脚本生成一致，避免下版 404）
+* dbbfae5 progress.md 更新提交历史
 * 3ff5b2d beellama-cpp 恢复 CUDA 13.3 包：上游已修复为 511MB 完整包（含 llama 系列 exe），更新 hash
 * 93ba688 progress.md 更新提交历史
 * c7ca677 补齐 zip/7z 类 bin/shortcuts/extract_dir（拆包实测）+ exe 类 autoupdate 模板；beellama 换 vulkan 包（CUDA 包无可执行文件）
