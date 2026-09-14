@@ -163,8 +163,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* c41a1dc (HEAD -> main) 更新 .gitignore：忽略 __pycache__ 与 *.pyc
-* 42d91d6 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 684f43e (HEAD -> main) autoupdate 模板字段同步：bin/shortcuts 随版本自动更新（floral/cc-haha/cherry-studio/tokenicode/windisktool）
+* c610d37 (origin/main, origin/HEAD) progress.md 更新提交历史
+* c41a1dc 更新 .gitignore：忽略 __pycache__ 与 *.pyc
+* 42d91d6 progress.md 更新提交历史
 * cdebba6 myscoop-update.py 支持可选 GH_TOKEN 认证：仅对 api.github.com 附加头，无 token 自动退回匿名
 * 862a289 progress.md 更新提交历史
 * fddb256 第三方23款重获取完成：限流7款补跑回归 + has_special守卫防纯通用三块重复 + tokenicode升1.0.8
