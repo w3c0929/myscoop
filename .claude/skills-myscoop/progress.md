@@ -166,7 +166,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 7ea3d2f (HEAD -> main) FALLBACK_OUT_DIR 改用正斜杠写法 Path(D:/ceshi) 消除编辑器转义误报
+* dfa7fee (HEAD -> main) 优先级调整：setup/install 安装包降到最低档(-10 与 MSI 同档)，floral 64bit 改用免安装版
+* ec49b6c (origin/main, origin/HEAD) progress.md 更新提交历史
+* 7ea3d2f FALLBACK_OUT_DIR 改用正斜杠写法 Path(D:/ceshi) 消除编辑器转义误报
 * 41c01ab progress.md 更新提交历史
 * e900392 progress.md 更新提交历史
 * ce8c992 修复 CI：git 身份配置独立成步骤，避免无 manifest 变更时 progress.md 提交因无身份失败
