@@ -9,7 +9,7 @@
     "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.6/beellama-v0.4.6-bin-win-cuda-13.3-x64.zip",
     "hash": "sha256:5ad1cf5f62e0ca703c18c888e736b8641be326c431b338f4eb0db9a97c1b5658",
     "autoupdate": {
-        "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-$version-bin-win-cuda-13.3-x64.zip"
+        "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-v$version-bin-win-cuda-13.3-x64.zip"
     },
     "notes": "NVIDIA CUDA 13.3 版（llama-server/llama-cli）。注：v0.4.6 上游曾短暂把该包替换成缺 exe 的残包（390MB），已恢复为 511MB 完整包，本 hash 为恢复后的最新值。",
     "bin": [
