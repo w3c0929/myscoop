@@ -6,10 +6,14 @@
     "checkver": {
         "github": "https://github.com/Anbeeld/beellama.cpp"
     },
-    "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.6/beellama-v0.4.6-bin-win-cuda-13.3-x64.zip",
-    "hash": "sha256:5ad1cf5f62e0ca703c18c888e736b8641be326c431b338f4eb0db9a97c1b5658",
+    "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.6/beellama-v0.4.6-bin-win-vulkan-x64.zip",
+    "hash": "sha256:e44d68fe771ba02e945b2cb4d8aec1031cb18fa14a460fc16f6a9818b586d68d",
     "autoupdate": {
-        "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-v$version-bin-win-cuda-13.3-x64.zip"
+        "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-$version-bin-win-vulkan-x64.zip"
     },
-    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+    "notes": "使用 Vulkan 通用 GPU 包：上游 CUDA 13.3 zip 仅含运行库 DLL、无可执行文件（llama-server/llama-cli 从 vulkan 包提供）。",
+    "bin": [
+        "llama-server.exe",
+        "llama-cli.exe"
+    ]
 }

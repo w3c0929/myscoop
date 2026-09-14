@@ -9,7 +9,20 @@
     "url": "https://github.com/Comfy-Org/ComfyUI/releases/download/v0.35.0/ComfyUI_windows_portable_nvidia.7z",
     "hash": "sha256:6fb005a8269c6f5972a8fb76d7a4fc251578ccc7906671a801b382591c791dd2",
     "autoupdate": {
-        "url": "https://github.com/Comfy-Org/ComfyUI/releases/download/v$version/ComfyUI_windows_portable_nvidia.7z"
+        "url": "https://github.com/Comfy-Org/ComfyUI/releases/download/v$version/ComfyUI_windows_portable_nvidia.7z",
+        "extract_dir": "ComfyUI_windows_portable"
     },
-    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+    "extract_dir": "ComfyUI_windows_portable",
+    "bin": [
+        [
+            "run_nvidia_gpu.bat",
+            "comfyui"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "run_nvidia_gpu.bat",
+            "ComfyUI"
+        ]
+    ]
 }

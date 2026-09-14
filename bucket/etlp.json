@@ -33,5 +33,11 @@
             }
         }
     },
-    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+    "bin": [
+        [
+            "python_embed\\python.exe",
+            "etlp",
+            "embyToLocalPlayer.py"
+        ]
+    ]
 }

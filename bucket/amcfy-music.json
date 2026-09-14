@@ -11,5 +11,12 @@
     "autoupdate": {
         "url": "https://github.com/amcfy-music/amcfy-music/releases/download/$version/Amcfy.Music_$version-windows.zip"
     },
-    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+    "pre_install": "Get-ChildItem \"$dir\" -Filter 'Amcfy Music*.exe' | Move-Item -Destination \"$dir\\Amcfy Music.exe\" -Force",
+    "bin": "Amcfy Music.exe",
+    "shortcuts": [
+        [
+            "Amcfy Music.exe",
+            "Amcfy Music"
+        ]
+    ]
 }
