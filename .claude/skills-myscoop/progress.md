@@ -163,8 +163,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* fddb256 (HEAD -> main) 第三方23款重获取完成：限流7款补跑回归 + has_special守卫防纯通用三块重复 + tokenicode升1.0.8
-* 780fa6e (origin/main, origin/HEAD) progress.md 更新提交历史
+* cdebba6 (HEAD -> main) myscoop-update.py 支持可选 GH_TOKEN 认证：仅对 api.github.com 附加头，无 token 自动退回匿名
+* 862a289 (origin/main, origin/HEAD) progress.md 更新提交历史
+* fddb256 第三方23款重获取完成：限流7款补跑回归 + has_special守卫防纯通用三块重复 + tokenicode升1.0.8
+* 780fa6e progress.md 更新提交历史
 * 368092b 收录策略：第三方资产按架构分组择优生成多架构块（规则①-④）
 * 416cbf0 progress.md 更新提交历史
 * d52a23c README 更新 SwitchHosts 通知默认内容说明
