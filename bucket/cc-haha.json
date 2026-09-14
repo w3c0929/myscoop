@@ -9,49 +9,28 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.6.2/Claude-Code-Haha-0.6.2-win-x64.exe",
-            "hash": "sha256:910a4b9f290388765dd58e112c316d7fdd5cccfac97b9b376dc8a50e955dc2d8",
-            "bin": "Claude-Code-Haha-0.6.2-win-x64.exe",
-            "shortcuts": [
-                [
-                    "Claude-Code-Haha-0.6.2-win-x64.exe",
-                    "cc-haha"
-                ]
-            ]
+            "hash": "sha256:910a4b9f290388765dd58e112c316d7fdd5cccfac97b9b376dc8a50e955dc2d8"
         },
         "arm64": {
             "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.6.2/Claude-Code-Haha-0.6.2-win-arm64.exe",
-            "hash": "sha256:8cfcc73b8464a6794d43b676afb039a1b8f322b46bee121f2b7bad0f2d8b8b48",
-            "bin": "Claude-Code-Haha-0.6.2-win-arm64.exe",
-            "shortcuts": [
-                [
-                    "Claude-Code-Haha-0.6.2-win-arm64.exe",
-                    "cc-haha"
-                ]
-            ]
+            "hash": "sha256:8cfcc73b8464a6794d43b676afb039a1b8f322b46bee121f2b7bad0f2d8b8b48"
         }
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-x64.exe",
-                "bin": "Claude-Code-Haha-$version-win-x64.exe",
-                "shortcuts": [
-                    [
-                        "Claude-Code-Haha-$version-win-x64.exe",
-                        "cc-haha"
-                    ]
-                ]
+                "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-x64.exe"
             },
             "arm64": {
-                "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-arm64.exe",
-                "bin": "Claude-Code-Haha-$version-win-arm64.exe",
-                "shortcuts": [
-                    [
-                        "Claude-Code-Haha-$version-win-arm64.exe",
-                        "cc-haha"
-                    ]
-                ]
+                "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-arm64.exe"
             }
         }
-    }
+    },
+    "bin": "Claude-Code-Haha-0.6.2-win-x64.exe",
+    "shortcuts": [
+        [
+            "Claude-Code-Haha-0.6.2-win-x64.exe",
+            "cc-haha"
+        ]
+    ]
 }

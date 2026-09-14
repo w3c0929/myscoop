@@ -173,7 +173,7 @@ def score_asset(name):
         score += 3
     # GPU 优先：NVIDIA > AMD > Intel
     has_nvidia = re.search(r'[._\-]nvidia|nvidia', lower)
-    has_cuda_ver = re.search(r'[._\-]cu\d{2,3}|cuda\d', lower)
+    has_cuda_ver = re.search(r'[._\-]cu\d{2,3}|cuda[._\-]?\d', lower)  # 兼容 cuda13 / cuda-13.3 / cu12 写法
     has_amd = re.search(r'[._\-]amd[._\-]|rocm|radeon', lower)
     has_intel = re.search(r'[._\-]intel[._\-]|intel', lower)
     if has_nvidia and not has_cuda_ver:
@@ -194,19 +194,23 @@ def score_asset(name):
 
 
 def max_num(name):
-    """文件名中最大的数字（用于同分 tie-breaker：数字最大=最新）"""
-    nums = [int(x) for x in re.findall(r"\d+", name)]
-    return max(nums) if nums else 0
+    """文件名中最大的版本号（用于同分 tie-breaker：最新=数字最大）。
+    只取点号版本（如 13.3、1.2.11），忽略 x64/32 这类架构数字。"""
+    nums = re.findall(r"\d+\.\d+(?:\.\d+)*", name)
+    if nums:
+        return max(tuple(int(x) for x in n.split(".")) for n in nums)
+    runs = [int(x) for x in re.findall(r"\d+", name)]
+    return (max(runs),) if runs else (0,)
 
 
 def pick_asset(group):
-    """组内择优：score_asset 最高；同分取文件名数字最大（规则①）"""
+    """组内择优：score_asset 最高；同分取文件名版本号最大（规则①）"""
     best = None
-    bscore, bnum = -1 << 30, -1
+    bscore, bnum = -1 << 30, None
     for a in group:
         sc = score_asset(a["name"])
         nm = max_num(a["name"])
-        if sc > bscore or (sc == bscore and nm > bnum):
+        if sc > bscore or (sc == bscore and (bnum is None or nm > bnum)):
             best, bscore, bnum = a, sc, nm
     return best
 

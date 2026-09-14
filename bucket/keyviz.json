@@ -1,6 +1,6 @@
 {
     "version": "2.1.1",
-    "description": "Keyviz is a free and open-source tool to visualize your keystrokes and mouse actions in real-time.",
+    "description": "Keyviz is a free and open-source tool to visualize your keystrokes ⌨️ and 🖱️ mouse actions in real-time.",
     "homepage": "https://keyviz.org",
     "license": "GPL-3.0",
     "url": "https://github.com/mulaRahul/keyviz/releases/download/v2.1.1/keyviz_2.1.1_windows.msi",

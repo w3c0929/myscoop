@@ -469,7 +469,7 @@ for a in r['assets']:
 
 ### 第三步：生成 Manifest 文件
 
-文件名规则：**小写 + 连字符**，如 `contextmenumgr-plus.json`、`windowsclear.json`
+文件名规则：**小写 + 连字符，尽量简短**（超长名会改短，如 `music-source-separation-training-gui` → `msst-gui`），如 `cmm-plus.json`、`windowsclear.json`
 
 写入 `bucket/{appname}.json`
 

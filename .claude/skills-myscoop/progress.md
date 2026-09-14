@@ -33,7 +33,7 @@ GitHub: https://github.com/w3c0929/myscoop
 ### 模式 1：官方 portable zip/7z
 - 直接引用官方 GitHub Release URL
 - 设置 checkver + autoupdate
-- 示例：contextmenumgr-plus, mykeymap, litemonitor, amcfy-music, floral-notepaper, baulk（多架构 zip 官方 release）
+- 示例：cmm-plus, mykeymap, litemonitor, amcfy-music, floral, baulk（多架构 zip 官方 release）
 
 ### 模式 2：单 exe / zip 便携（自托管）
 - 本地文件上传到 GitHub Release
@@ -93,7 +93,7 @@ certutil -hashfile app-portable.zip SHA256
 - Scoop 缓存文件已重命名为 `{app}#{ver}#{hash}.msi`，需用 `{appname}#*.msi` 通配符查找
 - 缓存路径通过 `$dir -replace '\\apps\\.*$', '\\cache'` 推导
 - 不设 bin/shortcuts/checkver/autoupdate
-- 示例：fileconverter, cfwarp, keyviz
+- 示例：fileconv, cfwarp, keyviz
 
 ### 模式 8：qlplugin 插件自启动安装
 - .qlplugin 文件直引上游 GitHub Release（或自托管）

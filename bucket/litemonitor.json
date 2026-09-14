@@ -11,13 +11,5 @@
     "autoupdate": {
         "url": "https://github.com/Diorser/LiteMonitor/releases/download/v$version/LiteMonitor_v$version-win-x64.zip"
     },
-    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。",
-    "bin": "LiteMonitor.exe",
-    "shortcuts": [
-        [
-            "LiteMonitor.exe",
-            "LiteMonitor"
-        ]
-    ],
-    "extract_dir": "LiteMonitor_v1.3.6-win-x64"
+    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
 }

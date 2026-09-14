@@ -102,21 +102,21 @@
 
 | # | 软件 | 安装命令 | 类型 | 版本 |
 |--|------|---------|------|------|
-| 1 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install contextmenumgr-plus` | 多架构 portable zip | 1.7.1 |
+| 1 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install cmm-plus` | 多架构 portable zip | 1.7.5 |
 | 2 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 |
-| 3 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral-notepaper` | 单 exe 官方 release | 1.1.0 |
+| 3 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral` | 多架构 exe 官方 release | 1.2.0 |
 | 4 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 |
 | 5 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.11.10024 |
-| 6 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry-studio` | portable exe 官方 release | 1.9.12 |
-| 7 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 单 exe 官方 release | 0.4.5 |
+| 6 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry` | 多架构 portable exe | 2.0.14 |
+| 7 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 多架构 portable exe | 0.6.2 |
 | 8 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.3 |
-| 9 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install embytolocalplayer` | zip 官方 release | 2025.11.13 |
-| 10 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | zip 官方 release | 5.4.2 |
-| 11 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconverter` | MSI 官方 release | 2.2 |
-| 12 | [tokenicode-deepseek-alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode-deepseek-alpha` | zip 官方 release | 0.10.12-alpha.1 |
-| 13 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.24.11321.0 |
-| 14 | [MSST-GUI](https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI) — 音乐源分离推理工具 | `scoop install music-source-separation-training-gui` | 单 exe 中文版 | 1.4.0 |
-| 15 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.27.0 |
+| 9 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install etlp` | 多架构 zip 官方 release | 2026.07.18 |
+| 10 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | 多架构 zip 官方 release | 5.5.0 |
+| 11 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconv` | MSI 官方 release | 2.2 |
+| 12 | [TOKENICODE DeepSeek Alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode` | 单 exe 官方 release | 1.0.8 |
+| 13 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.24.11911.0 |
+| 14 | [MSST-GUI](https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI) — 音乐源分离推理工具 | `scoop install msst-gui` | 单 exe 中文版 | 1.4.0 |
+| 15 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.35.0 |
 | 16 | [QuickLook CAD 插件](https://github.com/emako/QuickLook.Plugin.CADImport) — 预览 CAD 文件格式 | `scoop install qlcad` | qlplugin 官方 release | 1 |
 | 17 | [QuickLook Office 插件](https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer) — 预览 Word/Excel/PPT 文件 | `scoop install qloffice` | qlplugin 官方 release | 6 |
 | 18 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.0 |
@@ -124,7 +124,7 @@
 | 20 | [Keyviz](https://github.com/mulaRahul/keyviz) — 键盘/鼠标操作实时可视化 | `scoop install keyviz` | MSI 官方 release | 2.1.1 |
 | 21 | [baulk](https://github.com/baulk/baulk) — Minimal Package Manager for Windows | `scoop install baulk` | 多架构 portable zip | 6.1.0 |
 | 22 | [BeeLlama](https://github.com/Anbeeld/beellama.cpp) — llama.cpp 分支，KV 缓存精度优化，更长上下文同显存更高精度（Windows CUDA 13.3） | `scoop install beellama-cpp` | portable zip 官方 release (CUDA 13.3) | 0.4.6 |
-| 23 | [Lertaro](https://github.com/Lertaro/Lertaro) — 本地文件搜索与生产力工具（Everything/Listary 替代品，C# WPF + NT 服务，NTFS MFT 解析与实时 USN 监控） | `scoop install lertaro` | portable zip 官方 release | 5.5.5 |
+| 23 | [Lertaro](https://github.com/Lertaro/Lertaro) — 本地文件搜索与生产力工具（Everything/Listary 替代品，C# WPF + NT 服务，NTFS MFT 解析与实时 USN 监控） | `scoop install lertaro` | 多架构 portable zip 官方 release | 5.6.5 |
 
 ## 快速开始（用户）
 
@@ -141,11 +141,11 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 scoop search myscoop
 
 # 安装（任选其一）
-scoop install contextmenumgr-plus
+scoop install cmm-plus
 scoop install windowsclear
 
 # 或指定从 myscoop 安装
-scoop install myscoop/contextmenumgr-plus
+scoop install myscoop/cmm-plus
 ```
 
 > **多版本软件（如 Sublime Text）**：默认安装最新版（4207）；需旧版时用 `@版本号` 指定，例如：
@@ -158,7 +158,7 @@ scoop install myscoop/contextmenumgr-plus
 
 ```powershell
 # 更新单个软件
-scoop update contextmenumgr-plus
+scoop update cmm-plus
 
 # 更新所有已安装的软件
 scoop update *
@@ -167,7 +167,7 @@ scoop update *
 ### 4. 卸载
 
 ```powershell
-scoop uninstall contextmenumgr-plus
+scoop uninstall cmm-plus
 ```
 
 ## 智能模式：Scoop 工具箱文件名预选
@@ -387,7 +387,7 @@ git push origin main
 
 通过两个实际案例展示最常见的两种模式：
 
-**模式 1 — 多架构 portable zip**（`contextmenumgr-plus.json`）
+**模式 1 — 多架构 portable zip**（`cmm-plus.json`）
 
 适用于 release 有多个架构 zip 包的项目。使用 `architecture` 块区分 64bit/32bit/arm64：
 
@@ -783,7 +783,7 @@ myscoop/
 ├── .github/workflows/
 │   └── auto-update.yml             ← 每晚 1 点（北京时间）自动更新第三方软件
 ├── bucket/        ← 所有 manifest JSON（共 110 个）
-│   ├── contextmenumgr-plus.json     (模式1：多架构 zip 官方 release)
+│   ├── cmm-plus.json               (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
 │   ├── windowsclear.json            (模式2：单 exe 便携)
@@ -791,7 +791,7 @@ myscoop/
 │   ├── 360bwtest.json               (模式2：单 exe 便携)
 │   ├── hibituninstaller.json        (模式2：单 exe 便携 自托管)
 │   ├── btsou.json                   (模式2：zip 便携 自托管)
-│   ├── floral-notepaper.json        (模式2：单 exe 官方 release)
+│   ├── floral.json                  (模式1：多架构 exe 官方 release)
 │   ├── wgestures.json               (模式4：自托管便携)
 │   ├── uninstalltool.json           (模式5：静默安装)
 │   ├── bcompare.json                (模式5：静默安装)
@@ -819,18 +819,18 @@ myscoop/
 │   ├── audio-recorder.json              (模式5：Inno 解包自托管)
 │   ├── chromesetup.json                 (模式6：单 exe 手动安装)
 │   ├── wcap.json                       (模式2：zip 便携解压即用)
-│   ├── cherry-studio.json               (模式1：portable exe 官方 release)
-│   ├── cc-haha.json                    (模式1：单 exe 官方 release)
+│   ├── cherry.json                       (模式1：多架构 portable exe)
+│   ├── cc-haha.json                    (模式1：多架构 portable exe)
 │   ├── musictag.json                   (模式2：7z 便携解压即用)
 │   ├── miaomi.json                     (模式6：单 exe 手动安装)
 │   ├── cinetry.json                    (模式1：zip 官方 release)
-│   ├── embytolocalplayer.json          (模式1：zip 官方 release)
-│   ├── eserver.json                    (模式1：zip 官方 release)
-│   ├── fileconverter.json              (模式7：MSI 手动安装)
+│   ├── etlp.json                       (模式1：多架构 zip 官方 release)
+│   ├── eserver.json                    (模式1：多架构 zip 官方 release)
+│   ├── fileconv.json                   (模式7：MSI 手动安装)
 │   ├── bandicam.json                   (模式2：7z 便携解压即用)
 │   ├── vp9-video-extensions.json       (模式6：Appx 手动安装)
 │   ├── webview2-runtime.json           (模式6：单 exe 手动安装)
-│   └── tokenicode-deepseek-alpha.json   (模式1：zip 官方 release)
+│   └── tokenicode.json                 (模式1：单 exe 官方 release)
 │   ├── terminal.json                       (模式1：多架构 zip 官方 release)
 │   ├── hardlinkshellext.json               (模式6：单 exe 手动安装)
 │   ├── ultraiso.json                       (模式6：单 exe 手动安装)
@@ -850,7 +850,7 @@ myscoop/
 │   ├── cfwarp.json                      (模式7：MSI 手动安装)
 │   ├── gzh-formatter.json               (模式2：单 exe 便携)
 │   ├── wps.json                         (模式6：单 exe 手动安装)
-│   ├── music-source-separation-training-gui.json (模式1：单 exe 中文版)
+│   ├── msst-gui.json                   (模式1：单 exe 中文版)
 │   ├── comfyui.json                     (模式1：portable 7z 官方 release)
 │   ├── qlcad.json                      (qlplugin 自启动安装)
 │   ├── qloffice.json                   (qlplugin 自启动安装)
