@@ -23,6 +23,10 @@ logs/
 *.tmp
 *.tmp.mjs
 
+# Python 缓存
+__pycache__/
+*.pyc
+
 
 # 端到端测试临时产物
 sumail-vue/e2e/tmp/
