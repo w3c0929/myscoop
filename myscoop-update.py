@@ -31,7 +31,7 @@ from pathlib import Path
 BUCKET_DIR = Path(__file__).parent / "bucket"
 # 直链/模板/页面新增模式的默认输出目录：未经 --out-dir 指定时，清单落在 D:\ceshi，
 # 避免误写仓库 bucket；确认无误后再用 --out-dir 指向 bucket 目录落实
-FALLBACK_OUT_DIR = Path(r"D:\ceshi")
+FALLBACK_OUT_DIR = Path("D:/ceshi")
 
 
 def parse_repo_url(url):
