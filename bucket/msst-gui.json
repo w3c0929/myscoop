@@ -9,20 +9,14 @@
     "url": "https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI/releases/download/v1.4.0/MSST_GUI_v1.4_zh.exe",
     "hash": "sha256:23f607f62d95f476b952ab76769aed97c7c6755ea86e68a3aae89cdae006a212",
     "autoupdate": {
-        "url": "https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI/releases/download/v$version/MSST_GUI_v$version_zh.exe",
-        "bin": "MSST_GUI_v$version_zh.exe",
-        "shortcuts": [
-            [
-                "MSST_GUI_v$version_zh.exe",
-                "Music-Source-Separation-Training-GUI"
-            ]
-        ]
+        "url": "https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI/releases/download/v$version/MSST_GUI_v$version_zh.exe"
     },
-    "bin": "MSST_GUI_v1.4_zh.exe",
+    "bin": "msst-gui.exe",
     "shortcuts": [
         [
-            "MSST_GUI_v1.4_zh.exe",
+            "msst-gui.exe",
             "Music-Source-Separation-Training-GUI"
         ]
-    ]
+    ],
+    "pre_install": "Get-ChildItem \"$dir\" -Filter 'MSST_GUI*.exe' | Move-Item -Destination \"$dir\\msst-gui.exe\" -Force"
 }

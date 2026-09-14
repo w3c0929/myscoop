@@ -10,10 +10,10 @@
         "32bit": {
             "url": "https://github.com/Achilng/floral-notepaper/releases/download/v1.2.0/floral-notepaper_1.2.0.exe",
             "hash": "sha256:a049c4084d399fd326e62e97d4c5095225b96dff4050725ba4432a5d99a67fcd",
-            "bin": "floral-notepaper_1.2.0.exe",
+            "bin": "floral-notepaper.exe",
             "shortcuts": [
                 [
-                    "floral-notepaper_1.2.0.exe",
+                    "floral-notepaper.exe",
                     "floral-notepaper"
                 ]
             ]
@@ -21,10 +21,10 @@
         "64bit": {
             "url": "https://github.com/Achilng/floral-notepaper/releases/download/v1.2.0/floral-notepaper_1.2.0.exe",
             "hash": "sha256:a049c4084d399fd326e62e97d4c5095225b96dff4050725ba4432a5d99a67fcd",
-            "bin": "floral-notepaper_1.2.0.exe",
+            "bin": "floral-notepaper.exe",
             "shortcuts": [
                 [
-                    "floral-notepaper_1.2.0.exe",
+                    "floral-notepaper.exe",
                     "floral-notepaper"
                 ]
             ]
@@ -32,10 +32,10 @@
         "arm64": {
             "url": "https://github.com/Achilng/floral-notepaper/releases/download/v1.2.0/floral-notepaper_1.2.0_aarch64-setup.exe",
             "hash": "sha256:412735de4c8670bd6b1d0c2b91f39fbd1bdb9e810fa80740c932c526a91a95cc",
-            "bin": "floral-notepaper_1.2.0_aarch64-setup.exe",
+            "bin": "floral-notepaper.exe",
             "shortcuts": [
                 [
-                    "floral-notepaper_1.2.0_aarch64-setup.exe",
+                    "floral-notepaper.exe",
                     "floral-notepaper"
                 ]
             ]
@@ -44,35 +44,15 @@
     "autoupdate": {
         "architecture": {
             "32bit": {
-                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version.exe",
-                "bin": "floral-notepaper_$version.exe",
-                "shortcuts": [
-                    [
-                        "floral-notepaper_$version.exe",
-                        "floral-notepaper"
-                    ]
-                ]
+                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version.exe"
             },
             "64bit": {
-                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version.exe",
-                "bin": "floral-notepaper_$version.exe",
-                "shortcuts": [
-                    [
-                        "floral-notepaper_$version.exe",
-                        "floral-notepaper"
-                    ]
-                ]
+                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version.exe"
             },
             "arm64": {
-                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version_aarch64-setup.exe",
-                "bin": "floral-notepaper_$version_aarch64-setup.exe",
-                "shortcuts": [
-                    [
-                        "floral-notepaper_$version_aarch64-setup.exe",
-                        "floral-notepaper"
-                    ]
-                ]
+                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version_aarch64-setup.exe"
             }
         }
-    }
+    },
+    "pre_install": "Get-ChildItem \"$dir\" -Filter 'floral-notepaper*.exe' | Move-Item -Destination \"$dir\\floral-notepaper.exe\" -Force"
 }

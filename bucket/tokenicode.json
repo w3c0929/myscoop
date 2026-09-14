@@ -9,20 +9,15 @@
     "url": "https://github.com/mistydew/tokenicode-deepseek-alpha/releases/download/v1.0.8/tokenicode-deepseek-alpha-v1.0.8-windows-x64.exe",
     "hash": "sha256:db7d046793332f77d866699fbc764c465002bd7b482c9643756f6d1f6a46de81",
     "autoupdate": {
-        "url": "https://github.com/mistydew/tokenicode-deepseek-alpha/releases/download/v$version/tokenicode-deepseek-alpha-v$version-windows-x64.exe",
-        "bin": "tokenicode-deepseek-alpha-v$version-windows-x64.exe",
-        "shortcuts": [
-            [
-                "tokenicode-deepseek-alpha-v$version-windows-x64.exe",
-                "tokenicode-deepseek-alpha"
-            ]
-        ]
+        "url": "https://github.com/mistydew/tokenicode-deepseek-alpha/releases/download/v$version/tokenicode-deepseek-alpha-v$version-windows-x64.exe"
     },
-    "bin": "tokenicode-deepseek-alpha-v1.0.8-windows-x64.exe",
+    "bin": "tokenicode.exe",
     "shortcuts": [
         [
-            "tokenicode-deepseek-alpha-v1.0.8-windows-x64.exe",
+            "tokenicode.exe",
             "tokenicode-deepseek-alpha"
         ]
-    ]
+    ],
+    "pre_install": "Get-ChildItem \"$dir\" -Filter 'tokenicode-deepseek-alpha*.exe' | Move-Item -Destination \"$dir\\tokenicode.exe\" -Force",
+    "notes": "安装时统一定名为 tokenicode.exe（pre_install 通配符改名），升级后命令名不变。"
 }
