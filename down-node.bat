@@ -5,7 +5,7 @@ title ComfyUI插件批量安装 xget镜像版（增强代理）
 :: ===================================================================
 :: 1. 基础路径设置（请修改为您的 ComfyUI 实际路径）
 :: ===================================================================
-cd /d "D:\scoop\apps\comfyui\current\ComfyUI_windows_portable\ComfyUI\custom_nodes" || (
+cd /d "D:\scoop\apps\comfyui\current\ComfyUI\custom_nodes" || (
     echo 错误：无法进入目标目录，请检查路径！
     pause
     exit /b
