@@ -1,22 +1,44 @@
 {
     "version": "1.2.0",
-    "description": "Lightweight cross-platform desktop sticky notes with Markdown editing and preview",
+    "description": "花笺，轻量优雅的跨平台桌面便签工具，支持 Markdown 编辑与预览",
     "homepage": "https://github.com/Achilng/floral-notepaper",
     "license": "MIT",
-    "url": "https://github.com/Achilng/floral-notepaper/releases/download/v1.2.0/floral-notepaper_1.2.0.exe",
-    "hash": "sha256:a049c4084d399fd326e62e97d4c5095225b96dff4050725ba4432a5d99a67fcd",
-    "pre_install": "Move-Item \"$dir\\floral-notepaper_$version.exe\" \"$dir\\floral-notepaper.exe\" -Force",
-    "bin": "floral-notepaper.exe",
-    "shortcuts": [
-        [
-            "floral-notepaper.exe",
-            "Floral Notepaper"
-        ]
-    ],
     "checkver": {
         "github": "https://github.com/Achilng/floral-notepaper"
     },
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/Achilng/floral-notepaper/releases/download/v1.2.0/floral-notepaper_1.2.0.exe",
+            "hash": "sha256:a049c4084d399fd326e62e97d4c5095225b96dff4050725ba4432a5d99a67fcd"
+        },
+        "64bit": {
+            "url": "https://github.com/Achilng/floral-notepaper/releases/download/v1.2.0/floral-notepaper_1.2.0_x64-setup.exe",
+            "hash": "sha256:c3c83ca5f6ae3c6291841c288780d0b6ce8266af37dee476cbab273b81cda523"
+        },
+        "arm64": {
+            "url": "https://github.com/Achilng/floral-notepaper/releases/download/v1.2.0/floral-notepaper_1.2.0_aarch64-setup.exe",
+            "hash": "sha256:412735de4c8670bd6b1d0c2b91f39fbd1bdb9e810fa80740c932c526a91a95cc"
+        }
+    },
     "autoupdate": {
-        "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version.exe"
-    }
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version.exe"
+            },
+            "64bit": {
+                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version_x64-setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version_aarch64-setup.exe"
+            }
+        }
+    },
+    "bin": "floral-notepaper_1.2.0_x64-setup.exe",
+    "shortcuts": [
+        [
+            "floral-notepaper_1.2.0_x64-setup.exe",
+            "floral-notepaper"
+        ]
+    ],
+    "pre_install": "Move-Item \"$dir\\floral-notepaper_$version.exe\" \"$dir\\floral-notepaper.exe\" -Force"
 }

@@ -1,11 +1,17 @@
 {
     "version": "1.2.11",
-    "description": "Amcfy Music Player - Subsonic/Navidrome/Emby/Jellyfin client",
-    "homepage": "https://github.com/amcfy-music/amcfy-music",
+    "description": "Amcfy Music Player(箭头音乐) for 道理鱼音乐，Songloft，Subsonic，Navidrome，Emby，Jellyfin, Plex, webdav。",
+    "homepage": "https://www.amcfy.com",
     "license": "MIT",
-    "url": "https://github.com/amcfy-music/amcfy-music/releases/download/$matchHead/Amcfy.Music_1.2.11-windows.zip",
+    "checkver": {
+        "github": "https://github.com/amcfy-music/amcfy-music"
+    },
+    "url": "https://github.com/amcfy-music/amcfy-music/releases/download/1.2.11/Amcfy.Music_1.2.11.10024-windows.zip",
     "hash": "sha256:fdbf8da7b21cb322d6c19f5579e87b228a43e10d46ffcd1b4563f66d8c8409aa",
-    "pre_install": "Get-ChildItem \"$dir\" -Filter 'Amcfy Music*.exe' | Move-Item -Destination \"$dir\\Amcfy Music.exe\" -Force",
+    "autoupdate": {
+        "url": "https://github.com/amcfy-music/amcfy-music/releases/download/$version/Amcfy.Music_$version-windows.zip"
+    },
+    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。",
     "bin": "Amcfy Music.exe",
     "shortcuts": [
         [
@@ -13,11 +19,5 @@
             "Amcfy Music"
         ]
     ],
-    "checkver": {
-        "url": "https://api.github.com/repos/amcfy-music/amcfy-music/releases/latest",
-        "regex": "\"browser_download_url\":\"https://github\\.com/amcfy-music/amcfy-music/releases/download/[\\d.]+/(Amcfy\\.Music_[\\d.]+-windows\\.zip)\""
-    },
-    "autoupdate": {
-        "url": "https://github.com/amcfy-music/amcfy-music/releases/download/$matchHead/Amcfy.Music_$version-windows.zip"
-    }
+    "pre_install": "Get-ChildItem \"$dir\" -Filter 'Amcfy Music*.exe' | Move-Item -Destination \"$dir\\Amcfy Music.exe\" -Force"
 }

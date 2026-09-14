@@ -3,13 +3,20 @@
     "description": "TOKENICODE DeepSeek Alpha: a DeepSeek/CC Switch focused TOKENICODE fork",
     "homepage": "https://github.com/mistydew/tokenicode-deepseek-alpha",
     "license": "Apache-2.0",
-    "url": "https://github.com/mistydew/tokenicode-deepseek-alpha/releases/download/v0.10.4-alpha.1/tokenicode-deepseek-alpha-windows-x64.zip",
-    "hash": "sha256:43c503721aef886e7478a7d52cf2e2b3e9f8f24912bc891f1d4f80985dd00702",
     "checkver": {
         "github": "https://github.com/mistydew/tokenicode-deepseek-alpha"
     },
+    "url": "https://github.com/mistydew/tokenicode-deepseek-alpha/releases/download/v1.0.8/tokenicode-deepseek-alpha-v1.0.8-windows-x64.exe",
+    "hash": "sha256:db7d046793332f77d866699fbc764c465002bd7b482c9643756f6d1f6a46de81",
     "autoupdate": {
-        "url": "https://github.com/mistydew/tokenicode-deepseek-alpha/releases/download/v$version/tokenicode-deepseek-alpha-windows-x64.zip"
+        "url": "https://github.com/mistydew/tokenicode-deepseek-alpha/releases/download/v$version/tokenicode-deepseek-alpha-v$version-windows-x64.exe"
     },
-    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+    "bin": "tokenicode-deepseek-alpha-v1.0.8-windows-x64.exe",
+    "shortcuts": [
+        [
+            "tokenicode-deepseek-alpha-v1.0.8-windows-x64.exe",
+            "tokenicode-deepseek-alpha"
+        ]
+    ],
+    "notes": "bin/shortcuts 已由脚本自动生成（exe 文件名含版本号，升级后可能需重新安装）。"
 }

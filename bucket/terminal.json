@@ -3,6 +3,9 @@
     "description": "The new Windows Terminal and the original Windows console host, all in the same place!",
     "homepage": "https://github.com/microsoft/terminal",
     "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/microsoft/terminal"
+    },
     "architecture": {
         "32bit": {
             "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11911.0/Microsoft.WindowsTerminal_1.24.11911.0_x86.zip",
@@ -16,9 +19,6 @@
             "url": "https://github.com/microsoft/terminal/releases/download/v1.24.11911.0/Microsoft.WindowsTerminal_1.24.11911.0_arm64.zip",
             "hash": "sha256:d794a881d4b4e151d79366fac85d1cbe7e21e90fa69f4157796377c13f1ea844"
         }
-    },
-    "checkver": {
-        "github": "https://github.com/microsoft/terminal"
     },
     "autoupdate": {
         "architecture": {

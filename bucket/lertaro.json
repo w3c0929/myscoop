@@ -1,15 +1,37 @@
 {
-    "version": "5.6.2",
+    "version": "5.6.4",
     "description": "A modern, high-performance local file search and productivity tool for Windows. A sleek, customizable alternative to Everything and Listary built with C# WPF and NT Services, featuring instant NTFS MFT parsing, real-time USN monitoring, and plugin support.",
     "homepage": "https://lertaro.github.io",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/Lertaro/Lertaro"
     },
-    "url": "https://github.com/Lertaro/Lertaro/releases/download/v5.6.2/Lertaro-Portable.zip",
-    "hash": "sha256:8540d9841afc206f5fe466e134f7dc9d5b87e4823861e398dee8d556634364d7",
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/Lertaro/Lertaro/releases/download/v5.6.4/Lertaro-Portable.zip",
+            "hash": "sha256:ca6eb1988e4f91dc9b235c98e4699ded62ea2ead885adeb861fc574fb69b722f"
+        },
+        "64bit": {
+            "url": "https://github.com/Lertaro/Lertaro/releases/download/v5.6.4/Lertaro-Portable.zip",
+            "hash": "sha256:ca6eb1988e4f91dc9b235c98e4699ded62ea2ead885adeb861fc574fb69b722f"
+        },
+        "arm64": {
+            "url": "https://github.com/Lertaro/Lertaro/releases/download/v5.6.4/Lertaro-Portable-arm64.zip",
+            "hash": "sha256:1c30c46125bc096df74d5b78386bce4d51ddf5f7eafdd0d76737c1c79c41df2e"
+        }
+    },
     "autoupdate": {
-        "url": "https://github.com/Lertaro/Lertaro/releases/download/v$version/Lertaro-Portable.zip"
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/Lertaro/Lertaro/releases/download/v$version/Lertaro-Portable.zip"
+            },
+            "64bit": {
+                "url": "https://github.com/Lertaro/Lertaro/releases/download/v$version/Lertaro-Portable.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/Lertaro/Lertaro/releases/download/v$version/Lertaro-Portable-arm64.zip"
+            }
+        }
     },
     "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
 }

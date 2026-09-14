@@ -1,17 +1,17 @@
 {
     "version": "0.4.6",
-    "description": "llama.cpp fork with KVarN and KV-cache precision tail for longer context at better precision in the same VRAM (Windows CUDA 13.3 build)",
-    "homepage": "https://github.com/Anbeeld/beellama.cpp",
+    "description": "KVarN, KV cache precision tail, low-bit quants in llama.cpp for longer context of better precision in the same VRAM",
+    "homepage": "https://anbeeld.com/projects/beellama-cpp",
     "license": "MIT",
-    "notes": "BeeLlama CUDA 13.3 x64 build. Needs an NVIDIA GPU with a matching CUDA 13 driver. The CUDA runtime (cudart/cublas DLLs) is installed along with the main archive.",
-    "url": [
-        "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.6/beellama-v0.4.6-bin-win-cuda-13.3-x64.zip",
-        "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.6/beellama-v0.4.6-cudart-win-cuda-13.3-x64.zip"
-    ],
-    "hash": [
-        "sha256:5ad1cf5f62e0ca703c18c888e736b8641be326c431b338f4eb0db9a97c1b5658",
-        "sha256:1462a050eb4c684921ba51dcc4cc488a036674c3e73e9945ee705b854808d03e"
-    ],
+    "checkver": {
+        "github": "https://github.com/Anbeeld/beellama.cpp"
+    },
+    "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.6/beellama-v0.4.6-bin-win-hip-radeon-x64.zip",
+    "hash": "sha256:e16c04d3c8f9f5008a6246ad5c9c88e76acbe7025bcc850187442b5ffda37897",
+    "autoupdate": {
+        "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-v$version-bin-win-hip-radeon-x64.zip"
+    },
+    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。",
     "bin": [
         "llama-server.exe",
         "llama-cli.exe"
@@ -21,14 +21,5 @@
             "llama-server.exe",
             "BeeLlama"
         ]
-    ],
-    "checkver": {
-        "github": "https://github.com/Anbeeld/beellama.cpp"
-    },
-    "autoupdate": {
-        "url": [
-            "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-v$version-bin-win-cuda-13.3-x64.zip",
-            "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-v$version-cudart-win-cuda-13.3-x64.zip"
-        ]
-    }
+    ]
 }

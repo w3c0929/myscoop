@@ -329,13 +329,14 @@ def add_manifest(repo_url, app_name=None):
     else:
         manifest["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
 
-    # 候选架构：专用组优先；缺专用组时用通用组最优兜底（规则②）
+    # 候选架构：专用组优先；缺专用组时用通用组最优兜底（规则②；纯通用项目不做兜底）
     generic_best = pick_asset(arch_groups["generic"]) if arch_groups["generic"] else None
+    has_special = any(arch_groups[g] for g in ("64bit", "32bit", "arm64"))
     arch_sel = {}
     for arch in ("64bit", "32bit", "arm64"):
         if arch_groups[arch]:
             arch_sel[arch] = pick_asset(arch_groups[arch])
-        elif generic_best:
+        elif generic_best and has_special:
             arch_sel[arch] = generic_best
 
     if len(arch_sel) >= 2:
