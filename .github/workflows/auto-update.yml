@@ -23,6 +23,11 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: 配置 git 身份
+        run: |
+          git config user.name "myscoop-bot"
+          git config user.email "actions@users.noreply.github.com"
+
       - name: 运行更新脚本（免下载，读取 GitHub API digest）
         run: python3 myscoop-update.py --all
 
@@ -32,8 +37,6 @@ jobs:
             echo "无 manifest 变更，跳过提交"
             exit 0
           fi
-          git config user.name "myscoop-bot"
-          git config user.email "actions@users.noreply.github.com"
           git add bucket/
           git commit -m "自动更新第三方软件"
 
