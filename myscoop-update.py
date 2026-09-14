@@ -164,9 +164,10 @@ def score_asset(name):
     if name.endswith(".zip") or name.endswith(".7z"):
         score += 5
     elif name.endswith(".exe"):
-        # 有 setup 字样的是安装包，扣分
+        # 有 setup/install 字样的是安装包，降到最低档（与 MSI 同档），
+        # 免安装直用版（如 floral-notepaper_1.2.0.exe）优先
         if "setup" in lower or "install" in lower:
-            score -= 5
+            score -= 10
     # MSI 保留但降低优先级，避免 Scoop 自动解包执行完整安装到系统
     # 如需恢复 MSI 正常优先级，删除下面两行即可
     elif name.endswith(".msi"):

@@ -19,12 +19,12 @@
             ]
         },
         "64bit": {
-            "url": "https://github.com/Achilng/floral-notepaper/releases/download/v1.2.0/floral-notepaper_1.2.0_x64-setup.exe",
-            "hash": "sha256:c3c83ca5f6ae3c6291841c288780d0b6ce8266af37dee476cbab273b81cda523",
-            "bin": "floral-notepaper_1.2.0_x64-setup.exe",
+            "url": "https://github.com/Achilng/floral-notepaper/releases/download/v1.2.0/floral-notepaper_1.2.0.exe",
+            "hash": "sha256:a049c4084d399fd326e62e97d4c5095225b96dff4050725ba4432a5d99a67fcd",
+            "bin": "floral-notepaper_1.2.0.exe",
             "shortcuts": [
                 [
-                    "floral-notepaper_1.2.0_x64-setup.exe",
+                    "floral-notepaper_1.2.0.exe",
                     "floral-notepaper"
                 ]
             ]
@@ -54,11 +54,11 @@
                 ]
             },
             "64bit": {
-                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version_x64-setup.exe",
-                "bin": "floral-notepaper_$version_x64-setup.exe",
+                "url": "https://github.com/Achilng/floral-notepaper/releases/download/v$version/floral-notepaper_$version.exe",
+                "bin": "floral-notepaper_$version.exe",
                 "shortcuts": [
                     [
-                        "floral-notepaper_$version_x64-setup.exe",
+                        "floral-notepaper_$version.exe",
                         "floral-notepaper"
                     ]
                 ]
