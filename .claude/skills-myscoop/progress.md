@@ -163,8 +163,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* d52a23c (HEAD -> main) README 更新 SwitchHosts 通知默认内容说明
-* a1383cd (origin/main, origin/HEAD) progress.md 更新提交历史
+* 368092b (HEAD -> main) 收录策略：第三方资产按架构分组择优生成多架构块（规则①-④）
+* 416cbf0 (origin/main, origin/HEAD) progress.md 更新提交历史
+* d52a23c README 更新 SwitchHosts 通知默认内容说明
+* a1383cd progress.md 更新提交历史
 * b3cb65a SwitchHosts 更新便携包：通知内容默认为空的时候默认设置为 {title} {result} {message}
 * 177ee08 progress.md 更新提交历史
 * a7d0cc1 自动更新第三方软件
