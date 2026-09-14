@@ -96,7 +96,7 @@
 | 84 | WPS Office — 办公套件（文字/表格/演示） | `scoop install wps` | 单 exe 手动安装 | 26899 |
 | 85 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 |
 | 86 | [Windows App Runtime](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时（WinUI/WinAppSDK 应用依赖） | `scoop install windowsappruntime` | 单 exe 手动安装 | 2.4.0 |
-| 87 | [SwitchHosts](https://github.com/oldj/SwitchHosts) — Hosts 文件快速切换管理工具 | `scoop install switchhosts` | zip 便携解压即用 | 5.0.1 |
+| 87 | [SwitchHosts](https://github.com/oldj/SwitchHosts) — Hosts 文件快速切换管理工具（通知内容默认留空时自动显示为 {title} {result} {message}） | `scoop install switchhosts` | zip 便携解压即用 | 5.0.1 |
 
 ### 第三方官方（引用原项目 Release）
 
