@@ -163,8 +163,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 91a6c40 (HEAD -> main) 第三方 23 款清理重建：7 款更名简短化（cherry/cmm-plus/etlp/fileconv/floral/msst-gui/tokenicode）+ 修复 CUDA 与版本 tie-break 评分 + 文档同步
-* b746358 (origin/main, origin/HEAD) 更新lertaro 5.6.5
+* c7ca677 (HEAD -> main) 补齐 zip/7z 类 bin/shortcuts/extract_dir（拆包实测）+ exe 类 autoupdate 模板；beellama 换 vulkan 包（CUDA 包无可执行文件）
+* 46860fd (origin/main, origin/HEAD) progress.md 更新提交历史
+* 91a6c40 第三方 23 款清理重建：7 款更名简短化（cherry/cmm-plus/etlp/fileconv/floral/msst-gui/tokenicode）+ 修复 CUDA 与版本 tie-break 评分 + 文档同步
+* b746358 更新lertaro 5.6.5
 * 55e6fb7 progress.md 更新提交历史
 * 684f43e autoupdate 模板字段同步：bin/shortcuts 随版本自动更新（floral/cc-haha/cherry-studio/tokenicode/windisktool）
 * c610d37 progress.md 更新提交历史
