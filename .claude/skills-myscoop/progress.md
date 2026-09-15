@@ -166,8 +166,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 1d895be (HEAD -> main) 六款带版本名 exe 统一改造：pre_install 通配符改名 + 固定 bin/shortcuts（升级后文件名与命令名不再随版本变化）
-* c5f60cc (origin/main, origin/HEAD) progress.md 更新提交历史
+* 36ba999 (HEAD -> main) myscoop-update.py 顶部用法说明补充直链/下载页/模板新增模式
+* 1b4c4ad (origin/main, origin/HEAD) 新增第三方netcatty终端使用scoop install netcatty安装
+* 86079a8 progress.md 更新提交历史
+* 1d895be 六款带版本名 exe 统一改造：pre_install 通配符改名 + 固定 bin/shortcuts（升级后文件名与命令名不再随版本变化）
+* c5f60cc progress.md 更新提交历史
 * dfa7fee 优先级调整：setup/install 安装包降到最低档(-10 与 MSI 同档)，floral 64bit 改用免安装版
 * ec49b6c progress.md 更新提交历史
 * 7ea3d2f FALLBACK_OUT_DIR 改用正斜杠写法 Path(D:/ceshi) 消除编辑器转义误报
