@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 624d194 (HEAD -> main) .gitignore 加入 gzh/（公众号文章本地目录，永不提交）
-* c784a43 (origin/main, origin/HEAD) magpie.json补全快捷方式
+* 1abbc5c (HEAD -> main) .gitignore 加入 .playwright-cli（浏览器自动化会话产物）
+* 367fcae (origin/main, origin/HEAD) progress.md 更新提交历史
+* 624d194 .gitignore 加入 gzh/（公众号文章本地目录，永不提交）
+* c784a43 magpie.json补全快捷方式
 * 95ab7b2 progress.md 更新提交历史
 * 38072ed zip/7z 下载后保留缓存至 staging/.dl_cache，--fill-bin 优先复用缓存免二次下载（--no-keep/--force-download 控制）
 * b7501f3 progress.md 更新提交历史
