@@ -29,7 +29,7 @@ myscoop 管理脚本
   python3 myscoop-update.py --from ./pixpin.template.json --name pixpin
 
   # 以上三类生成的清单默认输出到仓库内 staging/（FALLBACK_OUT_DIR），确认无误后用 --out-dir 指定正式目录[pyz]
-  python3 myscoop-update.py --from ./pixpin.template.json --name pixpin --out-dir bucket/
+  python3 myscoop-update.py --from staging/pixpin.template.json --name pixpin --out-dir bucket/
   # 直链/下载页清单使用网页 checkver（url + regex），--all 每晚自动检查更新（有新版本才下载实测 hash）
 
 """
@@ -776,15 +776,24 @@ def finalize_direct_manifest(template, out_dir, app_name):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     tmp = out_dir / f".{app_name}_dl.tmp"
-    print(f"[下载] {url.split('#')[0]}")
-    try:
-        download_to(url, tmp)
-    except Exception as e:
-        print(f"[错误] 下载失败: {e}")
-        return None
-    size = tmp.stat().st_size
-    digest = sha256_hex(tmp)
-    print(f"[下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
+    existing_hash = template.get("hash")
+    force_dl = "--force-download" in sys.argv[1:]
+    if existing_hash and not force_dl:
+        # 模板已含 hash：跳过重复下载，直接信任既有值（--force-download 可强制重算）
+        given = str(existing_hash).lower()
+        digest = given[7:] if given.startswith("sha256:") else given
+        size = 0
+        print(f"[跳过下载] 模板已含 hash（{given[:24]}...），如需重算请加 --force-download")
+    else:
+        print(f"[下载] {url.split('#')[0]}")
+        try:
+            download_to(url, tmp)
+        except Exception as e:
+            print(f"[错误] 下载失败: {e}")
+            return None
+        size = tmp.stat().st_size
+        digest = sha256_hex(tmp)
+        print(f"[下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
 
     if template.get("hash"):
         given = str(template["hash"]).lower()
@@ -798,18 +807,24 @@ def finalize_direct_manifest(template, out_dir, app_name):
         template["hash"] = "sha256:" + digest
         print(f"[hash] 已自动填充 sha256:{digest[:16]}...")
 
-    inno = is_innosetup(tmp)
-    if inno:
-        print("[InnoSetup] 检测到 Inno Setup 安装器特征")
-        if template.get("innosetup") is not True:
-            template["innosetup"] = True
-            print("            已自动添加 \"innosetup\": true")
-    elif template.get("innosetup") is True:
-        print("[警告] 模板声明 innosetup:true 但文件中未检测到 Inno Setup 特征，请人工确认")
+    if "--force-download" not in sys.argv[1:]:
+        # 未下载文件：跳过 Inno Setup 检测（无文件可查）
+        print("[InnoSetup] 跳过检测（未下载文件，模板已 hash 齐备）")
+    else:
+        inno = is_innosetup(tmp)
+        if inno:
+            print("[InnoSetup] 检测到 Inno Setup 安装器特征")
+            if template.get("innosetup") is not True:
+                template["innosetup"] = True
+                print("            已自动添加 \"innosetup\": true")
+        elif template.get("innosetup") is True:
+            print("[警告] 模板声明 innosetup:true 但文件中未检测到 Inno Setup 特征，请人工确认")
     tmp.unlink(missing_ok=True)
 
     cv = template.get("checkver") or {}
-    if cv.get("url") and cv.get("regex"):
+    if cv.get("github"):
+        print(f"[checkver] 使用 GitHub 官方 API（{cv['github']}），--all 每晚自动更新")
+    elif cv.get("url") and cv.get("regex"):
         try:
             page = fetch_text(cv["url"])
             m = re.search(cv["regex"], page)
@@ -870,6 +885,27 @@ def add_direct_url(url, app_name=None):
     cv_url, cv_regex = arg_value("--checkver-url"), arg_value("--checkver-regex")
     if cv_url and cv_regex:
         template["checkver"] = {"url": cv_url, "regex": cv_regex}
+
+    # 若直链属于 GitHub 仓库（github.com/{owner}/{repo}/releases/...），自动获取仓库信息补全
+    # （description/homepage/license/checkver.github），网络失败时保持用户字段不阻断
+    gm = re.match(r"https?://github\.com/([^/]+)/([^/]+?)(?:/|$)", url)
+    if gm and not (cv_url and cv_regex):
+        owner, repo = gm.group(1), gm.group(2)
+        try:
+            info = get_repo_info(owner, repo, "github")
+            if not template["description"]:
+                template["description"] = info.get("description") or ""
+            if not template["homepage"]:
+                template["homepage"] = info.get("homepage") or f"https://github.com/{owner}/{repo}"
+            lic = info.get("license") or {}
+            spdx = lic.get("spdx_id") if isinstance(lic, dict) else lic
+            if spdx and spdx != "NOASSERTION" and template["license"] == "unknown":
+                template["license"] = spdx
+            if "checkver" not in template:
+                template["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
+            print(f"[仓库信息] {owner}/{repo}：已自动补全 description/homepage/license/checkver")
+        except Exception as e:
+            print(f"[提示] GitHub 仓库信息获取失败（保持用户字段）: {e}")
     exe_name = arg_value("--exe-name")
     if exe_name:
         template["bin"] = exe_name
