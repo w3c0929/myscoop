@@ -11,11 +11,12 @@
     "autoupdate": {
         "url": "https://github.com/SAOG0721/Magpie/releases/download/v$version-experimental.1/Magpie-Experimental-x64.zip"
     },
+    "extract_dir": "Magpie-Experimental-x64",
     "bin": "Magpie.exe",
     "shortcuts": [
         [
             "Magpie.exe",
-            "Magpie"
+            "magpie"
         ]
     ]
 }
