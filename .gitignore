@@ -46,3 +46,6 @@ desktop.ini
 *.7z
 *.rar
 *.exe
+
+# 公众号文章目录（铁律：绝不提交）
+gzh/
