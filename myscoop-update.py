@@ -887,7 +887,10 @@ def finalize_direct_manifest(template, out_dir, app_name):
     elif ver:
         tpl = make_url_template(url, ver)
         if tpl:
-            template["autoupdate"] = {"url": tpl}
+            # 保留模板中已有的其他键（如 extract_dir 模板），只补充 url
+            au_new = dict(template.get("autoupdate") or {})
+            au_new["url"] = tpl
+            template["autoupdate"] = au_new
             print(f"[autoupdate] 已自动生成模板: {tpl}")
         else:
             print("[autoupdate] URL 中未找到版本号，无法生成模板（可手动补充）")
@@ -898,6 +901,113 @@ def finalize_direct_manifest(template, out_dir, app_name):
         f.write("\n")
     print(f"\n[成功] 已写入: {out_path}")
     return out_path
+
+
+def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
+    """补全命令：下载 zip 探测 exe -> 列出供用户挑选主程序 -> 写入 bin/shortcuts。
+    用法: myscoop-update.py --fill-bin <manifest.json> [--out-dir 目录] [--select 编号|exe名]
+    不带 --select 时交互式提问（回车=第 1 个）。"""
+    template = json.loads(Path(tpath).read_text(encoding="utf-8"))
+    url = template.get("url", "")
+    if not url:
+        print("[错误] 清单缺少 url")
+        return None
+    if not url.lower().endswith(".zip"):
+        print("[错误] --fill-bin 仅支持 zip 类清单（exe 直链请用 --exe-name 重新 --add）")
+        return None
+    if not app_name:
+        app_name = arg_value("--name") or Path(tpath).stem
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    tmp = out_dir / f".{app_name}_fill.tmp"
+    print(f"[下载] {url.split('#')[0]}")
+    try:
+        download_to(url, tmp)
+    except Exception as e:
+        print(f"[错误] 下载失败: {e}")
+        return None
+    digest = sha256_hex(tmp)
+    try:
+        import zipfile
+        with zipfile.ZipFile(tmp) as z:
+            names = [n for n in z.namelist() if not n.endswith("/")]
+    except Exception as e:
+        tmp.unlink(missing_ok=True)
+        print(f"[错误] 无法读取 zip: {e}")
+        return None
+    tmpl_digest = str(template.get("hash", "")).lower()
+    tmpl_digest = tmpl_digest[7:] if tmpl_digest.startswith("sha256:") else tmpl_digest
+    if tmpl_digest and tmpl_digest != digest:
+        print(f"[警告] 实测 hash 与清单不一致（{digest[:16]}...），将按实测值更新")
+    elif tmpl_digest:
+        print(f"[hash] 与清单 hash 一致 (OK)  sha256:{digest[:16]}...")
+
+    # 列出全部 exe（顶层优先 + 名称排序）
+    exes = [n for n in names if n.lower().endswith(".exe")]
+    exes.sort(key=lambda n: (("/" in n), n.lower()))
+    if not exes:
+        tmp.unlink(missing_ok=True)
+        print("[提示] zip 内未发现 exe（可能是脚本类应用），无法自动补 bin")
+        return None
+    print(f"[探测] zip 内可执行文件（共 {len(exes)} 个）:")
+    for i, e in enumerate(exes, 1):
+        print(f"    {i}: {e}")
+
+    choice = None
+    if select:
+        if select.isdigit():
+            idx = int(select) - 1
+            if 0 <= idx < len(exes):
+                choice = exes[idx]
+            else:
+                print(f"[错误] 编号超出范围（1-{len(exes)}）")
+        else:
+            low = select.lower()
+            choice = next((e for e in exes if low in e.lower()), None)
+            if not choice:
+                print(f"[错误] 未找到包含 '{select}' 的 exe")
+    else:
+        try:
+            ans = input(f"请选择主程序编号（1-{len(exes)}，回车默认 1）: ").strip()
+            if ans:
+                if ans.isdigit() and 1 <= int(ans) <= len(exes):
+                    choice = exes[int(ans) - 1]
+                else:
+                    choice = next((e for e in exes if ans.lower() in e.lower()), None)
+            else:
+                choice = exes[0]
+        except EOFError:
+            choice = exes[0]
+    if not choice:
+        tmp.unlink(missing_ok=True)
+        return None
+    print(f"[选择] {choice}")
+
+    # 若 exe 在子目录且该目录是唯一顶层目录 -> 自动补 extract_dir（version 模板化）
+    bin_name = choice
+    if "/" in choice:
+        top = choice.split("/", 1)[0]
+        top_files = [n for n in names if "/" not in n]
+        top_dirs = {n.split("/", 1)[0] for n in names if "/" in n}
+        if not top_files and top_dirs == {top}:
+            template["extract_dir"] = top
+            bin_name = choice.split("/", 1)[1]
+            au = template.setdefault("autoupdate", {})
+            tpl = re.sub(r"\d+(?:\.\d+)+", "$version", top, count=1)
+            if tpl != top:
+                au["extract_dir"] = tpl
+            print(f"[extract_dir] {top}（已设置模板: {au.get('extract_dir', top)}）")
+        else:
+            print(f"[警告] zip 结构较复杂（多目录/顶层散文件），未自动设置 extract_dir，"
+                  f"bin 将使用完整相对路径 {choice}")
+    template["bin"] = bin_name
+    template["shortcuts"] = [[bin_name, arg_value("--shortcut-name") or app_name]]
+    print(f"[写入] bin = {bin_name} | shortcuts 显示名 = {arg_value('--shortcut-name') or app_name}")
+
+    tmp.unlink(missing_ok=True)
+    if not template.get("hash"):
+        template["hash"] = "sha256:" + digest
+    return finalize_direct_manifest(template, out_dir, app_name)
 
 
 def add_direct_url(url, app_name=None):
@@ -1058,6 +1168,18 @@ def main():
     dry_run = "--dry-run" in args
     all_mode = "--all" in args
     add_idx = args.index("--add") if "--add" in args else -1
+
+    # --fill-bin <清单.json>：下载 zip 探测 exe，由用户指定主程序，补全 bin/shortcuts
+    if "--fill-bin" in args:
+        fb_pos = args.index("--fill-bin")
+        tpath = args[fb_pos + 1] if fb_pos + 1 < len(args) else None
+        if not tpath:
+            print("用法: python3 myscoop-update.py --fill-bin <manifest.json> [--name 应用名] "
+                  "[--select 编号|exe名] [--out-dir 输出目录]")
+            sys.exit(1)
+        result = fill_bin_manifest(tpath, arg_value("--out-dir") or FALLBACK_OUT_DIR,
+                                   arg_value("--name"), arg_value("--select"))
+        sys.exit(0 if result else 1)
 
     # --from <模板.json>：非 GitHub 直链模板补全（下载算 hash + 检测 + 校验）
     if "--from" in args:
