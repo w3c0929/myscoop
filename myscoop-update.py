@@ -94,10 +94,24 @@ def fetch_json(url):
 
 
 def get_latest_release(owner, repo, platform="github"):
-    """获取最新 release 信息"""
+    """获取最新 release 信息。
+    兼容"只发布 prerelease"的仓库（/releases/latest 会 404，如 SAOG0721/Magpie）：
+    404 时回退到 releases 列表，取最新一个非 draft、非 untagged 的 release。"""
     base = api_base(platform)
     url = f"{base}/{owner}/{repo}/releases/latest"
-    return fetch_json(url)
+    try:
+        return fetch_json(url)
+    except urllib.error.HTTPError as e:
+        if e.code != 404:
+            raise
+        rels = fetch_json(f"{base}/{owner}/{repo}/releases?per_page=20")
+        for r in rels:
+            if r.get("draft"):
+                continue
+            if str(r.get("tag_name", "")).startswith("untagged-"):
+                continue
+            return r
+        raise urllib.error.HTTPError(url, 404, "no usable release", None, None)
 
 
 def get_repo_info(owner, repo, platform="github"):
@@ -597,6 +611,10 @@ def update_manifest(manifest_path, dry_run=False):
     latest_tag = release["tag_name"]
     latest_version = latest_tag.lstrip("v")
 
+    # 兼容"tag 带后缀而清单 version 只写主版本"的项目（如 v0.6.8-experimental.1 vs 0.6.8）：
+    # 视为同一版本，不触发伪更新（仅当后缀不同时）
+    if latest_version.startswith(current_version + "-"):
+        return None
     if latest_version == current_version:
         return None
     print(f"  {manifest_path.name}: {current_version} → {latest_version}")
