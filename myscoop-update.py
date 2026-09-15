@@ -18,6 +18,17 @@ myscoop 管理脚本
   # 更新所有含 checkver 的 manifest,[pyp]
   python3 myscoop-update.py --all
 
+  非 GitHub 直链 / 下载页 / 模板的新增（自动下载实测 SHA256、检测 Inno Setup、生成 checkver/autoupdate）:
+  # 直链模式：给安装包直链（可选 --version/--checkver-url/--checkver-regex/--exe-name/--homepage/--description/--license）
+  python3 myscoop-update.py --add "https://down.pixpin.cn/PixPin_win_3.5.5.1.exe" --name pixpin --version 3.5.5.1
+  # 下载页模式：给官网下载页 URL，自动提取安装包链接与版本号（href 抓不到时回退扫描 JS 里的裸 URL）
+  python3 myscoop-update.py --add "https://pixpin.cn/download/" --name pixpin
+  # 模板模式：填写/粘贴 manifest 模板（url 指向官网直链），脚本补全 hash 并校验 checkver/autoupdate
+  python3 myscoop-update.py --from ./pixpin.template.json --name pixpin
+  # 以上三类生成的清单默认输出到 D:\ceshi（FALLBACK_OUT_DIR），确认无误后用 --out-dir 指定正式目录
+  python3 myscoop-update.py --from ./pixpin.template.json --name pixpin --out-dir bucket/
+  # 直链/下载页清单使用网页 checkver（url + regex），--all 每晚自动检查更新（有新版本才下载实测 hash）
+
 """
 
 import json
