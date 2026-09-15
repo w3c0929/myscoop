@@ -25,7 +25,7 @@ myscoop 管理脚本
   python3 myscoop-update.py --add "https://pixpin.cn/download/" --name pixpin
   # 模板模式：填写/粘贴 manifest 模板（url 指向官网直链），脚本补全 hash 并校验 checkver/autoupdate
   python3 myscoop-update.py --from ./pixpin.template.json --name pixpin
-  # 以上三类生成的清单默认输出到 D:\ceshi（FALLBACK_OUT_DIR），确认无误后用 --out-dir 指定正式目录
+  # 以上三类生成的清单默认输出到 D:/ceshi（FALLBACK_OUT_DIR），确认无误后用 --out-dir 指定正式目录
   python3 myscoop-update.py --from ./pixpin.template.json --name pixpin --out-dir bucket/
   # 直链/下载页清单使用网页 checkver（url + regex），--all 每晚自动检查更新（有新版本才下载实测 hash）
 
