@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* f0be625 (HEAD) 直链/下载页/模板模式的草稿输出目录改为仓库内 staging/（替代 D:/ceshi）并加入 .gitignore
-* 21f9ed1 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 01088f2 (HEAD -> main) 直链新增增强：GitHub 直链自动补全仓库信息(checkver/description/homepage/license) + 模板已有 hash 跳过重下载(--force-download 可强制)；收录 magpie 0.6.8
+* 66b2ae8 (origin/main, origin/HEAD) progress.md 更新提交历史
+* f0be625 直链/下载页/模板模式的草稿输出目录改为仓库内 staging/（替代 D:/ceshi）并加入 .gitignore
+* 21f9ed1 progress.md 更新提交历史
 * 3af7818 自动更新第三方软件
 * 8a4c416 progress.md 更新提交历史
 * f7f2a09 用法注释中 D 盘路径改为正斜杠，消除 SyntaxWarning
