@@ -11,7 +11,8 @@ myscoop 管理脚本
   python3 myscoop-update.py --add https://github.com/owner/repo --name my-app-name
 
   # 2) 新增：安装包直链（自动下载实测 SHA256、Inno Setup 检测、生成 autoupdate；
-  #    GitHub 直链还会自动补全 description/homepage/license/checkver）[pyl]
+  #    GitHub 直链还会自动补全 description/homepage/license/checkver）
+  #    zip/7z 下载后默认保留到 staging/.dl_cache/，供模式 5 复用免二次下载（--no-keep 可关闭）[pyl]
   python3 myscoop-update.py --add "https://down.pixpin.cn/PixPin_win_3.5.5.1.exe" --name pixpin --version 3.5.5.1
   #    可选参数：--exe-name 主程序名（补 bin/shortcuts） --shortcut-name 快捷方式名
   #              --checkver-url / --checkver-regex 网页版本检查  --homepage / --description / --license
@@ -25,7 +26,8 @@ myscoop 管理脚本
   python3 myscoop-update.py --from staging/magpie.json --name magpie --out-dir bucket/
   python3 myscoop-update.py --from staging/magpie.json --name magpie --out-dir bucket/ --force-download
 
-  # 5) 补全：zip 清单下载探测 exe，由用户指定主程序，写入 bin/shortcuts（自动处理 extract_dir 与模板）[pyb]
+  # 5) 补全：zip 清单下载探测 exe，由用户指定主程序，写入 bin/shortcuts（自动处理 extract_dir 与模板）；
+  #    优先复用 staging/.dl_cache/ 缓存避免重复下载（--force-download 强制重下）[pyb]
   python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --out-dir bucket/          # 交互选择
   python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select 1 --out-dir bucket/  # 非交互
   python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select Magpie.exe --out-dir bucket/
@@ -806,6 +808,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     tmp = out_dir / f".{app_name}_dl.tmp"
+    keep_cached = False
     existing_hash = template.get("hash")
     force_dl = "--force-download" in sys.argv[1:]
     if existing_hash and not force_dl:
@@ -815,6 +818,15 @@ def finalize_direct_manifest(template, out_dir, app_name):
         size = 0
         print(f"[跳过下载] 模板已含 hash（{given[:24]}...），如需重算请加 --force-download")
     else:
+        # zip/7z 下载后保留到 staging/.dl_cache/，供 --fill-bin 复用（--no-keep 可关闭保留）
+        keep_cached = (url.lower().endswith((".zip", ".7z"))
+                       and "--no-keep" not in sys.argv[1:])
+        if keep_cached:
+            cache_dir = FALLBACK_OUT_DIR / ".dl_cache"
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            ext = ".7z" if url.lower().endswith(".7z") else ".zip"
+            tmp = cache_dir / f"{app_name}{ext}"
+            print(f"[缓存] 压缩包将保留到 {tmp}")
         print(f"[下载] {url.split('#')[0]}")
         try:
             download_to(url, tmp)
@@ -863,7 +875,8 @@ def finalize_direct_manifest(template, out_dir, app_name):
                 print("            已自动添加 \"innosetup\": true")
         elif template.get("innosetup") is True:
             print("[警告] 模板声明 innosetup:true 但文件中未检测到 Inno Setup 特征，请人工确认")
-    tmp.unlink(missing_ok=True)
+    if not keep_cached:
+        tmp.unlink(missing_ok=True)
 
     cv = template.get("checkver") or {}
     if cv.get("github"):
@@ -931,14 +944,28 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
         app_name = arg_value("--name") or Path(tpath).stem
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    tmp = out_dir / f".{app_name}_fill.tmp"
-    print(f"[下载] {url.split('#')[0]}")
-    try:
-        download_to(url, tmp)
-    except Exception as e:
-        print(f"[错误] 下载失败: {e}")
-        return None
-    digest = sha256_hex(tmp)
+    # 优先使用 --add/--from 下载时保留的缓存包（staging/.dl_cache/{app}.zip），避免二次下载；
+    # hash 能对上就用缓存；对不上或无--force-download 时重新下载并覆盖缓存
+    cache_dir = FALLBACK_OUT_DIR / ".dl_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    ext = ".7z" if url.lower().endswith(".7z") else ".zip"
+    tmp = cache_dir / f"{app_name}{ext}"
+    tmpl_digest = str(template.get("hash", "")).lower()
+    tmpl_digest = tmpl_digest[7:] if tmpl_digest.startswith("sha256:") else tmpl_digest
+    use_cache = tmp.exists() and "--force-download" not in sys.argv[1:]
+    if use_cache and tmpl_digest:
+        use_cache = sha256_hex(tmp) == tmpl_digest
+    if use_cache:
+        print(f"[缓存] 使用已有压缩包 {tmp}（跳过下载）")
+        digest = sha256_hex(tmp)
+    else:
+        print(f"[下载] {url.split('#')[0]}\n[缓存] 压缩包将保留到 {tmp}")
+        try:
+            download_to(url, tmp)
+        except Exception as e:
+            print(f"[错误] 下载失败: {e}")
+            return None
+        digest = sha256_hex(tmp)
     try:
         import zipfile
         with zipfile.ZipFile(tmp) as z:
@@ -1016,7 +1043,7 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
     template["shortcuts"] = [[bin_name, arg_value("--shortcut-name") or app_name]]
     print(f"[写入] bin = {bin_name} | shortcuts 显示名 = {arg_value('--shortcut-name') or app_name}")
 
-    tmp.unlink(missing_ok=True)
+    # 压缩包保留在 .dl_cache 供后续复用（不删除）
     if not template.get("hash"):
         template["hash"] = "sha256:" + digest
     return finalize_direct_manifest(template, out_dir, app_name)
