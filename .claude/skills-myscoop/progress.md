@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* de4c5be (HEAD -> main) 新增 --fill-bin 命令：下载 zip 列出 exe 由用户指定主程序，自动补 bin/shortcuts 与 extract_dir(模板)；修复 autoupdate 生成时丢弃既有模板键
-* dc3283a (origin/main, origin/HEAD) progress.md 更新提交历史
+* 783fd8f (HEAD -> main) 顶部用法注释重写：全部八类用法逐一举例（仓库/直链/下载页/模板/补全/更新/检查/GH_TOKEN）
+* af8eb2d (origin/main, origin/HEAD) progress.md 更新提交历史
+* de4c5be 新增 --fill-bin 命令：下载 zip 列出 exe 由用户指定主程序，自动补 bin/shortcuts 与 extract_dir(模板)；修复 autoupdate 生成时丢弃既有模板键
+* dc3283a progress.md 更新提交历史
 * 0dd1d68 magpie 补全 bin/shortcuts（Magpie.exe）；zip 直链下载后自动探测顶层 exe 并提示补 bin（--exe-name）
 * 5845a18 progress.md 更新提交历史
 * a7e126c 修复：仅发布 prerelease 的仓库(如 Magpie)更新 404——/releases/latest 回退取最新 prerelease；tag 带后缀且与清单同主版本时视为无更新
