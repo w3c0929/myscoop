@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 01088f2 (HEAD -> main) 直链新增增强：GitHub 直链自动补全仓库信息(checkver/description/homepage/license) + 模板已有 hash 跳过重下载(--force-download 可强制)；收录 magpie 0.6.8
-* 66b2ae8 (origin/main, origin/HEAD) progress.md 更新提交历史
+* a7e126c (HEAD -> main) 修复：仅发布 prerelease 的仓库(如 Magpie)更新 404——/releases/latest 回退取最新 prerelease；tag 带后缀且与清单同主版本时视为无更新
+* 9a8b314 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 01088f2 直链新增增强：GitHub 直链自动补全仓库信息(checkver/description/homepage/license) + 模板已有 hash 跳过重下载(--force-download 可强制)；收录 magpie 0.6.8
+* 66b2ae8 progress.md 更新提交历史
 * f0be625 直链/下载页/模板模式的草稿输出目录改为仓库内 staging/（替代 D:/ceshi）并加入 .gitignore
 * 21f9ed1 progress.md 更新提交历史
 * 3af7818 自动更新第三方软件
