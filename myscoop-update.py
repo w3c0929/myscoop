@@ -3,34 +3,46 @@
 myscoop 管理脚本
 通过 GitHub / Gitee API 免下载获取版本和哈希。
 
-用法:
-  # 从 GitHub / Gitee 链接添加新软件,[pya][pyn]
+用法（所有模式一览）:
+
+  # 1) 新增：GitHub / Gitee 仓库（自动解析仓库与 release，生成完整 manifest）,[pya][pyn]
   python3 myscoop-update.py --add https://github.com/NanmiCoder/cc-haha.git
   python3 myscoop-update.py --add https://gitee.com/fasterthanlight/automatic_clicker_2.git
   python3 myscoop-update.py --add https://github.com/owner/repo --name my-app-name
 
-  # 更新指定 manifest,[pyd]
-  python3 myscoop-update.py bucket/contextmenumgr-plus.json
-  
-  # 仅检查，不写入[pys]
-  python3 myscoop-update.py --all --dry-run
-
-  # 更新所有含 checkver 的 manifest,[pyp]
-  python3 myscoop-update.py --all
-
-  非 GitHub 直链 / 下载页 / 模板的新增（自动下载实测 SHA256、检测 Inno Setup、生成 checkver/autoupdate）:
-  # 直链模式：给安装包直链（可选 --version/--checkver-url/--checkver-regex/--exe-name/--homepage/--description/--license）[pyl]
+  # 2) 新增：安装包直链（自动下载实测 SHA256、Inno Setup 检测、生成 autoupdate；
+  #    GitHub 直链还会自动补全 description/homepage/license/checkver）[pyl]
   python3 myscoop-update.py --add "https://down.pixpin.cn/PixPin_win_3.5.5.1.exe" --name pixpin --version 3.5.5.1
+  #    可选参数：--exe-name 主程序名（补 bin/shortcuts） --shortcut-name 快捷方式名
+  #              --checkver-url / --checkver-regex 网页版本检查  --homepage / --description / --license
+  python3 myscoop-update.py --add "https://github.com/SAOG0721/Magpie/releases/download/v0.6.8-experimental.1/Magpie-Experimental-x64.zip" --name magpie --version 0.6.8 --exe-name Magpie.exe
 
-  # 下载页模式：给官网下载页 URL，自动提取安装包链接与版本号（href 抓不到时回退扫描 JS 里的裸 URL）[pyk]
+  # 3) 新增：官网下载页（自动提取安装包链接与版本号，生成 checkver/autoupdate；href 抓不到时回退 JS 裸 URL）[pyk]
   python3 myscoop-update.py --add "https://pixpin.cn/download/" --name pixpin
 
-  # 模板模式：填写/粘贴 manifest 模板（url 指向官网直链），脚本补全 hash 并校验 checkver/autoupdate[pym]
+  # 4) 新增：manifest 模板补全（模板已有 hash 时自动跳过重复下载，秒级完成；--force-download 可强制重算）[pym]
   python3 myscoop-update.py --from ./pixpin.template.json --name pixpin
+  python3 myscoop-update.py --from staging/magpie.json --name magpie --out-dir bucket/
+  python3 myscoop-update.py --from staging/magpie.json --name magpie --out-dir bucket/ --force-download
 
-  # 以上三类生成的清单默认输出到仓库内 staging/（FALLBACK_OUT_DIR），确认无误后用 --out-dir 指定正式目录[pyz]
-  python3 myscoop-update.py --from staging/pixpin.template.json --name pixpin --out-dir bucket/
-  # 直链/下载页清单使用网页 checkver（url + regex），--all 每晚自动检查更新（有新版本才下载实测 hash）
+  # 5) 补全：zip 清单下载探测 exe，由用户指定主程序，写入 bin/shortcuts（自动处理 extract_dir 与模板）[pyb]
+  python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --out-dir bucket/          # 交互选择
+  python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select 1 --out-dir bucket/  # 非交互
+  python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select Magpie.exe --out-dir bucket/
+
+  # 注意：模式 2/3/4/5 生成的清单默认输出到仓库内 staging/（FALLBACK_OUT_DIR），
+  #       确认无误后用 --out-dir 指定正式目录（如 bucket/）
+
+  # 6) 更新：单个 manifest,[pyd]
+  python3 myscoop-update.py bucket/contextmenumgr-plus.json
+  python3 myscoop-update.py bucket/contextmenumgr-plus.json --dry-run
+
+  # 7) 更新：全部含 checkver 的 manifest,[pyp][pys]
+  python3 myscoop-update.py --all
+  python3 myscoop-update.py --all --dry-run
+
+  # 8) 环境变量：GH_TOKEN（或 GITHUB_TOKEN）可提升 GitHub API 配额（仅对 api.github.com 生效）
+  $env:GH_TOKEN = "ghp_xxx"   # PowerShell；Linux/macOS: export GH_TOKEN=ghp_xxx
 
 """
 
