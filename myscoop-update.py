@@ -812,6 +812,20 @@ def finalize_direct_manifest(template, out_dir, app_name):
         size = tmp.stat().st_size
         digest = sha256_hex(tmp)
         print(f"[下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
+        # zip 且未指定 bin 时：探测压缩包顶层 exe，提示补 bin/shortcuts
+        if url.lower().endswith(".zip") and not template.get("bin"):
+            try:
+                import zipfile
+                with zipfile.ZipFile(tmp) as z:
+                    names = z.namelist()
+                exes = sorted({n for n in names if n.lower().endswith(".exe")
+                               and "/" not in n and "\\" not in n})
+                if exes:
+                    print(f"[zip探测] 顶层 exe: {', '.join(exes[:6])}"
+                          f"{'...' if len(exes) > 6 else ''}")
+                    print(f"          如需补 bin/shortcuts，可用 --exe-name {exes[0]} 重新生成，或手动添加")
+            except Exception:
+                pass
 
     if template.get("hash"):
         given = str(template["hash"]).lower()

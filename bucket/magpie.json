@@ -10,5 +10,12 @@
     "hash": "sha256:efb41e5177a628c0742566a887660a5a50e159f824cbfbf9f0620b2cc3b6803c",
     "autoupdate": {
         "url": "https://github.com/SAOG0721/Magpie/releases/download/v$version-experimental.1/Magpie-Experimental-x64.zip"
-    }
+    },
+    "bin": "Magpie.exe",
+    "shortcuts": [
+        [
+            "Magpie.exe",
+            "Magpie"
+        ]
+    ]
 }
