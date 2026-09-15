@@ -19,13 +19,16 @@ myscoop 管理脚本
   python3 myscoop-update.py --all
 
   非 GitHub 直链 / 下载页 / 模板的新增（自动下载实测 SHA256、检测 Inno Setup、生成 checkver/autoupdate）:
-  # 直链模式：给安装包直链（可选 --version/--checkver-url/--checkver-regex/--exe-name/--homepage/--description/--license）
+  # 直链模式：给安装包直链（可选 --version/--checkver-url/--checkver-regex/--exe-name/--homepage/--description/--license）[pyl]
   python3 myscoop-update.py --add "https://down.pixpin.cn/PixPin_win_3.5.5.1.exe" --name pixpin --version 3.5.5.1
-  # 下载页模式：给官网下载页 URL，自动提取安装包链接与版本号（href 抓不到时回退扫描 JS 里的裸 URL）
+
+  # 下载页模式：给官网下载页 URL，自动提取安装包链接与版本号（href 抓不到时回退扫描 JS 里的裸 URL）[pyk]
   python3 myscoop-update.py --add "https://pixpin.cn/download/" --name pixpin
-  # 模板模式：填写/粘贴 manifest 模板（url 指向官网直链），脚本补全 hash 并校验 checkver/autoupdate
+
+  # 模板模式：填写/粘贴 manifest 模板（url 指向官网直链），脚本补全 hash 并校验 checkver/autoupdate[pym]
   python3 myscoop-update.py --from ./pixpin.template.json --name pixpin
-  # 以上三类生成的清单默认输出到 D:/ceshi（FALLBACK_OUT_DIR），确认无误后用 --out-dir 指定正式目录
+
+  # 以上三类生成的清单默认输出到仓库内 staging/（FALLBACK_OUT_DIR），确认无误后用 --out-dir 指定正式目录[pyz]
   python3 myscoop-update.py --from ./pixpin.template.json --name pixpin --out-dir bucket/
   # 直链/下载页清单使用网页 checkver（url + regex），--all 每晚自动检查更新（有新版本才下载实测 hash）
 
@@ -40,9 +43,10 @@ import urllib.error
 from pathlib import Path
 
 BUCKET_DIR = Path(__file__).parent / "bucket"
-# 直链/模板/页面新增模式的默认输出目录：未经 --out-dir 指定时，清单落在 D:\ceshi，
-# 避免误写仓库 bucket；确认无误后再用 --out-dir 指向 bucket 目录落实
-FALLBACK_OUT_DIR = Path("D:/ceshi")
+# 直链/模板/页面新增模式的默认输出目录（staging/ 草稿区，已被 .gitignore 忽略）：
+# 未经 --out-dir 指定时，清单落在 staging/，避免误写仓库 bucket；
+# 确认无误后再用 --out-dir 指向 bucket 目录落实
+FALLBACK_OUT_DIR = Path(__file__).resolve().parent / "staging"
 
 
 def parse_repo_url(url):

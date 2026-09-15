@@ -27,6 +27,9 @@ logs/
 __pycache__/
 *.pyc
 
+# 清单草稿区（myscoop-update.py 直链/下载页/模板模式的默认输出目录）
+staging/
+
 
 # 端到端测试临时产物
 sumail-vue/e2e/tmp/

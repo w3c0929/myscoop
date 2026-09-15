@@ -655,7 +655,7 @@ python3 myscoop-update.py --add "https://down.pixpin.cn/PixPin_win_3.5.5.1.exe" 
 python3 myscoop-update.py --from ./pixpin.template.json --name pixpin
 ```
 
-> 这三类模式生成的清单**默认输出到 `D:\ceshi`**（草稿区），确认无误后再用
+> 这三类模式生成的清单**默认输出到仓库内 `staging/`**（草稿区，已被 .gitignore 忽略），确认无误后再用
 > `--out-dir` 指定正式目录（如 `--out-dir bucket/`）或手动移入 `bucket/`。
 > 直链/下载页清单使用网页 checkver（url + regex），`--all` 每晚也会自动检查更新
 > （有新版本时才会下载文件实测 hash）。
