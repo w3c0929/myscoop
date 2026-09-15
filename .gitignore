@@ -49,3 +49,6 @@ desktop.ini
 
 # 公众号文章目录（铁律：绝不提交）
 gzh/
+
+# playwright-cli 本地会话文件（截图/快照/控制台日志）
+/.playwright-cli/
