@@ -1,0 +1,11 @@
+{
+    "version": "2.4.0",
+    "description": "",
+    "homepage": "",
+    "license": "unknown",
+    "url": "https://aka.ms/windowsappsdk/2.4/2.4.0/windowsappruntimeinstall-x64.exe",
+    "hash": "sha256:851c35b0b0a59ce4c55f9171f601193322fc3413143b0dc3390ea11e14cfa7fc",
+    "autoupdate": {
+        "url": "https://aka.ms/windowsappsdk/2.4/$version/windowsappruntimeinstall-x64.exe"
+    }
+}
