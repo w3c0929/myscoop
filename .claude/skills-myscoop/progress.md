@@ -166,8 +166,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* d38db91 (HEAD -> main) SSL 增强：下载/抓取失败自动降级重试（警告+说明 hash 兜底），支持 --insecure 与 MYSCOOP_INSECURE=1；修复 aka.ms 等站点 CERTIFICATE_VERIFY_FAILED
-* e4faecc (origin/main, origin/HEAD) 新增qingjian.json,青简 Qingjian：用 Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词
+* 0d72b19 (HEAD -> main) --all 增强：多平台仓库按清单 url 平台过滤 release（修复 qingjian 被 macos tag 带偏）；tag 平台前缀剥离与 version 对齐；资产匹配失败不再虚报已更新
+* baf59ee (origin/main, origin/HEAD) 新增bucket/winsdk.json 版本为2.4 Windows App SDK 的运行时
+* 8d183f3 progress.md 更新提交历史
+* d38db91 SSL 增强：下载/抓取失败自动降级重试（警告+说明 hash 兜底），支持 --insecure 与 MYSCOOP_INSECURE=1；修复 aka.ms 等站点 CERTIFICATE_VERIFY_FAILED
+* e4faecc 新增qingjian.json,青简 Qingjian：用 Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词
 * 4b24c17 progress.md 更新提交历史
 * a36f842 Inno 自动探测多 exe 时支持交互式选择（编号/关键词，回车默认第一个）；--select 编号|名称可免交互；用法注释同步
 * 32a3412 progress.md 更新提交历史
