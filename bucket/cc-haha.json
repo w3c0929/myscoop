@@ -3,42 +3,24 @@
     "description": "Local-first cross-platform desktop workspace for Claude Code / agents: multi-agent, Git worktrees, code diffs, skill marketplace, multi-model, Computer Use, task-aware desktop pets, with WeChat, Feishu, DingTalk, Telegram, WhatsApp and H5 access.",
     "homepage": "cchaha.ai",
     "license": "MIT",
+    "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.6.3/Claude-Code-Haha-0.6.3-win-x64.exe",
     "checkver": {
         "github": "https://github.com/NanmiCoder/cc-haha"
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.6.3/Claude-Code-Haha-0.6.3-win-x64.exe",
-            "hash": "sha256:40a8480bc230af994458d5beb5b410f61c3eeccfef9b69c199fb84221e4e6561",
-            "bin": "cc-haha.exe",
-            "shortcuts": [
-                [
-                    "cc-haha.exe",
-                    "cc-haha"
-                ]
-            ]
-        },
-        "arm64": {
-            "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.6.3/Claude-Code-Haha-0.6.3-win-arm64.exe",
-            "hash": "sha256:f3a29f18730a742046c3cae925fe3d9e96b78e33698ed514c53dab129742f4cd",
-            "bin": "cc-haha.exe",
-            "shortcuts": [
-                [
-                    "cc-haha.exe",
-                    "cc-haha"
-                ]
-            ]
-        }
-    },
+    "hash": "sha256:40a8480bc230af994458d5beb5b410f61c3eeccfef9b69c199fb84221e4e6561",
+    "bin": "Claude Code Haha.exe",
+    "shortcuts": [
+        [
+            "Claude Code Haha.exe",
+            "cc-haha"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\Claude-Code-Haha-0.6.3-win-x64.exe\" \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ],
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-x64.exe"
-            },
-            "arm64": {
-                "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-arm64.exe"
-            }
-        }
-    },
-    "pre_install": "Get-ChildItem \"$dir\" -Filter 'Claude-Code-Haha*.exe' | Move-Item -Destination \"$dir\\cc-haha.exe\" -Force"
+        "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v$version/Claude-Code-Haha-$version-win-x64.exe"
+    }
 }
