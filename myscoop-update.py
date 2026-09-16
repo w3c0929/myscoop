@@ -32,6 +32,11 @@ myscoop 管理脚本
   python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select 1 --out-dir bucket/  # 非交互
   python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select Magpie.exe --out-dir bucket/
 
+  # 5b) 探测：Inno 安装器类先探测解包后的真实 exe 名（静默安装→列名→自动回滚；便携 exe 直接提示无需探测）；
+  #     安装包保留到 staging/.dl_cache/ 供复用（也支持直接传本地 exe 路径免下载）[pyc]
+  python3 myscoop-update.py --probe-exe "https://github.com/.../xxx-Setup.exe" --name xxx
+  python3 myscoop-update.py --probe-exe "D:\scoop\cache\xxx#1.0.0#hash.exe" --name xxx
+
   # 注意：模式 2/3/4/5 生成的清单默认输出到仓库内 staging/（FALLBACK_OUT_DIR），
   #       确认无误后用 --out-dir 指定正式目录（如 bucket/）
 
@@ -1049,6 +1054,80 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
     return finalize_direct_manifest(template, out_dir, app_name)
 
 
+def probe_exe(src, app_name=None):
+    """--probe-exe <下载URL 或 本地exe路径>：探测 Inno 安装器解包后的真实 exe 名。
+    流程：下载（安装包保留到 staging/.dl_cache/ 供复用）→ Inno 特征检测 →
+    - 非 Inno（便携 exe）：直接提示 bin 用文件名即可，不做静默安装；
+    - Inno：静默安装到临时目录 → 列出真实 exe → 自动卸载回滚。
+    用法: myscoop-update.py --probe-exe <url|本地文件> [--name 应用名]"""
+    url = str(src)
+    is_local = not url.lower().startswith(("http://", "https://"))
+    if not is_local and not url.split("?")[0].lower().endswith(".exe"):
+        print("[提示] 链接不是 .exe（不适用探测），按 --add 直链处理即可")
+        return None
+    if is_local and not Path(url).exists():
+        print("[错误] 本地文件不存在")
+        return None
+    if not app_name:
+        app_name = arg_value("--name") or Path(url.split("#")[0].split("?")[0]).stem or "probe"
+    if is_local:
+        tmp = Path(url)
+        print(f"[本地] 使用已有文件: {tmp}")
+    else:
+        cache_dir = FALLBACK_OUT_DIR / ".dl_cache"
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        ext = Path(url.split("?")[0]).suffix or ".exe"
+        tmp = cache_dir / f"{app_name}{ext}"
+        print(f"[下载] {url.split('#')[0]}\n[缓存] 安装包将保留到 {tmp}")
+        try:
+            download_to(url, tmp)
+        except Exception as e:
+            print(f"[错误] 下载失败: {e}")
+            return None
+    print(f"[hash] sha256:{sha256_hex(tmp)[:16]}...")
+    if not is_innosetup(tmp):
+        print(f"[便携exe] 未检测到 Inno Setup 安装器特征——此类直接可运行无需解包，"
+              f"bin 用文件名（{tmp.name}）即可，配合 --exe-name 生成清单")
+        return tmp
+
+    import subprocess
+    import shutil
+    print("[InnoSetup] 检测到安装器，开始静默安装探测…")
+    work = FALLBACK_OUT_DIR / ".probe_tmp" / app_name
+    shutil.rmtree(work, ignore_errors=True)
+    work.mkdir(parents=True, exist_ok=True)
+    exes = []
+    try:
+        r = subprocess.run([str(tmp), "/VERYSILENT", "/NORESTART", f"/DIR={work}"],
+                           capture_output=True, timeout=600)
+        if r.returncode != 0:
+            print(f"[警告] 静默安装退出码 {r.returncode}，安装目录可能不完整")
+        exes = sorted({p.name for p in work.rglob("*.exe")
+                       if p.name.lower() not in ("unins000.exe",)},
+                      key=lambda n: n.lower())
+        if exes:
+            roots = [e for e in exes if (work / e).is_file()]
+            print(f"[探测] 安装后的真实 exe（{len(exes)} 个）:")
+            for i, e in enumerate(exes, 1):
+                pos = "根目录" if e in roots else "子目录"
+                print(f"    {i}: {e}（{pos}）")
+            print("→ 请用 --exe-name <上选主程序名> 重新 --add 生成清单（Inno 会自动写 innosetup:true）")
+        else:
+            print("[提示] 未在安装目录发现 exe（可能为服务/驱动类或静默安装失败）")
+    except subprocess.TimeoutExpired:
+        print("[错误] 静默安装超时，已中止")
+    finally:
+        un = work / "unins000.exe"
+        try:
+            if un.exists():
+                subprocess.run([str(un), "/VERYSILENT"], capture_output=True, timeout=120)
+        except subprocess.TimeoutExpired:
+            pass
+        shutil.rmtree(work, ignore_errors=True)
+        print("[回滚] 临时安装已卸载清理")
+    return tmp
+
+
 def add_direct_url(url, app_name=None):
     """非 GitHub 直链新增：由下载链接 + 可选参数组装模板后补全。
     支持 --version / --checkver-url / --checkver-regex / --exe-name /
@@ -1207,6 +1286,16 @@ def main():
     dry_run = "--dry-run" in args
     all_mode = "--all" in args
     add_idx = args.index("--add") if "--add" in args else -1
+
+    # --probe-exe <url|本地exe>：探测 Inno 安装器解包后的真实 exe 名（便携 exe 直接提示）
+    if "--probe-exe" in args:
+        pe_pos = args.index("--probe-exe")
+        src = args[pe_pos + 1] if pe_pos + 1 < len(args) else None
+        if not src:
+            print("用法: python3 myscoop-update.py --probe-exe <下载URL|本地exe路径> [--name 应用名]")
+            sys.exit(1)
+        result = probe_exe(src, arg_value("--name"))
+        sys.exit(0 if result else 1)
 
     # --fill-bin <清单.json>：下载 zip 探测 exe，由用户指定主程序，补全 bin/shortcuts
     if "--fill-bin" in args:
