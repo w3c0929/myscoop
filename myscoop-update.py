@@ -811,6 +811,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
     keep_cached = False
     existing_hash = template.get("hash")
     force_dl = "--force-download" in sys.argv[1:]
+    downloaded = not (existing_hash and not force_dl)
     if existing_hash and not force_dl:
         # 模板已含 hash：跳过重复下载，直接信任既有值（--force-download 可强制重算）
         given = str(existing_hash).lower()
@@ -863,10 +864,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
         template["hash"] = "sha256:" + digest
         print(f"[hash] 已自动填充 sha256:{digest[:16]}...")
 
-    if "--force-download" not in sys.argv[1:]:
-        # 未下载文件：跳过 Inno Setup 检测（无文件可查）
-        print("[InnoSetup] 跳过检测（未下载文件，模板已 hash 齐备）")
-    else:
+    if downloaded:
         inno = is_innosetup(tmp)
         if inno:
             print("[InnoSetup] 检测到 Inno Setup 安装器特征")
@@ -875,6 +873,8 @@ def finalize_direct_manifest(template, out_dir, app_name):
                 print("            已自动添加 \"innosetup\": true")
         elif template.get("innosetup") is True:
             print("[警告] 模板声明 innosetup:true 但文件中未检测到 Inno Setup 特征，请人工确认")
+    else:
+        print("[InnoSetup] 跳过检测（未下载文件，模板已 hash 齐备）")
     if not keep_cached:
         tmp.unlink(missing_ok=True)
 
