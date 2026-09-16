@@ -36,7 +36,8 @@ myscoop 管理脚本
   #     安装包保留到 staging/.dl_cache/ 供复用（也支持直接传本地 exe 路径免下载）[pyc]
   python3 myscoop-update.py --exe-name "https://github.com/.../xxx-Setup.exe" --name xxx
   python3 myscoop-update.py --exe-name "D:/scoop/cache/xxx#1.0.0#hash.exe" --name xxx
-  #     注：--add 直链对 Inno 安装器已内置自动探测（唯一主程序自动写入 bin，多个则提示用 --exe-name 指定）
+  #     注：--add 直链对 Inno 安装器已内置自动探测（唯一主程序自动写入 bin，
+#         多个 exe 时交互式提示选择编号/输入关键词，回车默认第 1 个；加 --select 编号|名称 免交互）
 
   # 注意：模式 2/3/4/5 生成的清单默认输出到仓库内 staging/（FALLBACK_OUT_DIR），
   #       确认无误后用 --out-dir 指定正式目录（如 bucket/）
@@ -886,8 +887,34 @@ def finalize_direct_manifest(template, out_dir, app_name):
                     template["shortcuts"] = [[fexes[0], app_name]]
                     print(f"        唯一主程序 {fexes[0]}，已自动写入 bin/shortcuts")
                 elif fexes:
-                    print(f"        发现多个 exe：{', '.join(fexes)}，未自动写入；"
-                          f"需要指定请用 --exe-name <名> 重新生成")
+                    print(f"        发现多个 exe：{', '.join(fexes)}")
+                    sel = arg_value("--select")
+                    picked = None
+                    if sel:
+                        if sel.isdigit() and 1 <= int(sel) <= len(fexes):
+                            picked = fexes[int(sel) - 1]
+                        else:
+                            picked = next((e for e in fexes if sel.lower() in e.lower()), None)
+                        if not picked:
+                            print(f"        [错误] 未找到匹配 '{sel}'，未写入（可选：{' / '.join(fexes)}）")
+                    else:
+                        try:
+                            ans = input(f"        请选择主程序编号（1-{len(fexes)}，回车默认 1）: ").strip()
+                        except EOFError:
+                            ans = ""
+                        idx = 0
+                        if ans:
+                            if ans.isdigit() and 1 <= int(ans) <= len(fexes):
+                                idx = int(ans) - 1
+                            else:
+                                hit = next((i for i, e in enumerate(fexes)
+                                            if ans.lower() in e.lower()), None)
+                                idx = hit if hit is not None else 0
+                        picked = fexes[idx]
+                    if picked:
+                        template["bin"] = picked
+                        template["shortcuts"] = [[picked, app_name]]
+                        print(f"        已写入主程序 bin={picked}")
                 else:
                     print("        未发现 exe（服务/驱动类？），请人工补充 bin")
                 print("        （临时安装已回滚清理）")
