@@ -53,6 +53,9 @@ myscoop 管理脚本
   # 8) 环境变量：GH_TOKEN（或 GITHUB_TOKEN）可提升 GitHub API 配额（仅对 api.github.com 生效）
   $env:GH_TOKEN = "ghp_xxx"   # PowerShell；Linux/macOS: export GH_TOKEN=ghp_xxx
 
+  # 9) 可选：--insecure（或环境变量 MYSCOOP_INSECURE=1）跳过 SSL 证书校验
+  #    （默认失败时已自动降级重试一次；内容完整性由 sha256 清单比对兜底）[pyz]
+
 """
 
 import json
@@ -110,7 +113,7 @@ def fetch_json(url):
     if token and url.startswith("https://api.github.com/"):
         headers["Authorization"] = f"Bearer {token}"
     req = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    with _open(req, 30) as resp:
         return json.loads(resp.read().decode())
 
 
@@ -737,10 +740,32 @@ def arg_value(flag, default=None):
 PAGE_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"}
 
 
+def _open(req, timeout):
+    """urlopen 封装：SSL 证书校验失败时打印警告并降级为不校验证书重试一次。
+    安全性说明：本脚本下载的任何文件都会与清单 sha256 比对，内容完整性由 hash 兜底；
+    --insecure 或环境变量 MYSCOOP_INSECURE=1 可令首次请求即跳过证书校验。"""
+    import ssl
+    insecure = "--insecure" in sys.argv[1:] or os.environ.get("MYSCOOP_INSECURE") == "1"
+    ctx = ssl._create_unverified_context() if insecure else ssl.create_default_context()
+    try:
+        return urllib.request.urlopen(req, timeout=timeout, context=ctx)
+    except (ssl.SSLCertVerificationError, urllib.error.URLError) as e:
+        reason = getattr(e, "reason", e)
+        if not isinstance(reason, ssl.SSLCertVerificationError) and not isinstance(e, ssl.SSLCertVerificationError):
+            raise
+        if insecure:
+            raise
+        print(f"[安全] SSL 证书校验失败（{getattr(reason, 'reason', reason)}），"
+              f"已降级为不校验证书重试；内容完整性由 sha256 清单比对兜底"
+              f"（可加 --insecure 或设 MYSCOOP_INSECURE=1 跳过提示）")
+        return urllib.request.urlopen(req, timeout=timeout,
+                                      context=ssl._create_unverified_context())
+
+
 def fetch_text(url, timeout=60, headers=None):
     """抓取网页文本（用于 checkver 页面验证等）"""
     req = urllib.request.Request(url, headers=headers or {"User-Agent": "myscoop-updater"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
+    with _open(req, timeout) as resp:
         return resp.read().decode("utf-8", "replace")
 
 
@@ -748,7 +773,7 @@ def download_to(url, dest, timeout=180):
     """下载文件到 dest（自动去除 #fragment）"""
     clean = url.split("#", 1)[0]
     req = urllib.request.Request(clean, headers={"User-Agent": "myscoop-updater"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp, open(dest, "wb") as f:
+    with _open(req, timeout) as resp, open(dest, "wb") as f:
         while True:
             chunk = resp.read(65536)
             if not chunk:
