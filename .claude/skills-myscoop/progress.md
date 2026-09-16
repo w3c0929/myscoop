@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 49a0405 (HEAD -> main) 修复：Inno Setup 检测按本次是否真实下载判定（downloaded），此前任何不带 --force-download 的运行都会误跳检测导致安装器清单缺 innosetup
-* abf4a8f (origin/main, origin/HEAD) 新增第三方bucket/finch.json，停在你桌面上的小灵雀，帮你衔来线索、织成脉络的agent
+* cc255b7 (HEAD -> main) 新增 --probe-exe：Inno 安装器静默安装探测真实 exe 名后自动回滚（安装包保留 .dl_cache；便携 exe 直接提示）；顶部用法注释补充 5b
+* 4dc0f9b (origin/main, origin/HEAD) progress.md 更新提交历史
+* 49a0405 修复：Inno Setup 检测按本次是否真实下载判定（downloaded），此前任何不带 --force-download 的运行都会误跳检测导致安装器清单缺 innosetup
+* abf4a8f 新增第三方bucket/finch.json，停在你桌面上的小灵雀，帮你衔来线索、织成脉络的agent
 * 5acb562 progress.md 更新提交历史
 * 1abbc5c .gitignore 加入 .playwright-cli（浏览器自动化会话产物）
 * 367fcae progress.md 更新提交历史
