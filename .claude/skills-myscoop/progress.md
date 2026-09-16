@@ -166,8 +166,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* a36f842 (HEAD -> main) Inno 自动探测多 exe 时支持交互式选择（编号/关键词，回车默认第一个）；--select 编号|名称可免交互；用法注释同步
-* 32a3412 (origin/main, origin/HEAD) progress.md 更新提交历史
+* d38db91 (HEAD -> main) SSL 增强：下载/抓取失败自动降级重试（警告+说明 hash 兜底），支持 --insecure 与 MYSCOOP_INSECURE=1；修复 aka.ms 等站点 CERTIFICATE_VERIFY_FAILED
+* e4faecc (origin/main, origin/HEAD) 新增qingjian.json,青简 Qingjian：用 Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词
+* 4b24c17 progress.md 更新提交历史
+* a36f842 Inno 自动探测多 exe 时支持交互式选择（编号/关键词，回车默认第一个）；--select 编号|名称可免交互；用法注释同步
+* 32a3412 progress.md 更新提交历史
 * 999e948 方案B落地：--add 直链对 Inno 安装器内置自动探测（唯一主程序自动写 bin，多个提示）；--probe-exe 更名 --exe-name（旧名兼容）；修复 docstring 反斜杠转义
 * cedc2aa progress.md 更新提交历史
 * cc255b7 新增 --probe-exe：Inno 安装器静默安装探测真实 exe 名后自动回滚（安装包保留 .dl_cache；便携 exe 直接提示）；顶部用法注释补充 5b
