@@ -17,6 +17,6 @@
         ]
     ],
     "autoupdate": {
-        "url": "https://github.com/qingjian-team/qingjian/releases/download/windows-v$version-alpha.2/Qingjian-0.1.0-alpha.2-Setup.exe"
+        "url": "https://github.com/qingjian-team/qingjian/releases/download/windows-v$version-alpha.2/Qingjian-$version-alpha.2-Setup.exe"
     }
 }
