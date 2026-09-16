@@ -545,6 +545,31 @@ def sync_autoupdate_fields(au_block, target, version):
     return changed
 
 
+def _url_platform(url):
+    """从清单 url 推断目标平台（多平台仓库用）：优先 mac/linux 特征，其次 windows；无特征返回 None。"""
+    u = str(url or "").lower()
+    if any(k in u for k in ("macos", "darwin", "osx", "-mac", "mac-")) and "macbook" not in u:
+        return "mac"
+    if any(k in u for k in ("linux", "ubuntu", "debian")):
+        return "linux"
+    if any(k in u for k in ("windows", "win-x64", "win-x86", "win64", "win32", "-win")):
+        return "windows"
+    return None
+
+
+def _platform_tag_passes(tag, platform):
+    """release tag 是否属于 target 平台（排除明显的外平台词）。"""
+    if platform is None:
+        return True
+    t = str(tag or "").lower()
+    foreign = {
+        "windows": ("macos", "darwin", "osx", "linux", "ubuntu"),
+        "mac": ("windows", "win-x64", "win-x86", "win32", "win64", "linux", "ubuntu"),
+        "linux": ("windows", "win-x64", "win-x86", "win32", "win64", "macos", "darwin", "osx"),
+    }
+    return not any(f in t for f in foreign[platform])
+
+
 def update_manifest(manifest_path, dry_run=False):
     """更新单个 manifest"""
     with open(manifest_path, "r", encoding="utf-8") as f:
@@ -632,8 +657,29 @@ def update_manifest(manifest_path, dry_run=False):
         print(f"  [错误] {manifest_path.name}: {e}")
         return None
 
+    # 多平台仓库过滤：最新 release 若与清单平台不符（如 qingjian 的 macos tag），
+    # 遍历 releases 列表找一个平台匹配的（非 draft、非 untagged）
+    want_platform = _url_platform(manifest.get("url", ""))
+    if want_platform and not _platform_tag_passes(release.get("tag_name", ""), want_platform):
+        print(f"  [平台] 最新 {release.get('tag_name')} 与清单平台({want_platform})不符，查找匹配 release…")
+        try:
+            rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=20")
+            release = next((r for r in rels
+                            if not r.get("draft")
+                            and not str(r.get("tag_name", "")).startswith("untagged-")
+                            and _platform_tag_passes(r.get("tag_name", ""), want_platform)), None)
+        except Exception as e:
+            print(f"  [错误] {manifest_path.name}: {e}")
+            return None
+        if not release:
+            print(f"  [跳过] {manifest_path.name}: 上游近期没有 {want_platform} 平台 release")
+            return None
+
     latest_tag = release["tag_name"]
-    latest_version = latest_tag.lstrip("v")
+    # 剥离平台前缀（windows-v0.1.0 / macos-v1.2 等），与清单 version 对齐
+    latest_version = re.sub(r"^(windows|win64|win32|macos|darwin|linux|ubuntu)[-_]v",
+                            "", latest_tag, flags=re.I)
+    latest_version = latest_version.lstrip("v")
 
     # 兼容"tag 带后缀而清单 version 只写主版本"的项目（如 v0.6.8-experimental.1 vs 0.6.8）：
     # 视为同一版本，不触发伪更新（仅当后缀不同时）
@@ -712,6 +758,7 @@ def update_manifest(manifest_path, dry_run=False):
                 print(f"    hash: {digest2[:16]}... (fallback)")
             else:
                 print(f"    [警告] 无法匹配")
+                return None  # 资产匹配失败：不写入、不计入已更新
 
         # 同步顶层 autoupdate 模板字段（bin/shortcuts/extract_dir 等）
         chg = sync_autoupdate_fields(au, manifest, latest_version)
