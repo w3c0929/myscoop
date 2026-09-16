@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 7fca50f (HEAD -> main) 新增仓库顶层铁律：gzh/ 属本地仓库一部分但绝不提交推送（禁 add -f/commit/push，.gitignore 保护，备份仅私有手段）
-* e2016b2 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 0448050 (HEAD -> main) gzh 工作流工具脚本入库：封面升级链(v2/v4/cartoon-v4 超采样)、标签补足、end-mark 移除
+* 90dad3e (origin/main, origin/HEAD) progress.md 更新提交历史
+* 7fca50f 新增仓库顶层铁律：gzh/ 属本地仓库一部分但绝不提交推送（禁 add -f/commit/push，.gitignore 保护，备份仅私有手段）
+* e2016b2 progress.md 更新提交历史
 * c12de82 NSIS 安装器支持落地：Nullsoft 特征检测 + 7z 解包探测真实 exe（免真安装，兼容 Tauri app-*.7z 双层,主程序根目录优先）自动补 pre_install 与 bin/shortcuts；make_url_template 文件名版本号同步替换为 $version；探测选择逻辑抽取 pick_or_interactive 复用
 * db5ff2f progress.md 更新提交历史
 * 0fd0620 comfyui@0.36.0;qingjian@0.1.0
