@@ -36,8 +36,11 @@ myscoop 管理脚本
   #     安装包保留到 staging/.dl_cache/ 供复用（也支持直接传本地 exe 路径免下载）[pyc]
   python3 myscoop-update.py --exe-name "https://github.com/.../xxx-Setup.exe" --name xxx
   python3 myscoop-update.py --exe-name "D:/scoop/cache/xxx#1.0.0#hash.exe" --name xxx
-  #     注：--add 直链对 Inno 安装器已内置自动探测（唯一主程序自动写入 bin，
-#         多个 exe 时交互式提示选择编号/输入关键词，回车默认第 1 个；加 --select 编号|名称 免交互）
+  #     注：--add 直链对安装器已内置自动探测（Inno：静默安装探测；NSIS/Tauri：7z 解包探测，
+#         无需真安装——唯一主程序自动写入 bin，多个 exe 时交互式提示选择编号/输入关键词，
+#         回车默认第 1 个；加 --select 编号|名称 免交互）。
+#         NSIS 命中时自动补 pre_install（7z 解包，兼容 app-*.7z 双层结构），不写 innosetup；
+#         autoupdate 模板会同时替换路径与文件名中的版本号
 
   # 注意：模式 2/3/4/5 生成的清单默认输出到仓库内 staging/（FALLBACK_OUT_DIR），
   #       确认无误后用 --out-dir 指定正式目录（如 bucket/）
@@ -841,6 +844,109 @@ def sha256_hex(path):
     return h.hexdigest()
 
 
+def is_nsis(path, max_scan=64 * 1024 * 1024):
+    """检测 NSIS（Nullsoft）安装器特征串，流式扫描前 64MB（is_innosetup 同款骨架）"""
+    sigs = (b"Nullsoft Inst", b"NullsoftInst")
+    prev = b""
+    read = 0
+    with open(path, "rb") as f:
+        while True:
+            chunk = f.read(1024 * 1024)
+            if not chunk:
+                break
+            read += len(chunk)
+            buf = prev + chunk
+            if any(s in buf for s in sigs):
+                return True
+            if read >= max_scan:
+                break
+            prev = chunk[-64:]
+    return False
+
+
+def find_7z():
+    """定位 7-Zip 可执行（PATH / scoop shims / scoop 7zip 安装目录）"""
+    import shutil
+    p = shutil.which("7z")
+    if p:
+        return p
+    for c in ("D:/scoop/shims/7z.exe", "D:/scoop/apps/7zip/current/7z.exe",
+              "C:/Program Files/7-Zip/7z.exe"):
+        if os.path.exists(c):
+            return c
+    return None
+
+
+NSIS_PRE_INSTALL = [
+    "Expand-7zipArchive \"$dir\\{{FILE}}\" \"$dir\\_extract\"",
+    "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+    "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }",
+]
+
+
+def probe_nsis_exes(tmp, app_name):
+    """NSIS 安装器：用 7z 直接解包（无需真安装，无副作用）收集真实 exe 名。
+    有 app-*.7z（Tauri 结构）时二次解压；返回 exe 文件名列表。"""
+    import subprocess
+    import shutil
+    z = find_7z()
+    if not z:
+        print("[警告] 未找到 7z，无法解包 NSIS（可先 scoop install 7zip）")
+        return []
+    work = FALLBACK_OUT_DIR / ".probe_tmp" / app_name
+    shutil.rmtree(work, ignore_errors=True)
+    work.mkdir(parents=True, exist_ok=True)
+    try:
+        r = subprocess.run([z, "x", "-y", f"-o{work}", str(tmp)],
+                           capture_output=True, timeout=600)
+        if r.returncode != 0:
+            print(f"[警告] 7z 解包退出码 {r.returncode}")
+        def _key(p):
+            return ((p.parent != work and p.parent != work / "app"), p.name.lower())
+        exes = sorted({p for p in work.rglob("*.exe")
+                       if "uninstall" not in p.name.lower()}, key=_key)
+        exes = [p.name for p in exes]
+        if not exes:
+            app7z = next(work.rglob("app-*.7z"), None)
+            if app7z:
+                subprocess.run([z, "x", "-y", f"-o{work / 'app'}", str(app7z)],
+                               capture_output=True, timeout=900)
+                exes = sorted({p for p in (work / "app").rglob("*.exe")
+                               if "uninstall" not in p.name.lower()}, key=_key)
+                exes = [p.name for p in exes]
+        return exes
+    except subprocess.TimeoutExpired:
+        print("[错误] 7z 解包超时")
+        return []
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def pick_or_interactive(fexes, app_name, indent="        "):
+    """探测出多个 exe 时选择主程序：--select 编号|关键词 优先，否则交互输入（回车默认第 1 个）。
+    返回 picked 名称或 None；非交互环境（EOFError）自动取第 1 个。"""
+    sel = arg_value("--select")
+    if sel:
+        if sel.isdigit() and 1 <= int(sel) <= len(fexes):
+            return fexes[int(sel) - 1]
+        picked = next((e for e in fexes if sel.lower() in e.lower()), None)
+        if not picked:
+            print(f"{indent}[错误] 未找到匹配 '{sel}'，未写入（可选：{' / '.join(fexes)}）")
+        return picked
+    try:
+        ans = input(f"{indent}请选择主程序编号（1-{len(fexes)}，回车默认 1）: ").strip()
+    except EOFError:
+        ans = ""
+    idx = 0
+    if ans:
+        if ans.isdigit() and 1 <= int(ans) <= len(fexes):
+            idx = int(ans) - 1
+        else:
+            hit = next((i for i, e in enumerate(fexes) if ans.lower() in e.lower()), None)
+            idx = hit if hit is not None else 0
+    return fexes[idx]
+
+
 def is_innosetup(path, max_scan=64 * 1024 * 1024):
     """检测 Inno Setup 安装器特征串（可能出现在文件深处，流式扫描，最多前 64MB）"""
     sigs = (b"Inno Setup Setup Data", b"This installation was built with Inno Setup")
@@ -862,7 +968,8 @@ def is_innosetup(path, max_scan=64 * 1024 * 1024):
 
 
 def make_url_template(url, version):
-    """把下载 URL 中的版本号替换成 $version（query 参数值优先，其次路径段）。
+    """把下载 URL 中的版本号替换成 $version（query 参数值优先，其次路径段；
+    路径段替换后若文件名中仍有版本号，同样替换——修复 cc-haha 类文件名版本固定的问题）。
     手动拼接 query 以免 urlencode 把 $version 编码成 %24version。"""
     clean, frag = url.split("#", 1)[0], ("#" + url.split("#", 1)[1]) if "#" in url else ""
     from urllib.parse import parse_qsl, urlsplit, urlunsplit
@@ -873,8 +980,13 @@ def make_url_template(url, version):
         return urlunsplit((parts.scheme, parts.netloc, parts.path,
                            "&".join(f"{k}={v}" for k, v in nq), "")) + frag
     if version in parts.path:
+        tpl_path = parts.path.replace(version, "$version", 1)
+        head, _, fname = tpl_path.rpartition("/")
+        new_fname = re.sub(r"\d+\.\d+(?:\.\d+)*", "$version", fname)
+        if new_fname != fname:
+            tpl_path = head + "/" + new_fname
         return urlunsplit((parts.scheme, parts.netloc,
-                           parts.path.replace(version, "$version", 1), parts.query, "")) + frag
+                           tpl_path, parts.query, "")) + frag
     return None
 
 
@@ -945,6 +1057,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
 
     if downloaded:
         inno = is_innosetup(tmp)
+        nsis = is_nsis(tmp) if not inno else False
         if inno:
             print("[InnoSetup] 检测到 Inno Setup 安装器特征")
             if template.get("innosetup") is not True:
@@ -960,29 +1073,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
                     print(f"        唯一主程序 {fexes[0]}，已自动写入 bin/shortcuts")
                 elif fexes:
                     print(f"        发现多个 exe：{', '.join(fexes)}")
-                    sel = arg_value("--select")
-                    picked = None
-                    if sel:
-                        if sel.isdigit() and 1 <= int(sel) <= len(fexes):
-                            picked = fexes[int(sel) - 1]
-                        else:
-                            picked = next((e for e in fexes if sel.lower() in e.lower()), None)
-                        if not picked:
-                            print(f"        [错误] 未找到匹配 '{sel}'，未写入（可选：{' / '.join(fexes)}）")
-                    else:
-                        try:
-                            ans = input(f"        请选择主程序编号（1-{len(fexes)}，回车默认 1）: ").strip()
-                        except EOFError:
-                            ans = ""
-                        idx = 0
-                        if ans:
-                            if ans.isdigit() and 1 <= int(ans) <= len(fexes):
-                                idx = int(ans) - 1
-                            else:
-                                hit = next((i for i, e in enumerate(fexes)
-                                            if ans.lower() in e.lower()), None)
-                                idx = hit if hit is not None else 0
-                        picked = fexes[idx]
+                    picked = pick_or_interactive(fexes, app_name)
                     if picked:
                         template["bin"] = picked
                         template["shortcuts"] = [[picked, app_name]]
@@ -990,6 +1081,28 @@ def finalize_direct_manifest(template, out_dir, app_name):
                 else:
                     print("        未发现 exe（服务/驱动类？），请人工补充 bin")
                 print("        （临时安装已回滚清理）")
+        elif nsis:
+            print("[NSIS] 检测到 NSIS 安装器特征（7z 解包方式，非 Inno，无需 innosetup）")
+            if not template.get("bin") and url.lower().endswith(".exe"):
+                print("[探测] 7z 解包探测真实 exe 名…")
+                fexes = probe_nsis_exes(tmp, app_name)
+                if len(fexes) == 1:
+                    picked = fexes[0]
+                elif fexes:
+                    print(f"        发现多个 exe：{', '.join(fexes)}")
+                    picked = pick_or_interactive(fexes, app_name)
+                else:
+                    picked = None
+                    print("        未发现 exe，请人工补充 bin")
+                if picked:
+                    template["bin"] = picked
+                    template["shortcuts"] = [[picked, app_name]]
+                    print(f"        已写入主程序 bin={picked}")
+                fname = url.split("/")[-1].split("#")[0].split("?")[0]
+                if "pre_install" not in template:
+                    template["pre_install"] = [s.replace("{{FILE}}", fname)
+                                               for s in NSIS_PRE_INSTALL]
+                    print(f"        已自动添加 pre_install（7z 解包 {fname}，兼容 app-*.7z 双层结构）")
         elif template.get("innosetup") is True:
             print("[警告] 模板声明 innosetup:true 但文件中未检测到 Inno Setup 特征，请人工确认")
     else:
@@ -1229,21 +1342,29 @@ def probe_exe(src, app_name=None):
             print(f"[错误] 下载失败: {e}")
             return None
     print(f"[hash] sha256:{sha256_hex(tmp)[:16]}...")
-    if not is_innosetup(tmp):
-        print(f"[便携exe] 未检测到 Inno Setup 安装器特征——此类直接可运行无需解包，"
+    inno = is_innosetup(tmp)
+    nsis = is_nsis(tmp) if not inno else False
+    if not inno and not nsis:
+        print(f"[便携exe] 未检测到安装器特征（Inno/NSIS）——此类直接可运行无需解包，"
               f"bin 用文件名（{tmp.name}）即可，配合 --exe-name 指定生成清单")
         return tmp
-    print("[InnoSetup] 检测到安装器，开始静默安装探测…")
-    exes = probe_installer_exes(tmp, app_name)
+    if inno:
+        print("[InnoSetup] 检测到安装器，开始静默安装探测…")
+        exes = probe_installer_exes(tmp, app_name)
+        comment = "Inno 会自动写 innosetup:true"
+    else:
+        print("[NSIS] 检测到 NSIS 安装器，开始 7z 解包探测…（无需真安装）")
+        exes = probe_nsis_exes(tmp, app_name)
+        comment = "NSIS 请配合 --add 自动生成的 pre_install 解包"
     if exes:
         roots = [e for e in exes if (tmp.parent / e).exists() or True]
         print(f"[探测] 安装后的真实 exe（{len(exes)} 个）:")
         for i, e in enumerate(exes, 1):
             print(f"    {i}: {e}")
-        print("→ 请用 --exe-name <上选主程序名> 重新 --add 生成清单（Inno 会自动写 innosetup:true）")
+        print(f"→ 请用 --exe-name <上选主程序名> 重新 --add 生成清单（{comment}）")
     else:
-        print("[提示] 未在安装目录发现 exe（可能为服务/驱动类或静默安装失败）")
-    print("[回滚] 临时安装已卸载清理")
+        print("[提示] 未发现 exe（可能为服务/驱动类或解包失败）")
+    print("[回滚] 临时文件已清理")
     return tmp
 
 
