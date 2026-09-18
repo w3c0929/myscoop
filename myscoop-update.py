@@ -159,8 +159,41 @@ def resolve_autoupdate_url(autoupdate_url, version):
     return autoupdate_url.replace("$version", version)
 
 
+ARCHIVE_EXTS = {"zip", "7z", "rar", "gz", "xz", "bz2", "tgz", "txz"}
+INSTALLER_EXTS = {"exe", "msi"}
+
+
+def _ext_family(name):
+    """扩展名家族：archive（压缩包，zip/7z/tar.gz 等内部互通）/ installer（exe/msi）/ other。
+    压缩包家族内部互认——zip 被发布方换成 7z 是同一份资产换了容器，不应阻断更新；
+    archive 与 installer 之间严格隔离（zip↔exe 是两种形态，拒绝误配）。"""
+    low = name.lower().rstrip(".")
+    for ext in ("tar.gz", "tar.xz", "tar.bz2", "tgz", "txz"):
+        if low.endswith("." + ext):
+            return "archive"
+    tail = low.rsplit(".", 1)[-1] if "." in low else ""
+    if tail in ARCHIVE_EXTS:
+        return "archive"
+    if tail in INSTALLER_EXTS:
+        return "installer"
+    return "other"
+
+
+def _norm_base(name):
+    """基础名（去扩展名，含 tar.gz 复合扩展）数字段归一化：只比较文件身份，扩展名不参与。"""
+    low = name.lower().rstrip(".")
+    for ext in ("tar.gz", "tar.xz", "tar.bz2"):
+        if low.endswith("." + ext):
+            base = low[: -len(ext) - 1]
+            break
+    else:
+        base = low.rsplit(".", 1)[0] if "." in low else low
+    return re.sub(r"[\d.]+", "VER", base)
+
+
 def match_asset(resolved_url, assets):
-    """根据解析后的 URL 匹配对应的 release asset"""
+    """根据解析后的 URL 匹配对应的 release asset。优先级：
+    精确同名 → 忽略大小写 → 基础名数字归一化相等（同扩展名优先，其次同家族互通）。"""
     filename = resolved_url.split("/")[-1]
     for a in assets:
         if a["name"] == filename:
@@ -168,14 +201,19 @@ def match_asset(resolved_url, assets):
     for a in assets:
         if a["name"].lower() == filename.lower():
             return a
-    ext = filename.rsplit(".", 1)[-1] if "." in filename else ""
-    for a in assets:
-        if a["name"].endswith("." + ext):
-            a_base = re.sub(r"[\d.]+", "VER", a["name"].lower())
-            f_base = re.sub(r"[\d.]+", "VER", filename.lower())
-            if a_base == f_base:
-                return a
-    return None
+    f_base = _norm_base(filename)
+    cand = [a for a in assets if _norm_base(a["name"]) == f_base]
+    if not cand:
+        return None
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    for a in cand:
+        if a["name"].lower().endswith("." + ext):
+            return a
+    f_fam = _ext_family(filename)
+    for a in cand:
+        if _ext_family(a["name"]) == f_fam:
+            return a
+    return None  # 基础名同但家族不同（zip↔exe）：不匹配，防形态误配
 
 
 def sync_build_asset(manifest, asset, resolved_url, arch=None):
