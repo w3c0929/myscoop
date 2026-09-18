@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 3fadeae (HEAD -> main) README 新增「注册型软件」FAQ：TSF 注册根因、installer 模式正确形态、--add 自动处理、--installer-mode 存量迁移（qingjian 实测案例）
-* eb92ef6 (origin/main, origin/HEAD) progress.md 更新提交历史
+* f945985 (HEAD -> main) qingjian.json 增加 notes：输入法装完未出现时的免重启处理指引（新窗口即时生效/重启 ctfmon/资源管理器/注销）
+* 3f6ad46 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 3fadeae README 新增「注册型软件」FAQ：TSF 注册根因、installer 模式正确形态、--add 自动处理、--installer-mode 存量迁移（qingjian 实测案例）
+* eb92ef6 progress.md 更新提交历史
 * 384263f 新增注册型软件支持：--add 命中注册需求关键词+Inno/NSIS 时自动 installer 模式（真安装完成系统注册）；新增 --installer-mode 迁移命令（存量 innosetup/pre_install 清单一键转 installer 模式，幂等）；含单测
 * 431e445 progress.md 更新提交历史
 * c07e113 修复 qingjian 输入法不注册问题：innosetup 解包安装不执行 TSF 注册脚本 → 改用 installer 模式（/VERYSILENT /DIR=$dir 跑安装器，自动注册文本服务）+ post_uninstall 卸载器清理；验证 TSF TIP 注册 Description=青简
