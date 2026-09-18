@@ -166,8 +166,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 2207d4c (HEAD -> main) 注册型软件生成器升级：notes 自动附加（输入法类 TSF 激活指引/通用激活指引两档，与已有 notes 合并去重）；关键词收敛为强信号词（移除 text service/shell extension 防误伤）；迁移命令同样补 notes
-* 17f27cc (origin/main, origin/HEAD) progress.md 更新提交历史
+* fa4c10c (HEAD -> main) 构建号资产处理：匹配成功回写真实 browser_download_url（+N 漂移自愈）、版本未变时 heal_url_drift 检测修复、autoupdate 去模板化（防 scoop 客户端 404）；cinetry 自愈验证（+47→+48）；单测 5 场景
+* 9eb7383 (origin/main, origin/HEAD) 更新qingjian输入法安装方式，自动解包后能直接启动软件即可使用
+* 37ed131 progress.md 更新提交历史
+* 2207d4c 注册型软件生成器升级：notes 自动附加（输入法类 TSF 激活指引/通用激活指引两档，与已有 notes 合并去重）；关键词收敛为强信号词（移除 text service/shell extension 防误伤）；迁移命令同样补 notes
+* 17f27cc progress.md 更新提交历史
 * f945985 qingjian.json 增加 notes：输入法装完未出现时的免重启处理指引（新窗口即时生效/重启 ctfmon/资源管理器/注销）
 * 3f6ad46 progress.md 更新提交历史
 * 3fadeae README 新增「注册型软件」FAQ：TSF 注册根因、installer 模式正确形态、--add 自动处理、--installer-mode 存量迁移（qingjian 实测案例）
