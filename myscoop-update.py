@@ -178,6 +178,62 @@ def match_asset(resolved_url, assets):
     return None
 
 
+def sync_build_asset(manifest, asset, resolved_url, arch=None):
+    """资产名与模板解析名不一致（构建号漂移，如 Cinetry_0.8.4+47→+48）时收尾：
+    url 已由调用方回写真实资产；此函数移除 autoupdate 模板（防 scoop 客户端按旧模板 404），
+    extract_dir 同步为资产 stem。返回 True 表示有漂移处理。"""
+    fn = asset.get("name", "")
+    if fn == resolved_url.split("/")[-1]:
+        return False
+    au = manifest.get("autoupdate")
+    if au is None:
+        if isinstance(manifest.get("extract_dir"), str) and fn:
+            manifest["extract_dir"] = fn.rsplit(".", 1)[0]
+        return True
+    if arch is None:
+        # 弃用整个 autoupdate：无 url 模板时 extract_dir 等其他模板字段一并无用
+        manifest.pop("autoupdate", None)
+    else:
+        au_arch = au.get("architecture") or {}
+        au_arch.pop(arch, None)
+        if au_arch:
+            au["architecture"] = au_arch
+            manifest["autoupdate"] = au
+        else:
+            au.pop("architecture", None)
+            if not au:
+                manifest.pop("autoupdate", None)
+            else:
+                manifest["autoupdate"] = au
+    if isinstance(manifest.get("extract_dir"), str) and fn:
+        manifest["extract_dir"] = fn.rsplit(".", 1)[0]
+    return True
+
+
+def heal_url_drift(manifest, assets):
+    """版本未变但资产名漂移（构建号 +N 变化，如 Cinetry_0.8.4+47→+48）时自愈：
+    回写真实 url/hash/extract_dir 并移除 autoupdate 模板。返回 True 表示有修复。"""
+    if "architecture" in manifest:
+        fixed = False
+        for arch, blk in manifest["architecture"].items():
+            cur = blk.get("url", "")
+            a = match_asset(cur, assets)
+            if a and a["name"] != cur.split("/")[-1]:
+                blk["url"] = a.get("browser_download_url") or cur
+                if a.get("digest"):
+                    blk["hash"] = a["digest"]
+                fixed |= sync_build_asset(manifest, a, cur, arch=arch)
+        return fixed
+    cur = manifest.get("url", "")
+    a = match_asset(cur, assets)
+    if not a or a["name"] == cur.split("/")[-1]:
+        return False
+    manifest["url"] = a.get("browser_download_url") or cur
+    if a.get("digest"):
+        manifest["hash"] = a["digest"]
+    return sync_build_asset(manifest, a, cur)
+
+
 def is_windows_asset(name):
     """判断是否为 Windows 平台资产"""
     lower = name.lower()
@@ -726,6 +782,15 @@ def update_manifest(manifest_path, dry_run=False):
     if latest_version.startswith(current_version + "-"):
         return None
     if latest_version == current_version:
+        # 版本未变：检查 URL 构建号是否漂移（如 Cinetry_0.8.4+47 → +48），漂移则自愈
+        assets_now = release.get("assets", [])
+        if assets_now and heal_url_drift(manifest, assets_now):
+            with open(manifest_path, "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=4, ensure_ascii=False)
+                f.write("\n")
+            print(f"  {manifest_path.name}: 版本未变，URL 构建号漂移已自愈 → {manifest.get('url', '').split('/')[-1]}")
+            return {"manifest": manifest_path.name, "old": current_version,
+                    "new": latest_version, "drift": True}
         return None
     print(f"  {manifest_path.name}: {current_version} → {latest_version}")
 
@@ -746,17 +811,25 @@ def update_manifest(manifest_path, dry_run=False):
             asset = match_asset(new_url, assets)
             if asset:
                 digest = asset.get("digest", "")
-                manifest["architecture"][arch]["url"] = new_url
+                real = asset.get("browser_download_url") or new_url
+                manifest["architecture"][arch]["url"] = real
                 manifest["architecture"][arch]["hash"] = digest
-                print(f"    {arch}: {digest[:16]}...")
+                if sync_build_asset(manifest, asset, new_url, arch=arch):
+                    print(f"    {arch}: {digest[:16]}... [+构建号漂移: 已回写真实资产并移除该架构 autoupdate 模板]")
+                else:
+                    print(f"    {arch}: {digest[:16]}...")
             else:
                 new_url2 = resolve_autoupdate_url(old_url, latest_version)
                 asset2 = match_asset(new_url2, assets)
                 if asset2:
                     digest2 = asset2.get("digest", "")
-                    manifest["architecture"][arch]["url"] = new_url2
+                    real2 = asset2.get("browser_download_url") or new_url2
+                    manifest["architecture"][arch]["url"] = real2
                     manifest["architecture"][arch]["hash"] = digest2
-                    print(f"    {arch}: {digest2[:16]}... (fallback)")
+                    if sync_build_asset(manifest, asset2, new_url2, arch=arch):
+                        print(f"    {arch}: {digest2[:16]}... (fallback, +构建号漂移: 已回写真实资产并移除该架构 autoupdate 模板)")
+                    else:
+                        print(f"    {arch}: {digest2[:16]}... (fallback)")
                 else:
                     to_del.append(arch)
         # 规则③：上游缺失该架构资产 → 删除该架构块（该架构用户自动回退 64bit/通用包）
@@ -785,17 +858,25 @@ def update_manifest(manifest_path, dry_run=False):
         asset = match_asset(new_url, assets)
         if asset:
             digest = asset.get("digest", "")
-            manifest["url"] = new_url
+            real = asset.get("browser_download_url") or new_url
+            manifest["url"] = real
             manifest["hash"] = digest
-            print(f"    hash: {digest[:16]}...")
+            if sync_build_asset(manifest, asset, new_url):
+                print(f"    hash: {digest[:16]}... [+构建号漂移: 已回写真实资产 {asset['name']} 并移除 autoupdate 模板]")
+            else:
+                print(f"    hash: {digest[:16]}...")
         else:
             new_url2 = resolve_autoupdate_url(old_url, latest_version)
             asset2 = match_asset(new_url2, assets)
             if asset2:
                 digest2 = asset2.get("digest", "")
-                manifest["url"] = new_url2
+                real2 = asset2.get("browser_download_url") or new_url2
+                manifest["url"] = real2
                 manifest["hash"] = digest2
-                print(f"    hash: {digest2[:16]}... (fallback)")
+                if sync_build_asset(manifest, asset2, new_url2):
+                    print(f"    hash: {digest2[:16]}... (fallback, +构建号漂移: 已回写真实资产 {asset2['name']} 并移除 autoupdate 模板)")
+                else:
+                    print(f"    hash: {digest2[:16]}... (fallback)")
             else:
                 print(f"    [警告] 无法匹配")
                 return None  # 资产匹配失败：不写入、不计入已更新

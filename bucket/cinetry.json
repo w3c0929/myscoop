@@ -6,13 +6,9 @@
     "checkver": {
         "github": "https://github.com/gstory0404/Cinetry"
     },
-    "url": "https://github.com/gstory0404/Cinetry/releases/download/0.8.4/Cinetry_0.8.4+47_windows.zip",
+    "url": "https://github.com/gstory0404/Cinetry/releases/download/0.8.4/Cinetry_0.8.4%2B48_windows.zip",
     "hash": "sha256:4ddd2ed1a5b7b0479586a3a15b0fe398f39709f062cb839114dc86cd121c7739",
-    "autoupdate": {
-        "url": "https://github.com/gstory0404/Cinetry/releases/download/$version/Cinetry_$version+47_windows.zip",
-        "extract_dir": "Cinetry_$version+47_windows"
-    },
-    "extract_dir": "Cinetry_0.8.4+47_windows",
+    "extract_dir": "Cinetry_0.8.4+48_windows",
     "bin": "cinetry.exe",
     "shortcuts": [
         [
