@@ -878,7 +878,7 @@ def find_7z():
 
 
 NSIS_PRE_INSTALL = [
-    "Expand-7zipArchive \"$dir\\{{FILE}}\" \"$dir\\_extract\"",
+    "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
     "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
     "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }",
 ]
@@ -1100,9 +1100,8 @@ def finalize_direct_manifest(template, out_dir, app_name):
                     print(f"        已写入主程序 bin={picked}")
                 fname = url.split("/")[-1].split("#")[0].split("?")[0]
                 if "pre_install" not in template:
-                    template["pre_install"] = [s.replace("{{FILE}}", fname)
-                                               for s in NSIS_PRE_INSTALL]
-                    print(f"        已自动添加 pre_install（7z 解包 {fname}，兼容 app-*.7z 双层结构）")
+                    template["pre_install"] = list(NSIS_PRE_INSTALL)
+                    print(f"        已自动添加 pre_install（7z 动态解包 $dir\\*.exe，兼容 app-*.7z 双层结构，版本升级免改）")
         elif template.get("innosetup") is True:
             print("[警告] 模板声明 innosetup:true 但文件中未检测到 Inno Setup 特征，请人工确认")
     else:
