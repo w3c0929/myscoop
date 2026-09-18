@@ -989,12 +989,23 @@ def pick_or_interactive(fexes, app_name, indent="        "):
 
 
 # ---------- 注册型软件（输入法/驱动/右键菜单/Shell 扩展）识别与 installer 模式 ----------
+# 强信号词（弱信号词如 text service / shell extension 不入名单，避免误伤普通软件）
 REG_NEED_KEYWORDS = (
-    "ime", "input method", "input-method", "inputmethod", "输入法",
-    "tsf", "text service",
+    "ime", "input method", "input-method", "inputmethod", "输入法", "tsf",
     "driver", "驱动",
-    "context menu", "右键", "shell extension",
-    "registry", "注册表", "注册",
+    "context menu", "右键", "registry", "注册表", "注册",
+)
+# 输入法专属子集：命中则用「TSF 按进程加载」激活指引
+REG_IME_KEYWORDS = ("ime", "input method", "input-method", "inputmethod", "输入法", "tsf")
+
+NOTE_IME_ACTIVATE = (
+    "系统注册已完成；若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），"
+    "任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe）或重新启动资源管理器，"
+    "仍无效再注销或重启。"
+)
+NOTE_REG_ACTIVATE = (
+    "系统注册由安装器完成；若功能未即时生效，先重开目标窗口或重启资源管理器，"
+    "仍无效再注销或重启（驱动类设备可能需要重启后完成安装）。"
 )
 
 
@@ -1005,20 +1016,42 @@ def needs_registration(template):
     return any(k in blob for k in REG_NEED_KEYWORDS)
 
 
-def installer_mode_fields(is_inno):
-    """生成 installer 模式字段：真跑安装器（注册脚本随安装执行）+ 卸载器清理注册。
+def _note_for_template(template):
+    """按命中关键词分档：输入法类 → TSF 激活指引；其他注册型 → 通用激活指引。"""
+    blob = " ".join(str(template.get(k, "")) for k in ("name", "description", "homepage", "url")).lower()
+    if any(k in blob for k in REG_IME_KEYWORDS):
+        return NOTE_IME_ACTIVATE
+    return NOTE_REG_ACTIVATE
+
+
+def _merge_notes(existing, note):
+    """合并 notes：既有 str/list 保留，追加激活提示（去重）。"""
+    if not existing:
+        return [note]
+    items = [existing] if isinstance(existing, str) else list(existing)
+    if note not in items:
+        items.append(note)
+    return items
+
+
+def installer_mode_fields(is_inno, template=None):
+    """生成 installer 模式字段：真跑安装器（注册脚本随安装执行）+ 卸载器清理注册 + 激活提示。
     Inno: /VERYSILENT /NORESTART /DIR=$dir；NSIS: /S /D=$dir。"""
     if is_inno:
-        return {
+        fields = {
             "installer": {"args": ["/VERYSILENT", "/NORESTART", "/DIR=$dir"]},
             "post_uninstall": [
                 "Start-Process \"$dir\\unins000.exe\" -Wait -ArgumentList '/VERYSILENT','/NORESTART'"],
         }
-    return {
-        "installer": {"args": ["/S", "/D=$dir"]},
-        "post_uninstall": [
-            "$u = Get-ChildItem \"$dir\\unins*.exe\" | Select-Object -First 1; if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S' }"],
-    }
+    else:
+        fields = {
+            "installer": {"args": ["/S", "/D=$dir"]},
+            "post_uninstall": [
+                "$u = Get-ChildItem \"$dir\\unins*.exe\" | Select-Object -First 1; if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S' }"],
+        }
+    if template is not None:
+        fields["notes"] = _merge_notes(template.get("notes"), _note_for_template(template))
+    return fields
 
 
 def migrate_installer_mode(manifest_path, dry_run=False):
@@ -1037,7 +1070,7 @@ def migrate_installer_mode(manifest_path, dry_run=False):
         return True
     m.pop("innosetup", None)
     m.pop("pre_install", None)
-    m.update(installer_mode_fields(is_inno))
+    m.update(installer_mode_fields(is_inno, template=m))
     p.write_text(json.dumps(m, indent=4, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"  [迁移] {p.name}: {kind} → installer 模式（真安装自动注册）")
     return True
@@ -1157,7 +1190,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
         if inno:
             print("[InnoSetup] 检测到 Inno Setup 安装器特征")
             if needs_registration(template):
-                template.update(installer_mode_fields(is_inno=True))
+                template.update(installer_mode_fields(is_inno=True, template=template))
                 print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
             elif template.get("innosetup") is not True:
                 template["innosetup"] = True
@@ -1199,7 +1232,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
                     print(f"        已写入主程序 bin={picked}")
                 fname = url.split("/")[-1].split("#")[0].split("?")[0]
                 if needs_registration(template):
-                    template.update(installer_mode_fields(is_inno=False))
+                    template.update(installer_mode_fields(is_inno=False, template=template))
                     print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
                 elif "pre_install" not in template:
                     template["pre_install"] = list(NSIS_PRE_INSTALL)
