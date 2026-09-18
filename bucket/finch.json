@@ -33,11 +33,16 @@
             }
         }
     },
-    "bin": "Finch-1.6.3-setup-x64.exe",
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ],
+    "bin": "Finch.exe",
     "shortcuts": [
         [
-            "Finch-1.6.3-setup-x64.exe",
-            "finch-releases"
+            "Finch.exe",
+            "Finch"
         ]
     ]
 }
