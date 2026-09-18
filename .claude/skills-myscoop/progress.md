@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 384263f (HEAD -> main) 新增注册型软件支持：--add 命中注册需求关键词+Inno/NSIS 时自动 installer 模式（真安装完成系统注册）；新增 --installer-mode 迁移命令（存量 innosetup/pre_install 清单一键转 installer 模式，幂等）；含单测
-* 431e445 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 3fadeae (HEAD -> main) README 新增「注册型软件」FAQ：TSF 注册根因、installer 模式正确形态、--add 自动处理、--installer-mode 存量迁移（qingjian 实测案例）
+* eb92ef6 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 384263f 新增注册型软件支持：--add 命中注册需求关键词+Inno/NSIS 时自动 installer 模式（真安装完成系统注册）；新增 --installer-mode 迁移命令（存量 innosetup/pre_install 清单一键转 installer 模式，幂等）；含单测
+* 431e445 progress.md 更新提交历史
 * c07e113 修复 qingjian 输入法不注册问题：innosetup 解包安装不执行 TSF 注册脚本 → 改用 installer 模式（/VERYSILENT /DIR=$dir 跑安装器，自动注册文本服务）+ post_uninstall 卸载器清理；验证 TSF TIP 注册 Description=青简
 * b51803e progress.md 更新提交历史
 * 8946351 finch.json 恢复治本形态：pre_install 动态解包 + 固定名 Finch.exe（版本无关）；自动更正机制已验证生效（bin 硬编码 1.6.3 更新时自动更正为 1.7.1）
