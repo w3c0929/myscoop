@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* fa4c10c (HEAD -> main) 构建号资产处理：匹配成功回写真实 browser_download_url（+N 漂移自愈）、版本未变时 heal_url_drift 检测修复、autoupdate 去模板化（防 scoop 客户端 404）；cinetry 自愈验证（+47→+48）；单测 5 场景
-* 9eb7383 (origin/main, origin/HEAD) 更新qingjian输入法安装方式，自动解包后能直接启动软件即可使用
+* 5db3d60 (HEAD -> main) match_asset 扩展名家族分级：压缩包家族（zip/7z/tar.gz 等）内部互通——发布方换容器不再阻断更新；exe/msi 严格隔离防形态误配；基础名归一不再吞扩展名；单测 7 场景+原有 3 套回归全过
+* 790e452 (origin/main, origin/HEAD) progress.md 更新提交历史
+* fa4c10c 构建号资产处理：匹配成功回写真实 browser_download_url（+N 漂移自愈）、版本未变时 heal_url_drift 检测修复、autoupdate 去模板化（防 scoop 客户端 404）；cinetry 自愈验证（+47→+48）；单测 5 场景
+* 9eb7383 更新qingjian输入法安装方式，自动解包后能直接启动软件即可使用
 * 37ed131 progress.md 更新提交历史
 * 2207d4c 注册型软件生成器升级：notes 自动附加（输入法类 TSF 激活指引/通用激活指引两档，与已有 notes 合并去重）；关键词收敛为强信号词（移除 text service/shell extension 防误伤）；迁移命令同样补 notes
 * 17f27cc progress.md 更新提交历史
