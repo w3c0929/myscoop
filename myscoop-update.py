@@ -59,6 +59,12 @@ myscoop 管理脚本
   # 9) 可选：--insecure（或环境变量 MYSCOOP_INSECURE=1）跳过 SSL 证书校验
   #    （默认失败时已自动降级重试一次；内容完整性由 sha256 清单比对兜底）[pyz]
 
+  # 10) 注册型软件（输入法/驱动/右键菜单/Shell 扩展）：--add 检测到 Inno/NSIS 安装器且
+  #     关键词命中（ime 输入法 tsf driver 驱动 右键 context menu registry 等）时自动采用
+  #     installer 模式（真跑安装器完成系统注册，替代 innosetup/pre_install 解包——
+  #     解包不执行注册脚本，导致输入法不出现在系统选项、右键菜单缺失）。存量清单迁移:
+  #     python3 myscoop-update.py --installer-mode bucket/qingjian.json   # 多个文件或 --all
+
 """
 
 import json
@@ -982,6 +988,61 @@ def pick_or_interactive(fexes, app_name, indent="        "):
     return fexes[idx]
 
 
+# ---------- 注册型软件（输入法/驱动/右键菜单/Shell 扩展）识别与 installer 模式 ----------
+REG_NEED_KEYWORDS = (
+    "ime", "input method", "input-method", "inputmethod", "输入法",
+    "tsf", "text service",
+    "driver", "驱动",
+    "context menu", "右键", "shell extension",
+    "registry", "注册表", "注册",
+)
+
+
+def needs_registration(template):
+    """启发式：清单文本（name/description/homepage/url）命中注册型软件关键词。
+    注册型软件不适合 7z 解包安装（解包不执行安装器的系统注册脚本，如 TSF/服务/右键菜单注册）。"""
+    blob = " ".join(str(template.get(k, "")) for k in ("name", "description", "homepage", "url")).lower()
+    return any(k in blob for k in REG_NEED_KEYWORDS)
+
+
+def installer_mode_fields(is_inno):
+    """生成 installer 模式字段：真跑安装器（注册脚本随安装执行）+ 卸载器清理注册。
+    Inno: /VERYSILENT /NORESTART /DIR=$dir；NSIS: /S /D=$dir。"""
+    if is_inno:
+        return {
+            "installer": {"args": ["/VERYSILENT", "/NORESTART", "/DIR=$dir"]},
+            "post_uninstall": [
+                "Start-Process \"$dir\\unins000.exe\" -Wait -ArgumentList '/VERYSILENT','/NORESTART'"],
+        }
+    return {
+        "installer": {"args": ["/S", "/D=$dir"]},
+        "post_uninstall": [
+            "$u = Get-ChildItem \"$dir\\unins*.exe\" | Select-Object -First 1; if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S' }"],
+    }
+
+
+def migrate_installer_mode(manifest_path, dry_run=False):
+    """存量清单迁移：innosetup:true / pre_install 解包形态 → installer 模式（注册型软件修复形态）。
+    有 innosetup:true → Inno 参数；有 pre_install → NSIS 参数。返回 True 表示有迁移。"""
+    p = Path(manifest_path)
+    m = json.loads(p.read_text(encoding="utf-8"))
+    is_inno = m.get("innosetup") is True
+    has_pre = "pre_install" in m
+    if not (is_inno or has_pre):
+        print(f"  [跳过] {p.name}: 非解包形态清单（无需迁移）")
+        return False
+    kind = "Inno(innosetup)" if is_inno else "NSIS(pre_install 解包)"
+    if dry_run:
+        print(f"  [待迁移] {p.name}: {kind} → installer 模式")
+        return True
+    m.pop("innosetup", None)
+    m.pop("pre_install", None)
+    m.update(installer_mode_fields(is_inno))
+    p.write_text(json.dumps(m, indent=4, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"  [迁移] {p.name}: {kind} → installer 模式（真安装自动注册）")
+    return True
+
+
 def is_innosetup(path, max_scan=64 * 1024 * 1024):
     """检测 Inno Setup 安装器特征串（可能出现在文件深处，流式扫描，最多前 64MB）"""
     sigs = (b"Inno Setup Setup Data", b"This installation was built with Inno Setup")
@@ -1095,7 +1156,10 @@ def finalize_direct_manifest(template, out_dir, app_name):
         nsis = is_nsis(tmp) if not inno else False
         if inno:
             print("[InnoSetup] 检测到 Inno Setup 安装器特征")
-            if template.get("innosetup") is not True:
+            if needs_registration(template):
+                template.update(installer_mode_fields(is_inno=True))
+                print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
+            elif template.get("innosetup") is not True:
                 template["innosetup"] = True
                 print("            已自动添加 \"innosetup\": true")
             # 方案B：Inno 命中且未指定 bin 时自动静默探测真实主程序（唯一则写入，多个则提示）
@@ -1134,7 +1198,10 @@ def finalize_direct_manifest(template, out_dir, app_name):
                     template["shortcuts"] = [[picked, app_name]]
                     print(f"        已写入主程序 bin={picked}")
                 fname = url.split("/")[-1].split("#")[0].split("?")[0]
-                if "pre_install" not in template:
+                if needs_registration(template):
+                    template.update(installer_mode_fields(is_inno=False))
+                    print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
+                elif "pre_install" not in template:
                     template["pre_install"] = list(NSIS_PRE_INSTALL)
                     print(f"        已自动添加 pre_install（7z 动态解包 $dir\\*.exe，兼容 app-*.7z 双层结构，版本升级免改）")
         elif template.get("innosetup") is True:
@@ -1570,6 +1637,28 @@ def main():
             sys.exit(1)
         result = probe_exe(src, arg_value("--name"))
         sys.exit(0 if result else 1)
+
+    # --installer-mode <清单.json...|--all>：存量清单迁移为 installer 模式（注册型软件修复形态）
+    if "--installer-mode" in args:
+        im_pos = args.index("--installer-mode")
+        rest = args[im_pos + 1:]
+        if rest and rest[0] == "--all":
+            targets = sorted(BUCKET_DIR.glob("*.json"))
+        else:
+            targets = [Path(a) for a in rest if a and not a.startswith("--")]
+            if not targets:
+                print("用法: python3 myscoop-update.py --installer-mode <清单.json...|--all> [--dry-run]")
+                sys.exit(1)
+            targets = [t if t.exists() else BUCKET_DIR / t.name for t in targets]
+        n = 0
+        for t in targets:
+            try:
+                if migrate_installer_mode(t, dry_run=dry_run):
+                    n += 1
+            except Exception as e:
+                print(f"  [错误] {t}: {e}")
+        print(f"=== 迁移完成 {n} 个 ===")
+        sys.exit(0)
 
     # --fill-bin <清单.json>：下载 zip 探测 exe，由用户指定主程序，补全 bin/shortcuts
     if "--fill-bin" in args:
