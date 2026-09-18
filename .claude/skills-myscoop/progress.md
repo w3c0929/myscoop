@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 8946351 (HEAD -> main) finch.json 恢复治本形态：pre_install 动态解包 + 固定名 Finch.exe（版本无关）；自动更正机制已验证生效（bin 硬编码 1.6.3 更新时自动更正为 1.7.1）
-* b58827c (origin/main, origin/HEAD) progress.md 更新提交历史
+* c07e113 (HEAD -> main) 修复 qingjian 输入法不注册问题：innosetup 解包安装不执行 TSF 注册脚本 → 改用 installer 模式（/VERYSILENT /DIR=$dir 跑安装器，自动注册文本服务）+ post_uninstall 卸载器清理；验证 TSF TIP 注册 Description=青简
+* b51803e (origin/main, origin/HEAD) progress.md 更新提交历史
+* 8946351 finch.json 恢复治本形态：pre_install 动态解包 + 固定名 Finch.exe（版本无关）；自动更正机制已验证生效（bin 硬编码 1.6.3 更新时自动更正为 1.7.1）
+* b58827c progress.md 更新提交历史
 * 080d810 progress.md 更新提交历史
 * 704cf77 自动更新时更正 bin/shortcuts/pre_install 中的版本号：新增 sync_bin_version（旧版本号子串→新版本，固定名零影响），--all 每晚更新不再产生版本化文件名失配
 * 1be27a2 progress.md 更新提交历史
