@@ -573,6 +573,34 @@ def _platform_tag_passes(tag, platform):
     return not any(f in t for f in foreign[platform])
 
 
+def sync_bin_version(manifest, old_version, new_version):
+    """版本升级时，把 bin/shortcuts/pre_install 等字段中出现的旧版本号子串更正为新版本号。
+
+    背景：安装包/主程序文件名常含版本号（如 Finch-1.6.3-setup-x64.exe），autoupdate
+    只更新 version/url/hash，bin 若硬编码版本号会在升级后失配（启动器找不到文件）。
+    这里做精确子串替换：old_version → new_version（固定名如 Finch.exe 无版本号则零影响）。
+    """
+    if not old_version or old_version == new_version:
+        return []
+    changed = []
+
+    def walk(o):
+        if isinstance(o, str):
+            return o.replace(old_version, new_version)
+        if isinstance(o, list):
+            return [walk(x) for x in o]
+        return o
+
+    for key in ("bin", "shortcuts", "extract_dir", "installer", "pre_install", "post_install"):
+        if key not in manifest:
+            continue
+        before = json.dumps(manifest[key], ensure_ascii=False)
+        manifest[key] = walk(manifest[key])
+        if json.dumps(manifest[key], ensure_ascii=False) != before:
+            changed.append(key)
+    return changed
+
+
 def update_manifest(manifest_path, dry_run=False):
     """更新单个 manifest"""
     with open(manifest_path, "r", encoding="utf-8") as f:
@@ -638,6 +666,9 @@ def update_manifest(manifest_path, dry_run=False):
         chg = sync_autoupdate_fields(au, manifest, latest_version)
         if chg:
             print(f"    同步字段: {', '.join(chg)}")
+        chg2 = sync_bin_version(manifest, current_version, latest_version)
+        if chg2:
+            print(f"    版本化字段更正: {', '.join(chg2)} ({current_version} → {latest_version})")
         manifest["version"] = latest_version
         with open(manifest_path, "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=4, ensure_ascii=False)
@@ -767,6 +798,10 @@ def update_manifest(manifest_path, dry_run=False):
         chg = sync_autoupdate_fields(au, manifest, latest_version)
         if chg:
             print(f"    同步字段: {', '.join(chg)}")
+
+    chg2 = sync_bin_version(manifest, current_version, latest_version)
+    if chg2:
+        print(f"    版本化字段更正: {', '.join(chg2)} ({current_version} → {latest_version})")
 
     manifest["version"] = latest_version
 
