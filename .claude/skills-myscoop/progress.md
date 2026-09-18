@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* cc91e1f (HEAD -> main) 修复 cc-haha 0.6.4 升级失败：pre_install 硬编码 0.6.3 文件名，改为动态匹配 $dir 内 exe 任意版本自适应
-* 57d43f2 (origin/main, origin/HEAD) progress.md 更新提交历史
+* d8091ff (HEAD -> main) myscoop-update.py 同步修复：NSIS pre_install 模板弃用 {{FILE}} 硬编码，改动态匹配 $dir 内 exe，版本升级免维护
+* 7a10f22 (origin/main, origin/HEAD) progress.md 更新提交历史
+* cc91e1f 修复 cc-haha 0.6.4 升级失败：pre_install 硬编码 0.6.3 文件名，改为动态匹配 $dir 内 exe 任意版本自适应
+* 57d43f2 progress.md 更新提交历史
 * ed85027 自动更新第三方软件
 * 8d48e04 cc-haha支持解压即可使用
 * 6e6482c progress.md 更新提交历史
