@@ -738,6 +738,44 @@ Windows 下 zip 的中文文件名在 Scoop 解压后可能编码损坏，导致
 ]
 ```
 
+### Q: 注册型软件（输入法/驱动/右键菜单类）装完没生效？
+
+**症状**：输入法装完不出现在系统输入法选项、右键菜单空白、Shell 扩展无反应。
+
+**根因**：这类软件必须由**安装器脚本完成系统注册**（如输入法的 TSF 文本服务注册：
+`HKLM\SOFTWARE\Microsoft\CTF\TIP\{GUID}` + COM 组件注册指向安装目录 DLL）。
+Scoop 的 `innosetup: true` / `pre_install` 解包安装只是 7z 解文件，**不执行注册脚本**，
+系统自然不认识它。实测案例：青简输入法（qingjian），解包安装后不在输入法选项，
+改安装器模式后注册表出现 `Description=青简` 的 TSF 项，立即可用。
+
+**正确形态（installer 模式）**：真跑安装器（静默装进 scoop 目录），注册随安装执行；
+卸载时跑安装器的卸载器清理注册，不留残留：
+
+```json
+"installer": {
+    "args": ["/VERYSILENT", "/NORESTART", "/DIR=$dir"]   // Inno；NSIS 用 ["/S", "/D=$dir"]
+},
+"post_uninstall": [
+    "Start-Process \"$dir\\unins000.exe\" -Wait -ArgumentList '/VERYSILENT','/NORESTART'"
+]
+```
+
+升级时 installer 模式会重跑安装器 → 注册自动指向新版本组件，版本化文件名不失配。
+
+**自动处理**：`myscoop-update.py --add` 检测到 Inno/NSIS 安装器且名称/描述命中
+注册型关键词（ime 输入法 tsf driver 驱动 右键 context menu registry 等）时，
+**自动生成 installer 模式**，无需手工改造。
+
+**存量清单一键迁移**（把已入库的 `innosetup`/`pre_install` 解包形态转 installer 模式，幂等）：
+
+```powershell
+python3 myscoop-update.py --installer-mode bucket/qingjian.json   # 单个/多个
+python3 myscoop-update.py --installer-mode --all                  # 全库扫描
+```
+
+**不适合 installer 模式的例外**：安装器只做解包搬运、无注册逻辑时，用解包方式更
+轻量。判断标准：官方安装后是否新增系统级注册项（注册表/服务/右键菜单/输入法）。
+
 ### Q: self-contained 还是 framework-dependent？
 
 |                | self-contained        | framework-dependent     |
