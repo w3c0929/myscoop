@@ -8,6 +8,9 @@
         "github": "https://github.com/qingjian-team/qingjian"
     },
     "hash": "sha256:257c3b4008b6f8f1aac0666100eab51fa6646e9ae49df51fbce58cbf3eefa52c",
+    "notes": [
+        "输入法装完若未出现在系统输入法选项：新打开的窗口通常立即生效（旧窗口需重开）；任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe）或资源管理器；仍无效再注销/重启。"
+    ],
     "installer": {
         "args": [
             "/VERYSILENT",
