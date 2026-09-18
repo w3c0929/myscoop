@@ -1,5 +1,5 @@
 {
-    "version": "1.6.3",
+    "version": "1.7.1",
     "description": "Finch community hub",
     "homepage": "https://www.finchwork.app",
     "license": "unknown",
@@ -8,16 +8,16 @@
     },
     "architecture": {
         "32bit": {
-            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.6.3/Finch-1.6.3-setup-ia32.exe",
-            "hash": "sha256:a5838158842a87d339c7457aed9af5166b79c70762225cbe0bfc04f16e8ca5e3"
+            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.7.1/Finch-1.7.1-setup-ia32.exe",
+            "hash": "sha256:175921d157a7550488c726e7e1692393908b35d1b37271341395dd9ee4ef10d0"
         },
         "64bit": {
-            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.6.3/Finch-1.6.3-setup-x64.exe",
-            "hash": "sha256:d8dad6a9cabb13986a690ec0ecbc3e5fa406e221cdf69317460252d38015830c"
+            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.7.1/Finch-1.7.1-setup-x64.exe",
+            "hash": "sha256:f9414a0d9fd06559da543de496346397332d765009bdb51a1ed4e774799d9f64"
         },
         "arm64": {
-            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.6.3/Finch-1.6.3-setup.exe",
-            "hash": "sha256:5ba55ad69b648d73f70bc0fa7f16b5f08bcdba7a684065b9208953e27fff2cca"
+            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.7.1/Finch-1.7.1-setup.exe",
+            "hash": "sha256:6005ba507b18daa424b25ec17ba1890f10cff6a89bf965bf4a8bde5bfc7f88c9"
         }
     },
     "autoupdate": {
