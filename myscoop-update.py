@@ -10,6 +10,13 @@ myscoop 管理脚本
   python3 myscoop-update.py --add https://gitee.com/fasterthanlight/automatic_clicker_2.git
   python3 myscoop-update.py --add https://github.com/owner/repo --name my-app-name
 
+  # 1b) --add 仓库增强（zip/7z 主程序 + 已存在清单）：
+  #   python3 myscoop-update.py --add https://github.com/luolangaga/tubatools.git --exe-name 图吧工具箱WinUI3.exe
+  #     · zip/7z 时 --exe-name 直接写 bin/shortcuts，并自动附加扁平化 pre_install
+  #       （单顶层目录 zip 装后平铺到 $dir 根，无目录时零副作用；--no-flatten 可禁用）
+  #     · 目标清单已存在时默认【合并更新】：保留 bin/shortcuts/extract_dir/notes/pre_install
+  #       等人工字段，仅覆盖 version/url/hash/architecture；--force-new 强制全新重建
+
   # 2) 新增：安装包直链（自动下载实测 SHA256、Inno Setup 检测、生成 autoupdate；
   #    GitHub 直链还会自动补全 description/homepage/license/checkver）
   #    zip/7z 下载后默认保留到 staging/.dl_cache/，供模式 5 复用免二次下载（--no-keep 可关闭）[pyl]
