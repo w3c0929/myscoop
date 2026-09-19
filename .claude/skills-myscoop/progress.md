@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 8cabc9c (HEAD -> main) docstring 用法更新：新增 1b 段（--add 仓库增强：zip --exe-name 写 bin+扁平化 pre_install、已存在清单合并更新、--force-new/--no-flatten 开关）
-* b811933 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 4a755a4 (HEAD -> main) 扁平化条件化：FLATTEN_PRE_INSTALL 仅在唯一目录内含 exe（真打包目录）时平铺，资源目录（src 等）保持原生结构（tubatools 事故修复）；zip 探测侧同步 top_exe 条件；tubatools.json 移除扁平化恢复原生结构（bin/shortcuts 保留、shim 建成）；单测 7 套全过
+* 8a923e8 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 8cabc9c docstring 用法更新：新增 1b 段（--add 仓库增强：zip --exe-name 写 bin+扁平化 pre_install、已存在清单合并更新、--force-new/--no-flatten 开关）
+* b811933 progress.md 更新提交历史
 * 6c19ba4 仓库模式增强：--add 已存在清单默认合并更新（merge 保留 bin/shortcuts/pre_install 等人工字段，--force-new 强推）；zip 分支 --exe-name 直接写 bin/shortcuts + 附加扁平化 pre_install；tubatools 清单落地（多架构+图吧工具箱WinUI3.exe+扁平化）
 * 8ee44ff progress.md 更新提交历史
 * 093c72f --add zip 探测自动扁平化：单顶层目录（唯一目录层+顶层无文件+已指定 bin）自动生成版本无关 pre_install 扁平化脚本（FLATTEN_PRE_INSTALL），--no-flatten 禁用；多顶层/顶层已有文件/已有 pre_install/未指定 bin 均不生成；单测 9 场景+5 套回归全过
