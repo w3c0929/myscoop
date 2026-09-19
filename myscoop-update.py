@@ -1416,13 +1416,12 @@ def finalize_direct_manifest(template, out_dir, app_name):
                         and "--no-flatten" not in sys.argv[1:]):
                     files = [n for n in names if not n.endswith("/")]
                     tops = sorted({n.split("/")[0] for n in files if "/" in n})
-                    has_top_files = any("/" not in n for n in files)  # 顶层已有文件（bin 可能已在根）
-                    # 顶层目录内必须含 .exe（真打包目录）才扁平；资源目录（src 等）不含 exe，跳过
-                    top_exe = any("/" in n and n.split("/")[0] == tops[0] and n.lower().endswith(".exe")
-                                  for n in files) if len(tops) == 1 else False
-                    if len(tops) == 1 and tops[0] and not has_top_files and top_exe:
+                    has_top_files = any("/" not in n for n in files)  # 顶层散文件（文件夹+文件并列 → 不扁平）
+                    # 判据：顶层恰好只有一个文件夹（无散文件）→ 真打包目录 → 扁平化；
+                    # 文件夹+文件并列 / 多文件夹（如 src/ + exe 并列）→ 保持原生结构
+                    if len(tops) == 1 and tops[0] and not has_top_files:
                         template["pre_install"] = [FLATTEN_PRE_INSTALL]
-                        print(f"[zip探测] 单顶层打包目录「{tops[0]}」（含 exe）：已自动添加扁平化 pre_install"
+                        print(f"[zip探测] 单层打包目录「{tops[0]}」：已自动添加扁平化 pre_install"
                               f"（bin 直接落在 $dir 根，版本升级免维护；--no-flatten 可禁用）")
             except Exception:
                 pass

@@ -9,17 +9,14 @@ spec.loader.exec_module(mu)
 
 
 def detect(spec_keys, bin_given, no_flatten=False, has_pre=False):
-    """模拟 zip 探测核心判定，返回 (should_add, tops)。"""
+    """模拟 zip 探测核心判定，返回 (should_add, tops)。判据（用户定稿）：
+    顶层恰好只有一个文件夹且无散文件 → 扁平化；文件夹+文件并列/多文件夹 → 不扁平。"""
     files = [n for n in spec_keys if not n.endswith("/")]
     tops = sorted({n.split("/")[0] for n in files if "/" in n})
     has_top_files = any("/" not in n for n in files)
     if not (bin_given and not has_pre and not no_flatten):
         return False, tops
-    top_exe = False
-    if len(tops) == 1:
-        top_exe = any("/" in n and n.split("/")[0] == tops[0] and n.lower().endswith(".exe")
-                      for n in files)
-    return (len(tops) == 1 and bool(tops[0]) and not has_top_files and top_exe), tops
+    return (len(tops) == 1 and bool(tops[0]) and not has_top_files), tops
 
 
 # 1) 单顶层目录 + bin → 生成扁平化
@@ -74,11 +71,17 @@ ok, tops = detect(["TubaWinUi3_Portable_1.6.1_x64/图吧工具箱WinUI3.exe",
 assert ok is True and tops == ["TubaWinUi3_Portable_1.6.1_x64"]
 print("打包目录含 exe → 生成 OK")
 
-# 10) 唯一目录是资源目录（src，无 exe）→ 不生成（tubatools 事故回归）
+# 10) src 资源目录无 exe → 按"唯一文件夹"判据：src+exe 并列（顶层有文件）→ 不生成（tubatools 事故回归）
 ok, tops = detect(["src/Accessibility.dll", "src/AssistStudio.Core.dll",
                    "图吧工具箱WinUI3.exe", "图吧工具箱Winui3兼容版.exe"], True)
 assert ok is False and tops == ["src"]
-print("src 资源目录无 exe → 不生成 OK")
+print("src+exe 并列 → 不生成 OK")
+
+# 11) 唯一文件夹但目录内无 exe（纯数据目录）→ 仍生成（判据只看顶层结构，用户定稿）
+ok, tops = detect(["data/model.qjm", "data/dict.qj"], True)
+assert ok is True and tops == ["data"]
+print("唯一文件夹（无 exe）→ 生成 OK")
+
 assert "if ($d -and" in mu.FLATTEN_PRE_INSTALL and "-Filter *.exe" in mu.FLATTEN_PRE_INSTALL
 print("条件脚本结构 OK")
 
