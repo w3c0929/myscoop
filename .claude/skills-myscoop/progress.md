@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 102ac57 (HEAD -> main) 扁平化判据按用户定稿：生成侧只看顶层结构——恰好一个文件夹（无散文件）才扁平化（top_exe 条件移除）；文件夹+文件并列（src+exe）与多文件夹不扁平；运行侧保留"目录含 exe"守卫作安全兜底；单测新增纯数据文件夹场景，7 套全过
-* aaf28e6 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 9d6008e (HEAD -> main) 修复仓库模式扁平化误判：zip+--exe-name 不再无条件附加 flatten（免下载看不到 zip 结构）——改为显式 --flatten 才加，提示确认单层打包目录；--force-new 完全重建不 merge 保留旧字段；tubatools.json 恢复无扁平化正确形态；docstring 1b 同步；端到端双路径+7 套单测验证
+* b912205 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 102ac57 扁平化判据按用户定稿：生成侧只看顶层结构——恰好一个文件夹（无散文件）才扁平化（top_exe 条件移除）；文件夹+文件并列（src+exe）与多文件夹不扁平；运行侧保留"目录含 exe"守卫作安全兜底；单测新增纯数据文件夹场景，7 套全过
+* aaf28e6 progress.md 更新提交历史
 * 4a755a4 扁平化条件化：FLATTEN_PRE_INSTALL 仅在唯一目录内含 exe（真打包目录）时平铺，资源目录（src 等）保持原生结构（tubatools 事故修复）；zip 探测侧同步 top_exe 条件；tubatools.json 移除扁平化恢复原生结构（bin/shortcuts 保留、shim 建成）；单测 7 套全过
 * 8a923e8 progress.md 更新提交历史
 * 8cabc9c docstring 用法更新：新增 1b 段（--add 仓库增强：zip --exe-name 写 bin+扁平化 pre_install、已存在清单合并更新、--force-new/--no-flatten 开关）
