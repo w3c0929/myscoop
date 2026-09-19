@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 093c72f (HEAD -> main) --add zip 探测自动扁平化：单顶层目录（唯一目录层+顶层无文件+已指定 bin）自动生成版本无关 pre_install 扁平化脚本（FLATTEN_PRE_INSTALL），--no-flatten 禁用；多顶层/顶层已有文件/已有 pre_install/未指定 bin 均不生成；单测 9 场景+5 套回归全过
-* e0577e3 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 6c19ba4 (HEAD -> main) 仓库模式增强：--add 已存在清单默认合并更新（merge 保留 bin/shortcuts/pre_install 等人工字段，--force-new 强推）；zip 分支 --exe-name 直接写 bin/shortcuts + 附加扁平化 pre_install；tubatools 清单落地（多架构+图吧工具箱WinUI3.exe+扁平化）
+* 8ee44ff (origin/main, origin/HEAD) progress.md 更新提交历史
+* 093c72f --add zip 探测自动扁平化：单顶层目录（唯一目录层+顶层无文件+已指定 bin）自动生成版本无关 pre_install 扁平化脚本（FLATTEN_PRE_INSTALL），--no-flatten 禁用；多顶层/顶层已有文件/已有 pre_install/未指定 bin 均不生成；单测 9 场景+5 套回归全过
+* e0577e3 progress.md 更新提交历史
 * 198050c cinetry 解压扁平化：pre_install 通配移出 zip 顶层目录（版本无关），bin 直接落在 $dir 根，shim 创建成功（scoop 先 shim 后 post_install，扁平化必须用 pre_install——源码 install.ps1:59 shims → 69 post_install）
 * cd1e2c0 progress.md 更新提交历史
 * 62cd5cf 修复 refresh_build_in_template 判定：精确 extract_dir 同步不再计入"模板可推导"标记——模板 URL 无法替换时正确回退去模板化（回归 test_build_asset 场景4）
