@@ -475,9 +475,12 @@ def add_manifest(repo_url, app_name=None):
     if not app_name:
         app_name = repo.lower()
     manifest_path = BUCKET_DIR / f"{app_name}.json"
-    if manifest_path.exists():
-        print(f"[错误] manifest 已存在: {manifest_path.name}")
-        return None
+    if manifest_path.exists() and "--force-new" not in sys.argv[1:]:
+        # 默认合并更新：仓库模式写盘前 merge_existing_manifest 会保留既有
+        # bin/shortcuts/extract_dir/notes 等人工字段，仅覆盖 version/url/hash/architecture
+        print(f"[提示] manifest 已存在: {manifest_path.name}（将合并更新，人工字段保留；--force-new 可强制全新）")
+    elif manifest_path.exists():
+        print(f"[提示] --force-new：将覆盖重建 {manifest_path.name}（旧字段不保留）")
 
     print(f"平台: {platform}")
     print(f"仓库: {owner}/{repo}")
@@ -670,9 +673,24 @@ def add_manifest(repo_url, app_name=None):
         manifest["post_install"] = f"Start-Process \"$dir\\{best_name}\""
         print(f"[qlplugin] 将添加 post_install 自启动: {best_name}")
     elif best_name.endswith((".zip", ".7z")):
-        # 无法确定内部 exe 名，跳过 bin/shortcuts
-        manifest["notes"] = "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
-        print("[提示] zip/7z 格式无法自动推测 exe 名，请手动添加 bin/shortcuts")
+        exe_name = arg_value("--exe-name")
+        if exe_name:
+            manifest["bin"] = exe_name
+            manifest["shortcuts"] = [[exe_name, arg_value("--shortcut-name") or app_name]]
+            if "pre_install" not in manifest:
+                manifest["pre_install"] = [FLATTEN_PRE_INSTALL]
+                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts，并添加扁平化 pre_install"
+                      f"（zip 单顶层目录自动平铺，无目录时零副作用）")
+            else:
+                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts（已有 pre_install，未追加扁平化）")
+        else:
+            manifest["notes"] = "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+            print("[提示] zip/7z 格式无法自动推测 exe 名，请手动添加 bin/shortcuts 或加 --exe-name")
+
+    # 写盘前合并保留既有人工字段（--add 重跑不冲掉 bin/shortcuts/pre_install 等）
+    kept = merge_existing_manifest(manifest_path, manifest)
+    if kept:
+        print(f"[提示] 目标 {manifest_path.name} 已存在，已合并保留: {', '.join(kept)}")
 
     # 写入 manifest
     manifest_path_str = str(manifest_path)

@@ -1,0 +1,47 @@
+{
+    "version": "1.6.1",
+    "description": "图吧工具箱 CE",
+    "homepage": "https://tubawinui3.cn/",
+    "license": "GPL-3.0",
+    "checkver": {
+        "github": "https://github.com/luolangaga/tubatools"
+    },
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/luolangaga/tubatools/releases/download/v1.6.1/Tools.zip",
+            "hash": "sha256:1b7e4c5b2cd5aa47ea6520e2c3fe0527a99822a54c357ea394d4b978a202caed"
+        },
+        "64bit": {
+            "url": "https://github.com/luolangaga/tubatools/releases/download/v1.6.1/TubaWinUi3_Portable_1.6.1_x64.zip",
+            "hash": "sha256:0c5bb1750bf493e1ce37de110f4da33d31eccf0fac247162cac34fbaece3ada4"
+        },
+        "arm64": {
+            "url": "https://github.com/luolangaga/tubatools/releases/download/v1.6.1/TubaWinUi3_Portable_1.6.1_arm64.zip",
+            "hash": "sha256:03502ac85fce2fa0399b89473bcd7348353065210a108b1ea24dce114cbcfc76"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/luolangaga/tubatools/releases/download/v$version/Tools.zip"
+            },
+            "64bit": {
+                "url": "https://github.com/luolangaga/tubatools/releases/download/v$version/TubaWinUi3_Portable_$version_x64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/luolangaga/tubatools/releases/download/v$version/TubaWinUi3_Portable_$version_arm64.zip"
+            }
+        }
+    },
+    "bin": "图吧工具箱WinUI3.exe",
+    "shortcuts": [
+        [
+            "图吧工具箱WinUI3.exe",
+            "tubatools"
+        ]
+    ],
+    "pre_install": [
+        "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; if ($d) { Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; Remove-Item $d.FullName -Recurse -Force }"
+    ],
+    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+}
