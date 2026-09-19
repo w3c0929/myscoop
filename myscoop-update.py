@@ -1130,6 +1130,15 @@ NSIS_PRE_INSTALL = [
     "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }",
 ]
 
+# zip 单顶层目录扁平化：把唯一的顶层目录内容平铺到 $dir 根（版本无关通配）。
+# 必须用 pre_install（scoop 源码 install.ps1 先 create_shims 后 post_install，
+# bin 布局操作在 post_install 里会因 shim 已失败而永远来不及）。
+FLATTEN_PRE_INSTALL = (
+    "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; "
+    "if ($d) { Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; "
+    "Remove-Item $d.FullName -Recurse -Force }"
+)
+
 
 def probe_nsis_exes(tmp, app_name):
     """NSIS 安装器：用 7z 直接解包（无需真安装，无副作用）收集真实 exe 名。
@@ -1363,18 +1372,28 @@ def finalize_direct_manifest(template, out_dir, app_name):
         size = tmp.stat().st_size
         digest = sha256_hex(tmp)
         print(f"[下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
-        # zip 且未指定 bin 时：探测压缩包顶层 exe，提示补 bin/shortcuts
-        if url.lower().endswith(".zip") and not template.get("bin"):
+        # zip 探测：顶层 exe 提示 + 单顶层目录自动扁平化（版本无关，--no-flatten 禁用）
+        if url.lower().endswith(".zip"):
             try:
                 import zipfile
                 with zipfile.ZipFile(tmp) as z:
                     names = z.namelist()
-                exes = sorted({n for n in names if n.lower().endswith(".exe")
-                               and "/" not in n and "\\" not in n})
-                if exes:
-                    print(f"[zip探测] 顶层 exe: {', '.join(exes[:6])}"
-                          f"{'...' if len(exes) > 6 else ''}")
-                    print(f"          如需补 bin/shortcuts，可用 --exe-name {exes[0]} 重新生成，或手动添加")
+                if not template.get("bin"):
+                    exes = sorted({n for n in names if n.lower().endswith(".exe")
+                                   and "/" not in n and "\\" not in n})
+                    if exes:
+                        print(f"[zip探测] 顶层 exe: {', '.join(exes[:6])}"
+                              f"{'...' if len(exes) > 6 else ''}")
+                        print(f"          如需补 bin/shortcuts，可用 --exe-name {exes[0]} 重新生成，或手动添加")
+                if (template.get("bin") and "pre_install" not in template
+                        and "--no-flatten" not in sys.argv[1:]):
+                    files = [n for n in names if not n.endswith("/")]
+                    tops = sorted({n.split("/")[0] for n in files if "/" in n})
+                    has_top_files = any("/" not in n for n in files)  # 顶层已有文件（bin 可能已在根）
+                    if len(tops) == 1 and tops[0] and not has_top_files:
+                        template["pre_install"] = [FLATTEN_PRE_INSTALL]
+                        print(f"[zip探测] 单顶层目录「{tops[0]}」：已自动添加扁平化 pre_install"
+                              f"（bin 直接落在 $dir 根，版本升级免维护；--no-flatten 可禁用）")
             except Exception:
                 pass
 
