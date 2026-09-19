@@ -12,10 +12,10 @@ myscoop 管理脚本
 
   # 1b) --add 仓库增强（zip/7z 主程序 + 已存在清单）：
   #   python3 myscoop-update.py --add https://github.com/luolangaga/tubatools.git --exe-name 图吧工具箱WinUI3.exe
-  #     · zip/7z 时 --exe-name 直接写 bin/shortcuts，并自动附加扁平化 pre_install
-  #       （单顶层目录 zip 装后平铺到 $dir 根，无目录时零副作用；--no-flatten 可禁用）
+  #     · zip/7z 时 --exe-name 直接写 bin/shortcuts；扁平化 pre_install 需显式 --flatten
+  #       （仓库模式免下载看不到 zip 结构，不自动判定——单层打包目录才适合扁平化）
   #     · 目标清单已存在时默认【合并更新】：保留 bin/shortcuts/extract_dir/notes/pre_install
-  #       等人工字段，仅覆盖 version/url/hash/architecture；--force-new 强制全新重建
+  #       等人工字段，仅覆盖 version/url/hash/architecture；--force-new 强制全新重建（不保留旧字段）
 
   # 2) 新增：安装包直链（自动下载实测 SHA256、Inno Setup 检测、生成 autoupdate；
   #    GitHub 直链还会自动补全 description/homepage/license/checkver）
@@ -684,20 +684,26 @@ def add_manifest(repo_url, app_name=None):
         if exe_name:
             manifest["bin"] = exe_name
             manifest["shortcuts"] = [[exe_name, arg_value("--shortcut-name") or app_name]]
-            if "pre_install" not in manifest:
+            # 仓库模式免下载，看不到 zip 结构——扁平化不自动判定（会误伤 src+exe 并列结构），
+            # 仅显式 --flatten 才附加（用户确认过是单层打包目录）
+            if "--flatten" in sys.argv[1:] and "pre_install" not in manifest:
                 manifest["pre_install"] = [FLATTEN_PRE_INSTALL]
-                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts，并添加扁平化 pre_install"
-                      f"（zip 单顶层目录自动平铺，无目录时零副作用）")
-            else:
+                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts，并（--flatten）附加扁平化 pre_install")
+            elif "pre_install" in manifest:
                 print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts（已有 pre_install，未追加扁平化）")
+            else:
+                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts。"
+                      f"zip 结构未下载确认，未自动扁平化——确认是单层打包目录时可加 --flatten 重跑")
         else:
             manifest["notes"] = "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
             print("[提示] zip/7z 格式无法自动推测 exe 名，请手动添加 bin/shortcuts 或加 --exe-name")
 
-    # 写盘前合并保留既有人工字段（--add 重跑不冲掉 bin/shortcuts/pre_install 等）
-    kept = merge_existing_manifest(manifest_path, manifest)
-    if kept:
-        print(f"[提示] 目标 {manifest_path.name} 已存在，已合并保留: {', '.join(kept)}")
+    # 写盘前合并保留既有人工字段（--add 重跑不冲掉 bin/shortcuts/pre_install 等；
+    # --force-new 完全重建，不保留旧字段）
+    if "--force-new" not in sys.argv[1:]:
+        kept = merge_existing_manifest(manifest_path, manifest)
+        if kept:
+            print(f"[提示] 目标 {manifest_path.name} 已存在，已合并保留: {', '.join(kept)}")
 
     # 写入 manifest
     manifest_path_str = str(manifest_path)
