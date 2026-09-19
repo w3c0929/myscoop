@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* e309aa6 (HEAD -> main) SwitchHosts 5.0.1 便携版换代：替换发布同名 zip（2026-09-19 维护版），hash 更新为 sha256:982e72d5…（README 版本列已为 5.0.1，无需文字变更）
-* e63788a (origin/main, origin/HEAD) progress.md 更新提交历史
+* f16b73f (HEAD -> main) 自动更新第三方软件
+* cb651b1 (origin/main) progress.md 更新提交历史
+* e309aa6 SwitchHosts 5.0.1 便携版换代：替换发布同名 zip（2026-09-19 维护版），hash 更新为 sha256:982e72d5…（README 版本列已为 5.0.1，无需文字变更）
+* e63788a progress.md 更新提交历史
 * 9d6008e 修复仓库模式扁平化误判：zip+--exe-name 不再无条件附加 flatten（免下载看不到 zip 结构）——改为显式 --flatten 才加，提示确认单层打包目录；--force-new 完全重建不 merge 保留旧字段；tubatools.json 恢复无扁平化正确形态；docstring 1b 同步；端到端双路径+7 套单测验证
 * b912205 progress.md 更新提交历史
 * 102ac57 扁平化判据按用户定稿：生成侧只看顶层结构——恰好一个文件夹（无散文件）才扁平化（top_exe 条件移除）；文件夹+文件并列（src+exe）与多文件夹不扁平；运行侧保留"目录含 exe"守卫作安全兜底；单测新增纯数据文件夹场景，7 套全过
@@ -378,7 +380,7 @@ scoop cat myscoop/appname
 * 4aab0db Sublime Text 改版本化安装：合并 4200/4207 为单 manifest 模板 URL
 * 3324af9 progress.md 更新提交历史
 * 3e4f71a 收录 Sublime Text 4207 便携版：与 4200 并存安装
-* 2f3deec (tag: vSublimeText4207) progress.md 更新提交历史
+* 2f3deec progress.md 更新提交历史
 * b851a91 移除桌面整理工具 DeskBox：删除 manifest、Release 及文档引用
 * 239a4cf progress.md 更新提交历史
 * ff87361 DropIt 更新：重新上传重新编译的 x64 便携包
@@ -399,7 +401,7 @@ scoop cat myscoop/appname
 * af59e99 progress.md 更新提交历史
 * d05e530 progress.md 更新提交历史
 * acb1175 收录 DeskBox 1.4.2 桌面整理工具（单 exe 手动安装）
-* 9271550 (tag: v1.4.2) progress.md 更新提交历史
+* 9271550 progress.md 更新提交历史
 * 3064a64 progress.md 更新提交历史
 * 8dfbe5e DropIt 更新：再次重新上传修改源码后的便携包
 * ebaaa5c progress.md 更新提交历史
@@ -507,7 +509,7 @@ scoop cat myscoop/appname
 * 831da2a (tag: v147.0.7703.0, tag: v1.0-wcap) 添加项目进展文档 progress.md
 * 59cbd85 添加 StudioOne/VAM/BeatEdit/MdxBuilder/DisableGamebar 五个软件
 * 0e4c8c6 (tag: vVAM1.22, tag: vStudioOne7.1, tag: vMdxBuilder, tag: vDisableGamebar, tag: vBeatEdit2.1) 更新 Sublime Text 4200：重新打包，更新 hash
-* 40d4511 (tag: vSublimeText4200) 添加 6 个软件：GoldenDict/PointerStick/SublimeText/EpicPen/Tickeys/Anytxt
+* 40d4511 添加 6 个软件：GoldenDict/PointerStick/SublimeText/EpicPen/Tickeys/Anytxt
 * 8b35ecf (tag: vTickeys1.2.0, tag: vPointerStick, tag: vGoldenDict, tag: vEpicPen3.7.31, tag: vAnytxt1.3.1952) 添加 14 个单 exe 手动安装：网络工具/办公效率/系统工具/装机必备等
 * ca4bae0 (tag: vWujin, tag: vWinHex, tag: vSystemCleaner, tag: vSogouWubi, tag: vRobocopyGUI1.3, tag: vPDFMergeSplit, tag: vPDF24Converter, tag: vNumpadPractice, tag: vGoogleTranslateChecker, tag: vGIFTool, tag: vFolderEncrypt, tag: vDnsTools1.2.3) 添加 heu-kms/vba-runtime/driver-genius/360-driver-master/bootice 五个单 exe 手动安装
 * b4f66a9 (tag: vVBA7.0.1590, tag: vDriverGenius9.70, tag: vBOOTICE1.3.4, tag: v42.3.0, tag: v360DriverMaster2.0) 重构 README 软件表：分为本地维护和第三方官方两个分类，添加序号
