@@ -3,17 +3,22 @@
     "description": "Cinetry多媒体播放器，Jellyfin、Emby、CMS、IPTV、Webdav、Alist、Openlist、Subsonic、Navidrom、GD音乐台、audiobookshelf、道理鱼、飞牛影视数据导入，服务器一键切换，多服务器数据聚合搜索，支持Andorid、iOS、Windows、macOS、Linux、TV，纯本地客户端，不扫库，不会收集、存储或传输任何个人信息或服务器数据",
     "homepage": "https://cinetry.gstory.cn",
     "license": "unknown",
+    "url": "https://github.com/gstory0404/Cinetry/releases/download/0.8.4/Cinetry_0.8.4%2B48_windows.zip",
     "checkver": {
         "github": "https://github.com/gstory0404/Cinetry"
     },
-    "url": "https://github.com/gstory0404/Cinetry/releases/download/0.8.4/Cinetry_0.8.4%2B48_windows.zip",
-    "hash": "sha256:4ddd2ed1a5b7b0479586a3a15b0fe398f39709f062cb839114dc86cd121c7739",
-    "extract_dir": "Cinetry_0.8.4+48_windows",
     "bin": "cinetry.exe",
+    "pre_install": [
+        "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; if ($d) { Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; Remove-Item $d.FullName -Recurse -Force }"
+    ],
     "shortcuts": [
         [
             "cinetry.exe",
-            "Cinetry"
+            "cinetry"
         ]
-    ]
+    ],
+    "hash": "sha256:4ddd2ed1a5b7b0479586a3a15b0fe398f39709f062cb839114dc86cd121c7739",
+    "autoupdate": {
+        "url": "https://github.com/gstory0404/Cinetry/releases/download/$version/Cinetry_$version+48_windows.zip"
+    }
 }
