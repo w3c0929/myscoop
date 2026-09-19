@@ -248,10 +248,10 @@ def refresh_build_in_template(manifest, asset, current_url):
         if nv != obj[key]:
             obj[key] = nv
             changed = True
+    # 精确 extract_dir 一并同步（附带行为，不参与"模板可推导"判定）
     ed = manifest.get("extract_dir")
     if isinstance(ed, str) and f"+{old_b}" in ed:
         manifest["extract_dir"] = ed.replace(f"+{old_b}", f"+{new_b}")
-        changed = True
     return changed
 
 
