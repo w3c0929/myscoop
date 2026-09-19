@@ -73,6 +73,7 @@ import sys
 import os
 import urllib.request
 import urllib.error
+from urllib.parse import unquote
 from pathlib import Path
 
 BUCKET_DIR = Path(__file__).parent / "bucket"
@@ -194,7 +195,7 @@ def _norm_base(name):
 def match_asset(resolved_url, assets):
     """根据解析后的 URL 匹配对应的 release asset。优先级：
     精确同名 → 忽略大小写 → 基础名数字归一化相等（同扩展名优先，其次同家族互通）。"""
-    filename = resolved_url.split("/")[-1]
+    filename = unquote(resolved_url.split("/")[-1])  # %2B 之类编码还原后再匹配（+ 与 %2B 等价）
     for a in assets:
         if a["name"] == filename:
             return a
@@ -214,6 +215,78 @@ def match_asset(resolved_url, assets):
         if _ext_family(a["name"]) == f_fam:
             return a
     return None  # 基础名同但家族不同（zip↔exe）：不匹配，防形态误配
+
+
+def refresh_build_in_template(manifest, asset, current_url):
+    """方案A：模板构建号随资产刷新。资产名含 {版本}+{build} 段且清单有 autoupdate 模板时，
+    把模板（url/extract_dir，含架构）与精确 extract_dir 中的旧 build 替换为新 build——
+    模板保活，scoop 客户端自更新不再 404。构建号无法反推时返回 False（调用方回退去模板）。"""
+    cur = unquote((current_url or "").split("/")[-1])
+    om = re.search(r"\+(\d+)[^+]*$", cur)
+    new_m = re.search(r"\+(\d+)[^+]*$", asset.get("name", ""))
+    if not om or not new_m:
+        return False
+    old_b, new_b = om.group(1), new_m.group(1)
+    if old_b == new_b:
+        return True
+    au = manifest.get("autoupdate")
+    if not isinstance(au, dict):
+        return False
+    changed = False
+    targets = []
+    if isinstance(au.get("url"), str):
+        targets.append((au, "url"))
+    if isinstance(au.get("extract_dir"), str):
+        targets.append((au, "extract_dir"))
+    arch = au.get("architecture")
+    if isinstance(arch, dict):
+        for blk in arch.values():
+            if isinstance(blk, dict) and isinstance(blk.get("url"), str):
+                targets.append((blk, "url"))
+    for obj, key in targets:
+        nv = obj[key].replace(f"+{old_b}", f"+{new_b}")
+        if nv != obj[key]:
+            obj[key] = nv
+            changed = True
+    ed = manifest.get("extract_dir")
+    if isinstance(ed, str) and f"+{old_b}" in ed:
+        manifest["extract_dir"] = ed.replace(f"+{old_b}", f"+{new_b}")
+        changed = True
+    return changed
+
+
+KEEP_FIELDS = ("bin", "shortcuts", "extract_dir", "notes", "pre_install", "post_install",
+               "installer", "post_uninstall", "pre_uninstall", "env_add_path")
+
+
+def merge_existing_manifest(out_path, template):
+    """--add 目标已存在时合并保留人工字段（bin/shortcuts/extract_dir/notes 等），
+    由新模板覆盖 version/url/hash/checkver/autoupdate。返回保留字段列表。"""
+    out_path = Path(out_path)
+    if not out_path.exists():
+        return []
+    try:
+        old = json.loads(out_path.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    kept = []
+    for k in KEEP_FIELDS:
+        if k in old and k not in template:
+            template[k] = old[k]
+            kept.append(k)
+    return kept
+
+
+def handle_build_drift(manifest, asset, resolved_url, arch=None):
+    """构建号漂移处理（C 组合策略）：优先刷新模板构建号（方案A，保留模板）；
+    模板无法反推时去模板化+精确回写（方案B）。返回 'none' | 'refresh' | 'removed'。"""
+    if asset["name"] == resolved_url.split("/")[-1]:
+        return "none"
+    if refresh_build_in_template(manifest, asset, resolved_url):
+        return "refresh"
+    if sync_build_asset(manifest, asset, resolved_url, arch=arch):
+        return "removed"
+    return "none"
 
 
 def sync_build_asset(manifest, asset, resolved_url, arch=None):
@@ -256,20 +329,22 @@ def heal_url_drift(manifest, assets):
         for arch, blk in manifest["architecture"].items():
             cur = blk.get("url", "")
             a = match_asset(cur, assets)
-            if a and a["name"] != cur.split("/")[-1]:
+            if a and a["name"] != unquote(cur.split("/")[-1]):
                 blk["url"] = a.get("browser_download_url") or cur
                 if a.get("digest"):
                     blk["hash"] = a["digest"]
-                fixed |= sync_build_asset(manifest, a, cur, arch=arch)
+                fixed |= handle_build_drift(manifest, a, cur, arch=arch) in ("refresh", "removed")
         return fixed
     cur = manifest.get("url", "")
     a = match_asset(cur, assets)
-    if not a or a["name"] == cur.split("/")[-1]:
+    # URL 中 %2B 等编码与资产名原字符（+）等价：解码后再比，避免误判漂移
+    cur_name = unquote(cur.split("/")[-1])
+    if not a or a["name"] == cur_name:
         return False
     manifest["url"] = a.get("browser_download_url") or cur
     if a.get("digest"):
         manifest["hash"] = a["digest"]
-    return sync_build_asset(manifest, a, cur)
+    return handle_build_drift(manifest, a, cur) in ("refresh", "removed")
 
 
 def is_windows_asset(name):
@@ -852,7 +927,10 @@ def update_manifest(manifest_path, dry_run=False):
                 real = asset.get("browser_download_url") or new_url
                 manifest["architecture"][arch]["url"] = real
                 manifest["architecture"][arch]["hash"] = digest
-                if sync_build_asset(manifest, asset, new_url, arch=arch):
+                drift = handle_build_drift(manifest, asset, new_url, arch=arch)
+                if drift == "refresh":
+                    print(f"    {arch}: {digest[:16]}... [+构建号: autoupdate 模板已刷新为新构建号，保留模板]")
+                elif drift == "removed":
                     print(f"    {arch}: {digest[:16]}... [+构建号漂移: 已回写真实资产并移除该架构 autoupdate 模板]")
                 else:
                     print(f"    {arch}: {digest[:16]}...")
@@ -864,7 +942,10 @@ def update_manifest(manifest_path, dry_run=False):
                     real2 = asset2.get("browser_download_url") or new_url2
                     manifest["architecture"][arch]["url"] = real2
                     manifest["architecture"][arch]["hash"] = digest2
-                    if sync_build_asset(manifest, asset2, new_url2, arch=arch):
+                    drift2 = handle_build_drift(manifest, asset2, new_url2, arch=arch)
+                    if drift2 == "refresh":
+                        print(f"    {arch}: {digest2[:16]}... (fallback, +构建号: autoupdate 模板已刷新，保留模板)")
+                    elif drift2 == "removed":
                         print(f"    {arch}: {digest2[:16]}... (fallback, +构建号漂移: 已回写真实资产并移除该架构 autoupdate 模板)")
                     else:
                         print(f"    {arch}: {digest2[:16]}... (fallback)")
@@ -899,7 +980,10 @@ def update_manifest(manifest_path, dry_run=False):
             real = asset.get("browser_download_url") or new_url
             manifest["url"] = real
             manifest["hash"] = digest
-            if sync_build_asset(manifest, asset, new_url):
+            drift = handle_build_drift(manifest, asset, new_url)
+            if drift == "refresh":
+                print(f"    hash: {digest[:16]}... [+构建号: autoupdate 模板已刷新为新构建号，保留模板]")
+            elif drift == "removed":
                 print(f"    hash: {digest[:16]}... [+构建号漂移: 已回写真实资产 {asset['name']} 并移除 autoupdate 模板]")
             else:
                 print(f"    hash: {digest[:16]}...")
@@ -911,7 +995,10 @@ def update_manifest(manifest_path, dry_run=False):
                 real2 = asset2.get("browser_download_url") or new_url2
                 manifest["url"] = real2
                 manifest["hash"] = digest2
-                if sync_build_asset(manifest, asset2, new_url2):
+                drift2 = handle_build_drift(manifest, asset2, new_url2)
+                if drift2 == "refresh":
+                    print(f"    hash: {digest2[:16]}... (fallback, +构建号: autoupdate 模板已刷新，保留模板)")
+                elif drift2 == "removed":
                     print(f"    hash: {digest2[:16]}... (fallback, +构建号漂移: 已回写真实资产 {asset2['name']} 并移除 autoupdate 模板)")
                 else:
                     print(f"    hash: {digest2[:16]}... (fallback)")
@@ -1406,6 +1493,9 @@ def finalize_direct_manifest(template, out_dir, app_name):
             print("[autoupdate] URL 中未找到版本号，无法生成模板（可手动补充）")
 
     out_path = out_dir / f"{app_name}.json"
+    kept = merge_existing_manifest(out_path, template)
+    if kept:
+        print(f"[提示] 目标 {out_path.name} 已存在，已合并保留: {', '.join(kept)}")
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(template, f, indent=4, ensure_ascii=False)
         f.write("\n")
