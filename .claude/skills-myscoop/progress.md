@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 62cd5cf (HEAD -> main) 修复 refresh_build_in_template 判定：精确 extract_dir 同步不再计入"模板可推导"标记——模板 URL 无法替换时正确回退去模板化（回归 test_build_asset 场景4）
-* 969ae38 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 198050c (HEAD -> main) cinetry 解压扁平化：pre_install 通配移出 zip 顶层目录（版本无关），bin 直接落在 $dir 根，shim 创建成功（scoop 先 shim 后 post_install，扁平化必须用 pre_install——源码 install.ps1:59 shims → 69 post_install）
+* cd1e2c0 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 62cd5cf 修复 refresh_build_in_template 判定：精确 extract_dir 同步不再计入"模板可推导"标记——模板 URL 无法替换时正确回退去模板化（回归 test_build_asset 场景4）
+* 969ae38 progress.md 更新提交历史
 * 7f9a672 C 组合策略落地：①模板构建号随资产刷新（refresh_build_in_template，可反推时保留 autoupdate 模板，scoop 客户端不再 404）②无法反推回退去模板化 ③--add 目标已存在时合并保留人工字段（bin/shortcuts/extract_dir/notes 等，merge_existing_manifest）④match_asset/heal %2B 解码统一；单测 8 场景+4 套回归全过
 * bda891f progress.md 更新提交历史
 * 5db3d60 match_asset 扩展名家族分级：压缩包家族（zip/7z/tar.gz 等）内部互通——发布方换容器不再阻断更新；exe/msi 严格隔离防形态误配；基础名归一不再吞扩展名；单测 7 场景+原有 3 套回归全过
