@@ -166,8 +166,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 5db3d60 (HEAD -> main) match_asset 扩展名家族分级：压缩包家族（zip/7z/tar.gz 等）内部互通——发布方换容器不再阻断更新；exe/msi 严格隔离防形态误配；基础名归一不再吞扩展名；单测 7 场景+原有 3 套回归全过
-* 790e452 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 7f9a672 (HEAD -> main) C 组合策略落地：①模板构建号随资产刷新（refresh_build_in_template，可反推时保留 autoupdate 模板，scoop 客户端不再 404）②无法反推回退去模板化 ③--add 目标已存在时合并保留人工字段（bin/shortcuts/extract_dir/notes 等，merge_existing_manifest）④match_asset/heal %2B 解码统一；单测 8 场景+4 套回归全过
+* bda891f (origin/main, origin/HEAD) progress.md 更新提交历史
+* 5db3d60 match_asset 扩展名家族分级：压缩包家族（zip/7z/tar.gz 等）内部互通——发布方换容器不再阻断更新；exe/msi 严格隔离防形态误配；基础名归一不再吞扩展名；单测 7 场景+原有 3 套回归全过
+* 790e452 progress.md 更新提交历史
 * fa4c10c 构建号资产处理：匹配成功回写真实 browser_download_url（+N 漂移自愈）、版本未变时 heal_url_drift 检测修复、autoupdate 去模板化（防 scoop 客户端 404）；cinetry 自愈验证（+47→+48）；单测 5 场景
 * 9eb7383 更新qingjian输入法安装方式，自动解包后能直接启动软件即可使用
 * 37ed131 progress.md 更新提交历史
