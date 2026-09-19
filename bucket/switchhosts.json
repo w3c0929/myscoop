@@ -4,10 +4,13 @@
     "homepage": "https://github.com/oldj/SwitchHosts",
     "license": "Apache-2.0",
     "url": "https://github.com/w3c0929/myscoop/releases/download/v5.0.1/SwitchHosts-5.0.1-win-x64-portable.zip",
-    "hash": "sha256:91301142b14d34ca7d49b3b0783240fa9cf7586ba406168557f961c70ba3e93e",
+    "hash": "sha256:982e72d5767b864fe24003ef88b20c73eca01bfef7731da7fe514305bba813b9",
     "bin": "SwitchHosts.exe",
     "shortcuts": [
-        ["SwitchHosts.exe", "SwitchHosts Hosts 管理"]
+        [
+            "SwitchHosts.exe",
+            "SwitchHosts Hosts 管理"
+        ]
     ],
     "notes": "需要已安装 Microsoft Edge WebView2 Runtime（Windows 10/11 通常已自带；旧系统可先安装 WebView2 运行时）。"
 }
