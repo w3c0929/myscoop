@@ -51,8 +51,9 @@ assert tpl3["bin"] == "图吧工具箱WinUI3.exe"
 assert tpl3["pre_install"] == [FLAT]
 print("无 exe-name 三跑 → 旧字段全部保留 OK")
 
-# 4) 扁平化脚本自带保护（无目录时不报错）——常量结构断言
-assert "Get-ChildItem" in FLAT and "if ($d)" in FLAT and "Move-Item" in FLAT
+# 4) 扁平化脚本自带保护（无目录/资源目录时不破坏）——常量结构断言
+assert "Get-ChildItem" in FLAT and "if ($d -and" in FLAT and "Move-Item" in FLAT
+assert "-Filter *.exe" in FLAT
 print("FLATTEN 保护结构 OK")
 
 print("ALL PASS")

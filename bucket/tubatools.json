@@ -39,9 +39,5 @@
             "图吧工具箱WinUI3.exe",
             "tubatools"
         ]
-    ],
-    "pre_install": [
-        "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; if ($d) { Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; Remove-Item $d.FullName -Recurse -Force }"
-    ],
-    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+    ]
 }

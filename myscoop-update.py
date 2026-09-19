@@ -1155,12 +1155,14 @@ NSIS_PRE_INSTALL = [
     "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }",
 ]
 
-# zip 单顶层目录扁平化：把唯一的顶层目录内容平铺到 $dir 根（版本无关通配）。
-# 必须用 pre_install（scoop 源码 install.ps1 先 create_shims 后 post_install，
-# bin 布局操作在 post_install 里会因 shim 已失败而永远来不及）。
+# zip 单顶层目录扁平化：把唯一的顶层打包目录内容平铺到 $dir 根（版本无关通配）。
+# 条件：该目录内必须含 .exe（真打包目录）才移动——资源目录（如 src/）不含 exe，
+# 盲移会破坏程序目录语义（tubatools 事故）。必须用 pre_install（scoop 源码 install.ps1
+# 先 create_shims 后 post_install，bin 布局操作在 post_install 里永远来不及）。
 FLATTEN_PRE_INSTALL = (
     "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; "
-    "if ($d) { Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; "
+    "if ($d -and (Get-ChildItem \"$d\\*\" -Filter *.exe | Select-Object -First 1)) { "
+    "Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; "
     "Remove-Item $d.FullName -Recurse -Force }"
 )
 
@@ -1415,9 +1417,12 @@ def finalize_direct_manifest(template, out_dir, app_name):
                     files = [n for n in names if not n.endswith("/")]
                     tops = sorted({n.split("/")[0] for n in files if "/" in n})
                     has_top_files = any("/" not in n for n in files)  # 顶层已有文件（bin 可能已在根）
-                    if len(tops) == 1 and tops[0] and not has_top_files:
+                    # 顶层目录内必须含 .exe（真打包目录）才扁平；资源目录（src 等）不含 exe，跳过
+                    top_exe = any("/" in n and n.split("/")[0] == tops[0] and n.lower().endswith(".exe")
+                                  for n in files) if len(tops) == 1 else False
+                    if len(tops) == 1 and tops[0] and not has_top_files and top_exe:
                         template["pre_install"] = [FLATTEN_PRE_INSTALL]
-                        print(f"[zip探测] 单顶层目录「{tops[0]}」：已自动添加扁平化 pre_install"
+                        print(f"[zip探测] 单顶层打包目录「{tops[0]}」（含 exe）：已自动添加扁平化 pre_install"
                               f"（bin 直接落在 $dir 根，版本升级免维护；--no-flatten 可禁用）")
             except Exception:
                 pass

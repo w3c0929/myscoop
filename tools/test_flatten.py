@@ -15,7 +15,11 @@ def detect(spec_keys, bin_given, no_flatten=False, has_pre=False):
     has_top_files = any("/" not in n for n in files)
     if not (bin_given and not has_pre and not no_flatten):
         return False, tops
-    return (len(tops) == 1 and bool(tops[0]) and not has_top_files), tops
+    top_exe = False
+    if len(tops) == 1:
+        top_exe = any("/" in n and n.split("/")[0] == tops[0] and n.lower().endswith(".exe")
+                      for n in files)
+    return (len(tops) == 1 and bool(tops[0]) and not has_top_files and top_exe), tops
 
 
 # 1) 单顶层目录 + bin → 生成扁平化
@@ -63,5 +67,19 @@ print("FLATTEN_PRE_INSTALL 常量 OK")
 ok, tops = detect(["D/x.exe", "D/sub/"], True)
 assert ok is True
 print("目录条目忽略 OK")
+
+# 9) 单顶层打包目录（含 exe）→ 生成（cinetry 类）
+ok, tops = detect(["TubaWinUi3_Portable_1.6.1_x64/图吧工具箱WinUI3.exe",
+                   "TubaWinUi3_Portable_1.6.1_x64/src/a.dll"], True)
+assert ok is True and tops == ["TubaWinUi3_Portable_1.6.1_x64"]
+print("打包目录含 exe → 生成 OK")
+
+# 10) 唯一目录是资源目录（src，无 exe）→ 不生成（tubatools 事故回归）
+ok, tops = detect(["src/Accessibility.dll", "src/AssistStudio.Core.dll",
+                   "图吧工具箱WinUI3.exe", "图吧工具箱Winui3兼容版.exe"], True)
+assert ok is False and tops == ["src"]
+print("src 资源目录无 exe → 不生成 OK")
+assert "if ($d -and" in mu.FLATTEN_PRE_INSTALL and "-Filter *.exe" in mu.FLATTEN_PRE_INSTALL
+print("条件脚本结构 OK")
 
 print("ALL PASS")
