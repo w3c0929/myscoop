@@ -166,8 +166,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* f16b73f (HEAD -> main) 自动更新第三方软件
-* cb651b1 (origin/main) progress.md 更新提交历史
+* eeb6d7b (HEAD -> main) 自动更新第三方软件
+* 5890588 (origin/main) 新增tools/fix_quotes_tuba.py
+* 4959b21 progress.md 更新提交历史
+* f16b73f 自动更新第三方软件
+* cb651b1 progress.md 更新提交历史
 * e309aa6 SwitchHosts 5.0.1 便携版换代：替换发布同名 zip（2026-09-19 维护版），hash 更新为 sha256:982e72d5…（README 版本列已为 5.0.1，无需文字变更）
 * e63788a progress.md 更新提交历史
 * 9d6008e 修复仓库模式扁平化误判：zip+--exe-name 不再无条件附加 flatten（免下载看不到 zip 结构）——改为显式 --flatten 才加，提示确认单层打包目录；--force-new 完全重建不 merge 保留旧字段；tubatools.json 恢复无扁平化正确形态；docstring 1b 同步；端到端双路径+7 套单测验证
