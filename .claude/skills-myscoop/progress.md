@@ -166,8 +166,14 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* eeb6d7b (HEAD -> main) 自动更新第三方软件
-* 5890588 (origin/main) 新增tools/fix_quotes_tuba.py
+* 90df043 (HEAD -> main) 自动更新第三方软件
+* 2e2fbc3 (origin/main) 修正更新分类注释
+* ad0e150 myscoop-update.py下载支持镜像加速
+* a84357d 新增download镜像加速，新增第三方库bucket/kvllama
+* ed969fa 新增prllama
+* 9cb4311 progress.md 更新提交历史
+* eeb6d7b 自动更新第三方软件
+* 5890588 新增tools/fix_quotes_tuba.py
 * 4959b21 progress.md 更新提交历史
 * f16b73f 自动更新第三方软件
 * cb651b1 progress.md 更新提交历史
