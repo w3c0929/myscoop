@@ -16,6 +16,10 @@ myscoop 管理脚本
   #       （仓库模式免下载看不到 zip 结构，不自动判定——单层打包目录才适合扁平化）
   #     · 目标清单已存在时默认【合并更新】：保留 bin/shortcuts/extract_dir/notes/pre_install
   #       等人工字段，仅覆盖 version/url/hash/architecture；--force-new 强制全新重建（不保留旧字段）
+  #     · --more：主程序 + cudart 运行时配对合并收录（如 llama.cpp Prism fork 拆包发行）——
+  #       同架构、同 CUDA 版本的主程序 zip 与 cudart zip 成对生成 url/hash 数组（Scoop
+  #       依次解压合并到同一目录，等效"cudart 内容复制进主程序目录"）；
+  #       同架构多 CUDA 版本配对取最高（13.3 优先于 12.4）；无配对时回退常规流程
 
   # 2) 新增：安装包直链（自动下载实测 SHA256、Inno Setup 检测、生成 autoupdate；
   #    GitHub 直链还会自动补全 description/homepage/license/checkver）
@@ -457,14 +461,79 @@ def pick_asset(group):
     return best
 
 
-def generate_autoupdate_url(asset_name, tag, has_v_prefix, platform="github", owner=None, repo=None):
-    """根据 asset 文件名和 tag 生成 autoupdate URL 模板"""
-    ver_match = re.search(r"[\d]+(?:\.[\d]+)+", asset_name)
-    if ver_match:
-        asset_ver_in_file = ver_match.group(0)
-        new_name = asset_name.replace(asset_ver_in_file, "$version")
-    else:
-        new_name = asset_name
+# --more 模式：主程序 + CUDA 运行时（cudart）配对合并收录。
+# 运行时包以这些前缀命名（如 cudart-llama-bin-win-cuda-13.3-x64.zip），
+# 与同名架构、同 CUDA 版本的主程序包（如 llama-prism-…-bin-win-cuda-13.3-x64.zip）
+# 组成一对：两个 zip 都要下载，Scoop url 数组会把两者解压合并到同一目录。
+CUDA_RUNTIME_PREFIXES = ("cudart-",)
+
+
+def parse_cuda_asset(name):
+    """解析 CUDA 资产 → (arch, cuda_ver, kind) 或 None。
+    kind: 'main'（主程序）/ 'runtime'（cudart 运行时）。
+    仅识别含 cuda{ver} 标记、可检测架构的 Windows 包；
+    无架构标记（如 xcframework）或无 CUDA 版本号（cpu/vulkan/hip）返回 None。"""
+    arch = detect_arch(name)
+    if not arch:
+        return None
+    lower = name.lower()
+    m = re.search(r"cuda[._-]?(\d+(?:\.\d+)*)", lower)
+    if not m:
+        return None
+    cuda_ver = tuple(int(x) for x in m.group(1).split("."))
+    kind = "runtime" if lower.startswith(CUDA_RUNTIME_PREFIXES) else "main"
+    return (arch, cuda_ver, kind)
+
+
+def build_runtime_pairs(win_assets):
+    """--more 模式：识别「主程序 + cudart 运行时」配对（同架构、同 CUDA 版本）。
+    同一架构存在多组 CUDA 版本配对时，取版本最高者（13.3 优先于 12.4）。
+    返回 {arch: {"main": asset, "runtime": asset, "cuda_ver": (…), "cuda_str": "13.3"}}；
+    无任何配对时返回空 dict（调用方回退常规流程）。
+    参数 win_assets 与 add_manifest 同形：[(asset, score), …]"""
+    by_arch = {}
+    for a, _s in win_assets:
+        info = parse_cuda_asset(a["name"])
+        if info:
+            arch, cver, kind = info
+            d = by_arch.setdefault(arch, {})
+            d.setdefault(kind, {})[cver] = a
+    pairs = {}
+    for arch, kinds in sorted(by_arch.items()):
+        mains = kinds.get("main", {})
+        runtimes = kinds.get("runtime", {})
+        common = sorted(set(mains) & set(runtimes), reverse=True)
+        if not common:
+            continue
+        best_ver = common[0]
+        pairs[arch] = {
+            "main": mains[best_ver],
+            "runtime": runtimes[best_ver],
+            "cuda_ver": best_ver,
+            "cuda_str": ".".join(str(x) for x in best_ver),
+        }
+    return pairs
+
+
+def generate_autoupdate_url(asset_name, tag, has_v_prefix, platform="github", owner=None, repo=None,
+                            replace_in_name=True):
+    """根据 asset 文件名和 tag 生成 autoupdate URL 模板。
+    文件名模板化优先级（replace_in_name=True 时）：
+    1. tag 子串（如非语义 tag prism-b10709-9a9394a 出现在文件名中）→ $version
+       （tag 去 v 后长度 ≥4 才启用，防短 tag 误替换文件名其他位置；
+       与 tag 解耦的 CUDA 版本段保持写死，实测：一个 tag 下同时挂多套 CUDA 资产）
+    2. 点号版本段（如 1.2.3 / 13.3）→ $version（原有行为）
+    replace_in_name=False：文件名完全保持原样（--more 配对的 cudart 运行时——
+    文件名无 tag 段、只有与 tag 解耦的 CUDA 版本，模板化反而会在下版 404）。"""
+    new_name = asset_name
+    if replace_in_name:
+        tag_clean = tag.lstrip("v")
+        if len(tag_clean) >= 4 and tag_clean in asset_name:
+            new_name = asset_name.replace(tag_clean, "$version")
+        else:
+            ver_match = re.search(r"[\d]+(?:\.[\d]+)+", asset_name)
+            if ver_match:
+                new_name = asset_name.replace(ver_match.group(0), "$version")
 
     v_prefix = "v" if re.match(r"^v", tag) else ""
     if platform == "gitee" and owner and repo:
@@ -472,8 +541,11 @@ def generate_autoupdate_url(asset_name, tag, has_v_prefix, platform="github", ow
     return f"https://github.com/{{owner}}/{{repo}}/releases/download/{v_prefix}$version/{new_name}"
 
 
-def add_manifest(repo_url, app_name=None):
-    """从 GitHub / Gitee 链接添加新 manifest"""
+def add_manifest(repo_url, app_name=None, more=False):
+    """从 GitHub / Gitee 链接添加新 manifest。
+    more=True（--more）：启用「主程序 + cudart 运行时」配对合并收录——
+    配对架构生成 url/hash 数组（两个 zip 依次解压合并到同一目录）；
+    同架构多 CUDA 版本配对取最高（13.3 > 12.4）。无配对时回退常规流程。"""
     platform, owner, repo = parse_repo_url(repo_url)
     if not platform:
         print(f"[错误] 无法解析仓库 URL: {repo_url}")
@@ -599,22 +671,46 @@ def add_manifest(repo_url, app_name=None):
         elif generic_best and has_special:
             arch_sel[arch] = generic_best
 
+    # --more：主程序 + cudart 运行时配对（两个 zip 合并安装；同架构取 CUDA 版本最高）
+    runtime_pairs = {}
+    if more:
+        runtime_pairs = build_runtime_pairs(win_assets)
+        if runtime_pairs:
+            print("[--more] 检测到 主程序+运行时 配对（两包合并安装）:")
+            for arch, p in sorted(runtime_pairs.items()):
+                print(f"  {arch}: {p['main']['name']}")
+                print(f"         + {p['runtime']['name']}（CUDA {p['cuda_str']}）")
+        else:
+            print("[--more] 未检测到 主程序+运行时 配对，按常规流程收录")
+
     if len(arch_sel) >= 2:
         print(f"检测到多架构: {list(arch_sel.keys())}")
         manifest["architecture"] = {}
         au_arch = {}
         for arch, a in sorted(arch_sel.items()):
-            url = a["browser_download_url"]
-            digest = a.get("digest", "")
-            manifest["architecture"][arch] = {
-                "url": url,
-                "hash": digest
-            }
-            au_url = generate_autoupdate_url(a["name"], tag, has_v_prefix, platform, owner, repo)
+            pair = runtime_pairs.get(arch)
+            if pair:
+                main_a, rt_a = pair["main"], pair["runtime"]
+                url = [main_a["browser_download_url"], rt_a["browser_download_url"]]
+                digest = [main_a.get("digest", ""), rt_a.get("digest", "")]
+                print(f"  {arch}: {main_a['name']} + {rt_a['name']}（--more 配对合并）")
+            else:
+                url = a["browser_download_url"]
+                digest = a.get("digest", "")
+                print(f"  {arch}: {a['name']}")
+            manifest["architecture"][arch] = {"url": url, "hash": digest}
+            if pair:
+                au_url = [
+                    generate_autoupdate_url(pair["main"]["name"], tag, has_v_prefix, platform, owner, repo),
+                    # cudart 文件名只含与 tag 解耦的 CUDA 版本：不模板化，保持写死
+                    generate_autoupdate_url(pair["runtime"]["name"], tag, has_v_prefix, platform, owner, repo,
+                                            replace_in_name=False),
+                ]
+            else:
+                au_url = generate_autoupdate_url(a["name"], tag, has_v_prefix, platform, owner, repo)
             if platform != "gitee":
-                au_url = au_url.format(owner=owner, repo=repo)
+                au_url = [u.format(owner=owner, repo=repo) for u in au_url] if isinstance(au_url, list) else au_url.format(owner=owner, repo=repo)
             au_arch[arch] = {"url": au_url}
-            print(f"  {arch}: {a['name']}")
 
         manifest["autoupdate"] = {"architecture": au_arch}
     else:
@@ -624,23 +720,41 @@ def add_manifest(repo_url, app_name=None):
             best = generic_best
         else:
             best, _ = win_assets[0]
-        url = best["browser_download_url"]
-        digest = best.get("digest", "")
+        pair = runtime_pairs.get(list(arch_sel.keys())[0]) if arch_sel else None
+        if pair:
+            main_a, rt_a = pair["main"], pair["runtime"]
+            url = [main_a["browser_download_url"], rt_a["browser_download_url"]]
+            digest = [main_a.get("digest", ""), rt_a.get("digest", "")]
+            print(f"使用: {main_a['name']} + {rt_a['name']}（--more 配对合并）")
+        else:
+            url = best["browser_download_url"]
+            digest = best.get("digest", "")
 
         manifest["url"] = url
         manifest["hash"] = digest
 
-        au_url = generate_autoupdate_url(best["name"], tag, has_v_prefix, platform, owner, repo)
+        if pair:
+            au_url = [
+                generate_autoupdate_url(pair["main"]["name"], tag, has_v_prefix, platform, owner, repo),
+                # cudart 文件名只含与 tag 解耦的 CUDA 版本：不模板化，保持写死
+                generate_autoupdate_url(pair["runtime"]["name"], tag, has_v_prefix, platform, owner, repo,
+                                        replace_in_name=False),
+            ]
+        else:
+            au_url = generate_autoupdate_url(best["name"], tag, has_v_prefix, platform, owner, repo)
         if platform != "gitee":
-            au_url = au_url.format(owner=owner, repo=repo)
+            au_url = [u.format(owner=owner, repo=repo) for u in au_url] if isinstance(au_url, list) else au_url.format(owner=owner, repo=repo)
 
         manifest["autoupdate"] = {"url": au_url}
 
-        print(f"使用: {best['name']}")
+        if not pair:
+            print(f"使用: {best['name']}")
 
     # 添加 bin 和 shortcuts（与架构选择保持一致：多架构用 64bit 选定项）
     if arch_sel:
-        best_asset = list(arch_sel.values())[0]
+        first_arch = list(arch_sel.keys())[0]
+        first_pair = runtime_pairs.get(first_arch)
+        best_asset = first_pair["main"] if first_pair else arch_sel[first_arch]
     elif generic_best:
         best_asset = generic_best
     else:
@@ -715,7 +829,9 @@ def add_manifest(repo_url, app_name=None):
     print(f"  安装命令: scoop install {app_name}")
     print(f"\n  下一步：")
     if best_name.endswith((".zip", ".7z")):
-        print(f"  1. 下载并查看 zip 内部结构: curl -L -o _temp.zip \"{url}\" && 7z l _temp.zip | head -30")
+        print(f"  1. 下载并查看 zip 内部结构: curl -L -o _temp.zip \"{best_asset['browser_download_url']}\" && 7z l _temp.zip | head -30")
+        if "--more" in sys.argv[1:] and runtime_pairs:
+            print(f"     （--more 配对包共 {len(runtime_pairs)} 个架构，各架构下载 2 个 zip 合并安装）")
         print(f"  2. 确认主 exe 名，添加到 manifest 的 bin 和 shortcuts 字段")
         print(f"  3. 如有顶层目录，添加 extract_dir 字段")
     print(f"  4. 验证: python3 -m json.tool {manifest_path_str}")
@@ -1998,7 +2114,7 @@ def main():
         app_name = arg_value("--name")
         platform, _o, _r = parse_repo_url(target)
         if platform:
-            result = add_manifest(target, app_name)
+            result = add_manifest(target, app_name, more="--more" in add_args)
         elif target.startswith(("http://", "https://")):
             if re.search(r"\.(?:exe|msi|zip|7z)(?:[?#]|$)", target, re.I):
                 result = add_direct_url(target, app_name)

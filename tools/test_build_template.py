@@ -89,4 +89,36 @@ tpl2 = {"version": "1.0"}
 assert mu.merge_existing_manifest(os.path.join(d, "nope.json"), tpl2) == []
 print("merge 不存在 OK")
 
+# 9) generate_autoupdate_url：非语义 tag 子串模板化（llama.cpp 主程序场景）
+#    tag prism-b10709-9a9394a 无点号 → 旧逻辑漏掉写死；新逻辑整体子串替换为 $version
+u9 = mu.generate_autoupdate_url(
+    "llama-prism-b10709-9a9394a-bin-win-cuda-13.3-x64.zip",
+    "prism-b10709-9a9394a", False, "github", "o", "r")
+assert u9 == "https://github.com/{owner}/{repo}/releases/download/$version/" \
+             "llama-$version-bin-win-cuda-13.3-x64.zip", u9
+print("非语义 tag 子串模板化 OK")
+
+# 10) cudart 运行时：replace_in_name=False → 文件名完全写死（CUDA 版本与 tag 解耦）
+u10 = mu.generate_autoupdate_url(
+    "cudart-llama-bin-win-cuda-13.3-x64.zip",
+    "prism-b10709-9a9394a", False, "github", "o", "r", replace_in_name=False)
+assert u10 == "https://github.com/{owner}/{repo}/releases/download/$version/" \
+              "cudart-llama-bin-win-cuda-13.3-x64.zip", u10
+print("cudart 文件名保持写死 OK")
+
+# 11) 常规语义 tag 回归：tag v1.2.3 + 文件名 app-1.2.3-x64.zip → 与旧逻辑等价
+u11 = mu.generate_autoupdate_url("app-1.2.3-x64.zip", "v1.2.3", True, "github", "o", "r")
+assert u11 == "https://github.com/{owner}/{repo}/releases/download/v$version/app-$version-x64.zip", u11
+u11b = mu.generate_autoupdate_url("app-v1.2.3-x64.zip", "v1.2.3", True, "github", "o", "r")
+assert u11b == "https://github.com/{owner}/{repo}/releases/download/v$version/app-v$version-x64.zip", u11b
+print("常规语义 tag 回归 OK")
+
+# 12) 短 tag 保护：tag v2 不启用子串替换（防误替换文件名其他位置），无点号版本段 → 原样
+u12 = mu.generate_autoupdate_url("app2-x64.zip", "v2", True, "github", "o", "r")
+assert u12 == "https://github.com/{owner}/{repo}/releases/download/v$version/app2-x64.zip", u12
+# 多版本固定 tag（SublimeText 场景）：tag 不在文件名中 → fallback 点号版本逻辑（无点号 → 原样）
+u12b = mu.generate_autoupdate_url("sublime-text-4200-x64.zip", "vSublimeText", True, "github", "o", "r")
+assert u12b == "https://github.com/{owner}/{repo}/releases/download/v$version/sublime-text-4200-x64.zip", u12b
+print("短 tag / 固定 tag 保护 OK")
+
 print("ALL PASS")

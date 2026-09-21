@@ -1,0 +1,55 @@
+{
+    "version": "prism-b10709-9a9394a",
+    "description": "LLM inference in C/C++",
+    "homepage": "https://github.com/PrismML-Eng/llama.cpp",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/PrismML-Eng/llama.cpp"
+    },
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10709-9a9394a/llama-prism-b10709-9a9394a-xcframework.zip",
+            "hash": "sha256:6cd1667e9870a3f27a5f03dd9625804d17e21f31bab836e8b45438254f66165f"
+        },
+        "64bit": {
+            "url": [
+                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10709-9a9394a/llama-prism-b10709-9a9394a-bin-win-cuda-13.3-x64.zip",
+                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10709-9a9394a/cudart-llama-bin-win-cuda-13.3-x64.zip"
+            ],
+            "hash": [
+                "sha256:d656f217172c489706df40951e46bef647eb1a81eb8eeb1398c8f38bd7fa9725",
+                "sha256:1462a050eb4c684921ba51dcc4cc488a036674c3e73e9945ee705b854808d03e"
+            ]
+        },
+        "arm64": {
+            "url": [
+                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10709-9a9394a/llama-prism-b10709-9a9394a-bin-win-cuda-13.4-arm64.zip",
+                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10709-9a9394a/cudart-llama-bin-win-cuda-13.4-arm64.zip"
+            ],
+            "hash": [
+                "sha256:ab65db8aec808f3e12d647fc668291bdd9654b2b8b72a0c2c787a7ab8ae7727e",
+                "sha256:5a40dc7c5fa3d0a80ceeba4f16f9e8d25d87bcf1399c9233588953c43436c33c"
+            ]
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/PrismML-Eng/llama.cpp/releases/download/$version/llama-$version-xcframework.zip"
+            },
+            "64bit": {
+                "url": [
+                    "https://github.com/PrismML-Eng/llama.cpp/releases/download/$version/llama-$version-bin-win-cuda-13.3-x64.zip",
+                    "https://github.com/PrismML-Eng/llama.cpp/releases/download/$version/cudart-llama-bin-win-cuda-13.3-x64.zip"
+                ]
+            },
+            "arm64": {
+                "url": [
+                    "https://github.com/PrismML-Eng/llama.cpp/releases/download/$version/llama-$version-bin-win-cuda-13.4-arm64.zip",
+                    "https://github.com/PrismML-Eng/llama.cpp/releases/download/$version/cudart-llama-bin-win-cuda-13.4-arm64.zip"
+                ]
+            }
+        }
+    },
+    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+}
