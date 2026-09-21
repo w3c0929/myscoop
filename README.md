@@ -641,6 +641,14 @@ python3 myscoop-update.py bucket/amcfy-music.json
 
 ### 非 GitHub 软件的新增（直链 / 下载页 / 模板）
 
+> **GitHub 下载镜像加速（脚本）**：`myscoop-update.py` 的实际下载路径（直链/下载页/补全/hash 实测）对 GitHub release 文件**优先走加速镜像**——依次探测列表取第一个可达镜像，全部不可达自动回退原始 URL（与 Scoop `download.ps1` 补丁同一套机制）。镜像列表来源：
+> - 环境变量 `MYSCOOP_GH_MIRRORS`（逗号分隔，可写完整 URL 或裸域名，跨机/CI 可用）：
+>   ```powershell
+>   $env:MYSCOOP_GH_MIRRORS = "https://hk.gh-proxy.org,https://gh-proxy.com"
+>   ```
+> - 未设置时自动读 Scoop config.json 的 `aria2-mirrors` 数组（本机零配置复用）。
+> - 均不设置时行为与原来完全一致（不走镜像）。
+
 没有 GitHub/Gitee 仓库的软件（官网直链）用以下方式新增，脚本自动下载计算 SHA256、
 检测 Inno Setup、生成 checkver/autoupdate：
 

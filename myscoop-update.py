@@ -76,6 +76,14 @@ myscoop 管理脚本
   #     解包不执行注册脚本，导致输入法不出现在系统选项、右键菜单缺失）。存量清单迁移:
   #     python3 myscoop-update.py --installer-mode bucket/qingjian.json   # 多个文件或 --all
 
+  # 11) GitHub 下载镜像加速（与 Scoop download.ps1 补丁同一套机制）：实际下载路径
+  #     （直链/下载页/补全/hash 实测）对 GitHub release 文件优先走加速镜像——
+  #     依次探测列表，取第一个可达镜像，全部不可达自动回退原始 URL。
+  #     镜像列表来源：环境变量 MYSCOOP_GH_MIRRORS（逗号分隔，可写完整 URL 或裸域名）优先，
+  #     否则读 Scoop config.json 的 aria2-mirrors 数组（本机零配置复用）。
+  #     不设置时行为与原来完全一致：
+  #     $env:MYSCOOP_GH_MIRRORS = "https://hk.gh-proxy.org,https://gh-proxy.com"
+
 """
 
 import json
@@ -1183,6 +1191,64 @@ def arg_value(flag, default=None):
 
 PAGE_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"}
 
+# ========== GitHub 镜像加速（与 Scoop download.ps1 补丁同一套机制） ==========
+# GitHub Release 文件下载优先走加速镜像：依次探测可用镜像，全部不可达回退原始 URL。
+# 镜像列表来源（优先级）：
+#   1) 环境变量 MYSCOOP_GH_MIRRORS（逗号分隔，可写完整 URL 或裸域名，CI/跨机可用）
+#   2) Scoop config.json 的 aria2-mirrors 数组（本机与 download.ps1 补丁共用同一列表）
+# 无镜像配置时行为与原来完全一致。镜像地址自动补 https:// 前缀。
+GH_DOWNLOAD_RE = re.compile(r"^https://github\.com/.+/releases/download/", re.I)
+
+
+def gh_mirror_list(config_path=None):
+    """返回镜像列表（去空）；环境变量优先，其次读 Scoop config.json 的 aria2-mirrors。
+    兼容字符串形式（逗号/空格分隔）；读取失败或无配置返回 []。"""
+    env = os.environ.get("MYSCOOP_GH_MIRRORS", "").strip()
+    if env:
+        return [m.strip() for m in env.replace(",", " ").split() if m.strip()]
+    cfg_path = Path(config_path) if config_path else (Path.home() / ".config" / "scoop" / "config.json")
+    try:
+        cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+        ms = cfg.get("aria2-mirrors", [])
+        if isinstance(ms, str):
+            ms = [x for x in ms.replace(",", " ").split() if x]
+        return [str(m).strip() for m in ms if str(m).strip()]
+    except Exception:
+        return []
+
+
+def mirror_candidates(url, mirrors):
+    """GitHub release 下载 URL 的镜像候选列表（拼接 + 自动补协议）。
+    非 GitHub release 链接或无镜像配置 → []。"""
+    if not mirrors or not GH_DOWNLOAD_RE.match(url):
+        return []
+    out = []
+    for m in mirrors:
+        base = str(m).strip().rstrip("/")
+        if not re.match(r"^https?://", base):
+            base = "https://" + base
+        out.append(f"{base}/{url}")
+    return out
+
+
+def probe_mirror_url(url, timeout=8):
+    """返回第一个可达镜像 URL（range 1KB 探测，同 download.ps1）；
+    全部不可达或非 GitHub release 链接返回原 URL。"""
+    candidates = mirror_candidates(url, gh_mirror_list())
+    if not candidates:
+        return url
+    for murl in candidates:
+        try:
+            req = urllib.request.Request(murl, headers={
+                "User-Agent": "myscoop-updater", "Range": "bytes=0-1023"})
+            with _open(req, timeout) as resp:
+                if resp.status in (200, 206):
+                    return murl
+        except Exception:
+            continue
+    return url
+# ========== GitHub 镜像加速结束 ==========
+
 
 def _open(req, timeout):
     """urlopen 封装：SSL 证书校验失败时打印警告并降级为不校验证书重试一次。
@@ -1214,9 +1280,15 @@ def fetch_text(url, timeout=60, headers=None):
 
 
 def download_to(url, dest, timeout=180):
-    """下载文件到 dest（自动去除 #fragment）"""
+    """下载文件到 dest（自动去除 #fragment）。
+    GitHub release 下载优先走加速镜像（MYSCOOP_GH_MIRRORS 环境变量或
+    Scoop config.json 的 aria2-mirrors，与 download.ps1 补丁同一套列表），
+    镜像全部不可达自动回退原始 URL；无镜像配置时行为与原来完全一致。"""
     clean = url.split("#", 1)[0]
-    req = urllib.request.Request(clean, headers={"User-Agent": "myscoop-updater"})
+    target = probe_mirror_url(clean)
+    if target != clean:
+        print(f"[镜像] 使用 {target.split('/')[2]} 加速: {clean}")
+    req = urllib.request.Request(target, headers={"User-Agent": "myscoop-updater"})
     with _open(req, timeout) as resp, open(dest, "wb") as f:
         while True:
             chunk = resp.read(65536)
