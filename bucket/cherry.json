@@ -1,5 +1,5 @@
 {
-    "version": "2.1.0",
+    "version": "2.1.2",
     "description": "AI productivity studio with smart chat, autonomous agents, and 300+ assistants. Unified access to frontier LLMs",
     "homepage": "https://cherryai.com",
     "license": "AGPL-3.0",
@@ -8,8 +8,8 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.1.0/Cherry-Studio-CN-2.1.0-win-x64-portable.exe",
-            "hash": "sha256:628e76dcaa902aa6e244082246ca846771f83895daa9124fc2a07d3fd38f9e6d",
+            "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.1.2/Cherry-Studio-CN-2.1.2-win-x64-portable.exe",
+            "hash": "sha256:52ba826af7434599ed8fa7f66dc000fa5f0ee686b67e24474af5f27a2eacb8c4",
             "bin": "cherry-studio.exe",
             "shortcuts": [
                 [
@@ -19,8 +19,8 @@
             ]
         },
         "arm64": {
-            "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.1.0/Cherry-Studio-CN-2.1.0-win-arm64-portable.exe",
-            "hash": "sha256:5338bcd61bdff3663569efeb51c362dff35f5dcec7f168860fec2ad014c3f338",
+            "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.1.2/Cherry-Studio-CN-2.1.2-win-arm64-portable.exe",
+            "hash": "sha256:a99bfd5d5dc3876bc4ee6326455f33d457647b784b6cd8faee1ffa1aadb99931",
             "bin": "cherry-studio.exe",
             "shortcuts": [
                 [
