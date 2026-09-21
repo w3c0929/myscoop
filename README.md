@@ -824,16 +824,22 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ## Scoop 辅助文件（本机部署）
 
-仓库根目录提供两个供使用者部署到**本机 Scoop 安装**的辅助文件，用于调整仓库下载优先级（同名软件存在于多个 bucket 时，按优先级选择来源）：
+仓库根目录提供两个供使用者部署到**本机 Scoop 安装**的辅助文件，用于调整仓库下载优先级（同名软件存在于多个 bucket 时，按优先级选择来源）以及 GitHub 下载加速：
 
 | 文件 | 部署位置 | 作用 |
 |------|----------|------|
 | `manifest.ps1` | `D:\scoop\apps\scoop\current\lib\manifest.ps1` | Scoop 库补丁，修改下载文件时优先选择仓库的顺序 |
+| `download.ps1` | `D:\scoop\apps\scoop\current\lib\download.ps1` | Scoop 库补丁，GitHub Release 下载优先走加速镜像（aria2 与默认下载器通用） |
 | `config.json`  | `C:\Users\Administrator\.config\scoop\config.json` | Scoop 配置文件，`bucketlist` 数组控制各仓库的下载优先级顺序 |
 
-> **部署方式**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `config.json` 覆盖到用户配置目录即可。
+> **部署方式**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `download.ps1` 覆盖到 Scoop 的 `lib\download.ps1`，将 `config.json` 覆盖到用户配置目录即可。
 > - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
 > - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
+> - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
+>   - 下载 `https://github.com/*/releases/download/` 资产时，依次探测 `aria2-mirrors` 镜像列表（**数组形式，须直接编辑 config.json 设置**——`scoop config` 命令不支持数组参数），取第一个可达镜像作为下载源；**全部不可达时自动回退官方原始 URL**。
+>   - 镜像地址可写完整 URL 或裸域名（自动补 `https://`），数组顺序即优先级（快的放前面）；默认：
+>     `["https://hk.gh-proxy.org", "https://gh-proxy.com", "https://gh-proxy.org"]`
+>   - 对 aria2（`aria2-enabled: true`）与默认下载器（未启用 aria2 或 aria2 失败回退）两条路径均生效；**Scoop 自更新后补丁会丢失**，重新覆盖即可（原版备份在仓库 `staging/scoop-backup/`）。
 
 ### 目录结构约定
 
