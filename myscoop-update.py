@@ -3,86 +3,129 @@
 myscoop 管理脚本
 通过 GitHub / Gitee API 免下载获取版本和哈希。
 
-用法（所有模式一览）:
+用法（按分类整理）:
 
-  # 1) 新增：GitHub / Gitee 仓库（自动解析仓库与 release，生成完整 manifest）,[pya][pyn]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  一、新增收录
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # 1) GitHub / Gitee 仓库链接（自动解析仓库与 release，生成完整 manifest）
   python3 myscoop-update.py --add https://github.com/NanmiCoder/cc-haha.git
   python3 myscoop-update.py --add https://gitee.com/fasterthanlight/automatic_clicker_2.git
   python3 myscoop-update.py --add https://github.com/owner/repo --name my-app-name
+  #    · 已存在清单默认【合并更新】：保留 bin/shortcuts/extract_dir/notes/pre_install 等人工字段，
+  #      仅覆盖 version/url/hash/architecture；--force-new 强制全新重建（不保留旧字段）
+  #    · zip/7z + --exe-name 直接写 bin/shortcuts；拍平见「三、zip 拍平」
 
-  # 1b) --add 仓库增强（zip/7z 主程序 + 已存在清单）：
-  #   python3 myscoop-update.py --add https://github.com/luolangaga/tubatools.git --exe-name 图吧工具箱WinUI3.exe
-  #     · zip/7z 时 --exe-name 直接写 bin/shortcuts；扁平化 pre_install 需显式 --flatten
-  #       （仓库模式免下载看不到 zip 结构，不自动判定——单层打包目录才适合扁平化）
-  #     · 目标清单已存在时默认【合并更新】：保留 bin/shortcuts/extract_dir/notes/pre_install
-  #       等人工字段，仅覆盖 version/url/hash/architecture；--force-new 强制全新重建（不保留旧字段）
-  #     · --more：主程序 + cudart 运行时配对合并收录（如 llama.cpp Prism fork 拆包发行）——
-  #       同架构、同 CUDA 版本的主程序 zip 与 cudart zip 成对生成 url/hash 数组（Scoop
-  #       依次解压合并到同一目录，等效"cudart 内容复制进主程序目录"）；
-  #       同架构多 CUDA 版本配对取最高（13.3 优先于 12.4）；无配对时回退常规流程
-
-  # 2) 新增：安装包直链（自动下载实测 SHA256、Inno Setup 检测、生成 autoupdate；
-  #    GitHub 直链还会自动补全 description/homepage/license/checkver）
-  #    zip/7z 下载后默认保留到 staging/.dl_cache/，供模式 5 复用免二次下载（--no-keep 可关闭）[pyl]
+  # 2) 安装包直链（自动下载实测 SHA256、Inno Setup 检测、生成 autoupdate；
+  #    GitHub 直链自动补全 description/homepage/license/checkver）
   python3 myscoop-update.py --add "https://down.pixpin.cn/PixPin_win_3.5.5.1.exe" --name pixpin --version 3.5.5.1
-  #    可选参数：--exe-name 主程序名（补 bin/shortcuts） --shortcut-name 快捷方式名
-  #              --checkver-url / --checkver-regex 网页版本检查  --homepage / --description / --license
   python3 myscoop-update.py --add "https://github.com/SAOG0721/Magpie/releases/download/v0.6.8-experimental.1/Magpie-Experimental-x64.zip" --name magpie --version 0.6.8 --exe-name Magpie.exe
+  #    可选参数：--exe-name 主程序名  --shortcut-name 快捷方式名  --version 版本号
+  #              --checkver-url / --checkver-regex 网页版本检查  --homepage / --description / --license
+  #              --force-download 强制重下  --no-keep 不保留 zip 到 staging/.dl_cache/
+  #    安装器自动探测：Inno（静默安装）与 NSIS/Tauri（7z 解包）内置检测，唯一主程序自动写 bin，
+  #    多个 exe 交互式选择（加 --select 编号|名称 免交互）；NSIS 自动补 pre_install
 
-  # 3) 新增：官网下载页（自动提取安装包链接与版本号，生成 checkver/autoupdate；href 抓不到时回退 JS 裸 URL）[pyk]
+  # 3) 官网下载页（自动提取安装包链接与版本号，生成 checkver/autoupdate；href 抓不到时回退 JS 裸 URL）
   python3 myscoop-update.py --add "https://pixpin.cn/download/" --name pixpin
 
-  # 4) 新增：manifest 模板补全（模板已有 hash 时自动跳过重复下载，秒级完成；--force-download 可强制重算）[pym]
+  # 4) manifest 模板补全（模板已含 hash 时自动跳过下载，秒级完成；--force-download 强制重算）
   python3 myscoop-update.py --from ./pixpin.template.json --name pixpin
   python3 myscoop-update.py --from staging/magpie.json --name magpie --out-dir bucket/
   python3 myscoop-update.py --from staging/magpie.json --name magpie --out-dir bucket/ --force-download
 
-  # 5) 补全：zip 清单下载探测 exe，由用户指定主程序，写入 bin/shortcuts（自动处理 extract_dir 与模板）；
-  #    优先复用 staging/.dl_cache/ 缓存避免重复下载（--force-download 强制重下）[pyb]
-  python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --out-dir bucket/          # 交互选择
-  python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select 1 --out-dir bucket/  # 非交互
+  # 5) zip 补全 / 生成 --fill-bin（接受本地清单或 zip 下载 URL）
+  #    清单模式：下载 zip 探测 exe → 用户指定主程序 → 写 bin/shortcuts（自动 extract_dir 与模板）；
+  #    优先复用 staging/.dl_cache/ 缓存免二次下载（--force-download 强制重下）
+  python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --out-dir bucket/            # 交互选择
+  python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select 1 --out-dir bucket/ # 非交互
   python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select Magpie.exe --out-dir bucket/
+  #    URL 模式：直接由链接生成清单（复用缓存、GitHub 补全仓库信息），额外支持
+  #    --version / --exe-name / --unzip / --flatten（双候选 exe 名自动匹配 zip 内全路径）：
+  #    python3 myscoop-update.py --fill-bin "https://...kvmem-v0.16.0-rc3-windows-x86_64-cuda13.zip" \
+  #        --name kvllama --version 0.16.0-rc3 --unzip --exe-name llama-kvmem-server.exe --out-dir bucket/
 
-  # 5b) 探测：Inno 安装器类先探测解包后的真实 exe 名（静默安装→列名→自动回滚；便携 exe 直接提示）；
-  #     安装包保留到 staging/.dl_cache/ 供复用（也支持直接传本地 exe 路径免下载）[pyc]
+  # 6) 探测安装器真实 exe 名（Inno 静默安装→列名→自动回滚；便携 exe 直接提示；也支持本地路径）
   python3 myscoop-update.py --exe-name "https://github.com/.../xxx-Setup.exe" --name xxx
   python3 myscoop-update.py --exe-name "D:/scoop/cache/xxx#1.0.0#hash.exe" --name xxx
-  #     注：--add 直链对安装器已内置自动探测（Inno：静默安装探测；NSIS/Tauri：7z 解包探测，
-#         无需真安装——唯一主程序自动写入 bin，多个 exe 时交互式提示选择编号/输入关键词，
-#         回车默认第 1 个；加 --select 编号|名称 免交互）。
-#         NSIS 命中时自动补 pre_install（7z 解包，兼容 app-*.7z 双层结构），不写 innosetup；
-#         autoupdate 模板会同时替换路径与文件名中的版本号
 
-  # 注意：模式 2/3/4/5 生成的清单默认输出到仓库内 staging/（FALLBACK_OUT_DIR），
-  #       确认无误后用 --out-dir 指定正式目录（如 bucket/）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  二、更新维护
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  # 6) 更新：单个 manifest,[pyd]
+  # 7) 更新单个 manifest（免下载，GitHub API digest 实测；--dry-run 只检查不写盘）
   python3 myscoop-update.py bucket/contextmenumgr-plus.json
   python3 myscoop-update.py bucket/contextmenumgr-plus.json --dry-run
 
-  # 7) 更新：全部含 checkver 的 manifest,[pyp][pys]
+  # 8) 更新全部含 checkver 的 manifest（CI 每晚 1 点自动执行同款）
   python3 myscoop-update.py --all
   python3 myscoop-update.py --all --dry-run
 
-  # 8) 环境变量：GH_TOKEN（或 GITHUB_TOKEN）可提升 GitHub API 配额（仅对 api.github.com 生效）
-  $env:GH_TOKEN = "ghp_xxx"   # PowerShell；Linux/macOS: export GH_TOKEN=ghp_xxx
+  # 9) 注册型软件（输入法/驱动/右键菜单/Shell 扩展）存量清单迁移为 installer 模式
+  #    （--add 新增时自动采用；ting 解包不执行注册脚本导致输入法/右键菜单缺失的场景）
+  python3 myscoop-update.py --installer-mode bucket/qingjian.json   # 多个文件或 --all
 
-  # 9) 可选：--insecure（或环境变量 MYSCOOP_INSECURE=1）跳过 SSL 证书校验
-  #    （默认失败时已自动降级重试一次；内容完整性由 sha256 清单比对兜底）[pyz]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  三、zip 拍平三态与配对（--unzip / --flatten / --no-flatten / --more）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  # 10) 注册型软件（输入法/驱动/右键菜单/Shell 扩展）：--add 检测到 Inno/NSIS 安装器且
-  #     关键词命中（ime 输入法 tsf driver 驱动 右键 context menu registry 等）时自动采用
-  #     installer 模式（真跑安装器完成系统注册，替代 innosetup/pre_install 解包——
-  #     解包不执行注册脚本，导致输入法不出现在系统选项、右键菜单缺失）。存量清单迁移:
-  #     python3 myscoop-update.py --installer-mode bucket/qingjian.json   # 多个文件或 --all
+  # 默认（无参数）自动探测：唯一顶层目录且无散文件 → 加「带 exe 守卫」拍平 pre_install
+  #     --unzip      无条件解压拍平一层（不检测 exe，内部层级保留）：
+  #                  kvmem-*/bin/xxx.exe → $dir/bin/xxx.exe，bin 自动补全子路径
+  #                  （直链 / --fill-bin URL 模式自动补；仓库模式需自己写 bin\\xxx.exe）
+  #     --flatten    带 exe 守卫拍平（顶层目录内须有 exe，防误拍资源目录；仓库模式显式指定）
+  #     --no-flatten 禁用拍平（zip 保持原生结构）      --unzip 优先于 --flatten
+  #  --more 主程序 + cudart 运行时配对合并收录（如 llama.cpp Prism fork 拆包发行）：
+  #     同架构、同 CUDA 版本的主程序 zip 与 cudart zip 成对生成 url/hash 数组
+  #     （Scoop 依次解压合并到同一目录，等效 cudart 内容复制进主程序目录）；
+  #     同架构多 CUDA 版本配对取最高（13.3 优先于 12.4）；无配对时回退常规流程
+  python3 myscoop-update.py --add https://github.com/PrismML-Eng/llama.cpp.git --more
 
-  # 11) GitHub 下载镜像加速（与 Scoop download.ps1 补丁同一套机制）：实际下载路径
-  #     （直链/下载页/补全/hash 实测）对 GitHub release 文件优先走加速镜像——
-  #     依次探测列表，取第一个可达镜像，全部不可达自动回退原始 URL。
-  #     镜像列表来源：环境变量 MYSCOOP_GH_MIRRORS（逗号分隔，可写完整 URL 或裸域名）优先，
-  #     否则读 Scoop config.json 的 aria2-mirrors 数组（本机零配置复用）。
-  #     不设置时行为与原来完全一致：
-  #     $env:MYSCOOP_GH_MIRRORS = "https://hk.gh-proxy.org,https://gh-proxy.com"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  四、GitHub 下载镜像加速
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # 10) 实际下载路径（直链/下载页/补全/hash 实测）对 GitHub release 文件优先走加速镜像：
+  #     依次探测列表取第一个可达镜像，全部不可达自动回退原始 URL（与 Scoop download.ps1 补丁同机制）。
+  #     镜像列表：环境变量 MYSCOOP_GH_MIRRORS（逗号分隔，完整 URL 或裸域名）优先，
+  #     否则读 Scoop config.json 的 aria2-mirrors 数组（本机零配置复用）；均不设置则不走镜像
+  $env:MYSCOOP_GH_MIRRORS = "https://hk.gh-proxy.org,https://gh-proxy.com"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  五、环境变量
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  GH_TOKEN（或 GITHUB_TOKEN）  提升 GitHub API 配额（仅对 api.github.com 生效）
+  $env:GH_TOKEN = "ghp_xxx"    # PowerShell；Linux/macOS: export GH_TOKEN=ghp_xxx
+
+  MYSCOOP_GH_MIRRORS           GitHub 镜像列表（见「四」，逗号分隔）
+  MYSCOOP_INSECURE=1           等价 --insecure（跳过 SSL 证书校验；默认失败时已自动降级重试一次，
+                               内容完整性由 sha256 清单比对兜底）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  六、可选参数速查
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  · 命名/输出：--name 应用名  --out-dir 输出目录（默认 staging/）
+  · 版本与信息：--version 版本号（应与 tag 完全一致，含 -rc3 等后缀）
+                 --homepage  --description  --license  --checkver-url  --checkver-regex
+  · 主程序：--exe-name 主程序名（zip 可带子路径如 bin/xxx.exe）  --shortcut-name 快捷方式名
+  · zip 拍平：--unzip / --flatten / --no-flatten（见「三」，仅 zip 类生效）
+  · 合并/覆盖：--force-new 覆盖重建（默认合并保留 bin/shortcuts 等人工字段）
+  · 下载：--force-download 强制重下  --no-keep 不保留 zip 缓存（默认留到 staging/.dl_cache/）
+  · 交互：--select 编号|名称 免交互选择 exe
+  · 特殊模式：--more 主程序+cudart 配对合并  --installer-mode 存量清单迁移注册型
+  · 全局：--dry-run 只检查不写盘  --insecure 跳过 SSL 校验
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  七、输出约定
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  · 模式 2/3/4/5 生成的清单默认输出到仓库内 staging/（FALLBACK_OUT_DIR，已被 .gitignore 忽略），
+    确认无误后用 --out-dir 指定正式目录（如 bucket/）
+  · 仓库模式（--add <仓库>）直接输出 bucket/；zip/7z 下载后默认保留到 staging/.dl_cache/
+    供 --fill-bin 等复用（--no-keep 可关闭）
 
 """
 
@@ -807,8 +850,13 @@ def add_manifest(repo_url, app_name=None, more=False):
             manifest["bin"] = exe_name
             manifest["shortcuts"] = [[exe_name, arg_value("--shortcut-name") or app_name]]
             # 仓库模式免下载，看不到 zip 结构——扁平化不自动判定（会误伤 src+exe 并列结构），
-            # 仅显式 --flatten 才附加（用户确认过是单层打包目录）
-            if "--flatten" in sys.argv[1:] and "pre_install" not in manifest:
+            # 仅显式 --flatten（带 exe 守卫）或 --unzip（无条件解压拍平）才附加；
+            # --unzip 优先：不检测 exe，内部层级保留（kvmem-*/bin/xxx.exe → $dir/bin/xxx.exe）
+            if "--unzip" in sys.argv[1:] and "pre_install" not in manifest:
+                manifest["pre_install"] = [UNZIP_PRE_INSTALL]
+                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts，并（--unzip）附加无条件解压拍平 "
+                      f"pre_install（不检测 exe，内部层级保留；bin 需子路径时写 bin\\{exe_name}）")
+            elif "--flatten" in sys.argv[1:] and "pre_install" not in manifest:
                 manifest["pre_install"] = [FLATTEN_PRE_INSTALL]
                 print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts，并（--flatten）附加扁平化 pre_install")
             elif "pre_install" in manifest:
@@ -1360,6 +1408,17 @@ FLATTEN_PRE_INSTALL = (
     "Remove-Item $d.FullName -Recurse -Force }"
 )
 
+# --unzip 显式解压拍平：无条件把唯一顶层目录内容上移一层（不检测 exe，cinetry 式）。
+# 仅当用户显式加 --unzip 时使用（用户确认过是单层打包目录、内部层级保留
+# ——如 kvmem-*/bin/llama-kvmem-server.exe 会变成 $dir/bin/llama-kvmem-server.exe，
+# bin 字段需写子路径）。默认路径仍走 FLATTEN_PRE_INSTALL（带 exe 守卫）。
+UNZIP_PRE_INSTALL = (
+    "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; "
+    "if ($d) { "
+    "Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; "
+    "Remove-Item $d.FullName -Recurse -Force }"
+)
+
 
 def probe_nsis_exes(tmp, app_name):
     """NSIS 安装器：用 7z 直接解包（无需真安装，无副作用）收集真实 exe 名。
@@ -1547,12 +1606,41 @@ def make_url_template(url, version):
     if version in parts.path:
         tpl_path = parts.path.replace(version, "$version", 1)
         head, _, fname = tpl_path.rpartition("/")
-        new_fname = re.sub(r"\d+\.\d+(?:\.\d+)*", "$version", fname)
+        # 文件名段优先替换完整版本串（含 -rc3 等后缀，防 kvmem-v$version-rc3 残留），
+        # 无完整串时回退点号版本段替换（原逻辑）
+        if version in fname:
+            new_fname = fname.replace(version, "$version", 1)
+        else:
+            new_fname = re.sub(r"\d+\.\d+(?:\.\d+)*", "$version", fname)
         if new_fname != fname:
             tpl_path = head + "/" + new_fname
         return urlunsplit((parts.scheme, parts.netloc,
                            tpl_path, parts.query, "")) + frag
     return None
+
+
+def strip_top_dir(subpath, top):
+    """--unzip 只拍平唯一顶层目录一层：bin 子路径 = exe 路径去掉该层前缀。
+    如 ("kvmem-x/bin", "kvmem-x") → "bin"；前缀不匹配原样返回。"""
+    if top and subpath and subpath.startswith(top + "/"):
+        return subpath[len(top) + 1:]
+    return subpath
+
+
+def locate_exe_subpath(names, exe_name):
+    """--unzip 模式：从 zip 条目中定位 exe 所在子路径（取最短/最浅层）。
+    如 "bin/llama-kvmem-server.exe" → "bin"；多条同名校名路径取最浅的。
+    已位于顶层、未找到或 exe_name 为空 → None。"""
+    if not exe_name:
+        return None
+    target = exe_name.lower()
+    best = None
+    for n in names:
+        parts = n.replace("\\", "/").split("/")
+        if len(parts) > 1 and parts[-1].lower() == target:
+            if best is None or len(parts) - 1 < len(best):
+                best = parts[:-1]
+    return "/".join(best) if best else None
 
 
 def finalize_direct_manifest(template, out_dir, app_name):
@@ -1614,9 +1702,28 @@ def finalize_direct_manifest(template, out_dir, app_name):
                     # 判据：顶层恰好只有一个文件夹（无散文件）→ 真打包目录 → 扁平化；
                     # 文件夹+文件并列 / 多文件夹（如 src/ + exe 并列）→ 保持原生结构
                     if len(tops) == 1 and tops[0] and not has_top_files:
-                        template["pre_install"] = [FLATTEN_PRE_INSTALL]
-                        print(f"[zip探测] 单层打包目录「{tops[0]}」：已自动添加扁平化 pre_install"
-                              f"（bin 直接落在 $dir 根，版本升级免维护；--no-flatten 可禁用）")
+                        if "--unzip" in sys.argv[1:]:
+                            # --unzip：无条件解压拍平（不检测 exe，内部层级保留），
+                            # 自动从 zip 定位 exe 子路径补全 bin/shortcuts
+                            template["pre_install"] = [UNZIP_PRE_INSTALL]
+                            tip = (f"[zip探测] 单层打包目录「{tops[0]}」：已按 --unzip 添加无条件解压拍平 "
+                                   f"pre_install（不检测 exe，内部层级保留）")
+                            if "--flatten" in sys.argv[1:]:
+                                tip += "；--flatten 被忽略（--unzip 优先）"
+                            print(tip)
+                            sub = locate_exe_subpath(names, template.get("bin"))
+                            if sub:
+                                # --unzip 去掉唯一顶层目录一层 → bin 子路径需剥离该层
+                                sub = strip_top_dir(sub, tops[0])
+                                newbin = f"{sub}/{template['bin']}"
+                                print(f"          bin 已补全子路径: {template['bin']} → {newbin}")
+                                template["bin"] = newbin
+                                if isinstance(template.get("shortcuts"), list) and template["shortcuts"]:
+                                    template["shortcuts"][0][0] = newbin
+                        else:
+                            template["pre_install"] = [FLATTEN_PRE_INSTALL]
+                            print(f"[zip探测] 单层打包目录「{tops[0]}」：已自动添加扁平化 pre_install"
+                                  f"（bin 直接落在 $dir 根，版本升级免维护；--no-flatten 可禁用）")
             except Exception:
                 pass
 
@@ -1746,9 +1853,12 @@ def finalize_direct_manifest(template, out_dir, app_name):
 
 
 def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
-    """补全命令：下载 zip 探测 exe -> 列出供用户挑选主程序 -> 写入 bin/shortcuts。
-    用法: myscoop-update.py --fill-bin <manifest.json> [--out-dir 目录] [--select 编号|exe名]
+    """补全命令：接受 <manifest.json> 或 zip 下载 URL（URL 模式支持
+    --version / --exe-name / --unzip / --flatten，优先复用 staging/.dl_cache/ 缓存免重复下载）。
+    用法: myscoop-update.py --fill-bin <manifest.json|zip URL> [--out-dir 目录] [--select 编号|exe名]
     不带 --select 时交互式提问（回车=第 1 个）。"""
+    if str(tpath).startswith(("http://", "https://")):
+        return _fill_bin_from_url(str(tpath), out_dir, app_name, select)
     template = json.loads(Path(tpath).read_text(encoding="utf-8"))
     url = template.get("url", "")
     if not url:
@@ -1863,6 +1973,174 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
     # 压缩包保留在 .dl_cache 供后续复用（不删除）
     if not template.get("hash"):
         template["hash"] = "sha256:" + digest
+    return finalize_direct_manifest(template, out_dir, app_name)
+
+
+def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
+    """--fill-bin <zip URL> 模式：直接由下载链接生成清单——
+    优先复用 staging/.dl_cache/ 缓存（免重复下载），支持：
+    --version / --exe-name / --shortcut-name / --unzip / --flatten / --select，
+    GitHub 链接自动补全 description/homepage/license/checkver。"""
+    if not url.split("?")[0].lower().endswith((".zip", ".7z")):
+        print("[错误] --fill-bin URL 模式仅支持 zip/7z 链接（exe 直链请用 --add）")
+        return None
+    if not app_name:
+        base = url.split("?")[0].rstrip("/").split("/")[-1].split("#")[0]
+        app_name = re.sub(r"[^0-9a-zA-Z._-]", "-", base) or "app"
+    version = arg_value("--version")
+    if not version:
+        m = re.search(r"/releases/download/v?([^/]+)/", url)
+        version = m.group(1) if m else (version_from_link(url) or "1.0")
+    template = {
+        "version": version,
+        "description": arg_value("--description") or "",
+        "homepage": arg_value("--homepage") or "",
+        "license": arg_value("--license") or "unknown",
+        "url": url,
+    }
+    # GitHub 直链自动补全仓库信息（与 --add 直链一致）
+    gm = re.match(r"https?://github\.com/([^/]+)/([^/]+?)(?:/|$)", url)
+    cv_url, cv_regex = arg_value("--checkver-url"), arg_value("--checkver-regex")
+    if gm and not (cv_url and cv_regex):
+        owner, repo = gm.group(1), gm.group(2)
+        try:
+            info = get_repo_info(owner, repo, "github")
+            if not template["description"]:
+                template["description"] = info.get("description") or ""
+            if not template["homepage"]:
+                template["homepage"] = info.get("homepage") or f"https://github.com/{owner}/{repo}"
+            lic = info.get("license") or {}
+            spdx = lic.get("spdx_id") if isinstance(lic, dict) else lic
+            if spdx and spdx != "NOASSERTION" and template["license"] == "unknown":
+                template["license"] = spdx
+            if "checkver" not in template:
+                template["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
+            print(f"[仓库信息] {owner}/{repo}：已自动补全 description/homepage/license/checkver")
+        except Exception as e:
+            print(f"[提示] GitHub 仓库信息获取失败（保持用户字段）: {e}")
+    if cv_url and cv_regex:
+        template["checkver"] = {"url": cv_url, "regex": cv_regex}
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cache_dir = FALLBACK_OUT_DIR / ".dl_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    ext = ".7z" if url.lower().endswith(".7z") else ".zip"
+    tmp = cache_dir / f"{app_name}{ext}"
+    if tmp.exists() and "--force-download" not in sys.argv[1:]:
+        print(f"[缓存] 复用已有压缩包 {tmp}（跳过下载）")
+    else:
+        print(f"[下载] {url.split('#')[0]}\n[缓存] 压缩包将保留到 {tmp}")
+        try:
+            download_to(url, tmp)
+        except Exception as e:
+            print(f"[错误] 下载失败: {e}")
+            return None
+    try:
+        import zipfile
+        with zipfile.ZipFile(tmp) as z:
+            names = [n for n in z.namelist() if not n.endswith("/")]
+    except Exception as e:
+        tmp.unlink(missing_ok=True)
+        print(f"[错误] 无法读取 zip: {e}")
+        return None
+    digest = sha256_hex(tmp)
+    template["hash"] = "sha256:" + digest
+    print(f"[hash] sha256:{digest[:16]}...")
+
+    exes = sorted({n for n in names if n.lower().endswith(".exe")}, key=lambda n: n.lower())
+    if not exes:
+        print("[提示] zip 内未发现 exe（可能是脚本类应用），无法自动补 bin")
+        return None
+    print(f"[探测] zip 内可执行文件（共 {len(exes)} 个）:")
+    for i, e in enumerate(exes, 1):
+        print(f"    {i}: {e}")
+
+    # 主程序选择：--exe-name > --select > 交互（回车=1）
+    choice = arg_value("--exe-name")
+    if choice:
+        full = next((e for e in exes if e.lower() == choice.lower()
+                     or e.lower().endswith("/" + choice.lower())), None)
+        if full and full.lower() != choice.lower():
+            print(f"[exe-name] {choice} → 命中 {full}")
+            choice = full
+        elif not full:
+            print(f"[提示] --exe-name {choice} 未在 zip 中找到精确匹配（仍按指定写入）")
+    elif select:
+        if select.isdigit():
+            idx = int(select) - 1
+            if 0 <= idx < len(exes):
+                choice = exes[idx]
+            else:
+                print(f"[错误] 编号超出范围（1-{len(exes)}）")
+                return None
+        else:
+            low = select.lower()
+            choice = next((e for e in exes if low in e.lower()), None)
+            if not choice:
+                print(f"[错误] 未找到包含 '{select}' 的 exe")
+                return None
+    else:
+        try:
+            ans = input(f"请选择主程序编号（1-{len(exes)}，回车默认 1）: ").strip()
+            if ans:
+                if ans.isdigit() and 1 <= int(ans) <= len(exes):
+                    choice = exes[int(ans) - 1]
+                else:
+                    choice = next((e for e in exes if ans.lower() in e.lower()), None)
+            else:
+                choice = exes[0]
+        except EOFError:
+            choice = exes[0]
+    if not choice:
+        return None
+    print(f"[选择] {choice}")
+
+    tops = sorted({n.split("/", 1)[0] for n in names if "/" in n})
+    top_files = [n for n in names if "/" not in n]
+    single_top = len(tops) == 1 and bool(tops[0]) and not top_files
+    if "--unzip" in sys.argv[1:]:
+        # 无条件解压拍平一层（不检测 exe，内部层级保留），bin 补全子路径
+        if single_top:
+            template["pre_install"] = [UNZIP_PRE_INSTALL]
+            sub = strip_top_dir(locate_exe_subpath(names, Path(choice).name), tops[0]) if "/" in choice else None
+            bin_name = f"{sub}/{Path(choice).name}" if sub else Path(choice).name
+            print(f"[unzip] 唯一顶层目录「{tops[0]}」：已添加无条件解压拍平，bin = {bin_name}")
+            if "--flatten" in sys.argv[1:]:
+                print("        --flatten 被忽略（--unzip 优先）")
+        else:
+            print(f"[警告] --unzip 仅支持唯一顶层目录（当前 {len(tops)} 个目录/顶层有散文件），"
+                  f"未加拍平，bin 用完整相对路径")
+            bin_name = choice
+    elif "--flatten" in sys.argv[1:]:
+        # 带 exe 守卫拍平（与 --add 直链默认一致）
+        if single_top:
+            template["pre_install"] = [FLATTEN_PRE_INSTALL]
+            bin_name = Path(choice).name
+            print(f"[flatten] 唯一顶层目录「{tops[0]}」：已添加守卫拍平 pre_install，bin = {bin_name}")
+        else:
+            print(f"[警告] --flatten 仅支持唯一顶层目录（当前 {len(tops)} 个目录/顶层有散文件），本次未加拍平")
+            bin_name = choice
+    else:
+        # 既有 extract_dir 方案（不拍平）
+        bin_name = choice
+        if "/" in choice:
+            top = choice.split("/", 1)[0]
+            top_dirs = {n.split("/", 1)[0] for n in names if "/" in n}
+            if not top_files and top_dirs == {top}:
+                template["extract_dir"] = top
+                bin_name = choice.split("/", 1)[1]
+                au = template.setdefault("autoupdate", {})
+                tpl = re.sub(r"\d+(?:\.\d+)+", "$version", top, count=1)
+                if tpl != top:
+                    au["extract_dir"] = tpl
+                print(f"[extract_dir] {top}（已设置模板: {au.get('extract_dir', top)}）")
+            else:
+                print(f"[警告] zip 结构较复杂（多目录/顶层散文件），未自动设置 extract_dir，"
+                      f"bin 将使用完整相对路径 {choice}")
+    template["bin"] = bin_name
+    template["shortcuts"] = [[bin_name, arg_value("--shortcut-name") or app_name]]
+    print(f"[写入] bin = {bin_name} | shortcuts 显示名 = {arg_value('--shortcut-name') or app_name}")
     return finalize_direct_manifest(template, out_dir, app_name)
 
 
@@ -2149,8 +2427,9 @@ def main():
         fb_pos = args.index("--fill-bin")
         tpath = args[fb_pos + 1] if fb_pos + 1 < len(args) else None
         if not tpath:
-            print("用法: python3 myscoop-update.py --fill-bin <manifest.json> [--name 应用名] "
-                  "[--select 编号|exe名] [--out-dir 输出目录]")
+            print("用法: python3 myscoop-update.py --fill-bin <manifest.json|zip下载URL> [--name 应用名] "
+                  "[--select 编号|exe名] [--version 版本号] [--exe-name 主程序名] "
+                  "[--unzip|--flatten] [--out-dir 输出目录]")
             sys.exit(1)
         result = fill_bin_manifest(tpath, arg_value("--out-dir") or FALLBACK_OUT_DIR,
                                    arg_value("--name"), arg_value("--select"))

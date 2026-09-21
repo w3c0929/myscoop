@@ -44,6 +44,8 @@ else:
 print("环境变量列表解析 OK")
 
 # 5) gh_mirror_list：Scoop config.json aria2-mirrors 数组 / 字符串兼容 / 无文件 → []
+#    （隔离环境变量：本机可能已设置 MYSCOOP_GH_MIRRORS，env 优先会短路 config 分支）
+_env_saved5 = os.environ.pop("MYSCOOP_GH_MIRRORS", None)
 d = tempfile.mkdtemp()
 p = os.path.join(d, "config.json")
 with open(p, "w", encoding="utf-8") as f:
@@ -53,6 +55,8 @@ with open(p, "w", encoding="utf-8") as f:
     json.dump({"aria2-mirrors": "https://a.g https://b.g"}, f)
 assert mu.gh_mirror_list(config_path=p) == ["https://a.g", "https://b.g"]
 assert mu.gh_mirror_list(config_path=os.path.join(d, "nope.json")) == []
+if _env_saved5 is not None:
+    os.environ["MYSCOOP_GH_MIRRORS"] = _env_saved5
 print("Scoop config 读取 OK")
 
 # 6) probe_mirror_url：依赖网络的函数名存在且无配置时原样返回（快速路径不联网）

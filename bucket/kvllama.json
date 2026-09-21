@@ -3,13 +3,22 @@
     "description": "Run Bonsai 2 27B on 8GB VRAM  with full 256K workspace",
     "homepage": "https://github.com/CrKcel/kvmem-llama.cpp",
     "license": "unknown",
+    "url": "https://github.com/CrKcel/kvmem-llama.cpp/releases/download/v0.16.0-rc3/kvmem-v0.16.0-rc3-windows-x86_64-cuda13.zip",
     "checkver": {
         "github": "https://github.com/CrKcel/kvmem-llama.cpp"
     },
-    "url": "https://github.com/CrKcel/kvmem-llama.cpp/releases/download/v0.16.0-rc3/kvmem-v0.16.0-rc3-windows-x86_64-cuda13.zip",
     "hash": "sha256:ac0914064b555dc5b45e483be9bbcd6aa9a2583a03116703b56a342d9a7603f8",
+    "pre_install": [
+        "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; if ($d) { Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; Remove-Item $d.FullName -Recurse -Force }"
+    ],
+    "bin": "bin/llama-kvmem-server.exe",
+    "shortcuts": [
+        [
+            "bin/llama-kvmem-server.exe",
+            "kvllama"
+        ]
+    ],
     "autoupdate": {
         "url": "https://github.com/CrKcel/kvmem-llama.cpp/releases/download/v$version/kvmem-v$version-windows-x86_64-cuda13.zip"
-    },
-    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+    }
 }

@@ -85,4 +85,43 @@ print("唯一文件夹（无 exe）→ 生成 OK")
 assert "if ($d -and" in mu.FLATTEN_PRE_INSTALL and "-Filter *.exe" in mu.FLATTEN_PRE_INSTALL
 print("条件脚本结构 OK")
 
+# 12) UNZIP_PRE_INSTALL：无条件拍平（无 exe 守卫），cinetry 式
+u = mu.UNZIP_PRE_INSTALL
+assert "if ($d)" in u and "-Filter *.exe" not in u and "Move-Item" in u and "Remove-Item" in u
+print("UNZIP_PRE_INSTALL 无条件 OK")
+
+# 13) locate_exe_subpath：多层取最短路径；顶层/未找到 → None
+assert mu.locate_exe_subpath(
+    ["kvmem-x/bin/llama-kvmem-server.exe", "kvmem-x/bin/llama-kvmem-cli.exe",
+     "kvmem-x/bin/cublas64_13.dll"], "llama-kvmem-server.exe") == "kvmem-x/bin"
+assert mu.locate_exe_subpath(["app.exe", "data/x.bin"], "llama-kvmem-server.exe") is None
+assert mu.locate_exe_subpath(["kvmem-x/bin/app.exe", "kvmem-x/app.exe"], "app.exe") == "kvmem-x"
+assert mu.locate_exe_subpath(["kvmem-x/bin/app.exe"], None) is None
+# 反斜杠兼容（zip 条目可能用 \）
+assert mu.locate_exe_subpath(["kvmem-x\\bin\\app.exe"], "app.exe") == "kvmem-x/bin"
+print("locate_exe_subpath 定位 OK")
+
+# 13b) strip_top_dir：--unzip 拍平一层后剥离顶层打包目录
+assert mu.strip_top_dir("kvmem-x/bin", "kvmem-x") == "bin"
+assert mu.strip_top_dir("bin", "kvmem-x") == "bin"  # 无顶层前缀原样
+assert mu.strip_top_dir("kvmem-x/bin", "") == "kvmem-x/bin"
+assert mu.strip_top_dir("pkg2/bin", "pkg") == "pkg2/bin"  # 前缀不匹配不动
+print("strip_top_dir 剥离顶层 OK")
+
+# 14) --unzip 分支判据：唯一顶层目录 → 无条件版；多目录/文件并列 → 拒绝
+def detect_unzip(spec_keys, unzip_mode):
+    files = [n for n in spec_keys if not n.endswith("/")]
+    tops = sorted({n.split("/")[0] for n in files if "/" in n})
+    has_top_files = any("/" not in n for n in files)
+    if len(tops) == 1 and bool(tops[0]) and not has_top_files:
+        return mu.UNZIP_PRE_INSTALL if unzip_mode else mu.FLATTEN_PRE_INSTALL
+    return None
+assert "-Filter *.exe" not in detect_unzip(
+    ["kvmem-v0.16.0-rc3/bin/llama-kvmem-server.exe", "kvmem-v0.16.0-rc3/README.md"], True)
+assert "-Filter *.exe" in detect_unzip(
+    ["Cinetry_0.8.4/cinetry.exe", "Cinetry_0.8.4/data/x.bin"], False)
+assert detect_unzip(["a/x.exe", "b/y.exe"], True) is None
+assert detect_unzip(["src/a.dll", "app.exe"], True) is None
+print("--unzip 判据 OK")
+
 print("ALL PASS")

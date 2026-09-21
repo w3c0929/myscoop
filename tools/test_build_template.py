@@ -121,4 +121,22 @@ u12b = mu.generate_autoupdate_url("sublime-text-4200-x64.zip", "vSublimeText", T
 assert u12b == "https://github.com/{owner}/{repo}/releases/download/v$version/sublime-text-4200-x64.zip", u12b
 print("短 tag / 固定 tag 保护 OK")
 
+# 13) make_url_template：完整版本串替换（含 rc 后缀，防 kvmem-v$version-rc3 残留）
+t13 = mu.make_url_template(
+    "https://github.com/CrKcel/kvmem-llama.cpp/releases/download/v0.16.0-rc3/"
+    "kvmem-v0.16.0-rc3-windows-x86_64-cuda13.zip", "0.16.0-rc3")
+assert t13 == "https://github.com/CrKcel/kvmem-llama.cpp/releases/download/v$version/" \
+              "kvmem-v$version-windows-x86_64-cuda13.zip", t13
+print("make_url_template rc 后缀 OK")
+
+# 14) make_url_template：常规语义版本回归（与旧逻辑等价）
+t14 = mu.make_url_template(
+    "https://github.com/o/r/releases/download/v1.2.3/app-1.2.3-x64.zip", "1.2.3")
+assert t14 == "https://github.com/o/r/releases/download/v$version/app-$version-x64.zip", t14
+# 构建号场景：文件名含完整版本串 → 完整串替换（构建号保留）
+t14b = mu.make_url_template(
+    "https://github.com/o/r/releases/download/v1.2.3/Cinetry_1.2.3+48_windows.zip", "1.2.3")
+assert t14b == "https://github.com/o/r/releases/download/v$version/Cinetry_$version+48_windows.zip", t14b
+print("make_url_template 常规回归 OK")
+
 print("ALL PASS")
