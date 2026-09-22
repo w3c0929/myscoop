@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **110** 款 Windows 软件，其中 **87** 款为本地维护（自托管 Release），**23** 款引用第三方官方 Release。
+> 共收录 **111** 款 Windows 软件，其中 **88** 款为本地维护（自托管 Release），**23** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -96,6 +96,7 @@
 | 84 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 |
 | 85 | [Windows App Runtime](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时（WinUI/WinAppSDK 应用依赖） | `scoop install windowsappruntime` | 单 exe 手动安装 | 2.4.0 |
 | 86 | [SwitchHosts](https://github.com/oldj/SwitchHosts) — Hosts 文件快速切换管理工具（通知内容默认留空时自动显示为 {title} {result} {message}） | `scoop install switchhosts` | zip 便携解压即用 | 5.0.1 |
+| 87 | [NInfer](https://github.com/w3c0929/myscoop) — 三元推理引擎（Ternary-Bonsai 模型，CUDA 13.3 sm_89，自带运行库） | `scoop install ninfer` | zip 便携（CLI + 服务端 + PPL） | 1.0.8 |
 
 ### 第三方官方（引用原项目 Release）
 
