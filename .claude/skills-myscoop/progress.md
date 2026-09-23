@@ -166,8 +166,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 9965e9e (HEAD -> main) 自动更新第三方软件
-* 395189b (origin/main) 收录 ninfer 1.0.8 三元推理引擎便携版（自托管 Release v1.0.8，CLI+服务端+PPL，内置 CUDA/ffmpeg 运行库）
+* 4381cda (HEAD -> main) 自动更新第三方软件
+* 74a65f3 (origin/main) 新增加速镜像config.json
+* f40c49d progress.md 更新提交历史
+* 9965e9e 自动更新第三方软件
+* 395189b 收录 ninfer 1.0.8 三元推理引擎便携版（自托管 Release v1.0.8，CLI+服务端+PPL，内置 CUDA/ffmpeg 运行库）
 * 69f26a0 (tag: v1.0.8) progress.md 更新提交历史
 * 90df043 自动更新第三方软件
 * 2e2fbc3 修正更新分类注释
