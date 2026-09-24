@@ -12,11 +12,20 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-09-22）
 
-- **收录软件总数**: 111 款
-- **本地维护（自托管 Release）**: 88 款
-- **第三方官方（引用原项目 Release）**: 23 款
+- **收录软件总数**: 120 款
+- **本地维护（自托管 Release）**: 87 款
+- **第三方官方（引用原项目 Release）**: 33 款
 
-不包含上下文提到的草稿软件。
+## 脚本能力（myscoop-update.py 最新）
+
+- `--add <仓库链接> [--name 应用名]`：仓库模式一键收录（信息/评分/架构/autoupdate 模板自动生成）
+  - **`--more`**：主程序 + cudart 运行时配对合并收录——同架构同 CUDA 版本成对生成 url/hash 数组（Scoop 依次解压合并到同一目录），同架构多 CUDA 版本取最高（13.3 > 12.4），cudart 文件名保持写死与 tag 解耦；无配对回退常规流程（示例：prllama / llama.cpp Prism fork）
+  - **`--dl`**：生成 json 后直接下载选中资产自动探测补全——zip/7z 列 exe 交互选主程序（`--select 编号|exe名` 免交互，列表去重+编号）；portable.exe 7z 解包探测内部主程序并自动补 pre_install（cherry 实测 102 exe）；多架构自动下载 64bit 主架构；exe/msi 分支自动写 bin 无需探测
+  - autoupdate 模板：文件名中非语义 tag 子串自动模板化为 `$version`（防下版 404）
+  - 资产判定：x86_64/amd64 正确判 64bit（修复含 x86 子串误判），i686/i386 → 32bit；平台裸二进制（.arm/.x86_64/.s390x 等无 .exe 跨平台产物）与无扩展名校验文件（SHA256SUMS）不再混入 Windows 资产
+- `--add <直链|下载页|模板>`：直链/下载页/模板新增强（含 Inno/NSIS 探测、--fill-bin URL 模式）
+- `--installer-mode`：注册型软件存量清单迁移 installer 模式
+- `--all` / 单清单更新：GitHub API digest 免下载更新；CI 每晚 1 点自动执行
 
 ## 核心规则
 

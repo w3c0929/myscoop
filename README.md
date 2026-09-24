@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **111** 款 Windows 软件，其中 **88** 款为本地维护（自托管 Release），**23** 款引用第三方官方 Release。
+> 共收录 **120** 款 Windows 软件，其中 **87** 款为本地维护（自托管 Release），**33** 款引用第三方官方 Release。
 
 ### 本地维护（自托管 Release）
 
@@ -126,6 +126,15 @@
 | 22 | [BeeLlama](https://github.com/Anbeeld/beellama.cpp) — llama.cpp 分支，KV 缓存精度优化，更长上下文同显存更高精度（Windows CUDA 13.3） | `scoop install beellama-cpp` | portable zip 官方 release (CUDA 13.3) | 0.4.6 |
 | 23 | [Lertaro](https://github.com/Lertaro/Lertaro) — 本地文件搜索与生产力工具（Everything/Listary 替代品，C# WPF + NT 服务，NTFS MFT 解析与实时 USN 监控） | `scoop install lertaro` | 多架构 portable zip 官方 release | 5.6.5 |
 | 24 | [PixPin](https://pixpin.cn/) — 截图标注工具（官方直链，Inno Setup） | `scoop install pixpin` | Inno Setup 官方直链 | 3.5.5.1 |
+| 25 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.7.1 |
+| 26 | [kvmem-llama.cpp](https://github.com/CrKcel/kvmem-llama.cpp) — llama.cpp KV 缓存压缩分支：8GB 显存跑 Bonsai 2 27B 满 256K 上下文（RC 版） | `scoop install kvllama` | zip 官方 release | 0.16.0-rc3 |
+| 27 | [Magpie (实验版)](https://github.com/SAOG0721/Magpie) — 游戏画面缩放/超分工具的非官方实验 fork | `scoop install magpie` | zip 官方直链 | 0.6.8 |
+| 28 | [Netcatty](https://github.com/binaricat/Netcatty) — SSH 工作区、SFTP 与终端一体的跨平台客户端 | `scoop install netcatty` | portable zip 官方 release | 1.1.83 |
+| 29 | [llama.cpp Prism](https://github.com/PrismML-Eng/llama.cpp) — llama.cpp 分支（CUDA 主程序 + cudart 运行库配对合并，--more 收录） | `scoop install prllama` | 多架构 zip 官方 release | vprism-b10709-9a9394a |
+| 30 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.1.4 |
+| 31 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.6.4 |
+| 32 | [AI-Vault (updist)](https://ergeaia.github.io/) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | 0.2.9 |
+| 33 | [Windows App SDK 运行时](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时官方直链 | `scoop install winsdk` | 单 exe 官方直链 | 2.4.0 |
 
 ## 快速开始（用户）
 
