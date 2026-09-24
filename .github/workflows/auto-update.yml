@@ -31,13 +31,16 @@ jobs:
       - name: 运行更新脚本（免下载，读取 GitHub API digest）
         run: python3 myscoop-update.py --all
 
+      - name: 同步 README 第三方版本列（= 清单 version 原样，幂等）
+        run: python3 tools/sync_readme_versions.py
+
       - name: 提交 manifest 变更
         run: |
-          if git diff --quiet -- bucket/; then
+          if git diff --quiet -- bucket/ && git diff --quiet -- README.md; then
             echo "无 manifest 变更，跳过提交"
             exit 0
           fi
-          git add bucket/
+          git add bucket/ README.md
           git commit -m "自动更新第三方软件"
 
       - name: 更新 progress.md 提交历史
