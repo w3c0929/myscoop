@@ -175,7 +175,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* c98a00d (HEAD -> main, origin/main, origin/HEAD) --add 增强三件套：--more 主程序+cudart 配对合并收录（同架构同 CUDA 版本成对、多版本取最高）、--dl 生成后直接下载自动探测补全（zip 列 exe 交互选主程序 / portable.exe 7z 解包探测内部主程序并补 pre_install，多架构取 64bit）、autoupdate 模板非语义 tag 子串动态化（cudart 文件名保持写死与 tag 解耦）；修复 detect_arch x86_64/i686 误判与平台裸二进制过滤（ttyd 场景）；多 exe 选择列表去重+编号显示；pick_or_interactive 扩展 --select；新增 2 套单测 + 全量 9 套回归；README/SKILL 同步；cherry 更新 2.1.3（portable exe 解包探测补 bin/pre_install）
+* 780fc59 (HEAD -> main, origin/main, origin/HEAD) 文档同步：README 收录数 110→120（第三方补 9 款：finch/kvllama/magpie/netcatty/prllama/qingjian/tubatools/updist/winsdk，表与计数一致 87+33）；progress 状态区更新为 120 款并新增脚本能力说明（--more/--dl/动态 tag/架构修复）
+* 54caf61 progress.md 更新提交历史
+* c98a00d --add 增强三件套：--more 主程序+cudart 配对合并收录（同架构同 CUDA 版本成对、多版本取最高）、--dl 生成后直接下载自动探测补全（zip 列 exe 交互选主程序 / portable.exe 7z 解包探测内部主程序并补 pre_install，多架构取 64bit）、autoupdate 模板非语义 tag 子串动态化（cudart 文件名保持写死与 tag 解耦）；修复 detect_arch x86_64/i686 误判与平台裸二进制过滤（ttyd 场景）；多 exe 选择列表去重+编号显示；pick_or_interactive 扩展 --select；新增 2 套单测 + 全量 9 套回归；README/SKILL 同步；cherry 更新 2.1.3（portable exe 解包探测补 bin/pre_install）
 * 704a186 progress.md 更新提交历史
 * 15bfe95 自动更新第三方软件
 * 6614413 新增updist.json AI Vault 是本地优先的 AI 创作者工作台：把技能、提示词、MCP、ComfyUI 工作流、模型与在线平台收进一个本地保险库，并分发到你使用的各个 AI Agent
