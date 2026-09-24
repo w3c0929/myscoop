@@ -80,7 +80,11 @@ myscoop 管理脚本
   #     同架构、同 CUDA 版本的主程序 zip 与 cudart zip 成对生成 url/hash 数组
   #     （Scoop 依次解压合并到同一目录，等效 cudart 内容复制进主程序目录）；
   #     同架构多 CUDA 版本配对取最高（13.3 优先于 12.4）；无配对时回退常规流程
+  #     --dl 生成 json 后直接下载选中资产（zip/7z）自动探测补全 bin/shortcuts/extract_dir
+  #     （复用 --fill-bin 引擎：含扁平化 pre_install 判定；多架构自动下载 64bit 主架构；
+  #      zip 内多 exe 交互选择，--select 编号|exe名 免交互；压缩包留 staging/.dl_cache/ 复用）
   python3 myscoop-update.py --add https://github.com/PrismML-Eng/llama.cpp.git --more
+  python3 myscoop-update.py --add https://github.com/CherryHQ/cherry-studio.git --name cherry --dl
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   四、GitHub 下载镜像加速
@@ -412,6 +416,7 @@ def heal_url_drift(manifest, assets):
 def is_windows_asset(name):
     """判断是否为 Windows 平台资产"""
     lower = name.lower()
+    base = lower.rsplit("/", 1)[-1]
     # 明确排除非 Windows 格式
     if any(m in lower for m in [".dmg", ".appimage", ".rpm", ".deb", ".apk"]):
         return False
@@ -419,6 +424,14 @@ def is_windows_asset(name):
     if name.lower().endswith((".tar", ".tar.gz", ".tar.xz", ".txt", ".json",
                              ".md", ".sum", ".sha256", ".asc", ".list", ".html",
                              ".yml", ".blockmap", ".sig")):
+        return False
+    # 跨平台编译的裸二进制后缀（Go/Rust 等无 .exe 平台产物，如 ttyd.arm / ttyd.x86_64 / ttyd.i686）
+    if base.endswith((".arm", ".armhf", ".i686", ".i386", ".i586", ".x86_64", ".amd64",
+                      ".aarch64", ".s390x", ".mips", ".mips64", ".mips64el", ".mipsel",
+                      ".ppc64", ".ppc64le", ".riscv64", ".loongarch64")):
+        return False
+    # 无扩展名且无 win 标记 → 非 Windows（裸校验文件/脚本，如 SHA256SUMS）
+    if "." not in base and not re.search(r"win|windows", lower):
         return False
     # 明确排除非 Windows 平台标识
     if re.search(r'[-.]mac(?:os)?[-.]', lower) or re.search(r'[-.]mac$', lower.rsplit('.', 1)[0] if '.' in lower else ''):
@@ -439,10 +452,11 @@ def detect_arch(name):
     lower = name.lower()
     if "arm64" in lower or "aarch64" in lower:
         return "arm64"
-    if "x86" in lower or "32bit" in lower or "ia32" in lower:
-        return "32bit"
-    if "x64" in lower or "64bit" in lower or "amd64" in lower or "win64" in lower:
+    # x86_64 必须优先于 x86 检查（x86_64 含 x86 子串，旧逻辑误判 32bit）
+    if "x86_64" in lower or "x64" in lower or "64bit" in lower or "amd64" in lower or "win64" in lower:
         return "64bit"
+    if "x86" in lower or "i686" in lower or "i386" in lower or "i586" in lower or "32bit" in lower or "ia32" in lower:
+        return "32bit"
     return None
 
 
@@ -893,6 +907,31 @@ def add_manifest(repo_url, app_name=None, more=False):
     print(f"  4. 验证: python3 -m json.tool {manifest_path_str}")
     print(f"  5. 安装测试: scoop install {app_name}")
     print(f"  6. git add . && git commit -m '添加 {app_name}' && git push")
+
+    # --dl：生成后直接下载探测，自动补全 bin/shortcuts/extract_dir（复用 --fill-bin 引擎）
+    # zip/7z → fill-bin 引擎（列 exe 选主程序）；
+    # portable.exe（自解压包）→ finalize 引擎：Inno/NSIS 检测 + 7z 解包探测内部主程序 + pre_install
+    if "--dl" in sys.argv[1:]:
+        if best_name.endswith((".zip", ".7z")):
+            print("\n[--dl] 生成完毕，开始下载探测补全（zip 结构 → bin/shortcuts/extract_dir）…")
+            fill_bin_manifest(manifest_path, BUCKET_DIR, app_name, select=arg_value("--select"))
+        elif best_name.lower().endswith(".exe") and "portable" in best_name.lower():
+            print("\n[--dl] portable exe：下载并解包探测（Inno/NSIS 检测 → 自动补 pre_install 与内部主程序）…")
+            saved_bin, saved_sc = manifest.get("bin"), manifest.get("shortcuts")
+            manifest.pop("bin", None)   # 强制探测解包后的内部主程序（portable 自解压包）
+            manifest.pop("shortcuts", None)
+            try:
+                finalize_direct_manifest(manifest, BUCKET_DIR, app_name)
+            finally:
+                if not manifest.get("bin") and saved_bin:
+                    manifest["bin"] = saved_bin
+                    manifest["shortcuts"] = saved_sc
+                    print(f"[恢复] 解包探测未产出主程序，保留原 bin: {saved_bin}")
+                    with open(manifest_path_str, "w", encoding="utf-8") as f:
+                        json.dump(manifest, f, indent=4, ensure_ascii=False)
+                        f.write("\n")
+        else:
+            print("\n[--dl] 最佳资产非 zip/7z/portable-exe（普通 setup/msi 分支已自动处理 bin），跳过下载探测")
 
     return manifest_path_str
 
@@ -1460,27 +1499,32 @@ def probe_nsis_exes(tmp, app_name):
 
 def pick_or_interactive(fexes, app_name, indent="        "):
     """探测出多个 exe 时选择主程序：--select 编号|关键词 优先，否则交互输入（回车默认第 1 个）。
-    返回 picked 名称或 None；非交互环境（EOFError）自动取第 1 个。"""
+    列表去重保序，交互前逐行打印编号（102 个候选时无编号无法对上号）。返回 picked 名称或 None；
+    非交互环境（EOFError）自动取第 1 个。"""
+    uniq = list(dict.fromkeys(fexes))  # 去重保序（NSIS 解包常现同名牌多份，如 git.exe×2）
     sel = arg_value("--select")
     if sel:
-        if sel.isdigit() and 1 <= int(sel) <= len(fexes):
-            return fexes[int(sel) - 1]
-        picked = next((e for e in fexes if sel.lower() in e.lower()), None)
+        if sel.isdigit() and 1 <= int(sel) <= len(uniq):
+            return uniq[int(sel) - 1]
+        picked = next((e for e in uniq if sel.lower() in e.lower()), None)
         if not picked:
-            print(f"{indent}[错误] 未找到匹配 '{sel}'，未写入（可选：{' / '.join(fexes)}）")
+            print(f"{indent}[错误] 未找到匹配 '{sel}'，未写入（可选：{' / '.join(uniq)}）")
         return picked
     try:
-        ans = input(f"{indent}请选择主程序编号（1-{len(fexes)}，回车默认 1）: ").strip()
+        print(f"{indent}可用主程序候选（共 {len(uniq)} 个）:")
+        for i, e in enumerate(uniq, 1):
+            print(f"{indent}  {i:2d}: {e}")
+        ans = input(f"{indent}请选择主程序编号或关键词（1-{len(uniq)}，回车默认 1）: ").strip()
     except EOFError:
         ans = ""
     idx = 0
     if ans:
-        if ans.isdigit() and 1 <= int(ans) <= len(fexes):
+        if ans.isdigit() and 1 <= int(ans) <= len(uniq):
             idx = int(ans) - 1
         else:
-            hit = next((i for i, e in enumerate(fexes) if ans.lower() in e.lower()), None)
+            hit = next((i for i, e in enumerate(uniq) if ans.lower() in e.lower()), None)
             idx = hit if hit is not None else 0
-    return fexes[idx]
+    return uniq[idx]
 
 
 # ---------- 注册型软件（输入法/驱动/右键菜单/Shell 扩展）识别与 installer 模式 ----------
@@ -1644,10 +1688,11 @@ def locate_exe_subpath(names, exe_name):
 
 
 def finalize_direct_manifest(template, out_dir, app_name):
-    """非 GitHub 直链模板补全：下载算 hash + Inno Setup 检测 + checkver/autoupdate 校验"""
-    url = template.get("url", "")
+    """非 GitHub 直链模板补全：下载算 hash + Inno Setup 检测 + checkver/autoupdate 校验。
+    多架构清单以 64bit 主架构 url 为准做探测与模板校验（不写顶层 hash/url）。"""
+    url, _tmpl_digest = arch_url_hash(template)
     if not url:
-        print("[错误] 模板缺少 url")
+        print("[错误] 模板缺少 url（多架构清单需含 64bit 分支）")
         return None
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1727,7 +1772,26 @@ def finalize_direct_manifest(template, out_dir, app_name):
             except Exception:
                 pass
 
-    if template.get("hash"):
+    if template.get("architecture"):
+        # 多架构：顶层无 hash；64bit 已实测（--dl/--fill-bin）→ 用实测值；否则校验既有
+        arch64 = (template.get("architecture") or {}).setdefault("64bit", {})
+        digest64 = arch64.get("hash", "")
+        if digest64:
+            g = str(digest64).lower()
+            g = g[7:] if g.startswith("sha256:") else g
+            if g == digest:
+                print("[hash] 与 64bit 架构 hash 一致 (OK)")
+            else:
+                print(f"[hash] 实测与 64bit 架构 hash 不一致（清单 {g[:16]}... vs 实测 "
+                      f"{digest[:16]}...），已在填充实测值")
+        else:
+            if not arch64.get("url"):
+                print("[hash] 多架构清单 64bit 分支缺失，未处理")
+            else:
+                arch64["hash"] = "sha256:" + digest
+                print(f"[hash] 64bit 分支无 hash（API 无 digest），已用实测值补全 "
+                      f"sha256:{digest[:16]}...")
+    elif template.get("hash"):
         given = str(template["hash"]).lower()
         given = given[7:] if given.startswith("sha256:") else given
         if given == digest:
@@ -1759,7 +1823,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
                     template["shortcuts"] = [[fexes[0], app_name]]
                     print(f"        唯一主程序 {fexes[0]}，已自动写入 bin/shortcuts")
                 elif fexes:
-                    print(f"        发现多个 exe：{', '.join(fexes)}")
+                    print(f"        发现多个 exe（共 {len(fexes)} 个，含依赖工具）：")
                     picked = pick_or_interactive(fexes, app_name)
                     if picked:
                         template["bin"] = picked
@@ -1776,7 +1840,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
                 if len(fexes) == 1:
                     picked = fexes[0]
                 elif fexes:
-                    print(f"        发现多个 exe：{', '.join(fexes)}")
+                    print(f"        发现多个 exe（共 {len(fexes)} 个，含依赖工具）：")
                     picked = pick_or_interactive(fexes, app_name)
                 else:
                     picked = None
@@ -1822,7 +1886,14 @@ def finalize_direct_manifest(template, out_dir, app_name):
 
     au = template.get("autoupdate") or {}
     ver = str(template.get("version", ""))
-    if au.get("url"):
+    if template.get("architecture"):
+        # 多架构：autoupdate 逐架构模板由 --add/直链生成器负责，此处不改动
+        au_ok = (au.get("architecture") or {}).get("64bit", {}).get("url", "")
+        if au_ok:
+            print(f"[autoupdate] 多架构模板已存在（64bit: {au_ok[:72]}…）")
+        else:
+            print("[autoupdate] 多架构清单缺 64bit 模板，请用 --add 生成")
+    elif au.get("url"):
         tpl = au["url"]
         if "$version" in tpl:
             sub = tpl.replace("$version", ver)
@@ -1845,6 +1916,9 @@ def finalize_direct_manifest(template, out_dir, app_name):
     kept = merge_existing_manifest(out_path, template)
     if kept:
         print(f"[提示] 目标 {out_path.name} 已存在，已合并保留: {', '.join(kept)}")
+    # 占位提示清理：bin/shortcuts 已由探测补全时，移除"请手动添加"占位 notes（防 merge 从旧文件带回）
+    if template.get("notes") == "请手动添加 bin 和 shortcuts，或运行脚本后补充。":
+        del template["notes"]
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(template, f, indent=4, ensure_ascii=False)
         f.write("\n")
@@ -1852,18 +1926,41 @@ def finalize_direct_manifest(template, out_dir, app_name):
     return out_path
 
 
+def arch_url_hash(manifest):
+    """从清单取探测用 url/hash：顶层 url 优先；多架构清单取 64bit（无 64bit 取 arm64/32bit 首个）。
+    --dl/--fill-bin 多架构探测只下主架构资产（bin/shortcuts 各架构通用）。"""
+    url = manifest.get("url", "") or ""
+    digest = str(manifest.get("hash", "") or "").lower()
+    arch = (manifest.get("architecture") or {}).get("64bit") or {}
+    if not url and arch.get("url"):
+        url = arch["url"] or ""
+        digest = str(arch.get("hash", "") or "").lower()
+    if not url:
+        for a in ("32bit", "arm64"):
+            blk = (manifest.get("architecture") or {}).get(a) or {}
+            if blk.get("url"):
+                url = blk["url"]
+                digest = str(blk.get("hash", "") or "").lower()
+                break
+    return url, (digest[7:] if digest.startswith("sha256:") else digest)
+
+
 def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
     """补全命令：接受 <manifest.json> 或 zip 下载 URL（URL 模式支持
     --version / --exe-name / --unzip / --flatten，优先复用 staging/.dl_cache/ 缓存免重复下载）。
+    多架构清单自动取 64bit 主架构资产探测（bin/shortcuts/extract_dir 各架构通用）。
     用法: myscoop-update.py --fill-bin <manifest.json|zip URL> [--out-dir 目录] [--select 编号|exe名]
     不带 --select 时交互式提问（回车=第 1 个）。"""
     if str(tpath).startswith(("http://", "https://")):
         return _fill_bin_from_url(str(tpath), out_dir, app_name, select)
     template = json.loads(Path(tpath).read_text(encoding="utf-8"))
-    url = template.get("url", "")
+    multi_arch = bool(template.get("architecture"))
+    url, tmpl_digest = arch_url_hash(template)
     if not url:
-        print("[错误] 清单缺少 url")
+        print("[错误] 清单缺少 url（多架构清单需含 64bit 分支）")
         return None
+    if multi_arch:
+        print(f"[探测] 多架构清单：下载 64bit 主架构资产探测（bin/extract_dir 各架构通用）")
     if not url.lower().endswith(".zip"):
         print("[错误] --fill-bin 仅支持 zip 类清单（exe 直链请用 --exe-name 重新 --add）")
         return None
@@ -1877,8 +1974,6 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
     cache_dir.mkdir(parents=True, exist_ok=True)
     ext = ".7z" if url.lower().endswith(".7z") else ".zip"
     tmp = cache_dir / f"{app_name}{ext}"
-    tmpl_digest = str(template.get("hash", "")).lower()
-    tmpl_digest = tmpl_digest[7:] if tmpl_digest.startswith("sha256:") else tmpl_digest
     use_cache = tmp.exists() and "--force-download" not in sys.argv[1:]
     if use_cache and tmpl_digest:
         use_cache = sha256_hex(tmp) == tmpl_digest
@@ -1901,8 +1996,6 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
         tmp.unlink(missing_ok=True)
         print(f"[错误] 无法读取 zip: {e}")
         return None
-    tmpl_digest = str(template.get("hash", "")).lower()
-    tmpl_digest = tmpl_digest[7:] if tmpl_digest.startswith("sha256:") else tmpl_digest
     if tmpl_digest and tmpl_digest != digest:
         print(f"[警告] 实测 hash 与清单不一致（{digest[:16]}...），将按实测值更新")
     elif tmpl_digest:
@@ -1956,22 +2049,34 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
         top_files = [n for n in names if "/" not in n]
         top_dirs = {n.split("/", 1)[0] for n in names if "/" in n}
         if not top_files and top_dirs == {top}:
-            template["extract_dir"] = top
-            bin_name = choice.split("/", 1)[1]
-            au = template.setdefault("autoupdate", {})
             tpl = re.sub(r"\d+(?:\.\d+)+", "$version", top, count=1)
-            if tpl != top:
-                au["extract_dir"] = tpl
-            print(f"[extract_dir] {top}（已设置模板: {au.get('extract_dir', top)}）")
+            if multi_arch:
+                # 多架构：extract_dir 写入 64bit 分支 + autoupdate 对应分支（各架构同名目录）
+                (template.setdefault("architecture", {}).setdefault("64bit", {}))["extract_dir"] = top
+                au_arch = template.setdefault("autoupdate", {}).setdefault("architecture", {})
+                au_64 = au_arch.setdefault("64bit", {})
+                if tpl != top:
+                    au_64["extract_dir"] = tpl
+                print(f"[extract_dir] {top}（已写入 architecture.64bit，模板: {au_64.get('extract_dir', top)}）")
+            else:
+                template["extract_dir"] = top
+                au = template.setdefault("autoupdate", {})
+                if tpl != top:
+                    au["extract_dir"] = tpl
+                print(f"[extract_dir] {top}（已设置模板: {au.get('extract_dir', top)}）")
+            bin_name = choice.split("/", 1)[1]
         else:
             print(f"[警告] zip 结构较复杂（多目录/顶层散文件），未自动设置 extract_dir，"
                   f"bin 将使用完整相对路径 {choice}")
     template["bin"] = bin_name
     template["shortcuts"] = [[bin_name, arg_value("--shortcut-name") or app_name]]
+    # 已确认主程序：移除"请手动添加 bin/shortcuts"占位提示
+    if template.get("notes") == "请手动添加 bin 和 shortcuts，或运行脚本后补充。":
+        del template["notes"]
     print(f"[写入] bin = {bin_name} | shortcuts 显示名 = {arg_value('--shortcut-name') or app_name}")
 
-    # 压缩包保留在 .dl_cache 供后续复用（不删除）
-    if not template.get("hash"):
+    # 压缩包保留在 .dl_cache 供后续复用（不删除）；多架构清单不写顶层 hash（finalize 只校验不覆盖）
+    if not template.get("hash") and not multi_arch:
         template["hash"] = "sha256:" + digest
     return finalize_direct_manifest(template, out_dir, app_name)
 

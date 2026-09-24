@@ -9,25 +9,11 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.1.3/Cherry-Studio-CN-2.1.3-win-x64-portable.exe",
-            "hash": "sha256:5db51428ce3ecff81fc7d0d166897af305884e18240e7131b500ffb4067c522c",
-            "bin": "cherry-studio.exe",
-            "shortcuts": [
-                [
-                    "cherry-studio.exe",
-                    "cherry-studio"
-                ]
-            ]
+            "hash": "sha256:5db51428ce3ecff81fc7d0d166897af305884e18240e7131b500ffb4067c522c"
         },
         "arm64": {
             "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.1.3/Cherry-Studio-CN-2.1.3-win-arm64-portable.exe",
-            "hash": "sha256:64517fbdfaf6cf9e70dd0b96be5ffa4aa1c3b9488e48abe18127ccdc47ddff7d",
-            "bin": "cherry-studio.exe",
-            "shortcuts": [
-                [
-                    "cherry-studio.exe",
-                    "cherry-studio"
-                ]
-            ]
+            "hash": "sha256:64517fbdfaf6cf9e70dd0b96be5ffa4aa1c3b9488e48abe18127ccdc47ddff7d"
         }
     },
     "autoupdate": {
@@ -40,5 +26,16 @@
             }
         }
     },
-    "pre_install": "Get-ChildItem \"$dir\" -Filter 'Cherry-Studio*.exe' | Move-Item -Destination \"$dir\\cherry-studio.exe\" -Force"
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ],
+    "bin": "Cherry Studio.exe",
+    "shortcuts": [
+        [
+            "Cherry Studio.exe",
+            "cherry"
+        ]
+    ]
 }

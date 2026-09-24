@@ -540,3 +540,6 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
     - 示例：Sublime Text（`sublime-text.json`，release `vSublimeText` 下挂 4200 / 4207 两个资产）
 16. **改动文件必须全部提交推送**：任务中凡**内容发生改动的需提交文件**（manifest、README.md、progress.md、SKILL.md、LICENSE 等仓库内跟踪文件）一律 `git add` + `git commit` + `git push` 提交推送，**不得遗留未提交改动**；即使该改动与本任务无关（如历史遗留的各种文件改动），只要其内容已变也一并提交推送。未跟踪文件（如 portable zip 等发布资产、临时文件）不在此列。
 17. **用户给出仓库链接时必须用脚本操作**：用户要求收录并提供 GitHub/Gitee **仓库链接**时（如 `https://github.com/NanmiCoder/cc-haha.git`、`https://gitee.com/fasterthanlight/automatic_clicker_2.git`，或 `https://github.com/owner/repo --name reponame` 指定应用名），**必须**使用 `python3 myscoop-update.py --add <链接> [--name 应用名]` 完成操作，**不得**绕过脚本手动 curl 查询 + 手写 manifest。脚本自动完成仓库信息获取、Windows 资产打分排序、架构检测、manifest 生成与 autoupdate 模板，产物为 `bucket/{应用名}.json`；仅当链接是**直接下载链接/网页链接**（非仓库链接）时才走手动流程。
+    - **`--add` 增强参数**：
+      - `--more`：主程序 + cudart 运行时配对合并收录（同架构同 CUDA 版本成对生成 url/hash 数组，Scoop 解压合并到同一目录；同架构多 CUDA 版本取最高，如 13.3 > 12.4）
+      - `--dl`：生成 json 后直接下载选中资产自动探测补全——zip/7z 列 exe 交互选主程序（`--select 编号|exe名` 免交互）；portable.exe 7z 解包探测内部主程序并自动补 pre_install；多架构自动下载 64bit 主架构；不带此参数时行为与旧版完全一致

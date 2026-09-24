@@ -107,7 +107,7 @@
 | 3 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral` | 多架构 exe 官方 release | 1.2.0 |
 | 4 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 |
 | 5 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.11.10024 |
-| 6 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry` | 多架构 portable exe | 2.0.14 |
+| 6 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry` | 多架构 portable exe | 2.1.3 |
 | 7 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 多架构 portable exe | 0.6.2 |
 | 8 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.3 |
 | 9 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install etlp` | 多架构 zip 官方 release | 2026.07.18 |
@@ -625,6 +625,16 @@ Scoop 不设 `hash` 规则时，`checkver -u` 会自动下载文件并计算 SHA
 myscoop-update --all --dry-run    # 检查更新
 myscoop-update --all              # 自动更新全部
 myscoop-update --add <github-url> # 粘贴链接添加新软件
+
+# --add 增强（仓库模式）：
+#   --more  主程序 + cudart 运行时配对合并收录（如同仓库拆分发 CUDA 主程序与运行库两个 zip，
+#            自动配对生成 url/hash 数组，Scoop 解压合并；同架构多 CUDA 版本取最高）
+#   --dl    生成 json 后直接下载选中资产并自动探测补全 bin/shortcuts/extract_dir：
+#           zip/7z → 列 exe 交互选主程序（--select 编号|exe名 免交互）；portable.exe →
+#           7z 解包探测内部主程序并自动加 pre_install；多架构自动下载 64bit 主架构
+#   示例：
+#   myscoop-update --add https://github.com/PrismML-Eng/llama.cpp.git --more
+#   myscoop-update --add https://github.com/CherryHQ/cherry-studio.git --name cherry --dl
 
 # 或直接运行脚本
 cd D:\scoop\buckets\myscoop
