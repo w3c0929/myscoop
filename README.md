@@ -944,7 +944,7 @@ myscoop/
 ├── 智能模式Scoop(3).ps1              ← Scoop 工具箱（文件名预选智能模式）：复制改名 (1)(2)(4).ps1 自动执行对应菜单
 ├── cd-comfyui.bat                   ← 启动 ComfyUI（HF 镜像）
 ├── cd-models.bat                    ← 切换到 llama.cpp 模型目录
-├── down-node.bat                    ← ComfyUI 插件批量安装
+├── down-node.bat                    ← ComfyUI 插件批量安装（入口，逻辑在 down-node.py）
 ├── symlink.bat                      ← 创建 .bat 到 shims 的符号链接
 ├── manifest.ps1                     ← Scoop 库补丁：调整仓库下载优先级顺序
 ├── config.json                      ← Scoop 配置：bucketlist 控制仓库优先级顺序
