@@ -1,0 +1,26 @@
+{
+    "version": "0.2.9",
+    "description": "二哥免费软件及资源更新",
+    "homepage": "https://ergeaia.github.io/",
+    "license": "unknown",
+    "url": "https://github.com/ErgeAIA/updates-dist/releases/download/aivault-v0.2.9/AI-Vault_0.2.9_x64-setup.exe",
+    "checkver": {
+        "github": "https://github.com/ErgeAIA/updates-dist"
+    },
+    "hash": "sha256:a5210e8dc9466438f2b56b0e21e35dc08e51d940d9832fc69d18cac29db2d251",
+    "bin": "ai-vault.exe",
+    "shortcuts": [
+        [
+            "ai-vault.exe",
+            "updist"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ],
+    "autoupdate": {
+        "url": "https://github.com/ErgeAIA/updates-dist/releases/download/aivault-v$version/AI-Vault_$version_x64-setup.exe"
+    }
+}

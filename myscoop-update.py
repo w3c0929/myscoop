@@ -76,7 +76,7 @@ myscoop 管理脚本
   #                  （直链 / --fill-bin URL 模式自动补；仓库模式需自己写 bin\\xxx.exe）
   #     --flatten    带 exe 守卫拍平（顶层目录内须有 exe，防误拍资源目录；仓库模式显式指定）
   #     --no-flatten 禁用拍平（zip 保持原生结构）      --unzip 优先于 --flatten
-  #  --more 主程序 + cudart 运行时配对合并收录（如 llama.cpp Prism fork 拆包发行）：
+  #     --more 主程序 + cudart 运行时配对合并收录（如 llama.cpp Prism fork 拆包发行）：
   #     同架构、同 CUDA 版本的主程序 zip 与 cudart zip 成对生成 url/hash 数组
   #     （Scoop 依次解压合并到同一目录，等效 cudart 内容复制进主程序目录）；
   #     同架构多 CUDA 版本配对取最高（13.3 优先于 12.4）；无配对时回退常规流程
