@@ -4,7 +4,7 @@
     "homepage": "https://github.com/w3c0929/myscoop",
     "license": "unknown",
     "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.9/ninfer-ternary-ada-sm89-win64-v1.0.9-protable.zip",
-    "hash": "sha256:0df44c9a2d65659039bf5238d96d6b74e983070ef89290c416a4060d4b7eb429",
+    "hash": "sha256:60a84b713312b9d9a4578c685ec74f59236bdbcb5c0754c72dbab47f534c679d",
     "bin": "ninfer-serve.exe",
     "shortcuts": [
         [
