@@ -175,8 +175,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 91456d4 (HEAD) NInfer 升级 1.0.8→1.0.9：删除远程 v1.0.8 release，发布 v1.0.9（ninfer-ternary-ada-sm89-win64-v1.0.9-protable.zip，digest 与清单一致 0df44c9a）；hash 规范化小写；README 版本列同步
-* d6b85c3 (origin/main, origin/HEAD) progress.md 更新提交历史
+* ac7d04e (HEAD -> main, origin/main, origin/HEAD) NInfer 1.0.9 更新压缩包层级：删除远程旧 zip 重新上传新结构版本，hash 更新为 60a84b71（与远程 digest 一致）
+* 25411db 新增 .gitattributes：文本文件统一 LF 存储（*.bat 保持 CRLF），根治 CI Ubuntu 与本地 Windows 行尾漂移导致的 README/progress 全文件假 diff
+* e18437d progress.md 更新提交历史
+* 91456d4 NInfer 升级 1.0.8→1.0.9：删除远程 v1.0.8 release，发布 v1.0.9（ninfer-ternary-ada-sm89-win64-v1.0.9-protable.zip，digest 与清单一致 0df44c9a）；hash 规范化小写；README 版本列同步
+* d6b85c3 (tag: v1.0.9) progress.md 更新提交历史
 * 1c3c112 自动更新第三方软件
 * 0e39690 progress.md 更新提交历史
 * 2a3cb5b CI 自动同步 README 版本：新增 tools/sync_readme_versions.py（第三方表版本列 = 清单 version 原样，幂等，--check 干跑），auto-update.yml 每晚 --all 后自动同步并一并提交；首次落地同步 8 处滞后版本（cmm-plus 1.7.6 / cc-haha 0.6.6 / cinetry 0.8.4 / comfyui 0.37.0 / lertaro 5.7.3 / amcfy-music 1.2.11 / prllama prism-b10709-9a9394a / updist aivault-v0.2.9）
