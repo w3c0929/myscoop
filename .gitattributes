@@ -1,0 +1,25 @@
+# 统一行尾：文本一律 LF（CI Ubuntu 与本地 Windows 存储一致，防全文件行尾漂移假 diff）
+# 例外：*.bat 必须 CRLF（Windows cmd 解析铁律）
+*.md    text eol=lf
+*.py    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.json  text eol=lf
+*.ps1   text eol=lf
+*.cjs   text eol=lf
+*.txt   text eol=lf
+
+# cmd 批处理：必须 CRLF（LF 会导致解析错乱）
+*.bat   text eol=crlf
+
+# 二进制
+*.zip   binary
+*.exe   binary
+*.7z    binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
