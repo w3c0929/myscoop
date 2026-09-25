@@ -1,13 +1,13 @@
 {
-    "version": "0.4.6",
+    "version": "0.4.7",
     "description": "KVarN, KV cache precision tail, low-bit quants in llama.cpp for longer context of better precision in the same VRAM",
     "homepage": "https://anbeeld.com/projects/beellama-cpp",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/Anbeeld/beellama.cpp"
     },
-    "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.6/beellama-v0.4.6-bin-win-cuda-13.3-x64.zip",
-    "hash": "sha256:5ad1cf5f62e0ca703c18c888e736b8641be326c431b338f4eb0db9a97c1b5658",
+    "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.7/beellama-v0.4.7-bin-win-cuda-13.3-x64.zip",
+    "hash": "sha256:400dfa350f7e5e23e0b9a3ad57fd959d65600ef2143d84f2b404bc84fbb0168b",
     "autoupdate": {
         "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-v$version-bin-win-cuda-13.3-x64.zip"
     },
