@@ -175,7 +175,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* f6dafdf (HEAD -> main, origin/main, origin/HEAD) README 章节顺序调整：附录（Manifest 字段速查）与 Scoop 辅助文件（本机部署）移至智能模式下方（快速开始 → 智能模式 → 附录 → Scoop 辅助 → 收录策略 → 维护指南 → 自动更新 → 常见问题）
+* 87a711d (HEAD -> main, origin/main, origin/HEAD) README 软件表按创建时间倒序重排（最新收录在前）并重新编号（本地维护 87 / 第三方 33，时间列同步保留）
+* 2f87094 progress.md 更新提交历史
+* f6dafdf README 章节顺序调整：附录（Manifest 字段速查）与 Scoop 辅助文件（本机部署）移至智能模式下方（快速开始 → 智能模式 → 附录 → Scoop 辅助 → 收录策略 → 维护指南 → 自动更新 → 常见问题）
 * 5bf585f progress.md 更新提交历史
 * 5618746 README 软件表新增时间列（创建/更新 = bucket 清单 git 首次/最近提交日期，两表全覆盖），同步脚本兼容 @版本 安装命令（sublime-text）
 * 6ea7e20 progress.md 更新提交历史
