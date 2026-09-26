@@ -211,6 +211,152 @@ scoop uninstall cmm-plus
 
 ---
 
+## 附录：Manifest 字段速查
+
+| 字段            | 必须 | 说明                                                               |
+| --------------- | ---- | ------------------------------------------------------------------ |
+| `version`       | 是   | 软件版本号，与 release tag 一致（去掉 v）                          |
+| `description`   | 是   | 一句话描述，建议用英文以保持通用性                                 |
+| `homepage`      | 是   | 项目主页 URL                                                       |
+| `license`       | 是   | SPDX 标识符（MIT/GPL-3.0/Apache-2.0 等）或带 url 的对象            |
+| `url`           | 是   | 下载地址（单架构时放顶层）                                         |
+| `hash`          | 是   | SHA256 校验值，格式 `sha256:xxxx`                                  |
+| `architecture`  | 否   | 多架构配置，包含 64bit/32bit/arm64 子对象，替代顶层 url/hash       |
+| `bin`           | 否   | 暴露到 PATH 的可执行文件，字符串或数组                             |
+| `shortcuts`     | 否   | 开始菜单快捷方式，格式 `[["exe", "显示名称"]]`                    |
+| `extract_dir`   | 否   | zip 内的子目录名（有顶层目录时设）                                 |
+| `depends`       | 否   | 依赖的其他 scoop 包                                                |
+| `checkver`      | 否   | 版本检测规则，常用 `"github": "url"`                               |
+| `autoupdate`    | 否   | 自动更新 URL 模板，配合 checkver 使用                              |
+| `pre_install`   | 否   | 安装前执行的 PowerShell 命令                                       |
+| `post_install`  | 否   | 安装后执行的 PowerShell 命令，`$dir` 代表安装目录                  |
+| `pre_uninstall` | 否   | 卸载前执行的 PowerShell 命令                                       |
+| `persist`       | 否   | 持久化文件/目录（升级时保留），如 `"config.ini"` 或 `["data"]`    |
+| `notes`         | 否   | 安装后给用户的提示信息                                             |
+
+---
+
+## Scoop 辅助文件（本机部署）
+
+仓库根目录提供两个供使用者部署到**本机 Scoop 安装**的辅助文件，用于调整仓库下载优先级（同名软件存在于多个 bucket 时，按优先级选择来源）以及 GitHub 下载加速：
+
+| 文件 | 部署位置 | 作用 |
+|------|----------|------|
+| `manifest.ps1` | `D:\scoop\apps\scoop\current\lib\manifest.ps1` | Scoop 库补丁，修改下载文件时优先选择仓库的顺序 |
+| `download.ps1` | `D:\scoop\apps\scoop\current\lib\download.ps1` | Scoop 库补丁，GitHub Release 下载优先走加速镜像（aria2 与默认下载器通用） |
+| `config.json`  | `C:\Users\Administrator\.config\scoop\config.json` | Scoop 配置文件，`bucketlist` 数组控制各仓库的下载优先级顺序 |
+
+> **部署方式**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `download.ps1` 覆盖到 Scoop 的 `lib\download.ps1`，将 `config.json` 覆盖到用户配置目录即可。
+> - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
+> - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
+> - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
+>   - 下载 `https://github.com/*/releases/download/` 资产时，依次探测 `aria2-mirrors` 镜像列表（**数组形式，须直接编辑 config.json 设置**——`scoop config` 命令不支持数组参数），取第一个可达镜像作为下载源；**全部不可达时自动回退官方原始 URL**。
+>   - 镜像地址可写完整 URL 或裸域名（自动补 `https://`），数组顺序即优先级（快的放前面）；默认：
+>     `["https://hk.gh-proxy.org", "https://gh-proxy.com", "https://gh-proxy.org"]`
+>   - 对 aria2（`aria2-enabled: true`）与默认下载器（未启用 aria2 或 aria2 失败回退）两条路径均生效；**Scoop 自更新后补丁会丢失**，重新覆盖即可（原版备份在仓库 `staging/scoop-backup/`）。
+
+### 目录结构约定
+
+```
+myscoop/
+├── .github/workflows/
+│   └── auto-update.yml             ← 每晚 1 点（北京时间）自动更新第三方软件
+├── bucket/        ← 所有 manifest JSON（共 110 个）
+│   ├── cmm-plus.json               (模式1：多架构 zip 官方 release)
+│   ├── mykeymap.json                (模式2：zip 便携解压即用)
+│   ├── litemonitor.json             (模式1：portable zip 官方 release)
+│   ├── windowsclear.json            (模式2：单 exe 便携)
+│   ├── tinytask.json                (模式2：单 exe 便携)
+│   ├── 360bwtest.json               (模式2：单 exe 便携)
+│   ├── hibituninstaller.json        (模式2：单 exe 便携 自托管)
+│   ├── btsou.json                   (模式2：zip 便携 自托管)
+│   ├── floral.json                  (模式1：多架构 exe 官方 release)
+│   ├── wgestures.json               (模式4：自托管便携)
+│   ├── uninstalltool.json           (模式5：静默安装)
+│   ├── bcompare.json                (模式5：静默安装)
+│   ├── termius.json                 (模式5：NSIS 解包+asar)
+│   ├── 2345pic.json                 (模式5：已绿化)
+│   ├── apollo.json                  (模式6：单 exe 手动安装)
+│   ├── iobit.json                   (模式6：单 exe 手动安装)
+│   ├── idm.json                     (模式6：单 exe 手动安装)
+│   ├── bandizip6.json               (模式6：单 exe 手动安装)
+│   ├── sougoupy.json                (模式6：单 exe 手动安装)
+│   ├── uuyc.json                    (模式6：单 exe 手动安装)
+│   ├── pixpin.json                  (模式1：官方直链 Inno Setup)
+│   ├── sysdiag.json                 (模式6：单 exe 手动安装)
+│   ├── dotnet-desktopruntime.json   (模式6：单 exe 手动安装)
+│   ├── keycastow.json               (模式6：zip 便携+自动启动)
+│   ├── dianshishiguang.json          (模式6：单 exe 手动安装)
+│   ├── rdriveimage.json               (模式2：zip 便携解压即用)
+│   ├── winmtr.json                     (模式2：zip 便携解压即用)
+│   ├── networkfixtool.json             (模式2：单 exe 便携)
+│   ├── syshelper.json                  (模式2：单 exe 便携)
+│   ├── amcfy-music.json                 (模式1：官方 release+自动更新)
+│   ├── dropit.json                      (模式2：便携 zip 自托管)
+│   ├── gstarcad.json                    (模式5：多层 NSIS 解包自托管)
+│   ├── cutsilence.json                  (模式2：zip 便携解压即用)
+│   ├── audio-recorder.json              (模式5：Inno 解包自托管)
+│   ├── chromesetup.json                 (模式6：单 exe 手动安装)
+│   ├── wcap.json                       (模式2：zip 便携解压即用)
+│   ├── cherry.json                       (模式1：多架构 portable exe)
+│   ├── cc-haha.json                    (模式1：多架构 portable exe)
+│   ├── musictag.json                   (模式2：7z 便携解压即用)
+│   ├── miaomi.json                     (模式6：单 exe 手动安装)
+│   ├── cinetry.json                    (模式1：zip 官方 release)
+│   ├── etlp.json                       (模式1：多架构 zip 官方 release)
+│   ├── eserver.json                    (模式1：多架构 zip 官方 release)
+│   ├── fileconv.json                   (模式7：MSI 手动安装)
+│   ├── bandicam.json                   (模式2：7z 便携解压即用)
+│   ├── vp9-video-extensions.json       (模式6：Appx 手动安装)
+│   ├── webview2-runtime.json           (模式6：单 exe 手动安装)
+│   └── tokenicode.json                 (模式1：单 exe 官方 release)
+│   ├── terminal.json                       (模式1：多架构 zip 官方 release)
+│   ├── hardlinkshellext.json               (模式6：单 exe 手动安装)
+│   ├── ultraiso.json                       (模式6：单 exe 手动安装)
+│   └── edgeblock.json                      (模式2：zip 便携解压即用)
+│   ├── dingtalk-downloader.json            (模式6：单 exe 手动安装)
+│   ├── hipc.json                            (模式6：单 exe 手动安装)
+│   ├── qq.json                              (模式6：单 exe 手动安装)
+│   ├── wechat.json                          (模式6：单 exe 手动安装)
+│   └── wecom.json                           (模式6：单 exe 手动安装)
+│   ├── waifu2x-caffe.json                   (模式2：zip 便携解压即用)
+│   ├── vs-buildtools.json                 (模式6：单 exe 手动安装)
+│   ├── athena-loc.json                   (模式2：7z 便携解压即用)
+│   ├── pcmaster.json                     (模式2：zip 便携解压即用)
+│   ├── btseed.json                       (模式2：zip 便携解压即用)
+│   ├── video-captioner.json              (模式6：单 exe 手动安装)
+│   ├── hcsstudio.json                   (模式6：单 exe 手动安装)
+│   ├── cfwarp.json                      (模式7：MSI 手动安装)
+│   ├── gzh-formatter.json               (模式2：单 exe 便携)
+│   ├── wps.json                         (模式6：单 exe 手动安装)
+│   ├── msst-gui.json                   (模式1：单 exe 中文版)
+│   ├── comfyui.json                     (模式1：portable 7z 官方 release)
+│   ├── qlcad.json                      (qlplugin 自启动安装)
+│   ├── qloffice.json                   (qlplugin 自启动安装)
+│   ├── qlgit.json                      (qlplugin 自启动安装)
+│   ├── windisktool.json                 (模式1：单 exe 官方 release)
+│   ├── keyviz.json                      (模式7：MSI 手动安装)
+│   ├── getdict.json                       (模式6：单 exe 手动安装)
+│   ├── easytshark.json                    (模式2：zip 便携解压即用)
+│   ├── windowsappruntime.json             (模式6：单 exe 手动安装)
+│   ├── switchhosts.json                   (模式2：zip 便携解压即用)
+│   ├── baulk.json                         (模式1：多架构 zip 官方 release)
+├── .claude/
+│   └── skills-myscoop/
+│       ├── SKILL.md                 ← AI 自动收录技能
+│       └── progress.md              ← 项目进展
+├── myscoop-update.py                ← 免下载自动更新脚本
+├── 智能模式Scoop(3).ps1              ← Scoop 工具箱（文件名预选智能模式）：复制改名 (1)(2)(4).ps1 自动执行对应菜单
+├── cd-comfyui.bat                   ← 启动 ComfyUI（HF 镜像）
+├── cd-models.bat                    ← 切换到 llama.cpp 模型目录
+├── down-node.bat                    ← ComfyUI 插件批量安装（入口，逻辑在 down-node.py）
+├── symlink.bat                      ← 创建 .bat 到 shims 的符号链接
+├── manifest.ps1                     ← Scoop 库补丁：调整仓库下载优先级顺序
+├── config.json                      ← Scoop 配置：bucketlist 控制仓库优先级顺序
+└── README.md                        ← 此文件
+```
+---
+
 ## 收录策略：第三方资产按架构分组择优
 
 `myscoop-update.py` 收录第三方应用时的资产选择规则：
@@ -827,145 +973,3 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 
 ---
 
-## 附录：Manifest 字段速查
-
-| 字段            | 必须 | 说明                                                               |
-| --------------- | ---- | ------------------------------------------------------------------ |
-| `version`       | 是   | 软件版本号，与 release tag 一致（去掉 v）                          |
-| `description`   | 是   | 一句话描述，建议用英文以保持通用性                                 |
-| `homepage`      | 是   | 项目主页 URL                                                       |
-| `license`       | 是   | SPDX 标识符（MIT/GPL-3.0/Apache-2.0 等）或带 url 的对象            |
-| `url`           | 是   | 下载地址（单架构时放顶层）                                         |
-| `hash`          | 是   | SHA256 校验值，格式 `sha256:xxxx`                                  |
-| `architecture`  | 否   | 多架构配置，包含 64bit/32bit/arm64 子对象，替代顶层 url/hash       |
-| `bin`           | 否   | 暴露到 PATH 的可执行文件，字符串或数组                             |
-| `shortcuts`     | 否   | 开始菜单快捷方式，格式 `[["exe", "显示名称"]]`                    |
-| `extract_dir`   | 否   | zip 内的子目录名（有顶层目录时设）                                 |
-| `depends`       | 否   | 依赖的其他 scoop 包                                                |
-| `checkver`      | 否   | 版本检测规则，常用 `"github": "url"`                               |
-| `autoupdate`    | 否   | 自动更新 URL 模板，配合 checkver 使用                              |
-| `pre_install`   | 否   | 安装前执行的 PowerShell 命令                                       |
-| `post_install`  | 否   | 安装后执行的 PowerShell 命令，`$dir` 代表安装目录                  |
-| `pre_uninstall` | 否   | 卸载前执行的 PowerShell 命令                                       |
-| `persist`       | 否   | 持久化文件/目录（升级时保留），如 `"config.ini"` 或 `["data"]`    |
-| `notes`         | 否   | 安装后给用户的提示信息                                             |
-
-## Scoop 辅助文件（本机部署）
-
-仓库根目录提供两个供使用者部署到**本机 Scoop 安装**的辅助文件，用于调整仓库下载优先级（同名软件存在于多个 bucket 时，按优先级选择来源）以及 GitHub 下载加速：
-
-| 文件 | 部署位置 | 作用 |
-|------|----------|------|
-| `manifest.ps1` | `D:\scoop\apps\scoop\current\lib\manifest.ps1` | Scoop 库补丁，修改下载文件时优先选择仓库的顺序 |
-| `download.ps1` | `D:\scoop\apps\scoop\current\lib\download.ps1` | Scoop 库补丁，GitHub Release 下载优先走加速镜像（aria2 与默认下载器通用） |
-| `config.json`  | `C:\Users\Administrator\.config\scoop\config.json` | Scoop 配置文件，`bucketlist` 数组控制各仓库的下载优先级顺序 |
-
-> **部署方式**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `download.ps1` 覆盖到 Scoop 的 `lib\download.ps1`，将 `config.json` 覆盖到用户配置目录即可。
-> - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
-> - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
-> - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
->   - 下载 `https://github.com/*/releases/download/` 资产时，依次探测 `aria2-mirrors` 镜像列表（**数组形式，须直接编辑 config.json 设置**——`scoop config` 命令不支持数组参数），取第一个可达镜像作为下载源；**全部不可达时自动回退官方原始 URL**。
->   - 镜像地址可写完整 URL 或裸域名（自动补 `https://`），数组顺序即优先级（快的放前面）；默认：
->     `["https://hk.gh-proxy.org", "https://gh-proxy.com", "https://gh-proxy.org"]`
->   - 对 aria2（`aria2-enabled: true`）与默认下载器（未启用 aria2 或 aria2 失败回退）两条路径均生效；**Scoop 自更新后补丁会丢失**，重新覆盖即可（原版备份在仓库 `staging/scoop-backup/`）。
-
-### 目录结构约定
-
-```
-myscoop/
-├── .github/workflows/
-│   └── auto-update.yml             ← 每晚 1 点（北京时间）自动更新第三方软件
-├── bucket/        ← 所有 manifest JSON（共 110 个）
-│   ├── cmm-plus.json               (模式1：多架构 zip 官方 release)
-│   ├── mykeymap.json                (模式2：zip 便携解压即用)
-│   ├── litemonitor.json             (模式1：portable zip 官方 release)
-│   ├── windowsclear.json            (模式2：单 exe 便携)
-│   ├── tinytask.json                (模式2：单 exe 便携)
-│   ├── 360bwtest.json               (模式2：单 exe 便携)
-│   ├── hibituninstaller.json        (模式2：单 exe 便携 自托管)
-│   ├── btsou.json                   (模式2：zip 便携 自托管)
-│   ├── floral.json                  (模式1：多架构 exe 官方 release)
-│   ├── wgestures.json               (模式4：自托管便携)
-│   ├── uninstalltool.json           (模式5：静默安装)
-│   ├── bcompare.json                (模式5：静默安装)
-│   ├── termius.json                 (模式5：NSIS 解包+asar)
-│   ├── 2345pic.json                 (模式5：已绿化)
-│   ├── apollo.json                  (模式6：单 exe 手动安装)
-│   ├── iobit.json                   (模式6：单 exe 手动安装)
-│   ├── idm.json                     (模式6：单 exe 手动安装)
-│   ├── bandizip6.json               (模式6：单 exe 手动安装)
-│   ├── sougoupy.json                (模式6：单 exe 手动安装)
-│   ├── uuyc.json                    (模式6：单 exe 手动安装)
-│   ├── pixpin.json                  (模式1：官方直链 Inno Setup)
-│   ├── sysdiag.json                 (模式6：单 exe 手动安装)
-│   ├── dotnet-desktopruntime.json   (模式6：单 exe 手动安装)
-│   ├── keycastow.json               (模式6：zip 便携+自动启动)
-│   ├── dianshishiguang.json          (模式6：单 exe 手动安装)
-│   ├── rdriveimage.json               (模式2：zip 便携解压即用)
-│   ├── winmtr.json                     (模式2：zip 便携解压即用)
-│   ├── networkfixtool.json             (模式2：单 exe 便携)
-│   ├── syshelper.json                  (模式2：单 exe 便携)
-│   ├── amcfy-music.json                 (模式1：官方 release+自动更新)
-│   ├── dropit.json                      (模式2：便携 zip 自托管)
-│   ├── gstarcad.json                    (模式5：多层 NSIS 解包自托管)
-│   ├── cutsilence.json                  (模式2：zip 便携解压即用)
-│   ├── audio-recorder.json              (模式5：Inno 解包自托管)
-│   ├── chromesetup.json                 (模式6：单 exe 手动安装)
-│   ├── wcap.json                       (模式2：zip 便携解压即用)
-│   ├── cherry.json                       (模式1：多架构 portable exe)
-│   ├── cc-haha.json                    (模式1：多架构 portable exe)
-│   ├── musictag.json                   (模式2：7z 便携解压即用)
-│   ├── miaomi.json                     (模式6：单 exe 手动安装)
-│   ├── cinetry.json                    (模式1：zip 官方 release)
-│   ├── etlp.json                       (模式1：多架构 zip 官方 release)
-│   ├── eserver.json                    (模式1：多架构 zip 官方 release)
-│   ├── fileconv.json                   (模式7：MSI 手动安装)
-│   ├── bandicam.json                   (模式2：7z 便携解压即用)
-│   ├── vp9-video-extensions.json       (模式6：Appx 手动安装)
-│   ├── webview2-runtime.json           (模式6：单 exe 手动安装)
-│   └── tokenicode.json                 (模式1：单 exe 官方 release)
-│   ├── terminal.json                       (模式1：多架构 zip 官方 release)
-│   ├── hardlinkshellext.json               (模式6：单 exe 手动安装)
-│   ├── ultraiso.json                       (模式6：单 exe 手动安装)
-│   └── edgeblock.json                      (模式2：zip 便携解压即用)
-│   ├── dingtalk-downloader.json            (模式6：单 exe 手动安装)
-│   ├── hipc.json                            (模式6：单 exe 手动安装)
-│   ├── qq.json                              (模式6：单 exe 手动安装)
-│   ├── wechat.json                          (模式6：单 exe 手动安装)
-│   └── wecom.json                           (模式6：单 exe 手动安装)
-│   ├── waifu2x-caffe.json                   (模式2：zip 便携解压即用)
-│   ├── vs-buildtools.json                 (模式6：单 exe 手动安装)
-│   ├── athena-loc.json                   (模式2：7z 便携解压即用)
-│   ├── pcmaster.json                     (模式2：zip 便携解压即用)
-│   ├── btseed.json                       (模式2：zip 便携解压即用)
-│   ├── video-captioner.json              (模式6：单 exe 手动安装)
-│   ├── hcsstudio.json                   (模式6：单 exe 手动安装)
-│   ├── cfwarp.json                      (模式7：MSI 手动安装)
-│   ├── gzh-formatter.json               (模式2：单 exe 便携)
-│   ├── wps.json                         (模式6：单 exe 手动安装)
-│   ├── msst-gui.json                   (模式1：单 exe 中文版)
-│   ├── comfyui.json                     (模式1：portable 7z 官方 release)
-│   ├── qlcad.json                      (qlplugin 自启动安装)
-│   ├── qloffice.json                   (qlplugin 自启动安装)
-│   ├── qlgit.json                      (qlplugin 自启动安装)
-│   ├── windisktool.json                 (模式1：单 exe 官方 release)
-│   ├── keyviz.json                      (模式7：MSI 手动安装)
-│   ├── getdict.json                       (模式6：单 exe 手动安装)
-│   ├── easytshark.json                    (模式2：zip 便携解压即用)
-│   ├── windowsappruntime.json             (模式6：单 exe 手动安装)
-│   ├── switchhosts.json                   (模式2：zip 便携解压即用)
-│   ├── baulk.json                         (模式1：多架构 zip 官方 release)
-├── .claude/
-│   └── skills-myscoop/
-│       ├── SKILL.md                 ← AI 自动收录技能
-│       └── progress.md              ← 项目进展
-├── myscoop-update.py                ← 免下载自动更新脚本
-├── 智能模式Scoop(3).ps1              ← Scoop 工具箱（文件名预选智能模式）：复制改名 (1)(2)(4).ps1 自动执行对应菜单
-├── cd-comfyui.bat                   ← 启动 ComfyUI（HF 镜像）
-├── cd-models.bat                    ← 切换到 llama.cpp 模型目录
-├── down-node.bat                    ← ComfyUI 插件批量安装（入口，逻辑在 down-node.py）
-├── symlink.bat                      ← 创建 .bat 到 shims 的符号链接
-├── manifest.ps1                     ← Scoop 库补丁：调整仓库下载优先级顺序
-├── config.json                      ← Scoop 配置：bucketlist 控制仓库优先级顺序
-└── README.md                        ← 此文件
-```
