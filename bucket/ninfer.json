@@ -1,10 +1,10 @@
 {
-    "version": "1.0.9",
+    "version": "1.1.0",
     "description": "NInfer - ternary inference engine (Ternary-Bonsai models, CUDA 13.3 sm_89; CLI / OpenAI-Anthropic compatible server / PPL tool)",
     "homepage": "https://github.com/w3c0929/myscoop",
     "license": "unknown",
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.9/ninfer-ternary-ada-sm89-win64-v1.0.9-protable.zip",
-    "hash": "sha256:ac64b50a4af0094bb46edfa1cfefd0e0ec56762e9eaef52d9f716e2472db352e",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.1.0/ninfer-ternary-ada-sm89-win64-v1.1.0-protable.zip",
+    "hash": "sha256:8b2ee7f581f91443a760f66d14cfa2b7b513baf12272f5b41a6386e1e343798e",
     "bin": "ninfer-serve.exe",
     "shortcuts": [
         [

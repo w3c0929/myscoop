@@ -10,7 +10,7 @@
 
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
-| 1 | [NInfer](https://github.com/w3c0929/myscoop) — 三元推理引擎（Ternary-Bonsai 模型，CUDA 13.3 sm_89，自带运行库） | `scoop install ninfer` | zip 便携（CLI + 服务端 + PPL） | 1.0.9 | 2026-09-22 | 2026-09-26 |
+| 1 | [NInfer](https://github.com/w3c0929/myscoop) — 三元推理引擎（Ternary-Bonsai 模型，CUDA 13.3 sm_89，自带运行库） | `scoop install ninfer` | zip 便携（CLI + 服务端 + PPL） | 1.1.0 | 2026-09-22 | 2026-09-27 |
 | 2 | [SwitchHosts](https://github.com/oldj/SwitchHosts) — Hosts 文件快速切换管理工具（通知内容默认留空时自动显示为 {title} {result} {message}） | `scoop install switchhosts` | zip 便携解压即用 | 5.0.1 | 2026-08-29 | 2026-09-26 |
 | 3 | [Windows App Runtime](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时（WinUI/WinAppSDK 应用依赖） | `scoop install windowsappruntime` | 单 exe 手动安装 | 2.4.0 | 2026-08-19 | 2026-08-19 |
 | 4 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 | 2026-08-14 | 2026-08-14 |
