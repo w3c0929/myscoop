@@ -131,7 +131,7 @@
 | 27 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.4 | 2026-07-03 | 2026-09-26 |
 | 28 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | 多架构 zip 官方 release | 5.5.0 | 2026-07-03 | 2026-09-26 |
 | 29 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.24.11911.0 | 2026-07-03 | 2026-09-26 |
-| 30 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 多架构 portable exe | 0.6.6 | 2026-07-02 | 2026-09-22 |
+| 30 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 多架构 portable exe | 0.6.7 | 2026-07-02 | 2026-09-22 |
 | 31 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.11 | 2026-07-01 | 2026-09-26 |
 | 32 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 | 2026-06-30 | 2026-09-26 |
 | 33 | [PixPin](https://pixpin.cn/) — 截图标注工具（官方直链，Inno Setup） | `scoop install pixpin` | Inno Setup 官方直链 | 3.5.5.1 | 2026-06-30 | 2026-09-15 |
