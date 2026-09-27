@@ -175,7 +175,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* d532b6f (HEAD -> main, origin/main, origin/HEAD) 收录 ztools 3.2.0（uTools 开源实现，高性能可扩展应用启动器与插件平台，zip 官方 release）；README/progress 同步 121 款
+* 71468bd (HEAD -> main, origin/main, origin/HEAD) NInfer 升级 1.0.9→1.1.0：删除远程 v1.0.9 release，发布 v1.1.0（ninfer-ternary-ada-sm89-win64-v1.1.0-protable.zip，digest 与清单一致 8b2ee7f5）；README 版本列同步
+* b961508 progress.md 更新提交历史
+* d532b6f 收录 ztools 3.2.0（uTools 开源实现，高性能可扩展应用启动器与插件平台，zip 官方 release）；README/progress 同步 121 款
 * d58fd1a progress.md 更新提交历史
 * 87a711d README 软件表按创建时间倒序重排（最新收录在前）并重新编号（本地维护 87 / 第三方 33，时间列同步保留）
 * 2f87094 progress.md 更新提交历史
