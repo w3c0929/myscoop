@@ -185,6 +185,14 @@ scoop uninstall cmm-plus
 
 仓库的 `智能模式Scoop(3).ps1`（Scoop 工具箱智能模式版）支持**文件名预选**：复制脚本并改名，文件名末尾括号中的数字（1-4）即对应当执行的菜单项，双击即可**自动执行、完成后自动退出**，无需手动点选。
 
+> **⚠️ 首次运行前（必做）**：Windows 默认禁运本地脚本，第一次双击运行 `智能模式Scoop(3).ps1` 前，先打开 PowerShell 执行下面这条命令——**允许运行本地脚本，远程脚本需签名**：
+>
+> ```powershell
+> Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+>
+> 执行后即可正常双击运行脚本；提示输入 Y 确认即可。
+
 | 文件名 | 自动执行行为 |
 |--------|-------------|
 | `智能模式Scoop.ps1`（无括号） | 打开菜单手动选择；任务完成后停留等待按键 |
@@ -247,7 +255,13 @@ scoop uninstall cmm-plus
 | `download.ps1` | `D:\scoop\apps\scoop\current\lib\download.ps1` | Scoop 库补丁，GitHub Release 下载优先走加速镜像（aria2 与默认下载器通用） |
 | `config.json`  | `C:\Users\Administrator\.config\scoop\config.json` | Scoop 配置文件，`bucketlist` 数组控制各仓库的下载优先级顺序 |
 
-> **部署方式**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `download.ps1` 覆盖到 Scoop 的 `lib\download.ps1`，将 `config.json` 覆盖到用户配置目录即可。
+> **⚠️ 需要覆盖的文件（部署清单）**：从仓库复制以下 3 个文件，**覆盖**到对应位置（覆盖前建议先备份原文件）：
+>
+> 1. `manifest.ps1` → 覆盖到 **`D:\scoop\apps\scoop\current\lib\manifest.ps1`**
+> 2. `download.ps1` → 覆盖到 **`D:\scoop\apps\scoop\current\lib\download.ps1`**
+> 3. `config.json` → 覆盖到 **`C:\Users\Administrator\.config\scoop\config.json`**
+
+> **部署方式**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `download.ps1` 覆盖到 Scoop 的 `lib\download.ps1`，将 `config.json` 覆盖到上述 `.config\scoop\` 目录即可。
 > - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
 > - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
 > - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
@@ -352,10 +366,24 @@ myscoop/
 ├── cd-models.bat                    ← 切换到 llama.cpp 模型目录
 ├── down-node.bat                    ← ComfyUI 插件批量安装（入口，逻辑在 down-node.py）
 ├── symlink.bat                      ← 创建 .bat 到 shims 的符号链接
+├── 添加gitbash右键菜单.reg           ← 右键菜单添加 "Git Bash Here" 入口
+├── win11右键菜单转win10菜单.bat      ← Win11/Win10 右键菜单模式切换工具
 ├── manifest.ps1                     ← Scoop 库补丁：调整仓库下载优先级顺序
 ├── config.json                      ← Scoop 配置：bucketlist 控制仓库优先级顺序
 └── README.md                        ← 此文件
 ```
+
+---
+
+## 右键菜单工具（可选）
+
+仓库根目录附带两个右键菜单小工具，与本仓库 Scoop 功能无关，按需取用：
+
+| 文件 | 作用 | 使用方法 |
+|------|------|----------|
+| `添加gitbash右键菜单.reg` | 给文件夹空白处、文件夹图标、文件右键菜单添加 **Git Bash Here** 入口（路径按本机 scoop 版 Git 配置，`D:\scoop\apps\git\current\git-bash.exe`） | 双击运行，确认导入注册表即可；重启资源管理器后生效 |
+| `win11右键菜单转win10菜单.bat` | **Win11 右键菜单切换工具**：1 = 转 Win10 经典右键菜单；2 = 恢复 Win11 默认菜单；0 = 退出 | 双击运行，按提示输入数字，自动重启资源管理器生效 |
+
 ---
 
 ## 收录策略：第三方资产按架构分组择优

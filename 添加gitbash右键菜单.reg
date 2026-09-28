@@ -1,0 +1,25 @@
+Windows Registry Editor Version 5.00
+
+# 1. 文件夹空白处右键（桌面/文件夹空白区域）
+[HKEY_CLASSES_ROOT\Directory\Background\shell\GitBash Here]
+@="Git Bash Here"
+"Icon"="D:\\scoop\\apps\\git\\current\\git-bash.exe"
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\GitBash Here\command]
+@="\"D:\\scoop\\apps\\git\\current\\git-bash.exe\" --cd=\"%V\""
+
+# 2. 直接右键文件夹图标时显示菜单
+[HKEY_CLASSES_ROOT\Directory\shell\GitBash Here]
+@="Git Bash Here"
+"Icon"="D:\\scoop\\apps\\git\\current\\git-bash.exe"
+
+[HKEY_CLASSES_ROOT\Directory\shell\GitBash Here\command]
+@="\"D:\\scoop\\apps\\git\\current\\git-bash.exe\" --cd=\"%V\""
+
+# 3. 文件右键也支持（可选，按需保留）
+[HKEY_CLASSES_ROOT\*\shell\GitBash Here]
+@="Git Bash Here"
+"Icon"="D:\\scoop\\apps\\git\\current\\git-bash.exe"
+
+[HKEY_CLASSES_ROOT\*\shell\GitBash Here\command]
+@="\"D:\\scoop\\apps\\git\\current\\git-bash.exe\" --cd=\"%W\""
