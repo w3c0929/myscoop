@@ -542,4 +542,4 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
 17. **用户给出仓库链接时必须用脚本操作**：用户要求收录并提供 GitHub/Gitee **仓库链接**时（如 `https://github.com/NanmiCoder/cc-haha.git`、`https://gitee.com/fasterthanlight/automatic_clicker_2.git`，或 `https://github.com/owner/repo --name reponame` 指定应用名），**必须**使用 `python3 myscoop-update.py --add <链接> [--name 应用名]` 完成操作，**不得**绕过脚本手动 curl 查询 + 手写 manifest。脚本自动完成仓库信息获取、Windows 资产打分排序、架构检测、manifest 生成与 autoupdate 模板，产物为 `bucket/{应用名}.json`；仅当链接是**直接下载链接/网页链接**（非仓库链接）时才走手动流程。
     - **`--add` 增强参数**：
       - `--more`：主程序 + cudart 运行时配对合并收录（同架构同 CUDA 版本成对生成 url/hash 数组，Scoop 解压合并到同一目录；同架构多 CUDA 版本取最高，如 13.3 > 12.4）
-      - `--dl`：生成 json 后直接下载选中资产自动探测补全——zip/7z 列 exe 交互选主程序（`--select 编号|exe名` 免交互）；portable.exe 7z 解包探测内部主程序并自动补 pre_install；多架构自动下载 64bit 主架构；不带此参数时行为与旧版完全一致
+      - `--dl`：生成 json 后**必须下载**（清空 API digest 强制实测下载重算 hash）自动探测补全——zip/7z 列 exe 交互选主程序（`--select 编号|exe名` 免交互）；exe（portable/setup 统一）Inno/NSIS 解包探测内部主程序并自动补 pre_install；msi 实测下载回填 hash；多架构自动下载 64bit 主架构；不带此参数时行为与旧版完全一致

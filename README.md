@@ -874,9 +874,10 @@ myscoop-update --add <github-url> # 粘贴链接添加新软件
 # --add 增强（仓库模式）：
 #   --more  主程序 + cudart 运行时配对合并收录（如同仓库拆分发 CUDA 主程序与运行库两个 zip，
 #            自动配对生成 url/hash 数组，Scoop 解压合并；同架构多 CUDA 版本取最高）
-#   --dl    生成 json 后直接下载选中资产并自动探测补全 bin/shortcuts/extract_dir：
-#           zip/7z → 列 exe 交互选主程序（--select 编号|exe名 免交互）；portable.exe →
-#           7z 解包探测内部主程序并自动加 pre_install；多架构自动下载 64bit 主架构
+#   --dl    生成 json 后必须下载探测：清空 API digest 强制实测下载重算 hash，自动补全
+#           bin/shortcuts/extract_dir——zip/7z 列 exe 交互选主程序（--select 编号|exe名 免交互）；
+#           exe（portable/setup 统一）Inno/NSIS 解包探测内部主程序并自动加 pre_install；
+#           msi 实测下载回填 hash；多架构自动下载 64bit 主架构
 #   示例：
 #   myscoop-update --add https://github.com/PrismML-Eng/llama.cpp.git --more
 #   myscoop-update --add https://github.com/CherryHQ/cherry-studio.git --name cherry --dl

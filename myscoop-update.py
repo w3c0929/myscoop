@@ -80,9 +80,11 @@ myscoop 管理脚本
   #     同架构、同 CUDA 版本的主程序 zip 与 cudart zip 成对生成 url/hash 数组
   #     （Scoop 依次解压合并到同一目录，等效 cudart 内容复制进主程序目录）；
   #     同架构多 CUDA 版本配对取最高（13.3 优先于 12.4）；无配对时回退常规流程
-  #     --dl 生成 json 后直接下载选中资产（zip/7z）自动探测补全 bin/shortcuts/extract_dir
-  #     （复用 --fill-bin 引擎：含扁平化 pre_install 判定；多架构自动下载 64bit 主架构；
-  #      zip 内多 exe 交互选择，--select 编号|exe名 免交互；压缩包留 staging/.dl_cache/ 复用）
+  #     --dl 生成 json 后必须下载探测：清空 API digest 强制实测下载重算 hash，自动补全
+  #     bin/shortcuts/extract_dir —— zip/7z 复用 --fill-bin 引擎（列 exe 交互选择，
+  #     --select 编号|exe名 免交互，含扁平化 pre_install 判定）；exe（portable/setup 统一）
+  #     Inno/NSIS 检测 + 解包探测内部主程序并补 pre_install；msi 实测下载回填 hash；
+  #     多架构自动下载 64bit 主架构；压缩包留 staging/.dl_cache/ 复用
   python3 myscoop-update.py --add https://github.com/PrismML-Eng/llama.cpp.git --more
   python3 myscoop-update.py --add https://github.com/CherryHQ/cherry-studio.git --name cherry --dl
 
@@ -908,18 +910,25 @@ def add_manifest(repo_url, app_name=None, more=False):
     print(f"  5. 安装测试: scoop install {app_name}")
     print(f"  6. git add . && git commit -m '添加 {app_name}' && git push")
 
-    # --dl：生成后直接下载探测，自动补全 bin/shortcuts/extract_dir（复用 --fill-bin 引擎）
-    # zip/7z → fill-bin 引擎（列 exe 选主程序）；
-    # portable.exe（自解压包）→ finalize 引擎：Inno/NSIS 检测 + 7z 解包探测内部主程序 + pre_install
+    # --dl：生成后必须下载探测，自动补全 bin/shortcuts/extract_dir（复用 --fill-bin 引擎）。
+    # 铁律：--dl 就是必须下载——清空既有 hash（GitHub API digest）强制实测下载重算；
+    #  zip/7z → fill-bin 引擎（列 exe 选主程序）；
+    #  exe（portable/setup 统一）→ finalize 引擎：Inno/NSIS 检测 + 解包探测内部主程序 + pre_install；
+    #  msi → 实测下载回填 hash（安装行为由 MSI 分支 pre/post_install 承担）
     if "--dl" in sys.argv[1:]:
         if best_name.endswith((".zip", ".7z")):
             print("\n[--dl] 生成完毕，开始下载探测补全（zip 结构 → bin/shortcuts/extract_dir）…")
             fill_bin_manifest(manifest_path, BUCKET_DIR, app_name, select=arg_value("--select"))
-        elif best_name.lower().endswith(".exe") and "portable" in best_name.lower():
-            print("\n[--dl] portable exe：下载并解包探测（Inno/NSIS 检测 → 自动补 pre_install 与内部主程序）…")
+        else:
             saved_bin, saved_sc = manifest.get("bin"), manifest.get("shortcuts")
-            manifest.pop("bin", None)   # 强制探测解包后的内部主程序（portable 自解压包）
+            # 强制实测下载：清空 API digest，finalize 将真实下载并在探测后回填实测 hash
+            manifest.pop("bin", None)
             manifest.pop("shortcuts", None)
+            manifest.pop("hash", None)
+            for _blk in (manifest.get("architecture") or {}).values():
+                if isinstance(_blk, dict):
+                    _blk.pop("hash", None)
+            print("\n[--dl] 强制下载并探测（Inno/NSIS 检测 → 内部主程序 bin/shortcuts + pre_install，hash 实测）…")
             try:
                 finalize_direct_manifest(manifest, BUCKET_DIR, app_name)
             finally:
@@ -930,8 +939,6 @@ def add_manifest(repo_url, app_name=None, more=False):
                     with open(manifest_path_str, "w", encoding="utf-8") as f:
                         json.dump(manifest, f, indent=4, ensure_ascii=False)
                         f.write("\n")
-        else:
-            print("\n[--dl] 最佳资产非 zip/7z/portable-exe（普通 setup/msi 分支已自动处理 bin），跳过下载探测")
 
     return manifest_path_str
 

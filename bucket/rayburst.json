@@ -1,0 +1,40 @@
+{
+    "version": "4.0.0",
+    "description": "Redefining the open-source download manager",
+    "homepage": "https://rayburst.pages.dev",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/AnInsomniacy/rayburst"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/AnInsomniacy/rayburst/releases/download/v4.0.0/Rayburst_4.0.0_x64-setup.exe",
+            "hash": "sha256:6025330aa6e36b65af9c71930a3a341feeeff621e9364bc6c69046627f787352"
+        },
+        "arm64": {
+            "url": "https://github.com/AnInsomniacy/rayburst/releases/download/v4.0.0/Rayburst_4.0.0_arm64-setup.exe"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/AnInsomniacy/rayburst/releases/download/v$version/Rayburst_$version_x64-setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/AnInsomniacy/rayburst/releases/download/v$version/Rayburst_$version_arm64-setup.exe"
+            }
+        }
+    },
+    "bin": "rayburst.exe",
+    "shortcuts": [
+        [
+            "rayburst.exe",
+            "rayburst"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ]
+}
