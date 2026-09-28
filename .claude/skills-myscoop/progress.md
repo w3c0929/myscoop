@@ -175,8 +175,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* dbd0cb1 (HEAD -> main) 自动更新第三方软件
-* 43badea (origin/main) progress.md 更新提交历史
+* 839b02f (HEAD -> main, origin/main, origin/HEAD) README 新增：首次运行执行策略命令（Set-ExecutionPolicy RemoteSigned）、部署覆盖文件清单强调（config.json 目标修正为 C:\Users\Administrator\.config\scoop）；收录右键菜单工具两个（Git Bash Here .reg、Win11/Win10 右键菜单切换 .bat）
+* b22194d progress.md 更新提交历史
+* dbd0cb1 自动更新第三方软件
+* 43badea progress.md 更新提交历史
 * 71468bd NInfer 升级 1.0.9→1.1.0：删除远程 v1.0.9 release，发布 v1.1.0（ninfer-ternary-ada-sm89-win64-v1.1.0-protable.zip，digest 与清单一致 8b2ee7f5）；README 版本列同步
 * b961508 (tag: v1.1.0) progress.md 更新提交历史
 * d532b6f 收录 ztools 3.2.0（uTools 开源实现，高性能可扩展应用启动器与插件平台，zip 官方 release）；README/progress 同步 121 款
@@ -213,7 +215,7 @@ scoop cat myscoop/appname
 * f40c49d progress.md 更新提交历史
 * 9965e9e 自动更新第三方软件
 * 395189b 收录 ninfer 1.0.8 三元推理引擎便携版（自托管 Release v1.0.8，CLI+服务端+PPL，内置 CUDA/ffmpeg 运行库）
-* 69f26a0 progress.md 更新提交历史
+* 69f26a0 (tag: v1.0.8) progress.md 更新提交历史
 * 90df043 自动更新第三方软件
 * 2e2fbc3 修正更新分类注释
 * ad0e150 myscoop-update.py下载支持镜像加速
@@ -437,7 +439,7 @@ scoop cat myscoop/appname
 * 4aab0db Sublime Text 改版本化安装：合并 4200/4207 为单 manifest 模板 URL
 * 3324af9 progress.md 更新提交历史
 * 3e4f71a 收录 Sublime Text 4207 便携版：与 4200 并存安装
-* 2f3deec progress.md 更新提交历史
+* 2f3deec (tag: vSublimeText4207) progress.md 更新提交历史
 * b851a91 移除桌面整理工具 DeskBox：删除 manifest、Release 及文档引用
 * 239a4cf progress.md 更新提交历史
 * ff87361 DropIt 更新：重新上传重新编译的 x64 便携包
@@ -458,7 +460,7 @@ scoop cat myscoop/appname
 * af59e99 progress.md 更新提交历史
 * d05e530 progress.md 更新提交历史
 * acb1175 收录 DeskBox 1.4.2 桌面整理工具（单 exe 手动安装）
-* 9271550 progress.md 更新提交历史
+* 9271550 (tag: v1.4.2) progress.md 更新提交历史
 * 3064a64 progress.md 更新提交历史
 * 8dfbe5e DropIt 更新：再次重新上传修改源码后的便携包
 * ebaaa5c progress.md 更新提交历史
@@ -566,7 +568,7 @@ scoop cat myscoop/appname
 * 831da2a (tag: v147.0.7703.0, tag: v1.0-wcap) 添加项目进展文档 progress.md
 * 59cbd85 添加 StudioOne/VAM/BeatEdit/MdxBuilder/DisableGamebar 五个软件
 * 0e4c8c6 (tag: vVAM1.22, tag: vStudioOne7.1, tag: vMdxBuilder, tag: vDisableGamebar, tag: vBeatEdit2.1) 更新 Sublime Text 4200：重新打包，更新 hash
-* 40d4511 添加 6 个软件：GoldenDict/PointerStick/SublimeText/EpicPen/Tickeys/Anytxt
+* 40d4511 (tag: vSublimeText4200) 添加 6 个软件：GoldenDict/PointerStick/SublimeText/EpicPen/Tickeys/Anytxt
 * 8b35ecf (tag: vTickeys1.2.0, tag: vPointerStick, tag: vGoldenDict, tag: vEpicPen3.7.31, tag: vAnytxt1.3.1952) 添加 14 个单 exe 手动安装：网络工具/办公效率/系统工具/装机必备等
 * ca4bae0 (tag: vWujin, tag: vWinHex, tag: vSystemCleaner, tag: vSogouWubi, tag: vRobocopyGUI1.3, tag: vPDFMergeSplit, tag: vPDF24Converter, tag: vNumpadPractice, tag: vGoogleTranslateChecker, tag: vGIFTool, tag: vFolderEncrypt, tag: vDnsTools1.2.3) 添加 heu-kms/vba-runtime/driver-genius/360-driver-master/bootice 五个单 exe 手动安装
 * b4f66a9 (tag: vVBA7.0.1590, tag: vDriverGenius9.70, tag: vBOOTICE1.3.4, tag: v42.3.0, tag: v360DriverMaster2.0) 重构 README 软件表：分为本地维护和第三方官方两个分类，添加序号
