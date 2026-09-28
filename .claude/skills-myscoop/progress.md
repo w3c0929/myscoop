@@ -175,7 +175,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* a77a709 (HEAD -> main, origin/main, origin/HEAD) symlink.bat 打印过程对齐目录链接.bat 写法（分节标题/逐项处理/[成功][失败] 统一口径）；编码改为 GBK+CRLF（本机 conhost 936 下 UTF-8 bat 必乱码，实测 GBK+CRLF 中文正常），去除 chcp 65001；沙箱实测三个部署链接与 shims 链接全部成功创建
+* 60260ab (HEAD -> main, origin/main, origin/HEAD) README 新增 symlink.bat 一键链接部署用法说明：使用步骤（管理员运行/打印过程/验证）、日常维护（git pull 即生效/Scoop 自更新后重跑）、还原官方原版方法及 GBK 编码说明
+* 5fc8841 progress.md 更新提交历史
+* a77a709 symlink.bat 打印过程对齐目录链接.bat 写法（分节标题/逐项处理/[成功][失败] 统一口径）；编码改为 GBK+CRLF（本机 conhost 936 下 UTF-8 bat 必乱码，实测 GBK+CRLF 中文正常），去除 chcp 65001；沙箱实测三个部署链接与 shims 链接全部成功创建
 * 4884826 progress.md 更新提交历史
 * be7b9bf symlink.bat 升级为一键链接部署：管理员校验 + 三个部署文件（manifest/download/config）mklink 软链接替代覆盖（参考目录链接.bat 写法）+ 保留 .bat 链接到 shims；README 部署章节新增方式二（链接部署，推荐）
 * d0e0fed progress.md 更新提交历史
