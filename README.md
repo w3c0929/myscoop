@@ -219,6 +219,15 @@ scoop uninstall cmm-plus
 - 仓库自带示例 `智能模式Scoop(3).ps1`（导出备份的智能模式版），可直接复制改名复用。
 
 ---
+
+## Git 安全目录设置（安装 Git 后必做）
+
+> **⚠️ 必做**：安装完 Git 后，**提前把 buckets 全局加入 Git 安全目录**，永久杜绝"可疑所有权"（dubious ownership）报错：
+
+```powershell
+git config --global --add safe.directory D:/scoop/buckets/*
+```
+
 ---
 
 ## Scoop 辅助文件（本机部署）
@@ -282,6 +291,32 @@ scoop uninstall cmm-plus
 |------|------|----------|
 | `添加gitbash右键菜单.reg` | 给文件夹空白处、文件夹图标、文件右键菜单添加 **Git Bash Here** 入口（路径按本机 scoop 版 Git 配置，`D:\scoop\apps\git\current\git-bash.exe`） | 双击运行，确认导入注册表即可；重启资源管理器后生效 |
 | `win11右键菜单转win10菜单.bat` | **Win11 右键菜单切换工具**：1 = 转 Win10 经典右键菜单；2 = 恢复 Win11 默认菜单；0 = 退出 | 双击运行，按提示输入数字，自动重启资源管理器生效 |
+---
+
+## choco 与 Windows Terminal 安装（可选）
+
+以下为按需选装的终端环境工具，与 Scoop 功能无关，需要时取用：
+
+### 安装 choco（包管理器）
+
+方法一：cmd
+
+```powershell
+@powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
+```
+
+方法二：powershell
+
+```powershell
+iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+```
+
+### 安装 Windows Terminal（终端）
+
+```powershell
+winget install --id Microsoft.WindowsTerminal -e --source winget --accept-source-agreements --accept-package-agreements
+```
+
 ---
 
 ## 附录：Manifest 字段速查
