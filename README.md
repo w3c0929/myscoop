@@ -247,7 +247,7 @@ scoop uninstall cmm-plus
 
 ## Scoop 辅助文件（本机部署）
 
-仓库根目录提供两个供使用者部署到**本机 Scoop 安装**的辅助文件，用于调整仓库下载优先级（同名软件存在于多个 bucket 时，按优先级选择来源）以及 GitHub 下载加速：
+仓库根目录提供供使用者部署到**本机 Scoop 安装**的辅助文件，用于调整仓库下载优先级（同名软件存在于多个 bucket 时，按优先级选择来源）以及 GitHub 下载加速。部署有**覆盖**与**链接**两种方式，任选其一：
 
 | 文件 | 部署位置 | 作用 |
 |------|----------|------|
@@ -261,14 +261,19 @@ scoop uninstall cmm-plus
 > 2. `download.ps1` → 覆盖到 **`D:\scoop\apps\scoop\current\lib\download.ps1`**
 > 3. `config.json` → 覆盖到 **`C:\Users\Administrator\.config\scoop\config.json`**
 
-> **部署方式**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `download.ps1` 覆盖到 Scoop 的 `lib\download.ps1`，将 `config.json` 覆盖到上述 `.config\scoop\` 目录即可。
+> **部署方式一（覆盖）**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `download.ps1` 覆盖到 Scoop 的 `lib\download.ps1`，将 `config.json` 覆盖到上述 `.config\scoop\` 目录即可。
+>
+> **部署方式二（链接，推荐）**：运行仓库根目录的 `symlink.bat`（**需管理员权限**），脚本会自动把上述 3 个文件以 **mklink 软链接**方式部署到目标位置（参考 `E:\09.同步\目录链接.bat` 的写法），目标位置原有的旧文件会被删除后重建链接：
+> - 链接指向仓库源文件，**`git pull` 更新仓库后立即生效，无需再手动覆盖**；
+> - Scoop 自更新会重建 `current` 目录导致链接失效——届时**重新运行一次 `symlink.bat` 即可**（比重新覆盖快，也是一键完成）；
+> - 脚本顺带执行原有功能：把仓库根目录所有 `*.bat` 链接到 `D:\scoop\shims` 供全局命令使用。
 > - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
 > - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
 > - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
 >   - 下载 `https://github.com/*/releases/download/` 资产时，依次探测 `aria2-mirrors` 镜像列表（**数组形式，须直接编辑 config.json 设置**——`scoop config` 命令不支持数组参数），取第一个可达镜像作为下载源；**全部不可达时自动回退官方原始 URL**。
 >   - 镜像地址可写完整 URL 或裸域名（自动补 `https://`），数组顺序即优先级（快的放前面）；默认：
 >     `["https://hk.gh-proxy.org", "https://gh-proxy.com", "https://gh-proxy.org"]`
->   - 对 aria2（`aria2-enabled: true`）与默认下载器（未启用 aria2 或 aria2 失败回退）两条路径均生效；**Scoop 自更新后补丁会丢失**，重新覆盖即可（原版备份在仓库 `staging/scoop-backup/`）。
+>   - 对 aria2（`aria2-enabled: true`）与默认下载器（未启用 aria2 或 aria2 失败回退）两条路径均生效；**Scoop 自更新后补丁会丢失**（链接也会失效），**重新覆盖或重新运行 `symlink.bat`** 即可（原版备份在仓库 `staging/scoop-backup/`）。
 
 ### 目录结构约定
 
@@ -365,7 +370,7 @@ myscoop/
 ├── cd-comfyui.bat                   ← 启动 ComfyUI（HF 镜像）
 ├── cd-models.bat                    ← 切换到 llama.cpp 模型目录
 ├── down-node.bat                    ← ComfyUI 插件批量安装（入口，逻辑在 down-node.py）
-├── symlink.bat                      ← 创建 .bat 到 shims 的符号链接
+├── symlink.bat                      ← 一键链接部署：manifest/download/config 软链接 + 仓库 .bat 链接到 shims
 ├── 添加gitbash右键菜单.reg           ← 右键菜单添加 "Git Bash Here" 入口
 ├── win11右键菜单转win10菜单.bat      ← Win11/Win10 右键菜单模式切换工具
 ├── manifest.ps1                     ← Scoop 库补丁：调整仓库下载优先级顺序
