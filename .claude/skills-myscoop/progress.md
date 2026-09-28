@@ -175,7 +175,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 609e0bb (HEAD -> main, origin/main, origin/HEAD) README 章节重排：附录（Manifest 字段速查）移至目录结构约定上方；右键菜单工具（可选）移至 Scoop 辅助文件下方；目录结构约定升级为独立章节（##）
+* d68ac20 (HEAD -> main, origin/main, origin/HEAD) README 新增两章：①辅助文件上方新增「Git 安全目录设置（安装 Git 后必做）」——safe.directory 加入 buckets 全局永久杜绝可疑所有权；②右键菜单下方新增「choco 与 Windows Terminal 安装（可选）」——cmd/PowerShell 双方法装 choco + winget 装 Windows Terminal；顺带修复重排遗留的双 --- 分隔行
+* fca36c9 progress.md 更新提交历史
+* 609e0bb README 章节重排：附录（Manifest 字段速查）移至目录结构约定上方；右键菜单工具（可选）移至 Scoop 辅助文件下方；目录结构约定升级为独立章节（##）
 * 6a6fc8a progress.md 更新提交历史
 * 60260ab README 新增 symlink.bat 一键链接部署用法说明：使用步骤（管理员运行/打印过程/验证）、日常维护（git pull 即生效/Scoop 自更新后重跑）、还原官方原版方法及 GBK 编码说明
 * 5fc8841 progress.md 更新提交历史
