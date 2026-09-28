@@ -219,30 +219,6 @@ scoop uninstall cmm-plus
 - 仓库自带示例 `智能模式Scoop(3).ps1`（导出备份的智能模式版），可直接复制改名复用。
 
 ---
-
-## 附录：Manifest 字段速查
-
-| 字段            | 必须 | 说明                                                               |
-| --------------- | ---- | ------------------------------------------------------------------ |
-| `version`       | 是   | 软件版本号，与 release tag 一致（去掉 v）                          |
-| `description`   | 是   | 一句话描述，建议用英文以保持通用性                                 |
-| `homepage`      | 是   | 项目主页 URL                                                       |
-| `license`       | 是   | SPDX 标识符（MIT/GPL-3.0/Apache-2.0 等）或带 url 的对象            |
-| `url`           | 是   | 下载地址（单架构时放顶层）                                         |
-| `hash`          | 是   | SHA256 校验值，格式 `sha256:xxxx`                                  |
-| `architecture`  | 否   | 多架构配置，包含 64bit/32bit/arm64 子对象，替代顶层 url/hash       |
-| `bin`           | 否   | 暴露到 PATH 的可执行文件，字符串或数组                             |
-| `shortcuts`     | 否   | 开始菜单快捷方式，格式 `[["exe", "显示名称"]]`                    |
-| `extract_dir`   | 否   | zip 内的子目录名（有顶层目录时设）                                 |
-| `depends`       | 否   | 依赖的其他 scoop 包                                                |
-| `checkver`      | 否   | 版本检测规则，常用 `"github": "url"`                               |
-| `autoupdate`    | 否   | 自动更新 URL 模板，配合 checkver 使用                              |
-| `pre_install`   | 否   | 安装前执行的 PowerShell 命令                                       |
-| `post_install`  | 否   | 安装后执行的 PowerShell 命令，`$dir` 代表安装目录                  |
-| `pre_uninstall` | 否   | 卸载前执行的 PowerShell 命令                                       |
-| `persist`       | 否   | 持久化文件/目录（升级时保留），如 `"config.ini"` 或 `["data"]`    |
-| `notes`         | 否   | 安装后给用户的提示信息                                             |
-
 ---
 
 ## Scoop 辅助文件（本机部署）
@@ -296,8 +272,43 @@ scoop uninstall cmm-plus
 - **还原为官方原版**：删除目标位置的链接文件，再 `scoop update scoop` 让 Scoop 恢复官方文件；或改用上文"部署方式一（覆盖）"。
 
 > 注：`symlink.bat` 为 GBK 编码（本机系统代码页 936/conhost），在中文 Windows 控制台显示正常；若在 UTF-8 控制台（如 Windows Terminal 默认）下运行时打印乱码，属正常现象，不影响链接功能。
+---
 
-### 目录结构约定
+## 右键菜单工具（可选）
+
+仓库根目录附带两个右键菜单小工具，与本仓库 Scoop 功能无关，按需取用：
+
+| 文件 | 作用 | 使用方法 |
+|------|------|----------|
+| `添加gitbash右键菜单.reg` | 给文件夹空白处、文件夹图标、文件右键菜单添加 **Git Bash Here** 入口（路径按本机 scoop 版 Git 配置，`D:\scoop\apps\git\current\git-bash.exe`） | 双击运行，确认导入注册表即可；重启资源管理器后生效 |
+| `win11右键菜单转win10菜单.bat` | **Win11 右键菜单切换工具**：1 = 转 Win10 经典右键菜单；2 = 恢复 Win11 默认菜单；0 = 退出 | 双击运行，按提示输入数字，自动重启资源管理器生效 |
+---
+
+## 附录：Manifest 字段速查
+
+| 字段            | 必须 | 说明                                                               |
+| --------------- | ---- | ------------------------------------------------------------------ |
+| `version`       | 是   | 软件版本号，与 release tag 一致（去掉 v）                          |
+| `description`   | 是   | 一句话描述，建议用英文以保持通用性                                 |
+| `homepage`      | 是   | 项目主页 URL                                                       |
+| `license`       | 是   | SPDX 标识符（MIT/GPL-3.0/Apache-2.0 等）或带 url 的对象            |
+| `url`           | 是   | 下载地址（单架构时放顶层）                                         |
+| `hash`          | 是   | SHA256 校验值，格式 `sha256:xxxx`                                  |
+| `architecture`  | 否   | 多架构配置，包含 64bit/32bit/arm64 子对象，替代顶层 url/hash       |
+| `bin`           | 否   | 暴露到 PATH 的可执行文件，字符串或数组                             |
+| `shortcuts`     | 否   | 开始菜单快捷方式，格式 `[["exe", "显示名称"]]`                    |
+| `extract_dir`   | 否   | zip 内的子目录名（有顶层目录时设）                                 |
+| `depends`       | 否   | 依赖的其他 scoop 包                                                |
+| `checkver`      | 否   | 版本检测规则，常用 `"github": "url"`                               |
+| `autoupdate`    | 否   | 自动更新 URL 模板，配合 checkver 使用                              |
+| `pre_install`   | 否   | 安装前执行的 PowerShell 命令                                       |
+| `post_install`  | 否   | 安装后执行的 PowerShell 命令，`$dir` 代表安装目录                  |
+| `pre_uninstall` | 否   | 卸载前执行的 PowerShell 命令                                       |
+| `persist`       | 否   | 持久化文件/目录（升级时保留），如 `"config.ini"` 或 `["data"]`    |
+| `notes`         | 否   | 安装后给用户的提示信息                                             |
+---
+
+## 目录结构约定
 
 ```
 myscoop/
@@ -399,18 +410,6 @@ myscoop/
 ├── config.json                      ← Scoop 配置：bucketlist 控制仓库优先级顺序
 └── README.md                        ← 此文件
 ```
-
----
-
-## 右键菜单工具（可选）
-
-仓库根目录附带两个右键菜单小工具，与本仓库 Scoop 功能无关，按需取用：
-
-| 文件 | 作用 | 使用方法 |
-|------|------|----------|
-| `添加gitbash右键菜单.reg` | 给文件夹空白处、文件夹图标、文件右键菜单添加 **Git Bash Here** 入口（路径按本机 scoop 版 Git 配置，`D:\scoop\apps\git\current\git-bash.exe`） | 双击运行，确认导入注册表即可；重启资源管理器后生效 |
-| `win11右键菜单转win10菜单.bat` | **Win11 右键菜单切换工具**：1 = 转 Win10 经典右键菜单；2 = 恢复 Win11 默认菜单；0 = 退出 | 双击运行，按提示输入数字，自动重启资源管理器生效 |
-
 ---
 
 ## 收录策略：第三方资产按架构分组择优
@@ -1028,4 +1027,3 @@ curl -s "https://sourceforge.net/projects/<项目>/files/" | grep -i portable
 示例：DropIt 8.5.1 — 从 `choco info dropit.portable` 追踪到 SourceForge portable zip，最终自托管到 GitHub。
 
 ---
-
