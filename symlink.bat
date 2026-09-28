@@ -1,22 +1,22 @@
 @echo off
-chcp 65001 >nul
 setlocal enabledelayedexpansion
 
-:: æ£€æŸ¥ç®¡ç†å‘˜æƒé™ï¼ˆmklink éœ€è¦ï¼‰
+:: ¼ì²é¹ÜÀíÔ±È¨ÏŞ£¨mklink ĞèÒª£©
 net session >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [é”™è¯¯] è¯·ä»¥ç®¡ç†å‘˜èº«ä»½è¿è¡Œæ­¤è„šæœ¬ï¼
-    echo å³é”®è¯¥ bat æ–‡ä»¶ - "ä»¥ç®¡ç†å‘˜èº«ä»½è¿è¡Œ"
+    echo [´íÎó] ÇëÒÔ¹ÜÀíÔ±Éí·İÔËĞĞ´Ë½Å±¾£¡
+    echo ÓÒ¼ü¸Ã bat ÎÄ¼ş - "ÒÔ¹ÜÀíÔ±Éí·İÔËĞĞ"
     pause
     exit /b 1
 )
 
 :: ==============================================
-:: ç¬¬ä¸€éƒ¨åˆ†ï¼šScoop éƒ¨ç½²æ–‡ä»¶è½¯é“¾æ¥ï¼ˆé“¾æ¥æ–¹å¼æ›¿ä»£è¦†ç›–ï¼‰
-:: æ ¼å¼ï¼š"ç›®æ ‡æ–‡ä»¶è·¯å¾„|ä»“åº“çœŸå®æºæ–‡ä»¶è·¯å¾„"
+:: µÚÒ»²¿·Ö£ºScoop ²¿ÊğÎÄ¼şÈíÁ´½Ó£¨Á´½Ó·½Ê½Ìæ´ú¸²¸Ç£©
+:: ¸ñÊ½£º"Ä¿±êÎÄ¼şÂ·¾¶|²Ö¿âÕæÊµÔ´ÎÄ¼şÂ·¾¶"
 :: ==============================================
+echo.
 echo ==============================================
-echo ã€1/2ã€‘Scoop éƒ¨ç½²æ–‡ä»¶è½¯é“¾æ¥ï¼ˆmanifest/download/configï¼‰
+echo ¡¾1/2¡¿Scoop ²¿ÊğÎÄ¼şÈíÁ´½Ó£¨manifest/download/config£©
 echo ==============================================
 for %%i in (
 "D:\scoop\apps\scoop\current\lib\manifest.ps1|D:\scoop\buckets\myscoop\manifest.ps1"
@@ -28,39 +28,36 @@ for %%i in (
         set "DEST_FILE=%%a"
         set "SRC_FILE=%%b"
         echo.
-        echo å¤„ç†æ–‡ä»¶ï¼š!SRC_FILE!
+        echo ´¦ÀíÎÄ¼ş£º!SRC_FILE!
         if not exist "!SRC_FILE!" (
-            echo  è·³è¿‡ï¼šæºæ–‡ä»¶ä¸å­˜åœ¨ !SRC_FILE!
+            echo  Ìø¹ı£ºÔ´ÎÄ¼ş²»´æÔÚ !SRC_FILE!
         ) else (
             if exist "!DEST_FILE!" (
-                echo  åˆ é™¤æ—§æ–‡ä»¶ !DEST_FILE!
+                echo  É¾³ı¾ÉÎÄ¼ş !DEST_FILE!
                 del /f /q "!DEST_FILE!"
-                if errorlevel 1 (
-                    echo  [è­¦å‘Š] åˆ é™¤å¤±è´¥ï¼Œè¯·æ‰‹åŠ¨æ¸…ç† !DEST_FILE!
-                )
             )
             mklink "!DEST_FILE!" "!SRC_FILE!"
             if errorlevel 1 (
-                echo  [å¤±è´¥] !DEST_FILE! åˆ›å»ºå¤±è´¥
+                echo  [Ê§°Ü] !DEST_FILE! ´´½¨Ê§°Ü
             ) else (
-                echo  [æˆåŠŸ] æ–‡ä»¶è½¯é“¾æ¥ç”Ÿæˆå®Œæˆï¼š!DEST_FILE!
+                echo  [³É¹¦] ÎÄ¼şÈíÁ´½ÓÉú³ÉÍê³É
             )
         )
     )
 )
 
 :: ==============================================
-:: ç¬¬äºŒéƒ¨åˆ†ï¼šä»“åº“ .bat â†’ shims é“¾æ¥
+:: µÚ¶ş²¿·Ö£º²Ö¿â .bat ¡ú shims Á´½Ó
 :: ==============================================
 echo.
 echo ==============================================
-echo ã€2/2ã€‘ä»“åº“ .bat -^> D:\scoop\shims é“¾æ¥
+echo ¡¾2/2¡¿²Ö¿â .bat -^> D:\scoop\shims Á´½Ó
 echo ==============================================
 set "SOURCE_DIR=D:\scoop\buckets\myscoop"
 set "TARGET_DIR=D:\scoop\shims"
 
 for %%F in ("%SOURCE_DIR%\*.bat") do (
-    :: è·³è¿‡è„šæœ¬è‡ªèº«
+    rem Ìø¹ı½Å±¾×ÔÉí
     if /i not "%%~fF"=="%~f0" (
         set "link=%TARGET_DIR%\%%~nxF"
         if exist "!link!" del "!link!" 2>nul
@@ -75,7 +72,7 @@ for %%F in ("%SOURCE_DIR%\*.bat") do (
 
 echo.
 echo ==============================================
-echo æ‰€æœ‰ä»»åŠ¡å®Œæˆ
+echo ËùÓĞÈÎÎñÍê³É
 echo ==============================================
 pause
 endlocal
