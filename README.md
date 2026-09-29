@@ -331,9 +331,9 @@ winget install --id Microsoft.WindowsTerminal -e --source winget --accept-source
 
 **文件名预选启动**（与智能模式同款机制）：`获取所有权(1).ps1` = 只读体检、`(2)` = 正式修复、`(3)` = 选择目录/文件（`(3e2)` 直达 E 盘第 2 项，大小写均可）、`(4)` = 粘贴路径处理；任意预选 + `-Menu` 强制显示菜单。
 
-**常用参数**：`-DryRun` 只检测不做任何修改；`-Log` 生成 `.log` 日志 + `.acl` ACL 备份（含整体回滚命令）；`-Roots E:\` 指定目标盘/目录；`-SkipNames` 临时替换跳过清单（默认 `node_modules,.git,.svn,.hg,__pycache__,.venv,venv`）。
+**常用参数**：`-DryRun` 只检测不做任何修改；`-Log` 生成 `.log` 日志 + `.acl` ACL 备份（含整体回滚命令）；`-Roots E:\` 指定目标盘/目录；`-SkipNames` 临时替换跳过清单（默认 `node_modules,.git,.svn,.hg,__pycache__,.venv,venv,site-packages,envs,pkgs` 等）；`-Rescan` 修复成功后**强制**全盘重扫验证（默认修复 0 失败时自动跳过复扫，大幅省时）。
 
-**安全机制**：只清无法解析的孤儿 SID、不砍继承链（不做 `/inheritance:r`）、跳过 junction/符号链接/`$RECYCLE.BIN`/`System Volume Information`、修复前 Y/N 双重确认、修复后逐项复核 + 全盘重扫验证、非管理员拒绝修复模式。
+**安全机制**：只清无法解析的孤儿 SID、不砍继承链（不做 `/inheritance:r`）、跳过 junction/符号链接/`$RECYCLE.BIN`/`System Volume Information`、修复前 Y/N 双重确认、修复后逐项复核（0 失败时跳过全盘复扫，有失败项自动复扫兜底定位残留）、非管理员拒绝修复模式。
 
 完整使用手册见 `获取所有权.ps1使用说明.md`。
 

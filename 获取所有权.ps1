@@ -21,6 +21,7 @@
    * 加 -Log 时：写 .log 日志 并 自动备份受影响项的 ACL（.acl，icacls /save），可供回滚；默认均不生成
    * 默认仅输出控制台；正式修复前有 Y/N 确认
    * 跳过清单：node_modules/.git 等同名文件夹任意层级跳过（param 区修改，-SkipNames 可覆盖）
+   * 修复0失败自动跳过全盘复扫（-Rescan 强制）；有失败项自动重扫兜底定位残留
  用法（文件名预选，与「智能模式Scoop.ps1」同款）：
    .\获取所有权.ps1                # 打开菜单手动选择，任务完成后停留
    .\获取所有权(1).ps1             # 文件名预选：直接执行第1项「只读体检」
@@ -55,6 +56,7 @@ param(
         '.pnpm-store', '.npm', '.gradle', '.m2',         # 包/构建缓存
         '.idea', '.vs', '.vscode'                        # IDE 配置
         ),
+    [switch]$Rescan,     # 修复成功后强制全盘重扫验证（默认：修复0失败时跳过复扫）
     [string]$LogDir    = ''
 )
 
@@ -466,7 +468,8 @@ foreach ($root in $Roots) {
         }
     }
     Write-Progress -Id 2 -Activity ("获取所有权 " + $root) -Completed
-    Write-Log "[所有权] 完成（takeown 退出码 $LASTEXITCODE，个别失败项见下方验证）" 'Green'
+    $script:takeExitCode = $LASTEXITCODE
+    Write-Log "[所有权] 完成（takeown 退出码 $script:takeExitCode，个别失败项见下方验证）" 'Green'
 
     # 2) 备份 + 修复（ACL 备份与 -Log 同开关：默认不生成，-Log 时生成）
     if ($script:logEnabled) {
@@ -495,7 +498,9 @@ foreach ($root in $Roots) {
 }
 
 # ---------- 验证（仅修复模式） ----------
-if (-not ($DryRun -or $select -eq "1") -and $planTotal -gt 0) {
+# 结果驱动：修复0失败 + takeown 正常 → 跳过全盘复扫（逐项复核已确认）；有失败项/锁定项 → 自动重扫兜底；-Rescan 可强制复扫
+$script:verifySkipped = $false
+if (-not ($DryRun -or $select -eq "1") -and $planTotal -gt 0 -and ($script:takeExitCode -ne 0 -or $failTotal -gt 0 -or $Rescan)) {
     $script:remainTotal = 0
     $script:verifyCount = 0
     $remainSample = New-Object System.Collections.Generic.List[string]
@@ -528,6 +533,8 @@ if (-not ($DryRun -or $select -eq "1") -and $planTotal -gt 0) {
         Write-Log "[验证] 仍残留 $script:remainTotal 项（多为占用中/只读锁定文件，可稍后重跑），示例:" 'Red'
         foreach ($p in $remainSample) { Write-Log ('       - ' + $p) 'Red' }
     }
+} else {
+    if (-not ($DryRun -or $select -eq "1") -and $planTotal -gt 0) { $script:verifySkipped = $true }
 }
 
 # ---------- 汇总 ----------
@@ -535,7 +542,11 @@ Write-Log "`n===== 总结 =====" 'Green'
 if ($DryRun -or $select -eq "1") {
     Write-Log "[干跑] 共发现异常项 $planTotal 个（计划见上方；-Log 可写入日志文件）。确认无误后选择第2项或去掉 -DryRun 正式运行。" 'Yellow'
 } else {
-    Write-Log "统计: 扫描 $script:totalItems 项；计划修复 $planTotal 项；失败 $failTotal 项；残留 $script:remainTotal 项" 'Gray'
+    if ($script:verifySkipped) {
+        Write-Log "统计: 扫描 $script:totalItems 项；计划修复 $planTotal 项；失败 $failTotal 项；残留：未全盘复扫（修复0失败，逐项复核已通过；-Rescan 可强制复扫）" 'Gray'
+    } else {
+        Write-Log "统计: 扫描 $script:totalItems 项；计划修复 $planTotal 项；失败 $failTotal 项；残留 $script:remainTotal 项" 'Gray'
+    }
     if ($backupMap.Count -gt 0) {
         Write-Log "[回滚] 如需回滚 ACL，请对每块盘在「该盘根目录」执行（管理员）：" 'Cyan'
         foreach ($k in $backupMap.Keys) {
