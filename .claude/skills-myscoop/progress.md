@@ -175,8 +175,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 894de51 (HEAD) 新增 获取所有权.ps1（Windows 全盘权限体检修复工具：残留SID/所有者异常/无访问权，文件名预选启动）及完整使用手册；README 新增「获取所有权（可选）」章节并同步目录树；config.json last_update 同步
-* 5431710 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 4739a8f (HEAD -> main, origin/main, origin/HEAD) 获取所有权结果驱动复扫：修复 0 失败 + takeown 正常时自动跳过全盘复扫（-Rescan 强制复扫），有失败项自动重扫兜底；新增 -Rescan 参数与默认跳过清单补充（site-packages/envs/pkgs）；使用说明与 README 同步
+* d6b57a4 progress.md 更新提交历史
+* 894de51 新增 获取所有权.ps1（Windows 全盘权限体检修复工具：残留SID/所有者异常/无访问权，文件名预选启动）及完整使用手册；README 新增「获取所有权（可选）」章节并同步目录树；config.json last_update 同步
+* 5431710 progress.md 更新提交历史
 * 66b6581 自动更新第三方软件
 * 24e797e 新增rayburst.json  Rayburst 使用Aria2 Next作为其下载引擎，Aria2 Next 是 aria2 的一个维护分支，它在修复长期存在的问题的同时保留了原始接口，迁移到 CMake，添加了原生 ED2K 和 HLS/DASH 支持，并更新了现代依赖项。
 * 8872c1e 推送
