@@ -319,6 +319,26 @@ winget install --id Microsoft.WindowsTerminal -e --source winget --accept-source
 
 ---
 
+## 获取所有权（可选）
+
+`获取所有权.ps1` 是 Windows 全盘权限体检修复工具（源自《智能模式Scoop.ps1》的 `.ssh` 权限体检功能改造），处理旧机器/旧账号迁移数据盘遗留的权限垃圾：
+
+| 问题 | 处理 |
+|---|---|
+| 残留 SID（资源管理器显示 `UNKNOWN\S-1-5-21-...`） | 只清**无法解析的孤儿 SID**，Everyone/Users/SYSTEM 等正常账号一毫不动 |
+| 所有者仍是旧机器账号 | `takeown` 全盘收归当前用户 |
+| 当前用户无访问权 | 补授完全控制 |
+
+**文件名预选启动**（与智能模式同款机制）：`获取所有权(1).ps1` = 只读体检、`(2)` = 正式修复、`(3)` = 选择目录/文件（`(3e2)` 直达 E 盘第 2 项，大小写均可）、`(4)` = 粘贴路径处理；任意预选 + `-Menu` 强制显示菜单。
+
+**常用参数**：`-DryRun` 只检测不做任何修改；`-Log` 生成 `.log` 日志 + `.acl` ACL 备份（含整体回滚命令）；`-Roots E:\` 指定目标盘/目录；`-SkipNames` 临时替换跳过清单（默认 `node_modules,.git,.svn,.hg,__pycache__,.venv,venv`）。
+
+**安全机制**：只清无法解析的孤儿 SID、不砍继承链（不做 `/inheritance:r`）、跳过 junction/符号链接/`$RECYCLE.BIN`/`System Volume Information`、修复前 Y/N 双重确认、修复后逐项复核 + 全盘重扫验证、非管理员拒绝修复模式。
+
+完整使用手册见 `获取所有权.ps1使用说明.md`。
+
+---
+
 ## 附录：Manifest 字段速查
 
 | 字段            | 必须 | 说明                                                               |
@@ -435,6 +455,8 @@ myscoop/
 │       └── progress.md              ← 项目进展
 ├── myscoop-update.py                ← 免下载自动更新脚本
 ├── 智能模式Scoop(3).ps1              ← Scoop 工具箱（文件名预选智能模式）：复制改名 (1)(2)(4).ps1 自动执行对应菜单
+├── 获取所有权.ps1                  ← Windows 全盘权限体检修复（残留SID/无访问权/旧机账号，文件名预选）
+├── 获取所有权.ps1使用说明.md       ← 获取所有权.ps1 完整使用手册
 ├── cd-comfyui.bat                   ← 启动 ComfyUI（HF 镜像）
 ├── cd-models.bat                    ← 切换到 llama.cpp 模型目录
 ├── down-node.bat                    ← ComfyUI 插件批量安装（入口，逻辑在 down-node.py）
