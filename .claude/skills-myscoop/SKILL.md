@@ -543,3 +543,4 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
     - **`--add` 增强参数**：
       - `--more`：主程序 + cudart 运行时配对合并收录（同架构同 CUDA 版本成对生成 url/hash 数组，Scoop 解压合并到同一目录；同架构多 CUDA 版本取最高，如 13.3 > 12.4）
       - `--dl`：生成 json 后**必须下载**（清空 API digest 强制实测下载重算 hash）自动探测补全——zip/7z 列 exe 交互选主程序（`--select 编号|exe名` 免交互）；exe（portable/setup 统一）Inno/NSIS 解包探测内部主程序并自动补 pre_install；msi 实测下载回填 hash；多架构自动下载 64bit 主架构；不带此参数时行为与旧版完全一致
+18. **README 软件表必须与 bucket/ 全量对齐（缺一不可）**：每次新增/更新 manifest 后，提交前必须核对 README 两张表（第三方官方 + 本地维护）**行数之和 = `bucket/` 清单总数**；缺漏的清单**必须补进对应表**（最新收录置顶 + 全表重新编号），总数计数（收录总数/第三方数/本地数）同步修正——任何已入库 manifest 不得在 README 表中缺席（教训：rayburst.json 入库后 README 漏收，实测缺 1 行）。
