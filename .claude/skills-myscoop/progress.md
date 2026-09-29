@@ -176,7 +176,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 4739a8f (HEAD -> main, origin/main, origin/HEAD) 获取所有权结果驱动复扫：修复 0 失败 + takeown 正常时自动跳过全盘复扫（-Rescan 强制复扫），有失败项自动重扫兜底；新增 -Rescan 参数与默认跳过清单补充（site-packages/envs/pkgs）；使用说明与 README 同步
+* 9fb99aa (HEAD -> main, origin/main, origin/HEAD) README 收录表交换位置（第三方官方在前、本地维护在后）并补收录 rayburst 4.0.0（第三方表 34→35 行，总数 122）；新增铁律：README 软件表必须与 bucket 全量对齐缺一不可（SKILL 规则18/progress 核心规则8）
+* 6a9bda2 progress.md 更新提交历史
+* 4739a8f 获取所有权结果驱动复扫：修复 0 失败 + takeown 正常时自动跳过全盘复扫（-Rescan 强制复扫），有失败项自动重扫兜底；新增 -Rescan 参数与默认跳过清单补充（site-packages/envs/pkgs）；使用说明与 README 同步
 * d6b57a4 progress.md 更新提交历史
 * 894de51 新增 获取所有权.ps1（Windows 全盘权限体检修复工具：残留SID/所有者异常/无访问权，文件名预选启动）及完整使用手册；README 新增「获取所有权（可选）」章节并同步目录树；config.json last_update 同步
 * 5431710 progress.md 更新提交历史
