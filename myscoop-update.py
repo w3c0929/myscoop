@@ -449,6 +449,12 @@ def is_windows_asset(name):
     return True
 
 
+def _release_has_windows_asset(release):
+    """release 是否含可下载的 Windows 资产。无资产（monorepo/changesets 子包噪音 tag）
+    或仅含非 Windows 资产时返回 False，供更新流程预检跳过/回退。"""
+    return any(is_windows_asset(a.get("name", "")) for a in (release.get("assets") or []))
+
+
 def detect_arch(name):
     """从文件名检测架构"""
     lower = name.lower()
@@ -1133,6 +1139,26 @@ def update_manifest(manifest_path, dry_run=False):
             print(f"  [跳过] {manifest_path.name}: 上游近期没有 {want_platform} 平台 release")
             return None
 
+    # 加固：latest release 若无可下载的 Windows 资产（如 monorepo/changesets 子包噪音
+    # tag，其 assets 为空），在 releases 列表中回退到最近的、带 Windows 资产的 release；
+    # 仍找不到则跳过不更新，避免拿无资产的版本号去改写清单。
+    if not _release_has_windows_asset(release):
+        print(f"  [资产] 最新 {release.get('tag_name')} 无可下载 Windows 资产，回退查找…")
+        try:
+            rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=30")
+        except Exception as e:
+            print(f"  [错误] {manifest_path.name}: {e}")
+            return None
+        release = next((r for r in rels
+                        if not r.get("draft")
+                        and not str(r.get("tag_name", "")).startswith("untagged-")
+                        and _release_has_windows_asset(r)
+                        and (not want_platform
+                             or _platform_tag_passes(r.get("tag_name", ""), want_platform))), None)
+        if not release:
+            print(f"  [跳过] {manifest_path.name}: 上游近期没有带 Windows 资产的 release")
+            return None
+
     latest_tag = release["tag_name"]
     # 剥离平台前缀（windows-v0.1.0 / macos-v1.2 等），与清单 version 对齐
     latest_version = re.sub(r"^(windows|win64|win32|macos|darwin|linux|ubuntu)[-_]v",
@@ -1165,6 +1191,7 @@ def update_manifest(manifest_path, dry_run=False):
 
     if "architecture" in manifest:
         to_del = []
+        matched_any = False
         for arch in manifest["architecture"]:
             old_url = manifest["architecture"][arch]["url"]
             au_arch = au.get("architecture", {}).get(arch, {})
@@ -1172,6 +1199,7 @@ def update_manifest(manifest_path, dry_run=False):
             new_url = resolve_autoupdate_url(au_url_template, latest_version)
             asset = match_asset(new_url, assets)
             if asset:
+                matched_any = True
                 digest = asset.get("digest", "")
                 real = asset.get("browser_download_url") or new_url
                 manifest["architecture"][arch]["url"] = real
@@ -1187,6 +1215,7 @@ def update_manifest(manifest_path, dry_run=False):
                 new_url2 = resolve_autoupdate_url(old_url, latest_version)
                 asset2 = match_asset(new_url2, assets)
                 if asset2:
+                    matched_any = True
                     digest2 = asset2.get("digest", "")
                     real2 = asset2.get("browser_download_url") or new_url2
                     manifest["architecture"][arch]["url"] = real2
@@ -1200,6 +1229,11 @@ def update_manifest(manifest_path, dry_run=False):
                         print(f"    {arch}: {digest2[:16]}... (fallback)")
                 else:
                     to_del.append(arch)
+        # 资产守卫：所有架构都未匹配到任何资产 → 视为无效更新，跳过不写入。
+        # 防止上游噪音 tag（无资产）触发下方"规则③ 删架构"把整个清单改坏。
+        if not matched_any:
+            print(f"  [跳过] {manifest_path.name}: {latest_tag} 无任何架构可匹配的资产，跳过不写入（资产守卫）")
+            return None
         # 规则③：上游缺失该架构资产 → 删除该架构块（该架构用户自动回退 64bit/通用包）
         for arch in to_del:
             print(f"    [删除架构] {arch}: 上游缺少该架构资产（规则③）")

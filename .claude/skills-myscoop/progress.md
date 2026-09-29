@@ -10,7 +10,7 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 
 GitHub: https://github.com/w3c0929/myscoop
 
-## 当前状态（截至 2026-09-29）
+## 当前状态（截至 2026-09-30）
 
 - **收录软件总数**: 122 款
 - **本地维护（自托管 Release）**: 87 款
@@ -25,7 +25,7 @@ GitHub: https://github.com/w3c0929/myscoop
   - 资产判定：x86_64/amd64 正确判 64bit（修复含 x86 子串误判），i686/i386 → 32bit；平台裸二进制（.arm/.x86_64/.s390x 等无 .exe 跨平台产物）与无扩展名校验文件（SHA256SUMS）不再混入 Windows 资产
 - `--add <直链|下载页|模板>`：直链/下载页/模板新增强（含 Inno/NSIS 探测、--fill-bin URL 模式）
 - `--installer-mode`：注册型软件存量清单迁移 installer 模式
-- `--all` / 单清单更新：GitHub API digest 免下载更新；CI 每晚 1 点自动执行
+- `--all` / 单清单更新：GitHub API digest 免下载更新；CI 每晚 1 点自动执行；**资产守卫**：latest 无可下载 Windows 资产（如 monorepo 子包噪音 tag，assets 为空）时回退 releases 列表取带资产者，全架构匹配失败则跳过不写入
 
 ## 核心规则
 
@@ -37,6 +37,7 @@ GitHub: https://github.com/w3c0929/myscoop
 6. **多版本软件资产（自托管）**：同一软件需保留多个版本时，用一个 release（固定 tag）下挂多个资产（文件名含版本号区分），不要每版本各建一个 release。manifest 的 `version` 为默认（最新）版本，`url`/`hash` 硬编码默认版具体地址（`url` 里写 `$version` 会导致 Scoop 普通安装 404），`autoupdate.url` 仅文件名用 `$version` 模板。安装默认版 `scoop install myscoop/<app>`；指定版 `scoop install myscoop/<app>@<版本>`（触发 autoupdate 动态生成、GitHub digest 取 hash）；切换 `scoop reset myscoop/<app>@<版本>`。搜索工具只显示默认版，必须同步 README 标注多版本及 `@版本` 用法。示例：Sublime Text（release `vSublimeText` 挂 4200/4207）。详见 SKILL 规则 15。
 7. **改动文件必须全部提交推送**：所有内容改动过的需提交文件（含 README.md、progress.md、SKILL.md 及仓库内其他跟踪文件）一律提交推送，不得遗留未提交改动；即使改动与本任务无关（如历史遗留改动）也一并提交。未跟踪文件（发布资产、临时文件）不在此列。
 8. **README 软件表必须与 bucket/ 全量对齐**：每次新增/更新 manifest 后，提交前必须核对 README 两张表（第三方官方 + 本地维护）的行数之和等于 `bucket/` 清单总数，**缺漏必须补上**（含记录在 top 且重新编号）；总量计数（收录总数/第三方/本地）同步修正，不允许任何已入库 manifest 在 README 表中缺席。
+9. **自动更新资产守卫**：`myscoop-update.py` 更新单清单时，latest release 无可下载 Windows 资产（如 monorepo 子包噪音 tag，assets 为空）→ 自动回退 releases 列表找带资产的 release，仍无则跳过；架构分支所有架构都匹配失败时跳过不写入（防删架构块 + 写垃圾 version 改坏清单）。详见 SKILL 规则 19。
 
 ## 标准处理流程
 
