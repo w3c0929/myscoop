@@ -4,7 +4,7 @@
     "homepage": "https://github.com/oldj/SwitchHosts",
     "license": "Apache-2.0",
     "url": "https://github.com/w3c0929/myscoop/releases/download/v5.0.1/SwitchHosts-5.0.1-win-x64-portable.zip",
-    "hash": "sha256:982e72d5767b864fe24003ef88b20c73eca01bfef7731da7fe514305bba813b9",
+    "hash": "sha256:6e037412cc4f715c72e72611d2a5ea9e2d66eb87e77cb5234dc42ec56704b4af",
     "bin": "SwitchHosts.exe",
     "shortcuts": [
         [
