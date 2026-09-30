@@ -177,7 +177,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* d6d507b (HEAD -> main, origin/main, origin/HEAD) 修复自动更新资产守卫：恢复 cherry 清单并防噪音 tag 改坏清单
+* 69e80b7 (HEAD -> main, origin/main, origin/HEAD) 统一 Windows 独有后缀行尾：*.reg/*.ps1 设为 CRLF 并归一 .gitignore/.reg
+* bd8b399 config.json 格式同步（PowerShell 重排，键值未变）
+* abfc555 progress.md 更新提交历史
+* d6d507b 修复自动更新资产守卫：恢复 cherry 清单并防噪音 tag 改坏清单
 * bb6bb88 自动推送
 * 91d8271 progress.md 更新提交历史
 * 8134b2a 自动更新第三方软件
