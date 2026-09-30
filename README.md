@@ -23,7 +23,7 @@
 | 11 | [Netcatty](https://github.com/binaricat/Netcatty) — SSH 工作区、SFTP 与终端一体的跨平台客户端 | `scoop install netcatty` | portable zip 官方 release | 1.1.83 | 2026-09-15 | 2026-09-26 |
 | 12 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install cmm-plus` | 多架构 portable zip | 1.7.6 | 2026-09-14 | 2026-09-22 |
 | 13 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral` | 多架构 exe 官方 release | 1.2.0 | 2026-09-14 | 2026-09-26 |
-| 14 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry` | 多架构 portable exe | 2.1.3 | 2026-09-14 | 2026-09-26 |
+| 14 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry` | 多架构 portable exe | 2.1.3 | 2026-09-14 | 2026-09-30 |
 | 15 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install etlp` | 多架构 zip 官方 release | 2026.07.18 | 2026-09-14 | 2026-09-26 |
 | 16 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconv` | MSI 官方 release | 2.2 | 2026-09-14 | 2026-09-26 |
 | 17 | [TOKENICODE DeepSeek Alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode` | 单 exe 官方 release | 1.0.8 | 2026-09-14 | 2026-09-26 |
@@ -36,7 +36,7 @@
 | 24 | [QuickLook CAD 插件](https://github.com/emako/QuickLook.Plugin.CADImport) — 预览 CAD 文件格式 | `scoop install qlcad` | qlplugin 官方 release | 1 | 2026-07-09 | 2026-09-26 |
 | 25 | [QuickLook Office 插件](https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer) — 预览 Word/Excel/PPT 文件 | `scoop install qloffice` | qlplugin 官方 release | 6 | 2026-07-09 | 2026-09-26 |
 | 26 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.0 | 2026-07-09 | 2026-09-26 |
-| 27 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.37.0 | 2026-07-06 | 2026-09-21 |
+| 27 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.38.0 | 2026-07-06 | 2026-09-21 |
 | 28 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.4 | 2026-07-03 | 2026-09-26 |
 | 29 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | 多架构 zip 官方 release | 5.5.0 | 2026-07-03 | 2026-09-26 |
 | 30 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.24.11911.0 | 2026-07-03 | 2026-09-26 |
@@ -51,7 +51,7 @@
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
 | 1 | [NInfer](https://github.com/w3c0929/myscoop) — 三元推理引擎（Ternary-Bonsai 模型，CUDA 13.3 sm_89，自带运行库） | `scoop install ninfer` | zip 便携（CLI + 服务端 + PPL） | 1.1.0 | 2026-09-22 | 2026-09-27 |
-| 2 | [SwitchHosts](https://github.com/oldj/SwitchHosts) — Hosts 文件快速切换管理工具（通知内容默认留空时自动显示为 {title} {result} {message}） | `scoop install switchhosts` | zip 便携解压即用 | 5.0.1 | 2026-08-29 | 2026-09-26 |
+| 2 | [SwitchHosts](https://github.com/oldj/SwitchHosts) — Hosts 文件快速切换管理工具（通知内容默认留空时自动显示为 {title} {result} {message}） | `scoop install switchhosts` | zip 便携解压即用 | 5.0.1 | 2026-08-29 | 2026-09-30 |
 | 3 | [Windows App Runtime](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时（WinUI/WinAppSDK 应用依赖） | `scoop install windowsappruntime` | 单 exe 手动安装 | 2.4.0 | 2026-08-19 | 2026-08-19 |
 | 4 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 | 2026-08-14 | 2026-08-14 |
 | 5 | BT种子转磁力链工具 — BT种子转磁力链接 | `scoop install btseed` | zip 便携解压即用 | 1.0 | 2026-07-31 | 2026-07-31 |
