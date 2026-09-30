@@ -177,7 +177,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* f9ab74c (HEAD -> main, origin/main, origin/HEAD) Windows 独有文件编码统一：bat 加 chcp 65001、ps1/reg 规范编码
+* b618a19 (HEAD -> main, origin/main, origin/HEAD) 添加gitbash右键菜单.reg 修正注释符：# 改为 ;（.reg 仅支持 ; 注释，原 # 会导致 regedit 导入报错）
+* 9ceb2bf progress.md 更新提交历史
+* f9ab74c Windows 独有文件编码统一：bat 加 chcp 65001、ps1/reg 规范编码
 * 51afbd7 progress.md 更新提交历史
 * c5fa2d5 cd-models.bat 补 CRLF 行尾（单行无换行符，统一为 eol=crlf）
 * 6e1c200 progress.md 更新提交历史
