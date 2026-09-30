@@ -85,7 +85,7 @@ myscoop 管理脚本
   #     --select 编号|exe名 免交互，含扁平化 pre_install 判定）；exe（portable/setup 统一）
   #     Inno/NSIS 检测 + 解包探测内部主程序并补 pre_install；msi 实测下载回填 hash；
   #     多架构自动下载 64bit 主架构；压缩包留 staging/.dl_cache/ 复用
-  python3 myscoop-update.py --add https://github.com/PrismML-Eng/llama.cpp.git --more
+  python3 myscoop-update.py --add https://github.com/PrismML-Eng/llama.cpp.git --more --prllama
   python3 myscoop-update.py --add https://github.com/CherryHQ/cherry-studio.git --name cherry --dl
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
