@@ -183,7 +183,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* f253110 (HEAD -> main, origin/main, origin/HEAD) mykeymap 资产更新：替换远程 mykeymap.zip（新包为扁平结构）并适配清单
+* 512bfd9 (HEAD -> main, origin/main, origin/HEAD) mykeymap 2.0-beta33 压缩包再更新：替换远程 mykeymap.zip 资产（digest 4d8619d0，与清单一致）
+* eeef9e4 progress.md 更新提交历史
+* f253110 mykeymap 资产更新：替换远程 mykeymap.zip（新包为扁平结构）并适配清单
 * 8cb1d6e mykeymap 2.0-beta33 更新压缩包：替换远程 mykeymap.zip 资产（digest 8f724eed，与清单一致）；包结构调整为扁平（移除 extract_dir），根目录误带 install.json/manifest.json 已清除
 * e4e76d4 推送
 * 2c15be6 progress.md 更新提交历史
