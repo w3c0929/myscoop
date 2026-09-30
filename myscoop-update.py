@@ -396,6 +396,21 @@ def heal_url_drift(manifest, assets):
         fixed = False
         for arch, blk in manifest["architecture"].items():
             cur = blk.get("url", "")
+            if isinstance(cur, list):
+                # 配对资产（--more）：逐项回写 url/hash；构建号内嵌 tag，无 +N 漂移处理
+                hs = blk.get("hash") if isinstance(blk.get("hash"), list) else [""] * len(cur)
+                changed = False
+                for i, u in enumerate(cur):
+                    a = match_asset(u, assets)
+                    if a and a["name"] != unquote(u.split("/")[-1]):
+                        cur[i] = a.get("browser_download_url") or u
+                        if a.get("digest") and i < len(hs):
+                            hs[i] = a["digest"]
+                        changed = True
+                if changed:
+                    blk["hash"] = hs
+                    fixed = True
+                continue
             a = match_asset(cur, assets)
             if a and a["name"] != unquote(cur.split("/")[-1]):
                 blk["url"] = a.get("browser_download_url") or cur
@@ -404,6 +419,20 @@ def heal_url_drift(manifest, assets):
                 fixed |= handle_build_drift(manifest, a, cur, arch=arch) in ("refresh", "removed")
         return fixed
     cur = manifest.get("url", "")
+    if isinstance(cur, list):
+        # 配对资产（--more，单架构）：顶层 url/hash 数组逐项回写
+        hs = manifest.get("hash") if isinstance(manifest.get("hash"), list) else [""] * len(cur)
+        changed = False
+        for i, u in enumerate(cur):
+            a = match_asset(u, assets)
+            if a and a["name"] != unquote(u.split("/")[-1]):
+                cur[i] = a.get("browser_download_url") or u
+                if a.get("digest") and i < len(hs):
+                    hs[i] = a["digest"]
+                changed = True
+        if changed:
+            manifest["hash"] = hs
+        return changed
     a = match_asset(cur, assets)
     # URL 中 %2B 等编码与资产名原字符（+）等价：解码后再比，避免误判漂移
     cur_name = unquote(cur.split("/")[-1])
@@ -960,6 +989,36 @@ def substitute_version(value, version):
     return value
 
 
+def _update_pair_block(blk, tmpl, old_url, version, assets):
+    """逐项更新"配对资产"（--more 生成）的数组型 url/hash，返回命中项数。
+
+    数组顺序= [主程序, cudart 运行时]。逐项：$version 模板替换 → match_asset →
+    回写同下标的 url/hash。cudart 名称不含版本号（CUDA 版本段写死），强制精确匹配，
+    禁用 match_asset 的 _norm_base 归一，防止上游停发某个 CUDA 版本时跨版本误配。
+    配对清单的构建号内嵌在 tag（=$version）里，同版本内无 +N 漂移，故不做 drift 处理。"""
+    tlist = substitute_version(tmpl if isinstance(tmpl, list) else old_url, version)
+    urls = list(blk["url"])
+    hashes = list(blk["hash"]) if isinstance(blk.get("hash"), list) else [""] * len(urls)
+    n = 0
+    for i, t in enumerate(tlist):
+        if i >= len(urls):
+            break
+        a = match_asset(t, assets)
+        tmpl_i = tmpl[i] if isinstance(tmpl, list) and i < len(tmpl) else ""
+        if a and "$version" not in (tmpl_i or "") and a["name"] != unquote(t.split("/")[-1]):
+            a = None  # cudart 项：只认精确同名
+        if a:
+            urls[i] = a.get("browser_download_url") or t
+            hashes[i] = a.get("digest", "")
+            n += 1
+        else:
+            print(f"      [警告] 配对项 {i} 未匹配，保留旧值")
+    if n:
+        blk["url"] = urls
+        blk["hash"] = hashes
+    return n
+
+
 def sync_autoupdate_fields(au_block, target, version):
     """把 autoupdate 块内除 url/hash/architecture/note 外的模板字段
     （如 bin、shortcuts、extract_dir）替换 $version 后写回主清单对应位置，
@@ -980,6 +1039,8 @@ def sync_autoupdate_fields(au_block, target, version):
 
 def _url_platform(url):
     """从清单 url 推断目标平台（多平台仓库用）：优先 mac/linux 特征，其次 windows；无特征返回 None。"""
+    if isinstance(url, list):
+        url = " ".join(str(x) for x in url)
     u = str(url or "").lower()
     if any(k in u for k in ("macos", "darwin", "osx", "-mac", "mac-")) and "macbook" not in u:
         return "mac"
@@ -1176,7 +1237,9 @@ def update_manifest(manifest_path, dry_run=False):
             with open(manifest_path, "w", encoding="utf-8") as f:
                 json.dump(manifest, f, indent=4, ensure_ascii=False)
                 f.write("\n")
-            print(f"  {manifest_path.name}: 版本未变，URL 构建号漂移已自愈 → {manifest.get('url', '').split('/')[-1]}")
+            _u = manifest.get("url") or ""
+            _u = _u[0] if isinstance(_u, list) else _u
+            print(f"  {manifest_path.name}: 版本未变，URL 构建号漂移已自愈 → {_u.split('/')[-1]}")
             return {"manifest": manifest_path.name, "old": current_version,
                     "new": latest_version, "drift": True}
         return None
@@ -1194,6 +1257,17 @@ def update_manifest(manifest_path, dry_run=False):
         matched_any = False
         for arch in manifest["architecture"]:
             old_url = manifest["architecture"][arch]["url"]
+            # 配对资产（--more）：url/hash 为数组，逐项更新后跳过下方标量逻辑
+            if isinstance(old_url, list):
+                blk = manifest["architecture"][arch]
+                au_t = au.get("architecture", {}).get(arch, {}).get("url", old_url)
+                if _update_pair_block(blk, au_t, old_url, latest_version, assets):
+                    matched_any = True
+                    print(f"    {arch}: 配对资产 {len(blk['url'])} 项已更新")
+                else:
+                    print(f"    {arch}: 配对资产未匹配，标记待删")
+                    to_del.append(arch)
+                continue
             au_arch = au.get("architecture", {}).get(arch, {})
             au_url_template = au_arch.get("url", old_url)
             new_url = resolve_autoupdate_url(au_url_template, latest_version)
@@ -1255,44 +1329,55 @@ def update_manifest(manifest_path, dry_run=False):
                 print(f"    {arch} 同步: {', '.join(chg)}")
     else:
         old_url = manifest["url"]
-        au_url_template = au.get("url", old_url)
-        new_url = resolve_autoupdate_url(au_url_template, latest_version)
-        asset = match_asset(new_url, assets)
-        if asset:
-            digest = asset.get("digest", "")
-            real = asset.get("browser_download_url") or new_url
-            manifest["url"] = real
-            manifest["hash"] = digest
-            drift = handle_build_drift(manifest, asset, new_url)
-            if drift == "refresh":
-                print(f"    hash: {digest[:16]}... [+构建号: autoupdate 模板已刷新为新构建号，保留模板]")
-            elif drift == "removed":
-                print(f"    hash: {digest[:16]}... [+构建号漂移: 已回写真实资产 {asset['name']} 并移除 autoupdate 模板]")
-            else:
-                print(f"    hash: {digest[:16]}...")
+        # 配对资产（--more，单架构）：顶层 url/hash 为数组，逐项更新后跳过标量逻辑
+        if isinstance(old_url, list):
+            au_t = au.get("url", old_url)
+            if not _update_pair_block(manifest, au_t, old_url, latest_version, assets):
+                print("    [警告] 配对资产未匹配")
+                return None
+            print(f"    配对资产 {len(manifest['url'])} 项已更新")
+            chg = sync_autoupdate_fields(au, manifest, latest_version)
+            if chg:
+                print(f"    同步字段: {', '.join(chg)}")
         else:
-            new_url2 = resolve_autoupdate_url(old_url, latest_version)
-            asset2 = match_asset(new_url2, assets)
-            if asset2:
-                digest2 = asset2.get("digest", "")
-                real2 = asset2.get("browser_download_url") or new_url2
-                manifest["url"] = real2
-                manifest["hash"] = digest2
-                drift2 = handle_build_drift(manifest, asset2, new_url2)
-                if drift2 == "refresh":
-                    print(f"    hash: {digest2[:16]}... (fallback, +构建号: autoupdate 模板已刷新，保留模板)")
-                elif drift2 == "removed":
-                    print(f"    hash: {digest2[:16]}... (fallback, +构建号漂移: 已回写真实资产 {asset2['name']} 并移除 autoupdate 模板)")
+            au_url_template = au.get("url", old_url)
+            new_url = resolve_autoupdate_url(au_url_template, latest_version)
+            asset = match_asset(new_url, assets)
+            if asset:
+                digest = asset.get("digest", "")
+                real = asset.get("browser_download_url") or new_url
+                manifest["url"] = real
+                manifest["hash"] = digest
+                drift = handle_build_drift(manifest, asset, new_url)
+                if drift == "refresh":
+                    print(f"    hash: {digest[:16]}... [+构建号: autoupdate 模板已刷新为新构建号，保留模板]")
+                elif drift == "removed":
+                    print(f"    hash: {digest[:16]}... [+构建号漂移: 已回写真实资产 {asset['name']} 并移除 autoupdate 模板]")
                 else:
-                    print(f"    hash: {digest2[:16]}... (fallback)")
+                    print(f"    hash: {digest[:16]}...")
             else:
-                print(f"    [警告] 无法匹配")
-                return None  # 资产匹配失败：不写入、不计入已更新
+                new_url2 = resolve_autoupdate_url(old_url, latest_version)
+                asset2 = match_asset(new_url2, assets)
+                if asset2:
+                    digest2 = asset2.get("digest", "")
+                    real2 = asset2.get("browser_download_url") or new_url2
+                    manifest["url"] = real2
+                    manifest["hash"] = digest2
+                    drift2 = handle_build_drift(manifest, asset2, new_url2)
+                    if drift2 == "refresh":
+                        print(f"    hash: {digest2[:16]}... (fallback, +构建号: autoupdate 模板已刷新，保留模板)")
+                    elif drift2 == "removed":
+                        print(f"    hash: {digest2[:16]}... (fallback, +构建号漂移: 已回写真实资产 {asset2['name']} 并移除 autoupdate 模板)")
+                    else:
+                        print(f"    hash: {digest2[:16]}... (fallback)")
+                else:
+                    print(f"    [警告] 无法匹配")
+                    return None  # 资产匹配失败：不写入、不计入已更新
 
-        # 同步顶层 autoupdate 模板字段（bin/shortcuts/extract_dir 等）
-        chg = sync_autoupdate_fields(au, manifest, latest_version)
-        if chg:
-            print(f"    同步字段: {', '.join(chg)}")
+            # 同步顶层 autoupdate 模板字段（bin/shortcuts/extract_dir 等）
+            chg = sync_autoupdate_fields(au, manifest, latest_version)
+            if chg:
+                print(f"    同步字段: {', '.join(chg)}")
 
     chg2 = sync_bin_version(manifest, current_version, latest_version)
     if chg2:
@@ -2647,6 +2732,9 @@ def main():
                 updated.append(result)
         except Exception as e:
             print(f"  [异常] {path.name}: {e}")
+            if not dry_run:
+                import traceback
+                traceback.print_exc()
 
     print()
     if dry_run:

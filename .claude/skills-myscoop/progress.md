@@ -26,6 +26,7 @@ GitHub: https://github.com/w3c0929/myscoop
 - `--add <直链|下载页|模板>`：直链/下载页/模板新增强（含 Inno/NSIS 探测、--fill-bin URL 模式）
 - `--installer-mode`：注册型软件存量清单迁移 installer 模式
 - `--all` / 单清单更新：GitHub API digest 免下载更新；CI 每晚 1 点自动执行；**资产守卫**：latest 无可下载 Windows 资产（如 monorepo 子包噪音 tag，assets 为空）时回退 releases 列表取带资产者，全架构匹配失败则跳过不写入
+- **配对资产自动更新**（`--more` 生成的数组型 url/hash，如 prllama）：`_update_pair_block` 逐项 `$version` 替换 → `match_asset` → 回写同下标 url/hash；cudart 项（名不含版本）强制精确匹配，防跨 CUDA 版本误配。数组走独立分支，标量清单行为不变（回归测试 `tools/test_pair_update.py`）
 
 ## 核心规则
 
