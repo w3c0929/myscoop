@@ -152,7 +152,7 @@ for a in r['assets']:
 # 计算 hash（本地文件）
 certutil -hashfile "file.exe" SHA256 | grep -E "^[a-f0-9]{64}"
 
-# 每次本地提交后重建 progress.md 的"提交历史"章节
+# 每次本地提交后重建 progress.md 的"提交历史"章节（rebuild_progress.py 位于 tools/，仅本地维护未入库）
 python3 tools/rebuild_progress.py && git add .claude/skills-myscoop/progress.md && git commit -m "progress.md 更新提交历史"
 
 # 上传 release
