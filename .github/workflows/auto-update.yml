@@ -29,10 +29,17 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
 
       - name: 运行更新脚本（免下载，读取 GitHub API digest）
+        id: upd
+        continue-on-error: true
         run: python3 myscoop-update.py --all
 
       - name: 同步 README 第三方版本列（= 清单 version 原样，幂等）
         run: python3 tools/sync_readme_versions.py
+
+      - name: 一致性校验（README ↔ bucket ↔ progress）
+        id: chk
+        continue-on-error: true
+        run: python3 myscoop-update.py --check
 
       - name: 提交 manifest 变更
         run: |
@@ -72,3 +79,10 @@ jobs:
         run: |
           git pull --rebase origin main || true
           git push origin main
+
+      # 更新/校验异常不阻断提交推送（上面已 continue-on-error），但让 job 在末尾变红以便发现
+      - name: 异常汇总（有异常则让 job 失败）
+        if: steps.upd.outcome == 'failure' || steps.chk.outcome == 'failure'
+        run: |
+          echo "::error::myscoop-update.py 更新或一致性校验存在异常，请查看上方日志"
+          exit 1

@@ -550,3 +550,9 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
     - **配对资产（`--more` 数组型 url/hash）**：`update_manifest`/`heal_url_drift` 对数组型 url/hash 走**独立 `isinstance(..., list)` 分支**，由 `_update_pair_block` 逐项处理（`$version` 替换 → `match_asset` → 回写同下标 url/hash）；cudart 项名不含版本号，**强制精确匹配**防跨 CUDA 版本误配；配对 tag 内嵌版本、同版本无 `+N` 漂移，故不做 drift 处理。标量清单走原路径、行为字节级不变（回归测试 `tools/test_pair_update.py`）。背景：`prllama.json`（llama.cpp Prism fork 的 `--more` 配对）曾因数组型 url 使 nightly `--all` 抛 `'list' object has no attribute 'split'` 并被静默吞掉、长期不更新。
     - **`--add` 收录预检（与更新共用 `pick_effective_release`）**：收录新清单时只在 **非 draft/untagged 且含可下载 Windows 资产**的 release 里取**最新**一个——**只按"资产"判定，不看 prerelease/rc**（上游常把发布标成预发布但资产完整；且最新版可能恰是**零资产的空 release**，需往下探到最近一个带 Windows 资产的：如 `kvmem-llama.cpp` 的 `v0.17.0` 为空 → 自动取 `v0.16.0-rc3-prism.3`）。完全没有带 Windows 资产的 release → 打印**候选表**（tag/预发布?/win资产数）后跳过、**不写文件**。archived/fork 仓库默认**警告**（`--allow-archived` 静音）。直链/模板入口（`--add 直链`、下载页、`--from`、`--fill-bin`）无 release 列表可选，只做预发布**提示**、不阻断（回归测试 `tools/test_effective_release.py`）。
     - 背景：`CherryHQ/cherry-studio` 的 `latest` 长期指向子包噪音 tag `@cherrystudio/remote-transport@0.1.1`（assets 为空），曾把 `cherry.json` 的 2.1.3 双架构块整体删成空 `autoupdate.architecture`（提交 8134b2a）。
+20. **收录质量与一致性护栏**：
+    - **资产筛选**：`is_windows_asset` 排除源码包（`-source`/`-src` 独立段）、脚本（`.ps1/.sh/.bat/.cmd/.py` 等）、校验与元数据；generic 兜底仅限"可安装包"——防源码包被规则②兜底进缺失架构（教训：`kvllama` 的 `-source.zip` 曾被塞进 32bit/arm64）。`description` 为 null 时回退为 `owner/repo`。
+    - **一致性校验 `--check`**：校验 README 两表行数之和 == `bucket/` 清单数、逐条一一对应、`progress.md` 计数一致；不一致**非零退出**。已挂 CI（`.github/workflows/auto-update.yml`，异常不阻断提交推送，但在末尾让 job 变红）。
+    - **`--all` 异常可见**：逐文件异常打印 traceback 并汇总，末尾非零退出（修掉"异常被 `except Exception` 静默吞掉"）。
+    - **重复来源检测**：`--add` 时若同一 `checkver` 来源已存在于其它清单 → 警告（防重复收录 / 上游改名）。
+    - **API 健壮性**：`fetch_json` 支持 `GH_TOKEN`/`GITHUB_TOKEN`（GitHub 配额 60→5000/时）并对 429/5xx 与网络错误退避重试；`arch_url_hash` 支持数组型 url（配对清单取主资产，修 `--fill-bin` 对 prllama 这类清单崩溃）。

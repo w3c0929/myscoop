@@ -139,6 +139,7 @@ import json
 import re
 import sys
 import os
+import time
 import urllib.request
 import urllib.error
 from urllib.parse import unquote
@@ -190,9 +191,26 @@ def fetch_json(url):
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if token and url.startswith("https://api.github.com/"):
         headers["Authorization"] = f"Bearer {token}"
-    req = urllib.request.Request(url, headers=headers)
-    with _open(req, 30) as resp:
-        return json.loads(resp.read().decode())
+    # 限流/瞬时故障退避重试（429/5xx 与网络错误），最多 3 次
+    last = None
+    for attempt in range(3):
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with _open(req, 30) as resp:
+                return json.loads(resp.read().decode())
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 500, 502, 503, 504) and attempt < 2:
+                last = e
+                time.sleep(2 ** attempt)
+                continue
+            raise
+        except urllib.error.URLError as e:
+            if attempt < 2:
+                last = e
+                time.sleep(2 ** attempt)
+                continue
+            raise
+    raise last
 
 
 def get_latest_release(owner, repo, platform="github"):
@@ -456,6 +474,12 @@ def is_windows_asset(name):
                              ".md", ".sum", ".sha256", ".asc", ".list", ".html",
                              ".yml", ".blockmap", ".sig")):
         return False
+    # 排除源码包（-source / -src 独立段）与脚本文件——都不是可安装的 Windows 包
+    # （教训：kvmem-llama.cpp 的 -source.zip 曾被当 Windows 资产兜底进 32bit/arm64）
+    if re.search(r"(?:^|[-_.])(?:src|source)(?:[-_.]|$)", base):
+        return False
+    if base.endswith((".ps1", ".psm1", ".sh", ".bash", ".bat", ".cmd", ".py", ".rb", ".pl")):
+        return False
     # 跨平台编译的裸二进制后缀（Go/Rust 等无 .exe 平台产物，如 ttyd.arm / ttyd.x86_64 / ttyd.i686）
     if base.endswith((".arm", ".armhf", ".i686", ".i386", ".i586", ".x86_64", ".amd64",
                       ".aarch64", ".s390x", ".mips", ".mips64", ".mips64el", ".mipsel",
@@ -711,6 +735,25 @@ def generate_autoupdate_url(asset_name, tag, has_v_prefix, platform="github", ow
     return f"https://github.com/{{owner}}/{{repo}}/releases/download/{v_prefix}$version/{new_name}"
 
 
+def find_duplicate_source(owner, repo, exclude_app=None):
+    """在既有 bucket 清单里找 checkver 指向同一 owner/repo 的清单（防重复收录 / 上游改名）。"""
+    target = f"github.com/{owner}/{repo}".lower()
+    hits = []
+    for p in sorted(BUCKET_DIR.glob("*.json")):
+        if exclude_app and p.stem == exclude_app:
+            continue
+        try:
+            m = json.load(open(p, encoding="utf-8"))
+        except Exception:
+            continue
+        cv = m.get("checkver") or {}
+        gh = str(cv.get("github", "")).lower()
+        hp = str(m.get("homepage", "")).lower()
+        if target in gh or target in hp:
+            hits.append(p.stem)
+    return hits
+
+
 def _write_placeholder_manifest(manifest_path, description, homepage, license_val, platform, owner, repo):
     """无 Release 的仓库：写一个占位 manifest 供人工补充 url/hash。"""
     manifest = {
@@ -755,6 +798,10 @@ def add_manifest(repo_url, app_name=None, more=False):
     print(f"仓库: {owner}/{repo}")
     print(f"应用名: {app_name}")
 
+    dups = find_duplicate_source(owner, repo, exclude_app=app_name)
+    if dups:
+        print(f"[警告] 同一来源已存在于既有清单: {', '.join(dups)}（可能重复收录或上游改名，请确认）")
+
     # 获取仓库信息
     try:
         info = get_repo_info(owner, repo, platform)
@@ -762,7 +809,7 @@ def add_manifest(repo_url, app_name=None, more=False):
         print(f"[错误] 获取仓库信息失败: {e}")
         return None
 
-    description = info.get("description", f"{repo} - from {platform}")
+    description = info.get("description") or f"{repo} - from {platform}"
     homepage = info.get("homepage", "") or f"https://{platform}.com/{owner}/{repo}"
     license_info = info.get("license", {})
     if isinstance(license_info, dict):
@@ -857,6 +904,9 @@ def add_manifest(repo_url, app_name=None, more=False):
 
     # 候选架构：专用组优先；缺专用组时用通用组最优兜底（规则②；纯通用项目不做兜底）
     generic_best = pick_asset(arch_groups["generic"]) if arch_groups["generic"] else None
+    # 通用组兜底仅限"可安装包"（防把脚本/元数据等兜底进缺失架构）
+    if generic_best and _ext_family(generic_best["name"]) not in ("archive", "installer"):
+        generic_best = None
     has_special = any(arch_groups[g] for g in ("64bit", "32bit", "arm64"))
     arch_sel = {}
     for arch in ("64bit", "32bit", "arm64"):
@@ -2134,19 +2184,23 @@ def finalize_direct_manifest(template, out_dir, app_name):
 
 def arch_url_hash(manifest):
     """从清单取探测用 url/hash：顶层 url 优先；多架构清单取 64bit（无 64bit 取 arm64/32bit 首个）。
-    --dl/--fill-bin 多架构探测只下主架构资产（bin/shortcuts 各架构通用）。"""
-    url = manifest.get("url", "") or ""
-    digest = str(manifest.get("hash", "") or "").lower()
-    arch = (manifest.get("architecture") or {}).get("64bit") or {}
-    if not url and arch.get("url"):
-        url = arch["url"] or ""
-        digest = str(arch.get("hash", "") or "").lower()
+    数组型 url/hash（--more 配对）取首项（主程序）。--dl/--fill-bin 多架构探测只下主架构资产。"""
+    def first(u, h):
+        if isinstance(u, list):
+            u = u[0] if u else ""
+            h = h[0] if isinstance(h, list) and h else ""
+        return (u or ""), str(h or "").lower()
+
+    url, digest = first(manifest.get("url", ""), manifest.get("hash", ""))
+    if not url:
+        arch = (manifest.get("architecture") or {}).get("64bit") or {}
+        if arch.get("url"):
+            url, digest = first(arch["url"], arch.get("hash", ""))
     if not url:
         for a in ("32bit", "arm64"):
             blk = (manifest.get("architecture") or {}).get(a) or {}
             if blk.get("url"):
-                url = blk["url"]
-                digest = str(blk.get("hash", "") or "").lower()
+                url, digest = first(blk["url"], blk.get("hash", ""))
                 break
     return url, (digest[7:] if digest.startswith("sha256:") else digest)
 
@@ -2303,6 +2357,7 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
     if not version:
         m = re.search(r"/releases/download/v?([^/]+)/", url)
         version = m.group(1) if m else (version_from_link(url) or "1.0")
+    _warn_if_prerelease(version, "（--fill-bin URL）")
     template = {
         "version": version,
         "description": arg_value("--description") or "",
@@ -2696,11 +2751,90 @@ def add_page_mode(page_url, app_name=None):
     return finalize_direct_manifest(template, out_dir, app_name)
 
 
+def check_consistency():
+    """校验 README 两张表 ↔ bucket/*.json ↔ progress.md 计数 是否一致（SKILL 铁律18 自动化）。
+    返回 True=全部一致，False=有偏差。"""
+    repo_root = Path(__file__).resolve().parent
+    bucket = sorted(p.stem for p in BUCKET_DIR.glob("*.json"))
+    ok = True
+
+    text = (repo_root / "README.md").read_text(encoding="utf-8")
+
+    def rows_under(heading):
+        m = re.search(r"^" + re.escape(heading) + r"\s*$", text, re.M)
+        if not m:
+            return []
+        rest = text[m.end():]
+        nxt = re.search(r"^#{2,3} ", rest, re.M)
+        block = rest[:nxt.start()] if nxt else rest
+        out = []
+        for line in block.splitlines():
+            if not line.startswith("|"):
+                continue
+            if "安装命令" in line or re.match(r"^\|[\s\-|:]+\|?\s*$", line):
+                continue
+            out.append(line)
+        return out
+
+    t3 = rows_under("### 第三方官方（引用原项目 Release）")
+    t1 = rows_under("### 本地维护（自托管 Release）")
+    readme_names = set()
+    for line in t3 + t1:
+        mm = re.search(r"scoop install\s+([\w.@/+-]+)", line)
+        if mm:
+            readme_names.add(mm.group(1).split("@")[0].split("/")[-1])
+
+    total = len(bucket)
+    print("== 一致性校验（README ↔ bucket ↔ progress）==")
+    if len(t3) + len(t1) != total:
+        ok = False
+        print(f"  [不一致] README 表行数 {len(t3)}+{len(t1)}={len(t3)+len(t1)} != bucket 清单数 {total}")
+    else:
+        print(f"  README 表行数 {len(t3)}+{len(t1)} == bucket 清单数 {total} ✓")
+
+    miss = sorted(set(bucket) - readme_names)
+    extra = sorted(readme_names - set(bucket))
+    if miss:
+        ok = False
+        print(f"  [缺行] 清单未出现在 README 表中: {', '.join(miss)}")
+    if extra:
+        ok = False
+        print(f"  [多余] README 表中有 bucket 里没有的条目: {', '.join(extra)}")
+    if not miss and not extra:
+        print("  README 条目与 bucket 清单一一对应 ✓")
+
+    p = repo_root / ".claude" / "skills-myscoop" / "progress.md"
+    if p.exists():
+        pt = p.read_text(encoding="utf-8")
+        m = re.search(r"^## 当前状态.*?(?=^## )", pt, re.M | re.S)
+        sect = m.group(0) if m else pt
+
+        def num(label):
+            mm = re.search(re.escape(label) + r"[^0-9\n]*?(\d+)", sect)
+            return int(mm.group(1)) if mm else None
+
+        for label, exp in (("收录软件总数", total),
+                           ("本地维护（自托管 Release）", len(t1)),
+                           ("第三方官方（引用原项目 Release）", len(t3))):
+            got = num(label)
+            if got != exp:
+                ok = False
+                print(f"  [不一致] progress「{label}」= {got}，应为 {exp}")
+            else:
+                print(f"  progress「{label}」= {got} ✓")
+    print("== 结果: " + ("全部一致 ✓" if ok else "存在不一致 ✗（见上）") + " ==")
+    return ok
+
+
 def main():
     args = sys.argv[1:]
     dry_run = "--dry-run" in args
     all_mode = "--all" in args
     add_idx = args.index("--add") if "--add" in args else -1
+
+    # --check：一致性校验（README 两表 ↔ bucket 清单 ↔ progress 计数），不一致非零退出
+    if "--check" in args:
+        sys.exit(0 if check_consistency() else 1)
 
     # --exe-name <url|本地exe>：探测 Inno 安装器解包后的真实 exe 名（便携 exe 直接提示）
     # （命令置首使用；旧名 --probe-exe 兼容）
@@ -2806,6 +2940,7 @@ def main():
         sys.exit(0)
 
     updated = []
+    errors = []
     for path in paths:
         try:
             result = update_manifest(path, dry_run=dry_run)
@@ -2816,6 +2951,7 @@ def main():
             if not dry_run:
                 import traceback
                 traceback.print_exc()
+            errors.append(path.name)
 
     print()
     if dry_run:
@@ -2824,6 +2960,9 @@ def main():
         print(f"=== 已更新 {len(updated)} 个 ===")
     for u in updated:
         print(f"  {u['manifest']}: {u['old']} → {u['new']}")
+    if errors:
+        print(f"=== 异常 {len(errors)} 个: {', '.join(errors)} ===")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
