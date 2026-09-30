@@ -181,7 +181,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* a4a6dd6 (HEAD -> main, origin/main, origin/HEAD) 收录预检改按资产判定：--add 自动取最新带 Windows 资产的 release（不看 pre/rc）
+* 24bc569 (HEAD -> main, origin/main, origin/HEAD) 收录质量与一致性护栏：资产筛选加固 + --check 校验 + CI 可见性
+* 1377fa9 progress.md 更新提交历史
+* a4a6dd6 收录预检改按资产判定：--add 自动取最新带 Windows 资产的 release（不看 pre/rc）
 * c8b7545 progress.md 更新提交历史
 * a1dba7d --add 收录预检：共享 pick_effective_release 拦截无效 release（rc/预发布/无 Win 资产）
 * 4ba212a progress.md 更新提交历史
