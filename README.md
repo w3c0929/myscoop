@@ -10,7 +10,7 @@
 
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
-| 1 | [DeepSeek Harness](https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe) — DeepSeek 桌面客户端（NSIS 安装器 7z 解包便携） | `scoop install dsh` | 单 exe 官方直链（NSIS 解包） | latest | 2026-09-30 | 2026-09-30 |
+| 1 | [DeepSeek Harness](https://www.deepseek.com/en/harness/) — DeepSeek 桌面客户端（官方直链，NSIS 安装器 7z 解包便携） | `scoop install dsh` | 单 exe 官方直链（NSIS 解包） | 0.2.0-rc.2 | 2026-09-30 | 2026-09-30 |
 | 2 | [kvmem-llama.cpp](https://github.com/kvmem/kvmem-llama.cpp) — llama.cpp KV 缓存压缩分支：8GB 显存跑 Bonsai 2 27B 满 256K 上下文（RC 版） | `scoop install kvllama` | zip 官方 release | 0.16.0-rc3-prism.3 | 2026-09-30 | 2026-09-30 |
 | 3 | [Rayburst](https://rayburst.pages.dev) — 开源下载管理器（基于 Aria2 Next 引擎，NSIS 安装器解包便携） | `scoop install rayburst` | 多架构 exe 官方 release（NSIS 解包） | 4.0.0 | 2026-09-29 | 2026-09-29 |
 | 4 | [ZTools](https://github.com/ZToolsCenter/ZTools) — uTools 的开源实现，高性能可扩展的应用启动器与插件平台 | `scoop install ztools` | zip 官方 release | 3.2.0 | 2026-09-27 | 2026-09-27 |

@@ -1234,6 +1234,69 @@ def sync_bin_version(manifest, old_version, new_version):
     return changed
 
 
+def _update_by_regex(manifest, cv, manifest_path, dry_run):
+    """"文本正则" checkver：抓页面/接口 → 正则取版本 → 下载（`$version` 模板或静态直链）→ 写回。
+
+    适用于上游安装包不在 GitHub Release 的场景（Release 无资产/全 prerelease），
+    仅用接口或页面取版本；静态直链（模板无 `$version`，如 .../dsh-latest-windows-x64.exe）
+    时 URL 原样下载、重算 hash，内容未变则不提升版本（防"幽灵更新"）。"""
+    try:
+        page = fetch_text(cv["url"], headers=PAGE_UA)
+        rm = re.search(cv["regex"], page)
+    except Exception as e:
+        print(f"  [错误] {manifest_path.name}: checkver 页面抓取失败: {e}")
+        return None
+    if not rm:
+        print(f"  [跳过] {manifest_path.name}: checkver 正则 {cv['regex']} 未匹配")
+        return None
+    latest_version = rm.group(1) if rm.groups() else rm.group(0)
+    current_version = manifest["version"]
+    if latest_version == current_version:
+        return None
+    print(f"  {manifest_path.name}: {current_version} → {latest_version}")
+    if dry_run:
+        return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
+    au = manifest.get("autoupdate", {})
+    tpl = au.get("url", manifest.get("url", ""))
+    if not isinstance(tpl, str) or not tpl:
+        print(f"  [警告] {manifest_path.name}: autoupdate 模板缺失/异常，跳过")
+        return None
+    static = "$version" not in tpl
+    new_url = tpl if static else tpl.replace("$version", latest_version)
+    tmp = manifest_path.parent / f".{manifest_path.stem}_dl.tmp"
+    try:
+        print(f"  [下载] {new_url.split('#')[0]}" + ("（静态 latest 直链）" if static else ""))
+        download_to(new_url, tmp)
+        size = tmp.stat().st_size
+        digest = sha256_hex(tmp)
+        tmp.unlink(missing_ok=True)
+        print(f"  [下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
+    except Exception as e:
+        tmp.unlink(missing_ok=True)
+        print(f"  [错误] {manifest_path.name}: 下载失败 {e}")
+        return None
+    if static:
+        old = str(manifest.get("hash", "")).lower()
+        if old.startswith("sha256:"):
+            old = old[7:]
+        if digest.lower() == old:
+            print(f"  [跳过] 内容未变（sha256 相同），版本不提升：{latest_version}")
+            return None
+    manifest["url"] = new_url
+    manifest["hash"] = "sha256:" + digest
+    chg = sync_autoupdate_fields(au, manifest, latest_version)
+    if chg:
+        print(f"    同步字段: {', '.join(chg)}")
+    chg2 = sync_bin_version(manifest, current_version, latest_version)
+    if chg2:
+        print(f"    版本化字段更正: {', '.join(chg2)} ({current_version} → {latest_version})")
+    manifest["version"] = latest_version
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=4, ensure_ascii=False)
+        f.write("\n")
+    return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
+
+
 def update_manifest(manifest_path, dry_run=False):
     """更新单个 manifest"""
     with open(manifest_path, "r", encoding="utf-8") as f:
@@ -1247,6 +1310,12 @@ def update_manifest(manifest_path, dry_run=False):
     custom_url = cv.get("url", "")
     platform = "github"
 
+    # 显式 url+regex 的"文本正则 checkver"优先（含指向 GitHub API 的端点）：上游安装包常不在
+    # GitHub Release（无资产/全 prerelease），只能用接口/页面取版本（如 dsh：包在
+    # download.deepseek.com，版本取自 deepseek-harness 的 release tag）。
+    if custom_url and cv.get("regex") and not github_url:
+        return _update_by_regex(manifest, cv, manifest_path, dry_run)
+
     if github_url:
         m = re.match(r"https?://github\.com/([^/]+)/([^/]+)", github_url)
     elif "api.github.com/repos" in custom_url or "github.com" in custom_url:
@@ -1256,57 +1325,8 @@ def update_manifest(manifest_path, dry_run=False):
         if m:
             platform = "gitee"
     else:
-        # 通用网页 checkver（非 GitHub/Gitee：url + regex）：页面取版本，直链下载算 hash
-        if not (cv.get("url") and cv.get("regex")):
-            print(f"  [跳过] {manifest_path.name}: 无法识别的 checkver")
-            return None
-        try:
-            page = fetch_text(cv["url"], headers=PAGE_UA)
-            rm = re.search(cv["regex"], page)
-        except Exception as e:
-            print(f"  [错误] {manifest_path.name}: checkver 页面抓取失败: {e}")
-            return None
-        if not rm:
-            print(f"  [跳过] {manifest_path.name}: checkver 正则 {cv['regex']} 未匹配")
-            return None
-        latest_version = rm.group(1) if rm.groups() else rm.group(0)
-        current_version = manifest["version"]
-        if latest_version == current_version:
-            return None
-        print(f"  {manifest_path.name}: {current_version} → {latest_version}")
-        if dry_run:
-            return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
-        au = manifest.get("autoupdate", {})
-        tpl = au.get("url", manifest.get("url", ""))
-        if "$version" not in tpl:
-            print(f"  [警告] {manifest_path.name}: autoupdate 无 $version 模板，跳过")
-            return None
-        new_url = tpl.replace("$version", latest_version)
-        tmp = manifest_path.parent / f".{manifest_path.stem}_dl.tmp"
-        try:
-            print(f"  [下载] {new_url.split('#')[0]}")
-            download_to(new_url, tmp)
-            size = tmp.stat().st_size
-            digest = sha256_hex(tmp)
-            tmp.unlink(missing_ok=True)
-            print(f"  [下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
-        except Exception as e:
-            tmp.unlink(missing_ok=True)
-            print(f"  [错误] {manifest_path.name}: 下载失败 {e}")
-            return None
-        manifest["url"] = new_url
-        manifest["hash"] = "sha256:" + digest
-        chg = sync_autoupdate_fields(au, manifest, latest_version)
-        if chg:
-            print(f"    同步字段: {', '.join(chg)}")
-        chg2 = sync_bin_version(manifest, current_version, latest_version)
-        if chg2:
-            print(f"    版本化字段更正: {', '.join(chg2)} ({current_version} → {latest_version})")
-        manifest["version"] = latest_version
-        with open(manifest_path, "w", encoding="utf-8") as f:
-            json.dump(manifest, f, indent=4, ensure_ascii=False)
-            f.write("\n")
-        return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
+        print(f"  [跳过] {manifest_path.name}: 无法识别的 checkver")
+        return None
 
     if not m:
         print(f"  [跳过] {manifest_path.name}: 无法解析 repo 地址")
@@ -1615,8 +1635,13 @@ def _open(req, timeout):
 
 
 def fetch_text(url, timeout=60, headers=None):
-    """抓取网页文本（用于 checkver 页面验证等）"""
-    req = urllib.request.Request(url, headers=headers or {"User-Agent": "myscoop-updater"})
+    """抓取网页文本（用于 checkver 页面验证等）。
+    与 fetch_json 同样：仅在 GitHub 官方 API 上附带 token，绝不发给其他域名。"""
+    hdrs = dict(headers or {"User-Agent": "myscoop-updater"})
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if token and url.startswith("https://api.github.com/") and "Authorization" not in hdrs:
+        hdrs["Authorization"] = f"Bearer {token}"
+    req = urllib.request.Request(url, headers=hdrs)
     with _open(req, timeout) as resp:
         return resp.read().decode("utf-8", "replace")
 
