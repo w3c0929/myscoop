@@ -12,6 +12,8 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai  # CI 提交用北京时区，README 日期列显示中国日期
     steps:
       - name: 检出仓库
         uses: actions/checkout@v5
@@ -32,6 +34,20 @@ jobs:
         id: upd
         continue-on-error: true
         run: python3 myscoop-update.py --all
+
+      - name: 一致性校验（README ↔ bucket ↔ progress）
+        id: chk
+        continue-on-error: true
+        run: python3 myscoop-update.py --check
+
+      - name: 提交 manifest 变更（先提交，README 日期列才能取到当天提交）
+        run: |
+          if git diff --quiet -- bucket/; then
+            echo "无 manifest 变更，跳过提交"
+            exit 0
+          fi
+          git add bucket/
+          git commit -m "自动更新第三方软件"
 
       - name: 同步 README 第三方版本列（= 清单 version 原样，幂等；逻辑内联，tools/ 不入库）
         run: |
@@ -114,19 +130,14 @@ jobs:
           print(f'共 {changed} 行更新')
           PYEOF
 
-      - name: 一致性校验（README ↔ bucket ↔ progress）
-        id: chk
-        continue-on-error: true
-        run: python3 myscoop-update.py --check
-
-      - name: 提交 manifest 变更
+      - name: 提交 README 变更
         run: |
-          if git diff --quiet -- bucket/ && git diff --quiet -- README.md; then
-            echo "无 manifest 变更，跳过提交"
+          if git diff --quiet -- README.md; then
+            echo "README 无变更，跳过提交"
             exit 0
           fi
-          git add bucket/ README.md
-          git commit -m "自动更新第三方软件"
+          git add README.md
+          git commit -m "同步 README 第三方版本与日期列"
 
       - name: 更新 progress.md 提交历史
         run: |
