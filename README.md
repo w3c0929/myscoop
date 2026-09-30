@@ -3,7 +3,7 @@
 个人 Scoop Bucket 仓库，收集 GitHub 上的 Windows 软件，支持一键安装和自动更新。
 
 ## 收录软件
-> 共收录 **122** 款 Windows 软件，其中 **35** 款引用第三方官方 Release，**87** 款为本地维护（自托管 Release）。
+
 > 共收录 **122** 款 Windows 软件，其中 **35** 款引用第三方官方 Release，**87** 款为本地维护（自托管 Release）。
 
 ### 第三方官方（引用原项目 Release）
