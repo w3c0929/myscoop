@@ -1,4 +1,4 @@
-function manifest_path($app, $bucket) {
+﻿function manifest_path($app, $bucket) {
     (Get-ChildItem (Find-BucketDirectory $bucket) -Filter "$(sanitary_path $app).json" -Recurse).FullName
 }
 

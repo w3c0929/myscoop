@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul
 
 :start
 
@@ -6,25 +7,25 @@ cls
 
 echo,
 
-echo �޸��Ҽ��˵�ģʽ
+echo 修改右键菜单模式
 
 echo,
 
-echo 1 ��Խ��Windows 10Ĭ��ģʽ
+echo 1 穿越到Windows 10默认模式
 
 echo,
 
-echo 2 �ָ�ΪWindows 11Ĭ��ģʽ
+echo 2 恢复为Windows 11默认模式
 
 echo,
 
-echo 0 ʲôҲ�������˳�
+echo 0 什么也不做，退出
 
 echo,
 
 echo,
 
-choice /c:120 /n /m:"��ѡ��Ҫ���еĲ�����1/2/0����"
+choice /c:120 /n /m:"请选择要进行的操作（1/2/0）："
 
 if %errorlevel%==0 exit
 

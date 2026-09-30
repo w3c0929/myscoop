@@ -1,4 +1,4 @@
-# Description: Functions for downloading files
+﻿# Description: Functions for downloading files
 
 # ========== GitHub 镜像加速补丁开始 ==========
 # GitHub Release 下载优先走镜像（aria2 与默认下载器共用）：

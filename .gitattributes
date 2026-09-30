@@ -3,14 +3,13 @@
 
 # Windows 独有脚本/文件：必须 CRLF
 #   *.bat / *.cmd：cmd 批处理（LF 会导致解析错乱）
-#   *.reg：注册表文件（Windows 惯例 CRLF）
-#   *.ps1：PowerShell 脚本（Windows 惯例 CRLF）
+#   *.ps1：PowerShell 脚本（UTF-8 编码）
 *.cmd text eol=crlf
 *.bat text eol=crlf
-*.reg text eol=crlf
 *.ps1 text eol=crlf
 
-# 二进制
+# 二进制（*.reg 为 UTF-16 LE，含 NUL 字节，必须按二进制处理，不能用 text/eol）
+*.reg   binary
 *.zip   binary
 *.exe   binary
 *.7z    binary
