@@ -182,7 +182,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 642aa1f (HEAD -> main, origin/main, origin/HEAD) NSIS 双层探测修复：内层优先 + 排除助手 exe + 根级优先（修 dsh 建 shim 失败）
+* 6912dd4 (HEAD -> main, origin/main, origin/HEAD) 新增收录 dsh(DeepSeek Harness) 与 kvllama(kvmem-llama.cpp)：README 补行重编号 + progress 计数
+* 7b877ae progress.md 更新提交历史
+* 642aa1f NSIS 双层探测修复：内层优先 + 排除助手 exe + 根级优先（修 dsh 建 shim 失败）
 * 776c3bc progress.md 更新提交历史
 * 24bc569 收录质量与一致性护栏：资产筛选加固 + --check 校验 + CI 可见性
 * 1377fa9 progress.md 更新提交历史
