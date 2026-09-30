@@ -14,7 +14,7 @@
 | 2 | [ZTools](https://github.com/ZToolsCenter/ZTools) — uTools 的开源实现，高性能可扩展的应用启动器与插件平台 | `scoop install ztools` | zip 官方 release | 3.2.0 | 2026-09-27 | 2026-09-27 |
 | 3 | [AI-Vault (updist)](https://ergeaia.github.io/) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | aivault-v0.2.9 | 2026-09-24 | 2026-09-24 |
 | 4 | [kvmem-llama.cpp](https://github.com/CrKcel/kvmem-llama.cpp) — llama.cpp KV 缓存压缩分支：8GB 显存跑 Bonsai 2 27B 满 256K 上下文（RC 版） | `scoop install kvllama` | zip 官方 release | 0.16.0-rc3 | 2026-09-22 | 2026-09-26 |
-| 5 | [llama.cpp Prism](https://github.com/PrismML-Eng/llama.cpp) — llama.cpp 分支（CUDA 主程序 + cudart 运行库配对合并，--more 收录） | `scoop install prllama` | 多架构 zip 官方 release | prism-b10709-9a9394a | 2026-09-21 | 2026-09-26 |
+| 5 | [llama.cpp Prism](https://github.com/PrismML-Eng/llama.cpp) — llama.cpp 分支（CUDA 主程序 + cudart 运行库配对合并，--more 收录） | `scoop install prllama` | 多架构 zip 官方 release | prism-b10743-adfffbe | 2026-09-21 | 2026-09-30 |
 | 6 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.6.4 | 2026-09-19 | 2026-09-19 |
 | 7 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.7.1 | 2026-09-16 | 2026-09-26 |
 | 8 | [Magpie (实验版)](https://github.com/SAOG0721/Magpie) — 游戏画面缩放/超分工具的非官方实验 fork | `scoop install magpie` | zip 官方直链 | 0.6.8 | 2026-09-16 | 2026-09-26 |
@@ -36,7 +36,7 @@
 | 24 | [QuickLook CAD 插件](https://github.com/emako/QuickLook.Plugin.CADImport) — 预览 CAD 文件格式 | `scoop install qlcad` | qlplugin 官方 release | 1 | 2026-07-09 | 2026-09-26 |
 | 25 | [QuickLook Office 插件](https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer) — 预览 Word/Excel/PPT 文件 | `scoop install qloffice` | qlplugin 官方 release | 6 | 2026-07-09 | 2026-09-26 |
 | 26 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.0 | 2026-07-09 | 2026-09-26 |
-| 27 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.38.0 | 2026-07-06 | 2026-09-21 |
+| 27 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.38.0 | 2026-07-06 | 2026-09-30 |
 | 28 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.4 | 2026-07-03 | 2026-09-26 |
 | 29 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | 多架构 zip 官方 release | 5.5.0 | 2026-07-03 | 2026-09-26 |
 | 30 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.24.11911.0 | 2026-07-03 | 2026-09-26 |
