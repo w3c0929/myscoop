@@ -35,8 +35,18 @@ assert "prllama" in hits, hits
 assert mu.find_duplicate_source("PrismML-Eng", "llama.cpp", exclude_app="prllama") == []
 print("find_duplicate_source OK")
 
-# 4) check_consistency：当前仓库 README/bucket/progress 应一致
-assert mu.check_consistency() is True
+# 4) check_consistency：能运行并返回 bool（仓库是否一致由 CI/`--check` 判定，不依赖本测试的工作树）
+assert isinstance(mu.check_consistency(), bool)
 print("check_consistency OK")
+
+# 5) _is_helper_exe：助手/工具 exe 不作主程序候选（修 dsh 选中 dsh-7za.exe）
+HELPER = ["dsh-7za.exe", "7z.exe", "7za.exe", "unins000.exe", "uninstall.exe",
+          "app-updater.exe", "vc_redist.x64.exe", "crashpad_handler.exe"]
+NOT_HELPER = ["DeepSeek Harness.exe", "app.exe", "tool-x64.exe", "setup-wizard.exe"]
+for n in HELPER:
+    assert mu._is_helper_exe(n) is True, f"应判为助手: {n}"
+for n in NOT_HELPER:
+    assert mu._is_helper_exe(n) is False, f"不应判为助手: {n}"
+print("_is_helper_exe OK")
 
 print("ALL PASS")

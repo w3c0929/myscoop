@@ -30,6 +30,7 @@ GitHub: https://github.com/w3c0929/myscoop
 - **收录预检（`--add`，与更新共用 `pick_effective_release`）**：只取"非 draft/untagged + 含 Windows 资产"的**最新** release——**只按资产判定，不看 prerelease/rc**；最新版若是零资产空 release 会自动往下探到最近带 Windows 资产的（如 kvllama `v0.17.0` 空 → 取 `v0.16.0-rc3-prism.3`）；全无则打印候选表后跳过、不写文件。archived/fork 默认警告（`--allow-archived` 静音）；直链/`--from`/`--fill-bin` 只提示不阻断（回归测试 `tools/test_effective_release.py`）
 - **资产筛选加固**：`is_windows_asset` 排除源码包（`-source`/`-src` 独立段）、脚本（`.ps1/.sh/.bat/.cmd/.py` 等）、校验/元数据；generic 兜底仅限可安装包（防源码包被兜底进缺失架构）；`description` 为 null 时回退；`--add` 检测同一 checkver 来源重复（防重复收录/上游改名）；`arch_url_hash` 支持数组型 url（配对清单取主资产）
 - **一致性校验 `--check`**：校验 README 两表行数之和 == `bucket/` 清单数、逐条一一对应、`progress.md` 计数一致；不一致非零退出（已挂 CI）。`--all` 逐文件异常打印 traceback + 汇总并以非零退出码报告（不再静默）；`fetch_json` 支持 `GH_TOKEN`/`GITHUB_TOKEN` 并对 429/5xx 退避重试（回归测试 `tools/test_guards.py`）
+- **NSIS 双层探测修复**：`probe_nsis_exes` 只要存在 `app-*.7z` 就二次解包并**只用内层 exe**（内层为空则留空），排除 7z/卸载/更新器/vc_redist 等助手 exe，并**优先根级 exe**（滤掉 resources 下依赖）——修 `dsh` 把 7z 助手 `dsh-7za.exe` 当主程序导致建 shim 失败（实测该安装器现得到单候选 `DeepSeek Harness.exe`）
 
 ## 核心规则
 

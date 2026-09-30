@@ -1714,9 +1714,22 @@ UNZIP_PRE_INSTALL = (
 )
 
 
+# 助手/工具类 exe：不作为主程序候选（7z 自解包、卸载器、更新器、运行库等）
+_HELPER_EXE_RE = re.compile(r"(?i)(uninstall|unins\d|^7z|7za|7z\.|updater|update-helper|"
+                            r"vc_?redist|vcredist|crashpad|crashreport|-setup\.exe$)")
+
+
+def _is_helper_exe(name):
+    return bool(_HELPER_EXE_RE.search(name))
+
+
 def probe_nsis_exes(tmp, app_name):
-    """NSIS 安装器：用 7z 直接解包（无需真安装，无副作用）收集真实 exe 名。
-    有 app-*.7z（Tauri 结构）时二次解压；返回 exe 文件名列表。"""
+    """NSIS 安装器：用 7z 直接解包（无需真安装，无副作用）收集真实 exe 名，排除助手 exe。
+
+    双层结构（`app-*.7z`，Electron/Tauri 常见）：**只要存在 `app-*.7z` 就二次解包，且只用内层
+    exe 作候选**——因为配套的 pre_install 会把 `app-*.7z` 解到 `$dir` 并丢弃外层，外层 exe
+    （如 dsh 的 7z 助手 `dsh-7za.exe`）在安装后并不存在于 `$dir`，误选会导致建 shim 失败。
+    内层为空时返回空（宁可留空也不误用外层）；无 `app-*.7z` 时才用外层。"""
     import subprocess
     import shutil
     z = find_7z()
@@ -1731,20 +1744,24 @@ def probe_nsis_exes(tmp, app_name):
                            capture_output=True, timeout=600)
         if r.returncode != 0:
             print(f"[警告] 7z 解包退出码 {r.returncode}")
-        def _key(p):
-            return ((p.parent != work and p.parent != work / "app"), p.name.lower())
-        exes = sorted({p for p in work.rglob("*.exe")
-                       if "uninstall" not in p.name.lower()}, key=_key)
-        exes = [p.name for p in exes]
-        if not exes:
-            app7z = next(work.rglob("app-*.7z"), None)
-            if app7z:
-                subprocess.run([z, "x", "-y", f"-o{work / 'app'}", str(app7z)],
-                               capture_output=True, timeout=900)
-                exes = sorted({p for p in (work / "app").rglob("*.exe")
-                               if "uninstall" not in p.name.lower()}, key=_key)
-                exes = [p.name for p in exes]
-        return exes
+
+        def collect(root):
+            paths = {p for p in root.rglob("*.exe") if not _is_helper_exe(p.name)}
+            top = {p for p in paths if p.parent == root}
+            if top:
+                paths = top  # 主程序通常在应用根目录；有根级 exe 就只取根级（滤掉 resources 下的依赖）
+            return sorted(paths, key=lambda p: (p.parent != root, p.name.lower()))
+
+        app7zs = sorted(work.rglob("app-*.7z"),
+                        key=lambda p: (0 if "64" in p.name else 1, p.name.lower()))
+        if app7zs:
+            print(f"        检测到双层结构 {app7zs[0].name}，二次解包取内层 exe…")
+            subprocess.run([z, "x", "-y", f"-o{work / 'app'}", str(app7zs[0])],
+                           capture_output=True, timeout=900)
+            exes = collect(work / "app")
+        else:
+            exes = collect(work)
+        return [p.name for p in exes]
     except subprocess.TimeoutExpired:
         print("[错误] 7z 解包超时")
         return []
@@ -2525,8 +2542,7 @@ def probe_installer_exes(tmp, app_name):
                            capture_output=True, timeout=600)
         if r.returncode != 0:
             print(f"[警告] 静默安装退出码 {r.returncode}，安装目录可能不完整")
-        exes = sorted({p.name for p in work.rglob("*.exe")
-                       if p.name.lower() not in ("unins000.exe",)},
+        exes = sorted({p.name for p in work.rglob("*.exe") if not _is_helper_exe(p.name)},
                       key=lambda n: n.lower())
     except subprocess.TimeoutExpired:
         print("[错误] 静默安装超时，已中止")

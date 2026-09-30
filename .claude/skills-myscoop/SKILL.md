@@ -556,3 +556,4 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
     - **`--all` 异常可见**：逐文件异常打印 traceback 并汇总，末尾非零退出（修掉"异常被 `except Exception` 静默吞掉"）。
     - **重复来源检测**：`--add` 时若同一 `checkver` 来源已存在于其它清单 → 警告（防重复收录 / 上游改名）。
     - **API 健壮性**：`fetch_json` 支持 `GH_TOKEN`/`GITHUB_TOKEN`（GitHub 配额 60→5000/时）并对 429/5xx 与网络错误退避重试；`arch_url_hash` 支持数组型 url（配对清单取主资产，修 `--fill-bin` 对 prllama 这类清单崩溃）。
+    - **NSIS 双层探测修复（`probe_nsis_exes`）**：**只要存在 `app-*.7z` 就二次解包，并只用内层 exe 作候选**（内层为空则留空、不用外层）——因为配套的 `pre_install` 会把 `app-*.7z` 解到 `$dir` 并丢弃外层，外层 exe 安装后并不存在；同时排除助手 exe（`7z/7za/uninstall/updater/vc_redist/crashpad` 等）并**优先取根级 exe**（滤掉 `resources/` 下的依赖）。教训：`dsh`（DeepSeek Harness）安装器自带 7z 助手 `dsh-7za.exe` 被误当主程序 → 装后该文件已被删 → 建 shim 失败；修复后实测得到单候选 `DeepSeek Harness.exe`。
