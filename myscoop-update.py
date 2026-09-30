@@ -484,6 +484,78 @@ def _release_has_windows_asset(release):
     return any(is_windows_asset(a.get("name", "")) for a in (release.get("assets") or []))
 
 
+# 预发布版本串特征（要求是独立段，避免 premium / arch 之类误判）
+_PRERELEASE_TAG_RE = re.compile(
+    r"(?i)(?:^|[-._])(?:rc|beta|alpha|preview|pre|dev|nightly|canary)\d*(?:$|[-._])")
+
+
+def _version_looks_prerelease(version):
+    """版本串是否像预发布（如 0.16.0-rc3 / 2.0-beta.1）。
+    仅凭 GitHub 的 prerelease 标志不够——作者常把 rc 标成正式版，故按版本串判定。"""
+    return bool(_PRERELEASE_TAG_RE.search(str(version or "")))
+
+
+def _warn_if_prerelease(version, where=""):
+    """直链/模板类入口（无 release 列表可选）的预发布提示——不阻断，用户已显式给出源。"""
+    if _version_looks_prerelease(version):
+        print(f"[提示] 版本 {version} 像预发布版（rc/beta/…）{where}；如非本意请改用稳定版链接。")
+
+
+def _ver_of_tag(tag):
+    """release tag → 与清单一致的 version（剥离平台前缀与 v）。"""
+    v = re.sub(r"^(windows|win64|win32|macos|darwin|linux|ubuntu)[-_]v", "", str(tag or ""), flags=re.I)
+    return v.lstrip("v")
+
+
+def pick_effective_release(owner, repo, platform="github", want_platform=None,
+                           allow_prerelease=False, rels=None):
+    """挑一个"有效" release（--add 收录与更新路径回退共用）。
+    候选 = releases 列表去掉 draft / untagged-，要求：含可下载的 Windows 资产；
+    平台 tag 匹配 want_platform（若给定）；除非 allow_prerelease，否则既不是 prerelease
+    标志、也不是 rc/beta 等预发布版本串。取列表中最新的一个；找不到返回 None。
+
+    更新路径调用时传 allow_prerelease=True：老清单（如只发 prerelease 的 Magpie）本就
+    跟踪预发布，需保持既有行为；严格过滤只用于 --add 收录新清单。"""
+    if rels is None:
+        try:
+            rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=30")
+        except Exception as e:
+            print(f"  [错误] 获取 {owner}/{repo} releases 失败: {e}")
+            return None
+    for r in rels:
+        if r.get("draft") or str(r.get("tag_name", "")).startswith("untagged-"):
+            continue
+        if not _release_has_windows_asset(r):
+            continue
+        if want_platform and not _platform_tag_passes(r.get("tag_name", ""), want_platform):
+            continue
+        if not allow_prerelease and (r.get("prerelease")
+                                     or _version_looks_prerelease(_ver_of_tag(r.get("tag_name")))):
+            continue
+        return r
+    return None
+
+
+def describe_release_candidates(owner, repo, platform="github", rels=None):
+    """--add 找不到有效 release 时，打印候选（tag / 预发布? / Windows 资产数）供人工判断。"""
+    if rels is None:
+        try:
+            rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=20")
+        except Exception as e:
+            print(f"  获取候选 release 失败: {e}")
+            return
+    rels = [r for r in (rels or []) if not r.get("draft")]
+    if not rels:
+        print("  该仓库没有任何 release。")
+        return
+    print("  可用 release（tag | 预发布? | Windows 资产数）:")
+    for r in rels:
+        tag = str(r.get("tag_name", ""))
+        pre = bool(r.get("prerelease")) or _version_looks_prerelease(_ver_of_tag(tag))
+        nwin = sum(1 for a in (r.get("assets") or []) if is_windows_asset(a.get("name", "")))
+        print(f"    {tag:30s} 预发布={str(pre):5s} win资产={nwin}")
+
+
 def detect_arch(name):
     """从文件名检测架构"""
     lower = name.lower()
@@ -643,6 +715,26 @@ def generate_autoupdate_url(asset_name, tag, has_v_prefix, platform="github", ow
     return f"https://github.com/{{owner}}/{{repo}}/releases/download/{v_prefix}$version/{new_name}"
 
 
+def _write_placeholder_manifest(manifest_path, description, homepage, license_val, platform, owner, repo):
+    """无 Release 的仓库：写一个占位 manifest 供人工补充 url/hash。"""
+    manifest = {
+        "version": "1.0",
+        "description": description,
+        "homepage": homepage,
+        "license": license_val,
+        "url": f"https://{platform}.com/{owner}/{repo}/releases",
+        "hash": "sha256:" + "0" * 64,
+        "notes": "需要手动设置下载地址和 hash，该项目无 Release。"
+    }
+    s = str(manifest_path)
+    with open(s, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=4, ensure_ascii=False)
+        f.write("\n")
+    print(f"\n[占位] manifest 已创建: {s}")
+    print("  请手动补充 url 和 hash 后替换。")
+    return s
+
+
 def add_manifest(repo_url, app_name=None, more=False):
     """从 GitHub / Gitee 链接添加新 manifest。
     more=True（--more）：启用「主程序 + cudart 运行时」配对合并收录——
@@ -685,28 +777,34 @@ def add_manifest(repo_url, app_name=None, more=False):
     print(f"描述: {description}")
     print(f"License: {license_val}")
 
-    # 获取 release
+    # 仓库健康度（archived/fork）：默认警告，--allow-archived 静音
+    if "--allow-archived" not in sys.argv[1:]:
+        if info.get("archived"):
+            print("[警告] 该仓库已归档（archived），上游可能不再维护；确认无碍可加 --allow-archived 静音")
+        elif info.get("fork"):
+            print("[警告] 该仓库是 fork，非上游主仓；确认无碍可加 --allow-archived 静音")
+
+    # 获取 release（预检：仅取含 Windows 资产、且非预发布/rc 的有效 release）
+    allow_pre = "--prerelease" in sys.argv[1:]
     try:
-        release = get_latest_release(owner, repo, platform)
+        rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=30")
     except urllib.error.HTTPError as e:
         print(f"[错误] 获取 release 失败 (HTTP {e.code})，将创建无 checkver 的占位 manifest")
         print("  该项目可能没有 Release，需要手动处理。")
-        manifest = {
-            "version": "1.0",
-            "description": description,
-            "homepage": homepage,
-            "license": license_val,
-            "url": f"https://{platform}.com/{owner}/{repo}/releases",
-            "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-            "notes": "需要手动设置下载地址和 hash，该项目无 Release。"
-        }
-        manifest_path_str = str(manifest_path)
-        with open(manifest_path_str, "w", encoding="utf-8") as f:
-            json.dump(manifest, f, indent=4, ensure_ascii=False)
-            f.write("\n")
-        print(f"\n[占位] manifest 已创建: {manifest_path_str}")
-        print("  请手动补充 url 和 hash 后替换。")
-        return manifest_path_str
+        return _write_placeholder_manifest(manifest_path, description, homepage, license_val,
+                                           platform, owner, repo)
+
+    if not rels:
+        print("[提示] 该项目没有任何 Release，将创建占位 manifest 供手动补充。")
+        return _write_placeholder_manifest(manifest_path, description, homepage, license_val,
+                                           platform, owner, repo)
+
+    release = pick_effective_release(owner, repo, platform, allow_prerelease=allow_pre, rels=rels)
+    if not release:
+        print("\n[跳过] 未找到" + ("" if allow_pre else "非预发布的") + "含 Windows 资产的有效 release：")
+        describe_release_candidates(owner, repo, platform, rels=rels)
+        print("  如确认要用预发布版，可加 --prerelease 重跑。")
+        return None
 
     tag = release["tag_name"]
     version = tag.lstrip("v")
@@ -1200,31 +1298,20 @@ def update_manifest(manifest_path, dry_run=False):
             print(f"  [跳过] {manifest_path.name}: 上游近期没有 {want_platform} 平台 release")
             return None
 
-    # 加固：latest release 若无可下载的 Windows 资产（如 monorepo/changesets 子包噪音
-    # tag，其 assets 为空），在 releases 列表中回退到最近的、带 Windows 资产的 release；
-    # 仍找不到则跳过不更新，避免拿无资产的版本号去改写清单。
+    # 加固：latest release 若无可用 Windows 资产（如 monorepo 子包噪音 tag），回退到最近的
+    # 带 Windows 资产的 release；仍无则跳过不更新。allow_prerelease=True 保持既有行为
+    # （只发 prerelease 的仓库如 Magpie 仍跟踪）。
     if not _release_has_windows_asset(release):
         print(f"  [资产] 最新 {release.get('tag_name')} 无可下载 Windows 资产，回退查找…")
-        try:
-            rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=30")
-        except Exception as e:
-            print(f"  [错误] {manifest_path.name}: {e}")
-            return None
-        release = next((r for r in rels
-                        if not r.get("draft")
-                        and not str(r.get("tag_name", "")).startswith("untagged-")
-                        and _release_has_windows_asset(r)
-                        and (not want_platform
-                             or _platform_tag_passes(r.get("tag_name", ""), want_platform))), None)
+        release = pick_effective_release(owner, repo, platform,
+                                         want_platform=want_platform, allow_prerelease=True)
         if not release:
             print(f"  [跳过] {manifest_path.name}: 上游近期没有带 Windows 资产的 release")
             return None
 
     latest_tag = release["tag_name"]
     # 剥离平台前缀（windows-v0.1.0 / macos-v1.2 等），与清单 version 对齐
-    latest_version = re.sub(r"^(windows|win64|win32|macos|darwin|linux|ubuntu)[-_]v",
-                            "", latest_tag, flags=re.I)
-    latest_version = latest_version.lstrip("v")
+    latest_version = _ver_of_tag(latest_tag)
 
     # 兼容"tag 带后缀而清单 version 只写主版本"的项目（如 v0.6.8-experimental.1 vs 0.6.8）：
     # 视为同一版本，不触发伪更新（仅当后缀不同时）
@@ -1820,6 +1907,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
     if not url:
         print("[错误] 模板缺少 url（多架构清单需含 64bit 分支）")
         return None
+    _warn_if_prerelease(template.get("version") or version_from_link(url), "（直链/模板模式）")
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     tmp = out_dir / f".{app_name}_dl.tmp"
@@ -2085,6 +2173,7 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
     if not url:
         print("[错误] 清单缺少 url（多架构清单需含 64bit 分支）")
         return None
+    _warn_if_prerelease(template.get("version") or version_from_link(url), "（--fill-bin）")
     if multi_arch:
         print(f"[探测] 多架构清单：下载 64bit 主架构资产探测（bin/extract_dir 各架构通用）")
     if not url.lower().endswith(".zip"):
