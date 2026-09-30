@@ -507,15 +507,14 @@ def _ver_of_tag(tag):
     return v.lstrip("v")
 
 
-def pick_effective_release(owner, repo, platform="github", want_platform=None,
-                           allow_prerelease=False, rels=None):
+def pick_effective_release(owner, repo, platform="github", want_platform=None, rels=None):
     """挑一个"有效" release（--add 收录与更新路径回退共用）。
     候选 = releases 列表去掉 draft / untagged-，要求：含可下载的 Windows 资产；
-    平台 tag 匹配 want_platform（若给定）；除非 allow_prerelease，否则既不是 prerelease
-    标志、也不是 rc/beta 等预发布版本串。取列表中最新的一个；找不到返回 None。
+    平台 tag 匹配 want_platform（若给定）。取列表中最新的一个；找不到返回 None。
 
-    更新路径调用时传 allow_prerelease=True：老清单（如只发 prerelease 的 Magpie）本就
-    跟踪预发布，需保持既有行为；严格过滤只用于 --add 收录新清单。"""
+    只按"资产"判定，不看 prerelease/rc——上游常把发布标成预发布但资产完整，且最新
+    版本可能恰好是零资产的空 release（如 kvmem-llama.cpp 的 v0.17.0），需往下探到
+    最近一个真正带 Windows 资产的 release。"""
     if rels is None:
         try:
             rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=30")
@@ -528,9 +527,6 @@ def pick_effective_release(owner, repo, platform="github", want_platform=None,
         if not _release_has_windows_asset(r):
             continue
         if want_platform and not _platform_tag_passes(r.get("tag_name", ""), want_platform):
-            continue
-        if not allow_prerelease and (r.get("prerelease")
-                                     or _version_looks_prerelease(_ver_of_tag(r.get("tag_name")))):
             continue
         return r
     return None
@@ -784,8 +780,7 @@ def add_manifest(repo_url, app_name=None, more=False):
         elif info.get("fork"):
             print("[警告] 该仓库是 fork，非上游主仓；确认无碍可加 --allow-archived 静音")
 
-    # 获取 release（预检：仅取含 Windows 资产、且非预发布/rc 的有效 release）
-    allow_pre = "--prerelease" in sys.argv[1:]
+    # 获取 release（预检：跳过零资产/无 Windows 资产的 release，取最新带 Windows 资产的）
     try:
         rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=30")
     except urllib.error.HTTPError as e:
@@ -799,11 +794,10 @@ def add_manifest(repo_url, app_name=None, more=False):
         return _write_placeholder_manifest(manifest_path, description, homepage, license_val,
                                            platform, owner, repo)
 
-    release = pick_effective_release(owner, repo, platform, allow_prerelease=allow_pre, rels=rels)
+    release = pick_effective_release(owner, repo, platform, rels=rels)
     if not release:
-        print("\n[跳过] 未找到" + ("" if allow_pre else "非预发布的") + "含 Windows 资产的有效 release：")
+        print("\n[跳过] 未找到带 Windows 资产的有效 release：")
         describe_release_candidates(owner, repo, platform, rels=rels)
-        print("  如确认要用预发布版，可加 --prerelease 重跑。")
         return None
 
     tag = release["tag_name"]
@@ -1298,13 +1292,11 @@ def update_manifest(manifest_path, dry_run=False):
             print(f"  [跳过] {manifest_path.name}: 上游近期没有 {want_platform} 平台 release")
             return None
 
-    # 加固：latest release 若无可用 Windows 资产（如 monorepo 子包噪音 tag），回退到最近的
-    # 带 Windows 资产的 release；仍无则跳过不更新。allow_prerelease=True 保持既有行为
-    # （只发 prerelease 的仓库如 Magpie 仍跟踪）。
+    # 加固：latest release 若无可用 Windows 资产（如零资产的空 release / monorepo 子包
+    # 噪音 tag），回退到最近的带 Windows 资产的 release；仍无则跳过不更新。
     if not _release_has_windows_asset(release):
         print(f"  [资产] 最新 {release.get('tag_name')} 无可下载 Windows 资产，回退查找…")
-        release = pick_effective_release(owner, repo, platform,
-                                         want_platform=want_platform, allow_prerelease=True)
+        release = pick_effective_release(owner, repo, platform, want_platform=want_platform)
         if not release:
             print(f"  [跳过] {manifest_path.name}: 上游近期没有带 Windows 资产的 release")
             return None
