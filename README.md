@@ -137,7 +137,7 @@
 | 84 | 系统常用功能助手 — Windows 系统工具箱 | `scoop install syshelper` | 单 exe 便携 | 3.0 | 2026-06-30 | 2026-07-01 |
 | 85 | [WGestures](https://github.com/yingDev/WGestures) — 全局鼠标手势（上游已归档） | `scoop install wgestures` | portable zip | 1.8.5.0 | 2026-06-29 | 2026-06-29 |
 | 86 | [Uninstall Tool](https://www.crystalidea.com/uninstall-tool) — 强力卸载工具 | `scoop install uninstalltool` | portable zip | 3.4.3 | 2026-06-29 | 2026-06-29 |
-| 87 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具 | `scoop install mykeymap` | zip 便携解压即用 | 2.0-beta33 | 2026-06-29 | 2026-09-26 |
+| 87 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具 | `scoop install mykeymap` | zip 便携解压即用 | 2.0-beta33 | 2026-06-29 | 2026-10-01 |
 ## 快速开始（用户）
 
 ### 1. 添加 Bucket
