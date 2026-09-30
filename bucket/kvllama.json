@@ -1,0 +1,23 @@
+{
+    "version": "0.16.0-rc3-prism.3",
+    "description": "kvmem-llama.cpp - from github",
+    "homepage": "https://github.com/kvmem/kvmem-llama.cpp",
+    "license": "unknown",
+    "checkver": {
+        "github": "https://github.com/kvmem/kvmem-llama.cpp"
+    },
+    "url": "https://github.com/kvmem/kvmem-llama.cpp/releases/download/v0.16.0-rc3-prism.3/kvmem-v0.16.0-rc3-prism.3-windows-x86_64-cuda12.9-rtx20-30-40-50.zip",
+    "hash": "sha256:eeb86c24c72ab4f344534cfa0f78fadb7e8c4198c7e3bd9c2038ead41d578fbf",
+    "autoupdate": {
+        "url": "https://github.com/kvmem/kvmem-llama.cpp/releases/download/v$version/kvmem-v$version-windows-x86_64-cuda12.9-rtx20-30-40-50.zip",
+        "extract_dir": "kvmem-v$version-rc3-prism.3-windows-x86_64-cuda12.9-rtx20-30-40-50"
+    },
+    "extract_dir": "kvmem-v0.16.0-rc3-prism.3-windows-x86_64-cuda12.9-rtx20-30-40-50",
+    "bin": "bin/llama-kvmem-server.exe",
+    "shortcuts": [
+        [
+            "bin/llama-kvmem-server.exe",
+            "kvllama"
+        ]
+    ]
+}

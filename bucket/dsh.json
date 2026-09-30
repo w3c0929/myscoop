@@ -1,0 +1,23 @@
+{
+    "version": "latest",
+    "description": "",
+    "homepage": "",
+    "license": "unknown",
+    "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe",
+    "hash": "sha256:d61cd8882f8b8a1251144320493ad27920d15139503eba2465b9579eee720cfc",
+    "bin": "DeepSeek Harness.exe",
+    "shortcuts": [
+        [
+            "DeepSeek Harness.exe",
+            "dsh"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ],
+    "autoupdate": {
+        "url": "https://download.deepseek.com/desktop/dsh-$version-windows-x64.exe"
+    }
+}
