@@ -1,16 +1,14 @@
 # 统一行尾：文本一律 LF（CI Ubuntu 与本地 Windows 存储一致，防全文件行尾漂移假 diff）
-# 例外：*.bat 必须 CRLF（Windows cmd 解析铁律）
-*.md    text eol=lf
-*.py    text eol=lf
-*.yml   text eol=lf
-*.yaml  text eol=lf
-*.json  text eol=lf
-*.ps1   text eol=lf
-*.cjs   text eol=lf
-*.txt   text eol=lf
+* text=auto eol=lf
 
-# cmd 批处理：必须 CRLF（LF 会导致解析错乱）
-*.bat   text eol=crlf
+# Windows 独有脚本/文件：必须 CRLF
+#   *.bat / *.cmd：cmd 批处理（LF 会导致解析错乱）
+#   *.reg：注册表文件（Windows 惯例 CRLF）
+#   *.ps1：PowerShell 脚本（Windows 惯例 CRLF）
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.reg text eol=crlf
+*.ps1 text eol=crlf
 
 # 二进制
 *.zip   binary
