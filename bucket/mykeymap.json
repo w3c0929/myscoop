@@ -4,7 +4,7 @@
     "homepage": "https://xianyukang.com/MyKeymap.html",
     "license": "GPL-3.0",
     "url": "https://github.com/w3c0929/myscoop/releases/download/v2.0-beta33-mykeymap/mykeymap.zip",
-    "hash": "sha256:8f724eed25b77d80ef24b957d3eda754e0447df4e0d95866e99bc2b7a917bd5d",
+    "hash": "sha256:4d8619d0237a4912143022aabc3bab850eada7c4e555ddccf7ad51696cd0d245",
     "bin": "bin\\settings.exe",
     "shortcuts": [
         [
