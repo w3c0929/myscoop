@@ -183,7 +183,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 3d66d9d (HEAD -> main, origin/main, origin/HEAD) dsh 支持自动更新：静态 latest 直链 + 文本正则 checkver（版本取自官方 GitHub tag）
+* f253110 (HEAD -> main, origin/main, origin/HEAD) mykeymap 资产更新：替换远程 mykeymap.zip（新包为扁平结构）并适配清单
+* 8cb1d6e mykeymap 2.0-beta33 更新压缩包：替换远程 mykeymap.zip 资产（digest 8f724eed，与清单一致）；包结构调整为扁平（移除 extract_dir），根目录误带 install.json/manifest.json 已清除
+* e4e76d4 推送
+* 2c15be6 progress.md 更新提交历史
+* 3d66d9d dsh 支持自动更新：静态 latest 直链 + 文本正则 checkver（版本取自官方 GitHub tag）
 * 9e680a1 progress.md 更新提交历史
 * 6912dd4 新增收录 dsh(DeepSeek Harness) 与 kvllama(kvmem-llama.cpp)：README 补行重编号 + progress 计数
 * 7b877ae progress.md 更新提交历史
