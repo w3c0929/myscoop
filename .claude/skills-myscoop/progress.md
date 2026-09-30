@@ -183,7 +183,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 6912dd4 (HEAD -> main, origin/main, origin/HEAD) 新增收录 dsh(DeepSeek Harness) 与 kvllama(kvmem-llama.cpp)：README 补行重编号 + progress 计数
+* 3d66d9d (HEAD -> main, origin/main, origin/HEAD) dsh 支持自动更新：静态 latest 直链 + 文本正则 checkver（版本取自官方 GitHub tag）
+* 9e680a1 progress.md 更新提交历史
+* 6912dd4 新增收录 dsh(DeepSeek Harness) 与 kvllama(kvmem-llama.cpp)：README 补行重编号 + progress 计数
 * 7b877ae progress.md 更新提交历史
 * 642aa1f NSIS 双层探测修复：内层优先 + 排除助手 exe + 根级优先（修 dsh 建 shim 失败）
 * 776c3bc progress.md 更新提交历史
