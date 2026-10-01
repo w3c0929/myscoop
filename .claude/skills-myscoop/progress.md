@@ -183,7 +183,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* d9263c2 (HEAD -> main, origin/main, origin/HEAD) 新增收录 bongocat 2.0.1（BongoCat 跨平台桌面宠物，单 exe 官方 release NSIS 解包）；README 第三方表补行重编号（37 行，总数 124），progress 状态区同步；config.json last_update 同步
+* ba36165 (HEAD -> main, origin/main, origin/HEAD) 新增收录 ecopaste 1.1.1-nightly.20260813.1（EcoPaste 跨平台剪贴板管理工具，多架构 exe 官方 release NSIS 解包）；README 第三方表补行重编号（38 行，总数 125），progress 状态区同步
+* 31d5928 progress.md 更新提交历史
+* d9263c2 新增收录 bongocat 2.0.1（BongoCat 跨平台桌面宠物，单 exe 官方 release NSIS 解包）；README 第三方表补行重编号（37 行，总数 124），progress 状态区同步；config.json last_update 同步
 * 99c99a3 README 去除重复的收录总数引言行
 * 8299b87 progress.md 更新提交历史
 * 083083a config.json last_update 同步
