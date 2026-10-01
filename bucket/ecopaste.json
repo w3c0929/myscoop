@@ -1,5 +1,5 @@
 {
-    "version": "1.1.1-nightly.20260813.1",
+    "version": "1.1.0",
     "description": "🎉跨平台的剪贴板管理工具 | Cross-platform clipboard management tool",
     "homepage": "https://ecopaste.cn",
     "license": "Apache-2.0",
@@ -8,11 +8,12 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/EcoPasteHub/EcoPaste/releases/download/v1.1.1-nightly.20260813.1/EcoPaste_1.1.1-nightly.20260813.1_x64-setup.exe",
-            "hash": "sha256:81a8681bdcfa375b99fe44df85c629d8ab1e4dcdba535bcd81c32b653ac04d71"
+            "url": "https://github.com/EcoPasteHub/EcoPaste/releases/download/v1.1.0/EcoPaste_1.1.0_x64-setup.exe",
+            "hash": "sha256:8a437d9f2cd960184942e0b1a2d1063566501928ead07cf82bc0959da534b5bf"
         },
         "arm64": {
-            "url": "https://github.com/EcoPasteHub/EcoPaste/releases/download/v1.1.1-nightly.20260813.1/EcoPaste_1.1.1-nightly.20260813.1_arm64-setup.exe"
+            "url": "https://github.com/EcoPasteHub/EcoPaste/releases/download/v1.1.0/EcoPaste_1.1.0_arm64-setup.exe",
+            "hash": "sha256:94a8efaf4fbb5b2be13f705da6da49a826d8e7efd2ff8f74fb88a12184d36f14"
         }
     },
     "autoupdate": {

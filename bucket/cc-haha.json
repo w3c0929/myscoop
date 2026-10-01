@@ -1,13 +1,13 @@
 {
-    "version": "0.6.7",
+    "version": "0.6.8",
     "description": "Local-first cross-platform desktop workspace for Claude Code / agents: multi-agent, Git worktrees, code diffs, skill marketplace, multi-model, Computer Use, task-aware desktop pets, with WeChat, Feishu, DingTalk, Telegram, WhatsApp and H5 access.",
     "homepage": "cchaha.ai",
     "license": "MIT",
-    "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.6.7/Claude-Code-Haha-0.6.7-win-x64.exe",
+    "url": "https://github.com/NanmiCoder/cc-haha/releases/download/v0.6.8/Claude-Code-Haha-0.6.8-win-x64.exe",
     "checkver": {
         "github": "https://github.com/NanmiCoder/cc-haha"
     },
-    "hash": "sha256:849b4598d855d3c96671a62ae1a6cfd4d1f6288b08c5359903b92a253fbf430c",
+    "hash": "sha256:b2954795da8dcfa8d7b9f4016f543f1d6b97086864e271e8676e07ab3b4d4c91",
     "bin": "Claude Code Haha.exe",
     "shortcuts": [
         [
