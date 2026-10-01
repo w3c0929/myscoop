@@ -1,0 +1,40 @@
+{
+    "version": "1.1.1-nightly.20260813.1",
+    "description": "🎉跨平台的剪贴板管理工具 | Cross-platform clipboard management tool",
+    "homepage": "https://ecopaste.cn",
+    "license": "Apache-2.0",
+    "checkver": {
+        "github": "https://github.com/EcoPasteHub/EcoPaste"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/EcoPasteHub/EcoPaste/releases/download/v1.1.1-nightly.20260813.1/EcoPaste_1.1.1-nightly.20260813.1_x64-setup.exe",
+            "hash": "sha256:81a8681bdcfa375b99fe44df85c629d8ab1e4dcdba535bcd81c32b653ac04d71"
+        },
+        "arm64": {
+            "url": "https://github.com/EcoPasteHub/EcoPaste/releases/download/v1.1.1-nightly.20260813.1/EcoPaste_1.1.1-nightly.20260813.1_arm64-setup.exe"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/EcoPasteHub/EcoPaste/releases/download/v$version/EcoPaste_$version_x64-setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/EcoPasteHub/EcoPaste/releases/download/v$version/EcoPaste_$version_arm64-setup.exe"
+            }
+        }
+    },
+    "bin": "EcoPaste.exe",
+    "shortcuts": [
+        [
+            "EcoPaste.exe",
+            "ecopaste"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ]
+}
