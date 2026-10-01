@@ -2,8 +2,8 @@ name: 自动更新第三方软件
 
 on:
   schedule:
-    # GitHub Actions 的 cron 使用 UTC；北京时间 01:00 = UTC 17:00（前一天）
-    - cron: '0 17 * * *'
+    # GitHub Actions 的 cron 使用 UTC；北京时间 21:00 = UTC 13:00（前一天）
+    - cron: '0 13 * * *'
   workflow_dispatch:
 
 permissions:
