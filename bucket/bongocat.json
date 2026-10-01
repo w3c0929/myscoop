@@ -1,0 +1,26 @@
+{
+    "version": "2.0.1",
+    "description": "🐱 BongoCat — A cross-platform interactive desktop pet that brings fun to your desktop!",
+    "homepage": "https://github.com/ayangweb/Awesome-BongoCat",
+    "license": "Apache-2.0",
+    "checkver": {
+        "github": "https://github.com/ayangweb/BongoCat"
+    },
+    "url": "https://github.com/ayangweb/BongoCat/releases/download/v2.0.1/BongoCat_2.0.1_x64.exe",
+    "autoupdate": {
+        "url": "https://github.com/ayangweb/BongoCat/releases/download/v$version/BongoCat_$version_x64.exe"
+    },
+    "hash": "sha256:a463ce69e82908a2320185c05b70b3f4c20ed8537e8a754ff0aa5b45a80f35dc",
+    "bin": "bongocat-app.exe",
+    "shortcuts": [
+        [
+            "bongocat-app.exe",
+            "bongocat"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ]
+}
