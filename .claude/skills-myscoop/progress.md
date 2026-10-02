@@ -183,7 +183,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 1ee6219 (HEAD -> main, origin/main, origin/HEAD) 新增收录 pawnio 2.2.0（Pawn 语言工具套件官方安装器，单 exe 官方 release）；README 第三方表补行重编号（39 行，总数 126），progress 状态区同步；config.json last_update 同步
+* 5e4ac2f (HEAD -> main, origin/main, origin/HEAD) SwitchHosts 5.0.1 资产更新：替换远程 SwitchHosts-5.0.1-win-x64-portable.zip
+* 2aca852 progress.md 更新提交历史
+* 1ee6219 新增收录 pawnio 2.2.0（Pawn 语言工具套件官方安装器，单 exe 官方 release）；README 第三方表补行重编号（39 行，总数 126），progress 状态区同步；config.json last_update 同步
 * 637ab51 progress.md 更新提交历史
 * a9adb17 同步 README 第三方版本与日期列
 * b3cd588 自动更新第三方软件
