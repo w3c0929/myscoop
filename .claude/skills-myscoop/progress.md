@@ -33,6 +33,7 @@ GitHub: https://github.com/w3c0929/myscoop
 - **静态 latest 直链 + 文本正则 checkver**：安装包不在 GitHub Release 且只有免版本别名时（如 dsh），`checkver` 用 `url`+`regex` 取版本（**显式 url+regex 优先走文本分支**，即使 url 是 GitHub API）；`autoupdate.url` 写静态直链，版本变化时原样下载重算 hash、**内容未变不提升版本**（防幽灵更新）；`fetch_text` 支持 GitHub token（回归测试 `tools/test_static_au.py`）
 - **NSIS 双层探测修复**：`probe_nsis_exes` 只要存在 `app-*.7z` 就二次解包并**只用内层 exe**（内层为空则留空），排除 7z/卸载/更新器/vc_redist 等助手 exe，并**优先根级 exe**（滤掉 resources 下依赖）——修 `dsh` 把 7z 助手 `dsh-7za.exe` 当主程序导致建 shim 失败（实测该安装器现得到单候选 `DeepSeek Harness.exe`）
 - **GPU 资产优先级**：`score_asset` 非 N 卡专用（**HIP/ROCm/Radeon**）**降一级（-4）**，通用 x64 包优先——优先级为 NVIDIA 通用(+8) > 指定 CUDA(+6) > 通用包(0) > 非 N 卡(-4)；降级≠排除，仅当上游只发非 N 卡包时才选中（修 `strata` 选中 `strata-windows-x64-hip.zip`；回归测试 `tools/test_guards.py`）
+- **多产品共用仓库 → 文本正则 checkver 锁定产品线**：`updist`（ErgeAIA/updates-dist 同仓发 aivault-*/ergemd-*）改用 `url`(releases API)+`regex`（`"tag_name": "aivault-v([\d.]+)"`）→ 版本直接得 `0.3.0`（不含 tag 前缀）、不受其它产品干扰、且不再走"回退分支误判构建号漂移"→ `autoupdate` 保得住。`find_duplicate_source` 同步增强：也扫描 `checkver.url` 的 API 形式（归一 `/repos/` 段），修复改用文本正则后重复来源检测失效的副作用
 
 ## 核心规则
 

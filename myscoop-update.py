@@ -740,7 +740,10 @@ def generate_autoupdate_url(asset_name, tag, has_v_prefix, platform="github", ow
 
 
 def find_duplicate_source(owner, repo, exclude_app=None):
-    """在既有 bucket 清单里找 checkver 指向同一 owner/repo 的清单（防重复收录 / 上游改名）。"""
+    """在既有 bucket 清单里找 checkver 指向同一 owner/repo 的清单（防重复收录 / 上游改名）。
+
+    覆盖三种写法：checkver.github（https://github.com/o/r）、checkver.url 的 API 形式
+    （https://api.github.com/repos/o/r/…，如 updist 的文本正则 checkver）、homepage 含仓库地址。"""
     target = f"github.com/{owner}/{repo}".lower()
     hits = []
     for p in sorted(BUCKET_DIR.glob("*.json")):
@@ -751,9 +754,11 @@ def find_duplicate_source(owner, repo, exclude_app=None):
         except Exception:
             continue
         cv = m.get("checkver") or {}
-        gh = str(cv.get("github", "")).lower()
-        hp = str(m.get("homepage", "")).lower()
-        if target in gh or target in hp:
+        blob = " ".join(str(x) for x in (cv.get("github", ""), cv.get("url", ""),
+                                         m.get("homepage", ""))).lower()
+        # 统一去掉 API 形式的 /repos/ 段，使 api.github.com/repos/o/r 也能被 github.com/o/r 命中
+        blob = blob.replace("github.com/repos/", "github.com/")
+        if target in blob:
             hits.append(p.stem)
     return hits
 

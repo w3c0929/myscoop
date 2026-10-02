@@ -17,7 +17,7 @@
 | 5 | [kvmem-llama.cpp](https://github.com/kvmem/kvmem-llama.cpp) — llama.cpp KV 缓存压缩分支：8GB 显存跑 Bonsai 2 27B 满 256K 上下文（RC 版） | `scoop install kvllama` | zip 官方 release | 0.16.0-rc3-prism.3 | 2026-09-30 | 2026-09-30 |
 | 6 | [Rayburst](https://rayburst.pages.dev) — 开源下载管理器（基于 Aria2 Next 引擎，NSIS 安装器解包便携） | `scoop install rayburst` | 多架构 exe 官方 release（NSIS 解包） | 4.0.0 | 2026-09-29 | 2026-09-29 |
 | 7 | [ZTools](https://github.com/ZToolsCenter/ZTools) — uTools 的开源实现，高性能可扩展的应用启动器与插件平台 | `scoop install ztools` | zip 官方 release | 3.2.0 | 2026-09-27 | 2026-09-27 |
-| 8 | [AI-Vault (updist)](https://ergeaia.github.io/) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | aivault-v0.3.0 | 2026-09-24 | 2026-10-03 |
+| 8 | [AI-Vault (updist)](https://ergeaia.github.io/) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | 0.3.0 | 2026-09-24 | 2026-10-03 |
 | 9 | [llama.cpp Prism](https://github.com/PrismML-Eng/llama.cpp) — llama.cpp 分支（CUDA 主程序 + cudart 运行库配对合并，--more 收录） | `scoop install prllama` | 多架构 zip 官方 release | prism-b10743-adfffbe | 2026-09-21 | 2026-09-30 |
 | 10 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.6.4 | 2026-09-19 | 2026-09-19 |
 | 11 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.7.2 | 2026-09-16 | 2026-10-02 |
