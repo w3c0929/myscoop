@@ -611,19 +611,23 @@ def score_asset(name):
     # 中文版优先（_zh、-zh、chs、cn）
     if re.search(r'[._\-]zh[._\-]|_zh$|-zh$|[._\-]chs[._\-]|[._\-]cn[._\-]', lower):
         score += 3
-    # GPU 优先：NVIDIA > AMD > Intel
+    # GPU 优先级：NVIDIA 通用(+8) > 指定 CUDA(+6) > 通用包(0) > 非 N 卡专用(-4)
     has_nvidia = re.search(r'[._\-]nvidia|nvidia', lower)
     has_cuda_ver = re.search(r'[._\-]cu\d{2,3}|cuda[._\-]?\d', lower)  # 兼容 cuda13 / cuda-13.3 / cu12 写法
     has_amd = re.search(r'[._\-]amd[._\-]|rocm|radeon', lower)
+    has_hip = re.search(r'[._\-]hip[._\-]|hip$', lower)  # AMD HIP（非 N 卡）专用构建
     has_intel = re.search(r'[._\-]intel[._\-]|intel', lower)
     if has_nvidia and not has_cuda_ver:
         score += 8  # NVIDIA 通用版最高优先
     elif has_cuda_ver:
         score += 6  # NVIDIA 指定 CUDA 版本
-    elif has_amd:
-        score += 4  # AMD GPU
     elif has_intel:
-        score += 0  # Intel（不额外加分，排在 GPU 之后）
+        score += 0  # Intel（不额外加分）
+    # 非 N 卡专用（AMD HIP / ROCm / Radeon）降一级：通用 x64 包应优先。
+    # 教训：Strata 的 strata-windows-x64-hip.zip 与通用包同为 7 分（hip 不含任何 GPU 关键词），
+    # 平手后按列表顺序被选中 → 非 N 卡包反而优先。
+    if has_amd or has_hip:
+        score -= 4
     # x64 优先
     if "x64" in lower or "64bit" in lower or "amd64" in lower:
         score += 2
