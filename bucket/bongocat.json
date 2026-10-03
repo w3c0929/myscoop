@@ -1,16 +1,16 @@
 {
-    "version": "2.0.1",
+    "version": "2.1.1",
     "description": "🐱 BongoCat — A cross-platform interactive desktop pet that brings fun to your desktop!",
     "homepage": "https://github.com/ayangweb/Awesome-BongoCat",
     "license": "Apache-2.0",
     "checkver": {
         "github": "https://github.com/ayangweb/BongoCat"
     },
-    "url": "https://github.com/ayangweb/BongoCat/releases/download/v2.0.1/BongoCat_2.0.1_x64.exe",
+    "url": "https://github.com/ayangweb/BongoCat/releases/download/v2.1.1/BongoCat_2.1.1_x64.exe",
     "autoupdate": {
         "url": "https://github.com/ayangweb/BongoCat/releases/download/v$version/BongoCat_$version_x64.exe"
     },
-    "hash": "sha256:a463ce69e82908a2320185c05b70b3f4c20ed8537e8a754ff0aa5b45a80f35dc",
+    "hash": "sha256:73aa1cd67da0ae8c5f3f2f6a50e463110298a551a8b32504541a5f4e232f47b1",
     "bin": "bongocat-app.exe",
     "shortcuts": [
         [
