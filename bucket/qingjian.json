@@ -1,14 +1,14 @@
 {
-    "version": "0.1.5-beta.1",
+    "version": "0.2.0",
     "description": "青简 Qingjian：用 Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词",
     "homepage": "https://qingjian.app",
     "license": "GPL-3.0",
-    "url": "https://github.com/qingjian-team/qingjian/releases/download/v0.1.5-beta.1/qingjian-0.1.5-beta.1-windows-x86_64-setup.exe",
+    "url": "https://github.com/qingjian-team/qingjian/releases/download/v0.2.0/qingjian-0.2.0-windows-x86_64-setup.exe",
     "checkver": {
         "github": "https://github.com/qingjian-team/qingjian",
         "tag_regex": "^v([\\d.]+(?:-(?:beta|rc)\\.\\d+)?)$"
     },
-    "hash": "sha256:e3962c503a0b638f26b860ad661a97ac71de231def7d03a39c4972d0b5346f40",
+    "hash": "sha256:0cec0d06bbe1b10366961adb9ffda6ed635a528b8016e0325a0010d9c73d9d05",
     "installer": {
         "args": [
             "/VERYSILENT",
