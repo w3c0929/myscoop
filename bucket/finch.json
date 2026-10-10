@@ -1,0 +1,48 @@
+{
+    "version": "1.7.2",
+    "description": "Finch community hub",
+    "homepage": "https://www.finchwork.app",
+    "license": "unknown",
+    "checkver": {
+        "github": "https://github.com/finchtoys/finch-releases"
+    },
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.7.2/Finch-1.7.2-setup-ia32.exe",
+            "hash": "sha256:69c9518dbd466226d5aca7ca785defacdfec69830991c1354dddc6633e76ac6f"
+        },
+        "64bit": {
+            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.7.2/Finch-1.7.2-setup-x64.exe",
+            "hash": "sha256:98c29f193ddbefcc14e8d446ea93f91e97ee272740fc042e0588cb145b412148"
+        },
+        "arm64": {
+            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.7.2/Finch-1.7.2-setup.exe",
+            "hash": "sha256:2fe7715be92cd2d21b0634ce286adaea66a73e2fc501c376fec531e9eabd0bd0"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/finchtoys/finch-releases/releases/download/v$version/Finch-$version-setup-ia32.exe"
+            },
+            "64bit": {
+                "url": "https://github.com/finchtoys/finch-releases/releases/download/v$version/Finch-$version-setup-x64.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/finchtoys/finch-releases/releases/download/v$version/Finch-$version-setup.exe"
+            }
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ],
+    "bin": "Finch.exe",
+    "shortcuts": [
+        [
+            "Finch.exe",
+            "Finch"
+        ]
+    ]
+}

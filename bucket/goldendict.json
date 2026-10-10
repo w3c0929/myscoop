@@ -1,0 +1,10 @@
+{
+    "version": "1.0",
+    "description": "GoldenDict - offline dictionary and translation tool",
+    "homepage": "https://github.com/goldendict/goldendict",
+    "license": {"identifier": "GPL-3.0"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vGoldenDict/goldendict.zip",
+    "hash": "sha256:5af6b502d7bb4682c1a9837ea35ac69d190a51936669acf61a147fd42b36943c",
+    "bin": "GoldenDict.exe",
+    "shortcuts": [["GoldenDict.exe", "GoldenDict 翻译工具"]]
+}

@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "PDF Merge & Split tool",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vPDFMergeSplit/pdf-merge-split.exe",
+    "hash": "sha256:ceb160149f83d8509109b450a857422bf91271b6067887023bd00c993837c0f0",
+    "post_install": "Start-Process \"$dir\\pdf-merge-split.exe\""
+}

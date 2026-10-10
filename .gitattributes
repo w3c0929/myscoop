@@ -1,0 +1,22 @@
+# 统一行尾：文本一律 LF（CI Ubuntu 与本地 Windows 存储一致，防全文件行尾漂移假 diff）
+* text=auto eol=lf
+
+# Windows 独有脚本/文件：必须 CRLF
+#   *.bat / *.cmd：cmd 批处理（LF 会导致解析错乱）
+#   *.ps1：PowerShell 脚本（UTF-8 编码）
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# 二进制（*.reg 为 UTF-16 LE，含 NUL 字节，必须按二进制处理，不能用 text/eol）
+*.reg   binary
+*.zip   binary
+*.exe   binary
+*.7z    binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary

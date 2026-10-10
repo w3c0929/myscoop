@@ -1,0 +1,18 @@
+{
+    "version": "3.4.3",
+    "description": "Uninstall Tool - powerful uninstaller with forced removal and real-time monitoring (v3.4.3, community-maintained)",
+    "homepage": "https://www.crystalidea.com/uninstall-tool",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.crystalidea.com/uninstall-tool-eula"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v3.4.3/UninstallTool-3.4.3-portable.zip",
+    "hash": "sha256:9b222e31cd092884299b3f67509caf43eb4b543732c907a6043d3c039380b4ac",
+    "bin": "UninstallTool.exe",
+    "shortcuts": [
+        [
+            "UninstallTool.exe",
+            "Uninstall Tool"
+        ]
+    ]
+}

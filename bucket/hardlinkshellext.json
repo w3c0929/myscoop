@@ -1,0 +1,10 @@
+{
+    "version": "3.9.3.5",
+    "description": "HardLinkShellExt - Windows shell extension for creating and managing hard links and symbolic links",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v3.9.3.5/hardlinkshellext-3.9.3.5.exe",
+    "hash": "sha256:ca3f26ebf49dc4ea8b5d8c0154acca0de59a8689e5907fe748ffaeaa357ff3a0",
+    "post_install": "Start-Process \"$dir\\hardlinkshellext-3.9.3.5.exe\""
+}

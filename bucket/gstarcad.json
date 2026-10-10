@@ -1,0 +1,17 @@
+{
+    "version": "2022",
+    "description": "GstarCAD Pro 2022 - DWG-compatible CAD software (community-maintained)",
+    "homepage": "https://www.gstarcad.net/",
+    "license": {
+        "identifier": "Proprietary"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vGstarCAD2022/GstarCAD-2022-x64-portable.zip",
+    "hash": "sha256:523d6d9da7f08263759de365c13d8548a8452981dae123ef42ec9191d3fae4e5",
+    "bin": "gcad.exe",
+    "shortcuts": [
+        [
+            "gcad.exe",
+            "GstarCAD Pro 2022"
+        ]
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "version": "1.0.260708",
+    "description": "HCSStudio - 汉化工具",
+    "homepage": "https://github.com/w3c0929/myscoop",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.260708/HCSStudio_1.0.260708_with_Net8.exe",
+    "hash": "sha256:dc1276bcce317b1f4de7721781fef13a527f3e82e25389883ef10ca64dffb05e",
+    "post_install": "Start-Process \"$dir\\HCSStudio_1.0.260708_with_Net8.exe\""
+}

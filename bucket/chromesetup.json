@@ -1,0 +1,12 @@
+{
+    "version": "147.0.7703.0",
+    "description": "Google Chrome installer - web browser",
+    "homepage": "https://www.google.com/chrome/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.google.com/chrome/terms/"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v147.0.7703.0/ChromeSetup-147.0.7703.0.exe",
+    "hash": "sha256:7f528a7790adbb2d861bfc807a376f9fafa3037430d61ca8714f36e56343d48d",
+    "post_install": "Start-Process \"$dir\\ChromeSetup-147.0.7703.0.exe\""
+}

@@ -1,0 +1,10 @@
+{
+    "version": "3.7.31",
+    "description": "Epic Pen - screen annotation and whiteboard tool for teaching",
+    "homepage": "https://epicpen.com/",
+    "license": {"identifier": "Proprietary"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vEpicPen3.7.31/epicpen-portable.zip",
+    "hash": "sha256:84fb80e58b00ed0b08da345cca76be8aef86c449a79fb18632c8b36165ed1aa7",
+    "bin": "EpicPen.exe",
+    "shortcuts": [["EpicPen.exe", "Epic Pen 网课白板"]]
+}

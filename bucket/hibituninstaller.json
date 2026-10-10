@@ -1,0 +1,18 @@
+{
+    "version": "4.0.10",
+    "description": "HiBit Uninstaller - powerful software uninstaller with forced removal and batch uninstall (community-maintained)",
+    "homepage": "https://www.hibitsoft.ir/Uninstaller.html",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.hibitsoft.ir/EULA.html"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v4.0.10/HiBitUninstaller-Portable-4.0.10.exe",
+    "hash": "sha256:57cceca120ab7fa464c3a789c099a72a9ccdfeffc3ca458edd9465396091d9c8",
+    "bin": "HiBitUninstaller-Portable-4.0.10.exe",
+    "shortcuts": [
+        [
+            "HiBitUninstaller-Portable-4.0.10.exe",
+            "HiBit Uninstaller"
+        ]
+    ]
+}

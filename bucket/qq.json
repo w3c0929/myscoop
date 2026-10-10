@@ -1,0 +1,10 @@
+{
+    "version": "9.9.31",
+    "description": "QQ - Tencent instant messaging client",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v9.9.31-qq/qq-9.9.31.exe",
+    "hash": "sha256:0beb5cb4ff776cba822caa0abadbd53f5892f12628a86dabea1b372c82c086bc",
+    "post_install": "Start-Process \"$dir\\qq-9.9.31.exe\""
+}

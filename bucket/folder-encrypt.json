@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "Folder Encrypt - folder/file encryption tool",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vFolderEncrypt/folder-encrypt.exe",
+    "hash": "sha256:a82dc829e9333b014993f73ec659d50a4b44e23634a8c256bfdf5ed882cf7bbf",
+    "post_install": "Start-Process \"$dir\\folder-encrypt.exe\""
+}

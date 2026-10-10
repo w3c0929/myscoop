@@ -1,0 +1,9 @@
+{
+    "version": "18.7.11925.98",
+    "description": "Microsoft Visual Studio Build Tools installer (MSVC, Windows SDK, C++ build tools, etc.)",
+    "homepage": "https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2026",
+    "license": "proprietary",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v18.7.11925.98/vs-buildtools-18.7.11925.98.exe",
+    "hash": "sha256:5b2209dcb13f48ab09dc57f1fa42a6f678799e2db81985841a947670bb2ec659",
+    "post_install": "Start-Process \"$dir\\vs-buildtools-18.7.11925.98.exe\""
+}

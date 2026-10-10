@@ -1,0 +1,22 @@
+{
+    "version": "0.0.1",
+    "description": "SuMail 发布仓库：Windows 桌面版安装包与发布资产（源码仓库为私有）",
+    "homepage": "https://github.com/w3c0929/sumail-releases",
+    "license": "unknown",
+    "checkver": {
+        "github": "https://github.com/w3c0929/sumail-releases"
+    },
+    "url": "https://github.com/w3c0929/sumail-releases/releases/download/v0.0.1/SuMail-Desktop-0.0.1-win-x64-portable.zip",
+    "hash": "sha256:554c17e7f87cf7f1b587485f35d917469fc2941e98850399a5aa310f20d3181a",
+    "autoupdate": {
+        "url": "https://github.com/w3c0929/sumail-releases/releases/download/v$version/SuMail-Desktop-$version-win-x64-portable.zip"
+    },
+    "extract_dir": "SuMail-Desktop",
+    "bin": "SuMail.exe",
+    "shortcuts": [
+        [
+            "SuMail.exe",
+            "sumail"
+        ]
+    ]
+}

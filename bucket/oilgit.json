@@ -1,0 +1,26 @@
+{
+    "version": "0.1.0-test.1",
+    "description": "面向 AI 项目开发者的只读 Git 可视化桌面应用，支持 macOS 与 Windows。",
+    "homepage": "https://oil-oil.github.io/oil-git/",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/oil-oil/oil-git"
+    },
+    "url": "https://github.com/oil-oil/oil-git/releases/download/v0.1.0-test.1/oil-git_0.1.0_x64-setup.exe",
+    "autoupdate": {
+        "url": "https://github.com/oil-oil/oil-git/releases/download/v$version/oil-git_$version_x64-setup.exe"
+    },
+    "hash": "sha256:f8247243a45b6a113b179612477297e3256804e02125fe9ae831d18aa507c6bc",
+    "bin": "oil-git.exe",
+    "shortcuts": [
+        [
+            "oil-git.exe",
+            "oilgit"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ]
+}

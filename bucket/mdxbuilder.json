@@ -1,0 +1,9 @@
+{
+    "version": "3.0",
+    "description": "MdxBuilder - dictionary creation and conversion tool",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vMdxBuilder/mdxbuilder.zip",
+    "hash": "sha256:0f09848aa1a828cfbc08d1b244e28a276c9e69348d0d0cc752b9d0e69b32996d",
+    "bin": "MdxBuilder.exe",
+    "shortcuts": [["MdxBuilder.exe", "MdxBuilder 字典制作"]]
+}

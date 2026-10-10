@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "GIF Tool - animated GIF creation tool",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vGIFTool/gif-tool.exe",
+    "hash": "sha256:a42088f969fbaace0611823c15d367b5f8fc7302664041397614bf2f5c10e8b1",
+    "post_install": "Start-Process \"$dir\\gif-tool.exe\""
+}

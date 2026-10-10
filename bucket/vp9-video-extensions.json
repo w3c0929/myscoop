@@ -1,0 +1,10 @@
+{
+    "version": "1.0.50481.0",
+    "description": "Microsoft VP9 Video Extensions - VP9 video codec for Windows",
+    "license": {
+        "identifier": "Proprietary"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.50481.0/vp9-video-extensions-1.0.50481.0.appx",
+    "hash": "sha256:3991135b9ff4ef87caf0cfe579771da3872628026872ec69462439c7041f2360",
+    "post_install": "Add-AppxPackage -Path \"$dir\\vp9-video-extensions-1.0.50481.0.appx\""
+}

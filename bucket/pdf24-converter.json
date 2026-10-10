@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "PDF24 Converter - document conversion tool",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vPDF24Converter/pdf24-converter.exe",
+    "hash": "sha256:05f53a57decd9983350633b5a513325c03e861a44d44cbdafd7b4de333222b1a",
+    "post_install": "Start-Process \"$dir\\pdf24-converter.exe\""
+}

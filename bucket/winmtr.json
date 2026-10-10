@@ -1,0 +1,17 @@
+{
+    "version": "0.9.2",
+    "description": "WinMTR - network diagnostic tool combining ping and traceroute (x64)",
+    "homepage": "https://github.com/White-Tiger/WinMTR",
+    "license": {
+        "identifier": "GPL-2.0"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v0.9.2/WinMTR-x64-0.9.2.zip",
+    "hash": "sha256:f62a7bd5418f576bbc3f8b9174d0c64bba626fc4cdf82c61f0351a989e280132",
+    "bin": "mWinMTR_X64.exe",
+    "shortcuts": [
+        [
+            "mWinMTR_X64.exe",
+            "WinMTR"
+        ]
+    ]
+}

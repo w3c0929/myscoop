@@ -1,0 +1,17 @@
+{
+    "version": "1.0",
+    "description": "360 Bandwidth Test - internet speed test tool",
+    "homepage": "https://www.360.cn/",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v360bw/360BandwidthTest.exe",
+    "hash": "sha256:6e89f48bc95e77178059f89d2e7614704c389f8df7183236cf2b04c18c34d5d9",
+    "bin": "360BandwidthTest.exe",
+    "shortcuts": [
+        [
+            "360BandwidthTest.exe",
+            "360宽带测速"
+        ]
+    ]
+}

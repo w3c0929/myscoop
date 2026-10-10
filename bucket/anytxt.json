@@ -1,0 +1,9 @@
+{
+    "version": "1.3.1952",
+    "description": "Anytxt - image and document text search OCR tool",
+    "homepage": "https://anytxt.net/",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vAnytxt1.3.1952/anytxt-1.3.1952-ocr.exe",
+    "hash": "sha256:179e04a95ecb7c6b19536cf07642d525d5b75cea3280bde060a708ee07dbcf30",
+    "post_install": "Start-Process \"$dir\\anytxt-1.3.1952-ocr.exe\""
+}

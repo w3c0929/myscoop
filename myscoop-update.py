@@ -1,0 +1,3106 @@
+#!/usr/bin/env python3
+"""
+myscoop 管理脚本
+通过 GitHub / Gitee API 免下载获取版本和哈希。
+
+用法（按分类整理）:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  一、新增收录
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # 1) GitHub / Gitee 仓库链接（自动解析仓库与 release，生成完整 manifest）
+  python3 myscoop-update.py --add https://github.com/NanmiCoder/cc-haha.git
+  python3 myscoop-update.py --add https://gitee.com/fasterthanlight/automatic_clicker_2.git
+  python3 myscoop-update.py --add https://github.com/owner/repo --name my-app-name
+  #    · 已存在清单默认【合并更新】：保留 bin/shortcuts/extract_dir/notes/pre_install 等人工字段，
+  #      仅覆盖 version/url/hash/architecture；--force-new 强制全新重建（不保留旧字段）
+  #    · zip/7z + --exe-name 直接写 bin/shortcuts；拍平见「三、zip 拍平」
+
+  # 2) 安装包直链（自动下载实测 SHA256、Inno Setup 检测、生成 autoupdate；
+  #    GitHub 直链自动补全 description/homepage/license/checkver）
+  python3 myscoop-update.py --add "https://down.pixpin.cn/PixPin_win_3.5.5.1.exe" --name pixpin --version 3.5.5.1
+  python3 myscoop-update.py --add "https://github.com/SAOG0721/Magpie/releases/download/v0.6.8-experimental.1/Magpie-Experimental-x64.zip" --name magpie --version 0.6.8 --exe-name Magpie.exe
+  #    可选参数：--exe-name 主程序名  --shortcut-name 快捷方式名  --version 版本号
+  #              --checkver-url / --checkver-regex 网页版本检查  --homepage / --description / --license
+  #              --force-download 强制重下  --no-keep 不保留 zip 到 staging/.dl_cache/
+  #    安装器自动探测：Inno（静默安装）与 NSIS/Tauri（7z 解包）内置检测，唯一主程序自动写 bin，
+  #    多个 exe 交互式选择（加 --select 编号|名称 免交互）；NSIS 自动补 pre_install
+
+  # 3) 官网下载页（自动提取安装包链接与版本号，生成 checkver/autoupdate；href 抓不到时回退 JS 裸 URL）
+  python3 myscoop-update.py --add "https://pixpin.cn/download/" --name pixpin
+
+  # 4) manifest 模板补全（模板已含 hash 时自动跳过下载，秒级完成；--force-download 强制重算）
+  python3 myscoop-update.py --from ./pixpin.template.json --name pixpin
+  python3 myscoop-update.py --from staging/magpie.json --name magpie --out-dir bucket/
+  python3 myscoop-update.py --from staging/magpie.json --name magpie --out-dir bucket/ --force-download
+
+  # 5) zip 补全 / 生成 --fill-bin（接受本地清单或 zip 下载 URL）
+  #    清单模式：下载 zip 探测 exe → 用户指定主程序 → 写 bin/shortcuts（自动 extract_dir 与模板）；
+  #    优先复用 staging/.dl_cache/ 缓存免二次下载（--force-download 强制重下）
+  python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --out-dir bucket/            # 交互选择
+  python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select 1 --out-dir bucket/ # 非交互
+  python3 myscoop-update.py --fill-bin staging/magpie.json --name magpie --select Magpie.exe --out-dir bucket/
+  #    URL 模式：直接由链接生成清单（复用缓存、GitHub 补全仓库信息），额外支持
+  #    --version / --exe-name / --unzip / --flatten（双候选 exe 名自动匹配 zip 内全路径）：
+  #    python3 myscoop-update.py --fill-bin "https://...kvmem-v0.16.0-rc3-windows-x86_64-cuda13.zip" \
+  #        --name kvllama --version 0.16.0-rc3 --unzip --exe-name llama-kvmem-server.exe --out-dir bucket/
+
+  # 6) 探测安装器真实 exe 名（Inno 静默安装→列名→自动回滚；便携 exe 直接提示；也支持本地路径）
+  python3 myscoop-update.py --exe-name "https://github.com/.../xxx-Setup.exe" --name xxx
+  python3 myscoop-update.py --exe-name "D:/scoop/cache/xxx#1.0.0#hash.exe" --name xxx
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  二、更新维护
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # 7) 更新单个 manifest（免下载，GitHub API digest 实测；--dry-run 只检查不写盘）
+  python3 myscoop-update.py bucket/contextmenumgr-plus.json
+  python3 myscoop-update.py bucket/contextmenumgr-plus.json --dry-run
+
+  # 8) 更新全部含 checkver 的 manifest（CI 每晚 1 点自动执行同款）
+  python3 myscoop-update.py --all
+  python3 myscoop-update.py --all --dry-run
+
+  # 9) 注册型软件（输入法/驱动/右键菜单/Shell 扩展）存量清单迁移为 installer 模式
+  #    （--add 新增时自动采用；ting 解包不执行注册脚本导致输入法/右键菜单缺失的场景）
+  python3 myscoop-update.py --installer-mode bucket/qingjian.json   # 多个文件或 --all
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  三、zip 拍平三态与配对（--unzip / --flatten / --no-flatten / --more）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # 默认（无参数）自动探测：唯一顶层目录且无散文件 → 加「带 exe 守卫」拍平 pre_install
+  #     --unzip      无条件解压拍平一层（不检测 exe，内部层级保留）：
+  #                  kvmem-*/bin/xxx.exe → $dir/bin/xxx.exe，bin 自动补全子路径
+  #                  （直链 / --fill-bin URL 模式自动补；仓库模式需自己写 bin\\xxx.exe）
+  #     --flatten    带 exe 守卫拍平（顶层目录内须有 exe，防误拍资源目录；仓库模式显式指定）
+  #     --no-flatten 禁用拍平（zip 保持原生结构）      --unzip 优先于 --flatten
+  #     --more 主程序 + cudart 运行时配对合并收录（如 llama.cpp Prism fork 拆包发行）：
+  #     同架构、同 CUDA 版本的主程序 zip 与 cudart zip 成对生成 url/hash 数组
+  #     （Scoop 依次解压合并到同一目录，等效 cudart 内容复制进主程序目录）；
+  #     同架构多 CUDA 版本配对取最高（13.3 优先于 12.4）；无配对时回退常规流程
+  #     --dl 生成 json 后必须下载探测：清空 API digest 强制实测下载重算 hash，自动补全
+  #     bin/shortcuts/extract_dir —— zip/7z 复用 --fill-bin 引擎（列 exe 交互选择，
+  #     --select 编号|exe名 免交互，含扁平化 pre_install 判定）；exe（portable/setup 统一）
+  #     Inno/NSIS 检测 + 解包探测内部主程序并补 pre_install；msi 实测下载回填 hash；
+  #     多架构自动下载 64bit 主架构；压缩包留 staging/.dl_cache/ 复用
+  python3 myscoop-update.py --add https://github.com/PrismML-Eng/llama.cpp.git --more --prllama
+  python3 myscoop-update.py --add https://github.com/CherryHQ/cherry-studio.git --name cherry --dl
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  四、GitHub 下载镜像加速
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # 10) 实际下载路径（直链/下载页/补全/hash 实测）对 GitHub release 文件优先走加速镜像：
+  #     依次探测列表取第一个可达镜像，全部不可达自动回退原始 URL（与 Scoop download.ps1 补丁同机制）。
+  #     镜像列表：环境变量 MYSCOOP_GH_MIRRORS（逗号分隔，完整 URL 或裸域名）优先，
+  #     否则读 Scoop config.json 的 aria2-mirrors 数组（本机零配置复用）；均不设置则不走镜像
+  $env:MYSCOOP_GH_MIRRORS = "https://hk.gh-proxy.org,https://gh-proxy.com"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  五、环境变量
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  GH_TOKEN（或 GITHUB_TOKEN）  提升 GitHub API 配额（仅对 api.github.com 生效）
+  $env:GH_TOKEN = "ghp_xxx"    # PowerShell；Linux/macOS: export GH_TOKEN=ghp_xxx
+
+  MYSCOOP_GH_MIRRORS           GitHub 镜像列表（见「四」，逗号分隔）
+  MYSCOOP_INSECURE=1           等价 --insecure（跳过 SSL 证书校验；默认失败时已自动降级重试一次，
+                               内容完整性由 sha256 清单比对兜底）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  六、可选参数速查
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  · 命名/输出：--name 应用名  --out-dir 输出目录（默认 staging/）
+  · 版本与信息：--version 版本号（应与 tag 完全一致，含 -rc3 等后缀）
+                 --homepage  --description  --license  --checkver-url  --checkver-regex
+  · 主程序：--exe-name 主程序名（zip 可带子路径如 bin/xxx.exe）  --shortcut-name 快捷方式名
+  · zip 拍平：--unzip / --flatten / --no-flatten（见「三」，仅 zip 类生效）
+  · 合并/覆盖：--force-new 覆盖重建（默认合并保留 bin/shortcuts 等人工字段）
+  · 下载：--force-download 强制重下  --no-keep 不保留 zip 缓存（默认留到 staging/.dl_cache/）
+  · 交互：--select 编号|名称 免交互选择 exe
+  · 特殊模式：--more 主程序+cudart 配对合并  --installer-mode 存量清单迁移注册型
+  · 全局：--dry-run 只检查不写盘  --insecure 跳过 SSL 校验
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  七、输出约定
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  · 模式 2/3/4/5 生成的清单默认输出到仓库内 staging/（FALLBACK_OUT_DIR，已被 .gitignore 忽略），
+    确认无误后用 --out-dir 指定正式目录（如 bucket/）
+  · 仓库模式（--add <仓库>）直接输出 bucket/；zip/7z 下载后默认保留到 staging/.dl_cache/
+    供 --fill-bin 等复用（--no-keep 可关闭）
+
+"""
+
+import json
+import re
+import sys
+import os
+import time
+import urllib.request
+import urllib.error
+from urllib.parse import unquote
+from pathlib import Path
+
+BUCKET_DIR = Path(__file__).parent / "bucket"
+# 直链/模板/页面新增模式的默认输出目录（staging/ 草稿区，已被 .gitignore 忽略）：
+# 未经 --out-dir 指定时，清单落在 staging/，避免误写仓库 bucket；
+# 确认无误后再用 --out-dir 指向 bucket 目录落实
+FALLBACK_OUT_DIR = Path(__file__).resolve().parent / "staging"
+
+
+def parse_repo_url(url):
+    """解析仓库 URL，返回 (platform, owner, repo)"""
+    url = url.rstrip("/")
+    if url.endswith(".git"):
+        url = url[:-4]
+    for platform, host in [("github", r"github\.com"), ("gitee", r"gitee\.com")]:
+        m = re.match(rf"https?://{host}/([^/]+)/([^/]+?)$", url)
+        if m:
+            return platform, m.group(1), m.group(2)
+    return None, None, None
+
+
+def api_base(platform):
+    """获取 API 基地址"""
+    if platform == "gitee":
+        return "https://gitee.com/api/v5/repos"
+    return "https://api.github.com/repos"
+
+
+def download_base(platform, owner, repo):
+    """获取下载基地址"""
+    if platform == "gitee":
+        return f"https://gitee.com/{owner}/{repo}/releases/download"
+    return f"https://github.com/{owner}/{repo}/releases/download"
+
+
+def fetch_json(url):
+    """获取 JSON 数据
+
+    可选认证：设置环境变量 GH_TOKEN 或 GITHUB_TOKEN 后，仅对 GitHub
+    官方 API（https://api.github.com/*）附加 Authorization 头，配额从
+    60 次/时提升到 5000 次/时；未设置时自动退回匿名请求。
+    绝不把 token 发给其他域名（Gitee / 镜像 / 代理 / 自定义 checkver.url），
+    防止公开仓库场景下 token 外泄。
+    """
+    headers = {"User-Agent": "myscoop-updater"}
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if token and url.startswith("https://api.github.com/"):
+        headers["Authorization"] = f"Bearer {token}"
+    # 限流/瞬时故障退避重试（429/5xx 与网络错误），最多 3 次
+    last = None
+    for attempt in range(3):
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with _open(req, 30) as resp:
+                return json.loads(resp.read().decode())
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 500, 502, 503, 504) and attempt < 2:
+                last = e
+                time.sleep(2 ** attempt)
+                continue
+            raise
+        except urllib.error.URLError as e:
+            if attempt < 2:
+                last = e
+                time.sleep(2 ** attempt)
+                continue
+            raise
+    raise last
+
+
+def get_latest_release(owner, repo, platform="github"):
+    """获取最新 release 信息。
+    兼容"只发布 prerelease"的仓库（/releases/latest 会 404，如 SAOG0721/Magpie）：
+    404 时回退到 releases 列表，取最新一个非 draft、非 untagged 的 release。"""
+    base = api_base(platform)
+    url = f"{base}/{owner}/{repo}/releases/latest"
+    try:
+        return fetch_json(url)
+    except urllib.error.HTTPError as e:
+        if e.code != 404:
+            raise
+        rels = fetch_json(f"{base}/{owner}/{repo}/releases?per_page=20")
+        for r in rels:
+            if r.get("draft"):
+                continue
+            if str(r.get("tag_name", "")).startswith("untagged-"):
+                continue
+            return r
+        raise urllib.error.HTTPError(url, 404, "no usable release", None, None)
+
+
+def get_repo_info(owner, repo, platform="github"):
+    """获取仓库信息"""
+    base = api_base(platform)
+    url = f"{base}/{owner}/{repo}"
+    return fetch_json(url)
+
+
+def resolve_autoupdate_url(autoupdate_url, version):
+    """将 autoupdate URL 模板中的 $version 替换为实际版本号"""
+    return autoupdate_url.replace("$version", version)
+
+
+ARCHIVE_EXTS = {"zip", "7z", "rar", "gz", "xz", "bz2", "tgz", "txz"}
+INSTALLER_EXTS = {"exe", "msi"}
+
+
+def _ext_family(name):
+    """扩展名家族：archive（压缩包，zip/7z/tar.gz 等内部互通）/ installer（exe/msi）/ other。
+    压缩包家族内部互认——zip 被发布方换成 7z 是同一份资产换了容器，不应阻断更新；
+    archive 与 installer 之间严格隔离（zip↔exe 是两种形态，拒绝误配）。"""
+    low = name.lower().rstrip(".")
+    for ext in ("tar.gz", "tar.xz", "tar.bz2", "tgz", "txz"):
+        if low.endswith("." + ext):
+            return "archive"
+    tail = low.rsplit(".", 1)[-1] if "." in low else ""
+    if tail in ARCHIVE_EXTS:
+        return "archive"
+    if tail in INSTALLER_EXTS:
+        return "installer"
+    return "other"
+
+
+def _norm_base(name):
+    """基础名（去扩展名，含 tar.gz 复合扩展）数字段归一化：只比较文件身份，扩展名不参与。"""
+    low = name.lower().rstrip(".")
+    for ext in ("tar.gz", "tar.xz", "tar.bz2"):
+        if low.endswith("." + ext):
+            base = low[: -len(ext) - 1]
+            break
+    else:
+        base = low.rsplit(".", 1)[0] if "." in low else low
+    return re.sub(r"[\d.]+", "VER", base)
+
+
+def match_asset(resolved_url, assets):
+    """根据解析后的 URL 匹配对应的 release asset。优先级：
+    精确同名 → 忽略大小写 → 基础名数字归一化相等（同扩展名优先，其次同家族互通）。"""
+    filename = unquote(resolved_url.split("/")[-1])  # %2B 之类编码还原后再匹配（+ 与 %2B 等价）
+    for a in assets:
+        if a["name"] == filename:
+            return a
+    for a in assets:
+        if a["name"].lower() == filename.lower():
+            return a
+    f_base = _norm_base(filename)
+    cand = [a for a in assets if _norm_base(a["name"]) == f_base]
+    if not cand:
+        return None
+    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    for a in cand:
+        if a["name"].lower().endswith("." + ext):
+            return a
+    f_fam = _ext_family(filename)
+    for a in cand:
+        if _ext_family(a["name"]) == f_fam:
+            return a
+    return None  # 基础名同但家族不同（zip↔exe）：不匹配，防形态误配
+
+
+def refresh_build_in_template(manifest, asset, current_url):
+    """方案A：模板构建号随资产刷新。资产名含 {版本}+{build} 段且清单有 autoupdate 模板时，
+    把模板（url/extract_dir，含架构）与精确 extract_dir 中的旧 build 替换为新 build——
+    模板保活，scoop 客户端自更新不再 404。构建号无法反推时返回 False（调用方回退去模板）。"""
+    cur = unquote((current_url or "").split("/")[-1])
+    om = re.search(r"\+(\d+)[^+]*$", cur)
+    new_m = re.search(r"\+(\d+)[^+]*$", asset.get("name", ""))
+    if not om or not new_m:
+        return False
+    old_b, new_b = om.group(1), new_m.group(1)
+    if old_b == new_b:
+        return True
+    au = manifest.get("autoupdate")
+    if not isinstance(au, dict):
+        return False
+    changed = False
+    targets = []
+    if isinstance(au.get("url"), str):
+        targets.append((au, "url"))
+    if isinstance(au.get("extract_dir"), str):
+        targets.append((au, "extract_dir"))
+    arch = au.get("architecture")
+    if isinstance(arch, dict):
+        for blk in arch.values():
+            if isinstance(blk, dict) and isinstance(blk.get("url"), str):
+                targets.append((blk, "url"))
+    for obj, key in targets:
+        nv = obj[key].replace(f"+{old_b}", f"+{new_b}")
+        if nv != obj[key]:
+            obj[key] = nv
+            changed = True
+    # 精确 extract_dir 一并同步（附带行为，不参与"模板可推导"判定）
+    ed = manifest.get("extract_dir")
+    if isinstance(ed, str) and f"+{old_b}" in ed:
+        manifest["extract_dir"] = ed.replace(f"+{old_b}", f"+{new_b}")
+    return changed
+
+
+KEEP_FIELDS = ("bin", "shortcuts", "extract_dir", "notes", "pre_install", "post_install",
+               "installer", "post_uninstall", "pre_uninstall", "env_add_path")
+
+
+def merge_existing_manifest(out_path, template):
+    """--add 目标已存在时合并保留人工字段（bin/shortcuts/extract_dir/notes 等），
+    由新模板覆盖 version/url/hash/checkver/autoupdate。返回保留字段列表。"""
+    out_path = Path(out_path)
+    if not out_path.exists():
+        return []
+    try:
+        old = json.loads(out_path.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    kept = []
+    for k in KEEP_FIELDS:
+        if k in old and k not in template:
+            template[k] = old[k]
+            kept.append(k)
+    return kept
+
+
+def handle_build_drift(manifest, asset, resolved_url, arch=None):
+    """构建号漂移处理（C 组合策略）：优先刷新模板构建号（方案A，保留模板）；
+    模板无法反推时去模板化+精确回写（方案B）。返回 'none' | 'refresh' | 'removed'。"""
+    if asset["name"] == resolved_url.split("/")[-1]:
+        return "none"
+    if refresh_build_in_template(manifest, asset, resolved_url):
+        return "refresh"
+    if sync_build_asset(manifest, asset, resolved_url, arch=arch):
+        return "removed"
+    return "none"
+
+
+def sync_build_asset(manifest, asset, resolved_url, arch=None):
+    """资产名与模板解析名不一致（构建号漂移，如 Cinetry_0.8.4+47→+48）时收尾：
+    url 已由调用方回写真实资产；此函数移除 autoupdate 模板（防 scoop 客户端按旧模板 404），
+    extract_dir 同步为资产 stem。返回 True 表示有漂移处理。"""
+    fn = asset.get("name", "")
+    if fn == resolved_url.split("/")[-1]:
+        return False
+    au = manifest.get("autoupdate")
+    if au is None:
+        if isinstance(manifest.get("extract_dir"), str) and fn:
+            manifest["extract_dir"] = fn.rsplit(".", 1)[0]
+        return True
+    if arch is None:
+        # 弃用整个 autoupdate：无 url 模板时 extract_dir 等其他模板字段一并无用
+        manifest.pop("autoupdate", None)
+    else:
+        au_arch = au.get("architecture") or {}
+        au_arch.pop(arch, None)
+        if au_arch:
+            au["architecture"] = au_arch
+            manifest["autoupdate"] = au
+        else:
+            au.pop("architecture", None)
+            if not au:
+                manifest.pop("autoupdate", None)
+            else:
+                manifest["autoupdate"] = au
+    if isinstance(manifest.get("extract_dir"), str) and fn:
+        manifest["extract_dir"] = fn.rsplit(".", 1)[0]
+    return True
+
+
+def heal_url_drift(manifest, assets):
+    """版本未变但资产名漂移（构建号 +N 变化，如 Cinetry_0.8.4+47→+48）时自愈：
+    回写真实 url/hash/extract_dir 并移除 autoupdate 模板。返回 True 表示有修复。"""
+    if "architecture" in manifest:
+        fixed = False
+        for arch, blk in manifest["architecture"].items():
+            cur = blk.get("url", "")
+            if isinstance(cur, list):
+                # 配对资产（--more）：逐项回写 url/hash；构建号内嵌 tag，无 +N 漂移处理
+                hs = blk.get("hash") if isinstance(blk.get("hash"), list) else [""] * len(cur)
+                changed = False
+                for i, u in enumerate(cur):
+                    a = match_asset(u, assets)
+                    if a and a["name"] != unquote(u.split("/")[-1]):
+                        cur[i] = a.get("browser_download_url") or u
+                        if a.get("digest") and i < len(hs):
+                            hs[i] = a["digest"]
+                        changed = True
+                if changed:
+                    blk["hash"] = hs
+                    fixed = True
+                continue
+            a = match_asset(cur, assets)
+            if a and a["name"] != unquote(cur.split("/")[-1]):
+                blk["url"] = a.get("browser_download_url") or cur
+                if a.get("digest"):
+                    blk["hash"] = a["digest"]
+                fixed |= handle_build_drift(manifest, a, cur, arch=arch) in ("refresh", "removed")
+        return fixed
+    cur = manifest.get("url", "")
+    if isinstance(cur, list):
+        # 配对资产（--more，单架构）：顶层 url/hash 数组逐项回写
+        hs = manifest.get("hash") if isinstance(manifest.get("hash"), list) else [""] * len(cur)
+        changed = False
+        for i, u in enumerate(cur):
+            a = match_asset(u, assets)
+            if a and a["name"] != unquote(u.split("/")[-1]):
+                cur[i] = a.get("browser_download_url") or u
+                if a.get("digest") and i < len(hs):
+                    hs[i] = a["digest"]
+                changed = True
+        if changed:
+            manifest["hash"] = hs
+        return changed
+    a = match_asset(cur, assets)
+    # URL 中 %2B 等编码与资产名原字符（+）等价：解码后再比，避免误判漂移
+    cur_name = unquote(cur.split("/")[-1])
+    if not a or a["name"] == cur_name:
+        return False
+    manifest["url"] = a.get("browser_download_url") or cur
+    if a.get("digest"):
+        manifest["hash"] = a["digest"]
+    return handle_build_drift(manifest, a, cur) in ("refresh", "removed")
+
+
+def is_windows_asset(name):
+    """判断是否为 Windows 平台资产"""
+    lower = name.lower()
+    base = lower.rsplit("/", 1)[-1]
+    # 明确排除非 Windows 格式
+    if any(m in lower for m in [".dmg", ".appimage", ".rpm", ".deb", ".apk"]):
+        return False
+    # 排除源码包/校验与元数据文件
+    if name.lower().endswith((".tar", ".tar.gz", ".tar.xz", ".txt", ".json",
+                             ".md", ".sum", ".sha256", ".asc", ".list", ".html",
+                             ".yml", ".blockmap", ".sig")):
+        return False
+    # 校验和文件的其他写法：*.SHA256SUMS / *.sha512sums / *.md5sums / *.checksums / *.digest
+    # （上面的 endswith 只覆盖 ".sum"/".sha256"；"…x64.SHA256SUMS" 这类写法会漏，且带 x64 时
+    #   还能拿 +2 分——若 release 只发校验文件和 mac/linux 包，就会被当成主资产选走。
+    #   教训：vtracer 的 VTracer_1.0.0-alpha.4_x64.SHA256SUMS）
+    if re.search(r"(?i)\.(?:sha\d{0,3}sums?|md5sums?|checksums?|digests?|sums?)$", base):
+        return False
+    # 排除源码包（-source / -src 独立段）与脚本文件——都不是可安装的 Windows 包
+    # （教训：kvmem-llama.cpp 的 -source.zip 曾被当 Windows 资产兜底进 32bit/arm64）
+    if re.search(r"(?:^|[-_.])(?:src|source)(?:[-_.]|$)", base):
+        return False
+    if base.endswith((".ps1", ".psm1", ".sh", ".bash", ".bat", ".cmd", ".py", ".rb", ".pl")):
+        return False
+    # 跨平台编译的裸二进制后缀（Go/Rust 等无 .exe 平台产物，如 ttyd.arm / ttyd.x86_64 / ttyd.i686）
+    if base.endswith((".arm", ".armhf", ".i686", ".i386", ".i586", ".x86_64", ".amd64",
+                      ".aarch64", ".s390x", ".mips", ".mips64", ".mips64el", ".mipsel",
+                      ".ppc64", ".ppc64le", ".riscv64", ".loongarch64")):
+        return False
+    # 无扩展名且无 win 标记 → 非 Windows（裸校验文件/脚本，如 SHA256SUMS）
+    if "." not in base and not re.search(r"win|windows", lower):
+        return False
+    # 明确排除非 Windows 平台标识
+    if re.search(r'[-.]mac(?:os)?[-.]', lower) or re.search(r'[-.]mac$', lower.rsplit('.', 1)[0] if '.' in lower else ''):
+        return False
+    if "darwin" in lower or "macos" in lower:
+        return False
+    if any(d in lower for d in ["linux", "ubuntu", "debian", "fedora", "centos",
+                                "freebsd", "openbsd", "netbsd", "archlinux",
+                                "manjaro", "gentoo", "rhel", "suse", "alpine"]):
+        return False
+    if "android" in lower or "ios" in lower:
+        return False
+    return True
+
+
+def _release_has_windows_asset(release):
+    """release 是否含可下载的 Windows 资产。无资产（monorepo/changesets 子包噪音 tag）
+    或仅含非 Windows 资产时返回 False，供更新流程预检跳过/回退。"""
+    return any(is_windows_asset(a.get("name", "")) for a in (release.get("assets") or []))
+
+
+# 预发布版本串特征（要求是独立段，避免 premium / arch 之类误判）
+_PRERELEASE_TAG_RE = re.compile(
+    r"(?i)(?:^|[-._])(?:rc|beta|alpha|preview|pre|dev|nightly|canary)\d*(?:$|[-._])")
+
+
+def _version_looks_prerelease(version):
+    """版本串是否像预发布（如 0.16.0-rc3 / 2.0-beta.1）。
+    仅凭 GitHub 的 prerelease 标志不够——作者常把 rc 标成正式版，故按版本串判定。"""
+    return bool(_PRERELEASE_TAG_RE.search(str(version or "")))
+
+
+def _warn_if_prerelease(version, where=""):
+    """直链/模板类入口（无 release 列表可选）的预发布提示——不阻断，用户已显式给出源。"""
+    if _version_looks_prerelease(version):
+        print(f"[提示] 版本 {version} 像预发布版（rc/beta/…）{where}；如非本意请改用稳定版链接。")
+
+
+def _ver_of_tag(tag):
+    """release tag → 与清单一致的 version（剥离平台前缀与 v）。"""
+    v = re.sub(r"^(windows|win64|win32|macos|darwin|linux|ubuntu)[-_]v", "", str(tag or ""), flags=re.I)
+    return v.lstrip("v")
+
+
+def pick_effective_release(owner, repo, platform="github", want_platform=None, rels=None):
+    """挑一个"有效" release（--add 收录与更新路径回退共用）。
+    候选 = releases 列表去掉 draft / untagged-，要求：含可下载的 Windows 资产；
+    平台 tag 匹配 want_platform（若给定）。取列表中最新的一个；找不到返回 None。
+
+    只按"资产"判定，不看 prerelease/rc——上游常把发布标成预发布但资产完整，且最新
+    版本可能恰好是零资产的空 release（如 kvmem-llama.cpp 的 v0.17.0），需往下探到
+    最近一个真正带 Windows 资产的 release。"""
+    if rels is None:
+        try:
+            rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=30")
+        except Exception as e:
+            print(f"  [错误] 获取 {owner}/{repo} releases 失败: {e}")
+            return None
+    for r in rels:
+        if r.get("draft") or str(r.get("tag_name", "")).startswith("untagged-"):
+            continue
+        if not _release_has_windows_asset(r):
+            continue
+        if want_platform and not _platform_tag_passes(r.get("tag_name", ""), want_platform):
+            continue
+        return r
+    return None
+
+
+def describe_release_candidates(owner, repo, platform="github", rels=None):
+    """--add 找不到有效 release 时，打印候选（tag / 预发布? / Windows 资产数）供人工判断。"""
+    if rels is None:
+        try:
+            rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=20")
+        except Exception as e:
+            print(f"  获取候选 release 失败: {e}")
+            return
+    rels = [r for r in (rels or []) if not r.get("draft")]
+    if not rels:
+        print("  该仓库没有任何 release。")
+        return
+    print("  可用 release（tag | 预发布? | Windows 资产数）:")
+    for r in rels:
+        tag = str(r.get("tag_name", ""))
+        pre = bool(r.get("prerelease")) or _version_looks_prerelease(_ver_of_tag(tag))
+        nwin = sum(1 for a in (r.get("assets") or []) if is_windows_asset(a.get("name", "")))
+        print(f"    {tag:30s} 预发布={str(pre):5s} win资产={nwin}")
+
+
+def detect_arch(name):
+    """从文件名检测架构"""
+    lower = name.lower()
+    if "arm64" in lower or "aarch64" in lower:
+        return "arm64"
+    # x86_64 必须优先于 x86 检查（x86_64 含 x86 子串，旧逻辑误判 32bit）
+    if "x86_64" in lower or "x64" in lower or "64bit" in lower or "amd64" in lower or "win64" in lower:
+        return "64bit"
+    if "x86" in lower or "i686" in lower or "i386" in lower or "i586" in lower or "32bit" in lower or "ia32" in lower:
+        return "32bit"
+    return None
+
+
+def score_asset(name):
+    """给 Windows asset 打分，分数越高越好"""
+    lower = name.lower()
+    score = 0
+    # 优先便携版
+    if "portable" in lower:
+        score += 10
+    # zip/7z 优先于 exe（zip 可解压）
+    if name.endswith(".zip") or name.endswith(".7z"):
+        score += 5
+    elif name.endswith(".exe"):
+        # 有 setup/install 字样的是安装包，降到最低档（与 MSI 同档），
+        # 免安装直用版（如 floral-notepaper_1.2.0.exe）优先
+        if "setup" in lower or "install" in lower:
+            score -= 10
+    # MSI 保留但降低优先级，避免 Scoop 自动解包执行完整安装到系统
+    # 如需恢复 MSI 正常优先级，删除下面两行即可
+    elif name.endswith(".msi"):
+        score -= 10
+    # 中文版优先（_zh、-zh、chs、cn）
+    if re.search(r'[._\-]zh[._\-]|_zh$|-zh$|[._\-]chs[._\-]|[._\-]cn[._\-]', lower):
+        score += 3
+    # GPU 优先级：NVIDIA 通用(+8) > 指定 CUDA(+6) > 通用包(0) > 非 N 卡专用(-4)
+    has_nvidia = re.search(r'[._\-]nvidia|nvidia', lower)
+    has_cuda_ver = re.search(r'[._\-]cu\d{2,3}|cuda[._\-]?\d', lower)  # 兼容 cuda13 / cuda-13.3 / cu12 写法
+    has_amd = re.search(r'[._\-]amd[._\-]|rocm|radeon', lower)
+    has_hip = re.search(r'[._\-]hip[._\-]|hip$', lower)  # AMD HIP（非 N 卡）专用构建
+    has_intel = re.search(r'[._\-]intel[._\-]|intel', lower)
+    if has_nvidia and not has_cuda_ver:
+        score += 8  # NVIDIA 通用版最高优先
+    elif has_cuda_ver:
+        score += 6  # NVIDIA 指定 CUDA 版本
+    elif has_intel:
+        score += 0  # Intel（不额外加分）
+    # 非 N 卡专用（AMD HIP / ROCm / Radeon）降一级：通用 x64 包应优先。
+    # 教训：Strata 的 strata-windows-x64-hip.zip 与通用包同为 7 分（hip 不含任何 GPU 关键词），
+    # 平手后按列表顺序被选中 → 非 N 卡包反而优先。
+    if has_amd or has_hip:
+        score -= 4
+    # CLI / 裸二进制（工具链命名）降级：GUI 应用常同时发 CLI 包（bdl-cli-0.8.4-windows-x64.zip）
+    # 或裸二进制（vtracer-x86_64-pc-windows-msvc.zip）与安装器（setup/msi）；这类包不是桌面应用的
+    # 替代品 → 排到安装器之后（-20 低于 installer 档的 -10）。
+    # 教训：bdl 曾选中 bdl-cli-…zip、vtracer 曾选中 -msvc.zip，把 GUI 应用装成了命令行工具。
+    if re.search(r'(?i)(?:^|[-_.])(?:cli|msvc|gnu)(?:[-_.]|$)', lower):
+        score -= 20
+    # x64 优先
+    if "x64" in lower or "64bit" in lower or "amd64" in lower:
+        score += 2
+    # arm64 降级：通用版（无架构标记）应优先于 arm64 专版
+    if "arm64" in lower or "aarch64" in lower:
+        score -= 5
+    return score
+
+
+def max_num(name):
+    """文件名中最大的版本号（用于同分 tie-breaker：最新=数字最大）。
+    只取点号版本（如 13.3、1.2.11），忽略 x64/32 这类架构数字。"""
+    nums = re.findall(r"\d+\.\d+(?:\.\d+)*", name)
+    if nums:
+        return max(tuple(int(x) for x in n.split(".")) for n in nums)
+    runs = [int(x) for x in re.findall(r"\d+", name)]
+    return (max(runs),) if runs else (0,)
+
+
+def pick_asset(group):
+    """组内择优：score_asset 最高；同分取文件名版本号最大（规则①）"""
+    best = None
+    bscore, bnum = -1 << 30, None
+    for a in group:
+        sc = score_asset(a["name"])
+        nm = max_num(a["name"])
+        if sc > bscore or (sc == bscore and (bnum is None or nm > bnum)):
+            best, bscore, bnum = a, sc, nm
+    return best
+
+
+# --more 模式：主程序 + CUDA 运行时（cudart）配对合并收录。
+# 运行时包以这些前缀命名（如 cudart-llama-bin-win-cuda-13.3-x64.zip），
+# 与同名架构、同 CUDA 版本的主程序包（如 llama-prism-…-bin-win-cuda-13.3-x64.zip）
+# 组成一对：两个 zip 都要下载，Scoop url 数组会把两者解压合并到同一目录。
+CUDA_RUNTIME_PREFIXES = ("cudart-",)
+
+
+def parse_cuda_asset(name):
+    """解析 CUDA 资产 → (arch, cuda_ver, kind) 或 None。
+    kind: 'main'（主程序）/ 'runtime'（cudart 运行时）。
+    仅识别含 cuda{ver} 标记、可检测架构的 Windows 包；
+    无架构标记（如 xcframework）或无 CUDA 版本号（cpu/vulkan/hip）返回 None。"""
+    arch = detect_arch(name)
+    if not arch:
+        return None
+    lower = name.lower()
+    m = re.search(r"cuda[._-]?(\d+(?:\.\d+)*)", lower)
+    if not m:
+        return None
+    cuda_ver = tuple(int(x) for x in m.group(1).split("."))
+    kind = "runtime" if lower.startswith(CUDA_RUNTIME_PREFIXES) else "main"
+    return (arch, cuda_ver, kind)
+
+
+def build_runtime_pairs(win_assets):
+    """--more 模式：识别「主程序 + cudart 运行时」配对（同架构、同 CUDA 版本）。
+    同一架构存在多组 CUDA 版本配对时，取版本最高者（13.3 优先于 12.4）。
+    返回 {arch: {"main": asset, "runtime": asset, "cuda_ver": (…), "cuda_str": "13.3"}}；
+    无任何配对时返回空 dict（调用方回退常规流程）。
+    参数 win_assets 与 add_manifest 同形：[(asset, score), …]"""
+    by_arch = {}
+    for a, _s in win_assets:
+        info = parse_cuda_asset(a["name"])
+        if info:
+            arch, cver, kind = info
+            d = by_arch.setdefault(arch, {})
+            d.setdefault(kind, {})[cver] = a
+    pairs = {}
+    for arch, kinds in sorted(by_arch.items()):
+        mains = kinds.get("main", {})
+        runtimes = kinds.get("runtime", {})
+        common = sorted(set(mains) & set(runtimes), reverse=True)
+        if not common:
+            continue
+        best_ver = common[0]
+        pairs[arch] = {
+            "main": mains[best_ver],
+            "runtime": runtimes[best_ver],
+            "cuda_ver": best_ver,
+            "cuda_str": ".".join(str(x) for x in best_ver),
+        }
+    return pairs
+
+
+def generate_autoupdate_url(asset_name, tag, has_v_prefix, platform="github", owner=None, repo=None,
+                            replace_in_name=True):
+    """根据 asset 文件名和 tag 生成 autoupdate URL 模板。
+    文件名模板化优先级（replace_in_name=True 时）：
+    1. tag 子串（如非语义 tag prism-b10709-9a9394a 出现在文件名中）→ $version
+       （tag 去 v 后长度 ≥4 才启用，防短 tag 误替换文件名其他位置；
+       与 tag 解耦的 CUDA 版本段保持写死，实测：一个 tag 下同时挂多套 CUDA 资产）
+    2. 点号版本段（如 1.2.3 / 13.3）→ $version（原有行为）
+    replace_in_name=False：文件名完全保持原样（--more 配对的 cudart 运行时——
+    文件名无 tag 段、只有与 tag 解耦的 CUDA 版本，模板化反而会在下版 404）。"""
+    new_name = asset_name
+    if replace_in_name:
+        tag_clean = tag.lstrip("v")
+        if len(tag_clean) >= 4 and tag_clean in asset_name:
+            new_name = asset_name.replace(tag_clean, "$version")
+        else:
+            ver_match = re.search(r"[\d]+(?:\.[\d]+)+", asset_name)
+            if ver_match:
+                new_name = asset_name.replace(ver_match.group(0), "$version")
+
+    v_prefix = "v" if re.match(r"^v", tag) else ""
+    if platform == "gitee" and owner and repo:
+        return f"{download_base(platform, owner, repo)}/{v_prefix}$version/{new_name}"
+    return f"https://github.com/{{owner}}/{{repo}}/releases/download/{v_prefix}$version/{new_name}"
+
+
+def find_duplicate_source(owner, repo, exclude_app=None):
+    """在既有 bucket 清单里找 checkver 指向同一 owner/repo 的清单（防重复收录 / 上游改名）。
+
+    覆盖三种写法：checkver.github（https://github.com/o/r）、checkver.url 的 API 形式
+    （https://api.github.com/repos/o/r/…，如 updist 的文本正则 checkver）、homepage 含仓库地址。"""
+    target = f"github.com/{owner}/{repo}".lower()
+    hits = []
+    for p in sorted(BUCKET_DIR.glob("*.json")):
+        if exclude_app and p.stem == exclude_app:
+            continue
+        try:
+            m = json.load(open(p, encoding="utf-8"))
+        except Exception:
+            continue
+        cv = m.get("checkver") or {}
+        blob = " ".join(str(x) for x in (cv.get("github", ""), cv.get("url", ""),
+                                         m.get("homepage", ""))).lower()
+        # 统一去掉 API 形式的 /repos/ 段，使 api.github.com/repos/o/r 也能被 github.com/o/r 命中
+        blob = blob.replace("github.com/repos/", "github.com/")
+        if target in blob:
+            hits.append(p.stem)
+    return hits
+
+
+def _write_placeholder_manifest(manifest_path, description, homepage, license_val, platform, owner, repo):
+    """无 Release 的仓库：写一个占位 manifest 供人工补充 url/hash。"""
+    manifest = {
+        "version": "1.0",
+        "description": description,
+        "homepage": homepage,
+        "license": license_val,
+        "url": f"https://{platform}.com/{owner}/{repo}/releases",
+        "hash": "sha256:" + "0" * 64,
+        "notes": "需要手动设置下载地址和 hash，该项目无 Release。"
+    }
+    s = str(manifest_path)
+    with open(s, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=4, ensure_ascii=False)
+        f.write("\n")
+    print(f"\n[占位] manifest 已创建: {s}")
+    print("  请手动补充 url 和 hash 后替换。")
+    return s
+
+
+def add_manifest(repo_url, app_name=None, more=False):
+    """从 GitHub / Gitee 链接添加新 manifest。
+    more=True（--more）：启用「主程序 + cudart 运行时」配对合并收录——
+    配对架构生成 url/hash 数组（两个 zip 依次解压合并到同一目录）；
+    同架构多 CUDA 版本配对取最高（13.3 > 12.4）。无配对时回退常规流程。"""
+    platform, owner, repo = parse_repo_url(repo_url)
+    if not platform:
+        print(f"[错误] 无法解析仓库 URL: {repo_url}")
+        return None
+
+    if not app_name:
+        app_name = repo.lower()
+    manifest_path = BUCKET_DIR / f"{app_name}.json"
+    if manifest_path.exists() and "--force-new" not in sys.argv[1:]:
+        # 默认合并更新：仓库模式写盘前 merge_existing_manifest 会保留既有
+        # bin/shortcuts/extract_dir/notes 等人工字段，仅覆盖 version/url/hash/architecture
+        print(f"[提示] manifest 已存在: {manifest_path.name}（将合并更新，人工字段保留；--force-new 可强制全新）")
+    elif manifest_path.exists():
+        print(f"[提示] --force-new：将覆盖重建 {manifest_path.name}（旧字段不保留）")
+
+    print(f"平台: {platform}")
+    print(f"仓库: {owner}/{repo}")
+    print(f"应用名: {app_name}")
+
+    dups = find_duplicate_source(owner, repo, exclude_app=app_name)
+    if dups:
+        print(f"[警告] 同一来源已存在于既有清单: {', '.join(dups)}（可能重复收录或上游改名，请确认）")
+
+    # 获取仓库信息
+    try:
+        info = get_repo_info(owner, repo, platform)
+    except Exception as e:
+        print(f"[错误] 获取仓库信息失败: {e}")
+        return None
+
+    description = info.get("description") or f"{repo} - from {platform}"
+    homepage = info.get("homepage", "") or f"https://{platform}.com/{owner}/{repo}"
+    license_info = info.get("license", {})
+    if isinstance(license_info, dict):
+        license_val = license_info.get("spdx_id", license_info.get("name", "unknown"))
+    else:
+        license_val = license_info or "unknown"
+
+    print(f"描述: {description}")
+    print(f"License: {license_val}")
+
+    # 仓库健康度（archived/fork）：默认警告，--allow-archived 静音
+    if "--allow-archived" not in sys.argv[1:]:
+        if info.get("archived"):
+            print("[警告] 该仓库已归档（archived），上游可能不再维护；确认无碍可加 --allow-archived 静音")
+        elif info.get("fork"):
+            print("[警告] 该仓库是 fork，非上游主仓；确认无碍可加 --allow-archived 静音")
+
+    # 获取 release（预检：跳过零资产/无 Windows 资产的 release，取最新带 Windows 资产的）
+    try:
+        rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=30")
+    except urllib.error.HTTPError as e:
+        print(f"[错误] 获取 release 失败 (HTTP {e.code})，将创建无 checkver 的占位 manifest")
+        print("  该项目可能没有 Release，需要手动处理。")
+        return _write_placeholder_manifest(manifest_path, description, homepage, license_val,
+                                           platform, owner, repo)
+
+    if not rels:
+        print("[提示] 该项目没有任何 Release，将创建占位 manifest 供手动补充。")
+        return _write_placeholder_manifest(manifest_path, description, homepage, license_val,
+                                           platform, owner, repo)
+
+    release = pick_effective_release(owner, repo, platform, rels=rels)
+    if not release:
+        print("\n[跳过] 未找到带 Windows 资产的有效 release：")
+        describe_release_candidates(owner, repo, platform, rels=rels)
+        return None
+
+    tag = release["tag_name"]
+    version = tag.lstrip("v")
+    has_v_prefix = tag.startswith("v")
+    assets = release.get("assets", [])
+
+    print(f"Tag: {tag} → version: {version}")
+    print(f"Assets 数量: {len(assets)}")
+
+    # 筛选 Windows 资产并排序
+    win_assets = [(a, score_asset(a["name"])) for a in assets if is_windows_asset(a["name"])]
+    win_assets.sort(key=lambda x: -x[1])
+
+    if not win_assets:
+        print("\n[警告] 未找到 Windows 平台资产。可用资产:")
+        for a in assets:
+            print(f"  {a['name']}")
+        print("\n  请手动处理或等待项目提供 Windows 版本。")
+        return None
+
+    print("\nWindows 资产（按优先级）:")
+    for a, score in win_assets:
+        digest = a.get("digest", "N/A")
+        print(f"  [{score}] {a['name']}")
+        print(f"       digest: {digest}")
+        print(f"       url: {a['browser_download_url']}")
+
+    # 按架构分组（64bit/32bit/arm64/通用），组内择优（规则①同分取数字最大）
+    arch_groups = {"64bit": [], "32bit": [], "arm64": [], "generic": []}
+    for a, s in win_assets:
+        arch_groups[detect_arch(a["name"]) or "generic"].append(a)
+
+    # 检查是否有提取目录
+    # 无法下载检查，先提示
+    needs_extract_dir = False  # 默认不设置
+
+    print()
+
+    # 构建 manifest
+    manifest = {
+        "version": version,
+        "description": description,
+        "homepage": homepage,
+        "license": license_val,
+    }
+
+    # 根据平台设置 checkver
+    if platform == "gitee":
+        manifest["checkver"] = {
+            "url": f"https://gitee.com/api/v5/repos/{owner}/{repo}/releases/latest",
+            "jsonpath": "$.tag_name",
+            "regex": "v([\\d.]+)"
+        }
+    else:
+        manifest["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
+
+    # 候选架构：专用组优先；缺专用组时用通用组最优兜底（规则②；纯通用项目不做兜底）
+    generic_best = pick_asset(arch_groups["generic"]) if arch_groups["generic"] else None
+    # 通用组兜底仅限"可安装包"（防把脚本/元数据等兜底进缺失架构）
+    if generic_best and _ext_family(generic_best["name"]) not in ("archive", "installer"):
+        generic_best = None
+    has_special = any(arch_groups[g] for g in ("64bit", "32bit", "arm64"))
+    arch_sel = {}
+    for arch in ("64bit", "32bit", "arm64"):
+        if arch_groups[arch]:
+            arch_sel[arch] = pick_asset(arch_groups[arch])
+        elif generic_best and has_special:
+            arch_sel[arch] = generic_best
+
+    # --more：主程序 + cudart 运行时配对（两个 zip 合并安装；同架构取 CUDA 版本最高）
+    runtime_pairs = {}
+    if more:
+        runtime_pairs = build_runtime_pairs(win_assets)
+        if runtime_pairs:
+            print("[--more] 检测到 主程序+运行时 配对（两包合并安装）:")
+            for arch, p in sorted(runtime_pairs.items()):
+                print(f"  {arch}: {p['main']['name']}")
+                print(f"         + {p['runtime']['name']}（CUDA {p['cuda_str']}）")
+        else:
+            print("[--more] 未检测到 主程序+运行时 配对，按常规流程收录")
+
+    if len(arch_sel) >= 2:
+        print(f"检测到多架构: {list(arch_sel.keys())}")
+        manifest["architecture"] = {}
+        au_arch = {}
+        for arch, a in sorted(arch_sel.items()):
+            pair = runtime_pairs.get(arch)
+            if pair:
+                main_a, rt_a = pair["main"], pair["runtime"]
+                url = [main_a["browser_download_url"], rt_a["browser_download_url"]]
+                digest = [main_a.get("digest", ""), rt_a.get("digest", "")]
+                print(f"  {arch}: {main_a['name']} + {rt_a['name']}（--more 配对合并）")
+            else:
+                url = a["browser_download_url"]
+                digest = a.get("digest", "")
+                print(f"  {arch}: {a['name']}")
+            manifest["architecture"][arch] = {"url": url, "hash": digest}
+            if pair:
+                au_url = [
+                    generate_autoupdate_url(pair["main"]["name"], tag, has_v_prefix, platform, owner, repo),
+                    # cudart 文件名只含与 tag 解耦的 CUDA 版本：不模板化，保持写死
+                    generate_autoupdate_url(pair["runtime"]["name"], tag, has_v_prefix, platform, owner, repo,
+                                            replace_in_name=False),
+                ]
+            else:
+                au_url = generate_autoupdate_url(a["name"], tag, has_v_prefix, platform, owner, repo)
+            if platform != "gitee":
+                au_url = [u.format(owner=owner, repo=repo) for u in au_url] if isinstance(au_url, list) else au_url.format(owner=owner, repo=repo)
+            au_arch[arch] = {"url": au_url}
+
+        manifest["autoupdate"] = {"architecture": au_arch}
+    else:
+        if arch_sel:
+            best = list(arch_sel.values())[0]
+        elif generic_best:
+            best = generic_best
+        else:
+            best, _ = win_assets[0]
+        pair = runtime_pairs.get(list(arch_sel.keys())[0]) if arch_sel else None
+        if pair:
+            main_a, rt_a = pair["main"], pair["runtime"]
+            url = [main_a["browser_download_url"], rt_a["browser_download_url"]]
+            digest = [main_a.get("digest", ""), rt_a.get("digest", "")]
+            print(f"使用: {main_a['name']} + {rt_a['name']}（--more 配对合并）")
+        else:
+            url = best["browser_download_url"]
+            digest = best.get("digest", "")
+
+        manifest["url"] = url
+        manifest["hash"] = digest
+
+        if pair:
+            au_url = [
+                generate_autoupdate_url(pair["main"]["name"], tag, has_v_prefix, platform, owner, repo),
+                # cudart 文件名只含与 tag 解耦的 CUDA 版本：不模板化，保持写死
+                generate_autoupdate_url(pair["runtime"]["name"], tag, has_v_prefix, platform, owner, repo,
+                                        replace_in_name=False),
+            ]
+        else:
+            au_url = generate_autoupdate_url(best["name"], tag, has_v_prefix, platform, owner, repo)
+        if platform != "gitee":
+            au_url = [u.format(owner=owner, repo=repo) for u in au_url] if isinstance(au_url, list) else au_url.format(owner=owner, repo=repo)
+
+        manifest["autoupdate"] = {"url": au_url}
+
+        if not pair:
+            print(f"使用: {best['name']}")
+
+    # 添加 bin 和 shortcuts（与架构选择保持一致：多架构用 64bit 选定项）
+    if arch_sel:
+        first_arch = list(arch_sel.keys())[0]
+        first_pair = runtime_pairs.get(first_arch)
+        best_asset = first_pair["main"] if first_pair else arch_sel[first_arch]
+    elif generic_best:
+        best_asset = generic_best
+    else:
+        best_asset, _ = win_assets[0]
+    best_name = best_asset["name"]
+
+    if best_name.endswith(".msi"):
+        # MSI 手动安装：Scoop 对 .msi 始终先执行 extract_archive（msiexec /a），
+        # installer 字段在解包之后才执行，无法阻止。
+        # 因此用 pre_install 在解包前从缓存复制 MSI 到 $dir 保存，再 post_install 启动
+        # 不设 bin/shortcuts/checkver/autoupdate
+        # 注意：Scoop 缓存文件名格式为 {appname}#{version}#{hash}.msi，不是原始文件名
+        # 如需恢复 Scoop 默认 MSI 自动解包行为，删除此分支即可
+        print("[MSI] 检测到 MSI 安装包，将使用 pre_install 保存 + post_install 启动")
+        manifest["pre_install"] = [
+            "$appname = Split-Path (Split-Path $dir -Parent) -Leaf",
+            "$cachedir = $dir -replace '\\\\apps\\\\.*$', '\\cache'",
+            "$msi = Get-ChildItem $cachedir -Filter \"$appname#*.msi\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+            "if ($msi) { Copy-Item $msi.FullName \"$dir\\setup.msi\" }"
+        ]
+        manifest["post_install"] = "Start-Process \"$dir\\setup.msi\""
+        if "checkver" in manifest:
+            del manifest["checkver"]
+        if "autoupdate" in manifest:
+            del manifest["autoupdate"]
+        manifest["notes"] = "MSI 手动安装包，scoop install 下载后自动启动，用户手动选择安装目录。"
+    elif best_name.endswith(".exe"):
+        exe_name = best_name
+        # 去掉版本号得到更通用的名字（用于 bin/shortcuts）
+        clean_name = re.sub(r"[-_]v?[\d]+(?:\.[\d]+)+", "", best_name)
+        clean_name = clean_name.replace(".exe", ".exe")  # 确保后缀
+        manifest["bin"] = exe_name
+        manifest["shortcuts"] = [[exe_name, repo]]
+        print(f"bin: {exe_name}")
+    elif best_name.endswith(".qlplugin"):
+        # .qlplugin 插件：下载后自启动，用户手动确认安装
+        manifest["post_install"] = f"Start-Process \"$dir\\{best_name}\""
+        print(f"[qlplugin] 将添加 post_install 自启动: {best_name}")
+    elif best_name.endswith((".zip", ".7z")):
+        exe_name = arg_value("--exe-name")
+        if exe_name:
+            manifest["bin"] = exe_name
+            manifest["shortcuts"] = [[exe_name, arg_value("--shortcut-name") or app_name]]
+            # 仓库模式免下载，看不到 zip 结构——扁平化不自动判定（会误伤 src+exe 并列结构），
+            # 仅显式 --flatten（带 exe 守卫）或 --unzip（无条件解压拍平）才附加；
+            # --unzip 优先：不检测 exe，内部层级保留（kvmem-*/bin/xxx.exe → $dir/bin/xxx.exe）
+            if "--unzip" in sys.argv[1:] and "pre_install" not in manifest:
+                manifest["pre_install"] = [UNZIP_PRE_INSTALL]
+                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts，并（--unzip）附加无条件解压拍平 "
+                      f"pre_install（不检测 exe，内部层级保留；bin 需子路径时写 bin\\{exe_name}）")
+            elif "--flatten" in sys.argv[1:] and "pre_install" not in manifest:
+                manifest["pre_install"] = [FLATTEN_PRE_INSTALL]
+                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts，并（--flatten）附加扁平化 pre_install")
+            elif "pre_install" in manifest:
+                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts（已有 pre_install，未追加扁平化）")
+            else:
+                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts。"
+                      f"zip 结构未下载确认，未自动扁平化——确认是单层打包目录时可加 --flatten 重跑")
+        else:
+            manifest["notes"] = "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+            print("[提示] zip/7z 格式无法自动推测 exe 名，请手动添加 bin/shortcuts 或加 --exe-name")
+
+    # 写盘前合并保留既有人工字段（--add 重跑不冲掉 bin/shortcuts/pre_install 等；
+    # --force-new 完全重建，不保留旧字段）
+    if "--force-new" not in sys.argv[1:]:
+        kept = merge_existing_manifest(manifest_path, manifest)
+        if kept:
+            print(f"[提示] 目标 {manifest_path.name} 已存在，已合并保留: {', '.join(kept)}")
+
+    # 写入 manifest
+    manifest_path_str = str(manifest_path)
+    with open(manifest_path_str, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=4, ensure_ascii=False)
+        f.write("\n")
+
+    print(f"\n[成功] manifest 已创建: {manifest_path_str}")
+    print(f"  安装命令: scoop install {app_name}")
+    print(f"\n  下一步：")
+    if best_name.endswith((".zip", ".7z")):
+        print(f"  1. 下载并查看 zip 内部结构: curl -L -o _temp.zip \"{best_asset['browser_download_url']}\" && 7z l _temp.zip | head -30")
+        if "--more" in sys.argv[1:] and runtime_pairs:
+            print(f"     （--more 配对包共 {len(runtime_pairs)} 个架构，各架构下载 2 个 zip 合并安装）")
+        print(f"  2. 确认主 exe 名，添加到 manifest 的 bin 和 shortcuts 字段")
+        print(f"  3. 如有顶层目录，添加 extract_dir 字段")
+    print(f"  4. 验证: python3 -m json.tool {manifest_path_str}")
+    print(f"  5. 安装测试: scoop install {app_name}")
+    print(f"  6. git add . && git commit -m '添加 {app_name}' && git push")
+
+    # --dl：生成后必须下载探测，自动补全 bin/shortcuts/extract_dir（复用 --fill-bin 引擎）。
+    # 铁律：--dl 就是必须下载——清空既有 hash（GitHub API digest）强制实测下载重算；
+    #  zip/7z → fill-bin 引擎（列 exe 选主程序）；
+    #  exe（portable/setup 统一）→ finalize 引擎：Inno/NSIS 检测 + 解包探测内部主程序 + pre_install；
+    #  msi → 实测下载回填 hash（安装行为由 MSI 分支 pre/post_install 承担）
+    if "--dl" in sys.argv[1:]:
+        if best_name.endswith((".zip", ".7z")):
+            print("\n[--dl] 生成完毕，开始下载探测补全（zip 结构 → bin/shortcuts/extract_dir）…")
+            fill_bin_manifest(manifest_path, BUCKET_DIR, app_name, select=arg_value("--select"))
+        else:
+            saved_bin, saved_sc = manifest.get("bin"), manifest.get("shortcuts")
+            # 强制实测下载：清空 API digest，finalize 将真实下载并在探测后回填实测 hash
+            manifest.pop("bin", None)
+            manifest.pop("shortcuts", None)
+            manifest.pop("hash", None)
+            for _blk in (manifest.get("architecture") or {}).values():
+                if isinstance(_blk, dict):
+                    _blk.pop("hash", None)
+            print("\n[--dl] 强制下载并探测（Inno/NSIS 检测 → 内部主程序 bin/shortcuts + pre_install，hash 实测）…")
+            try:
+                finalize_direct_manifest(manifest, BUCKET_DIR, app_name)
+            finally:
+                if not manifest.get("bin") and saved_bin:
+                    manifest["bin"] = saved_bin
+                    manifest["shortcuts"] = saved_sc
+                    print(f"[恢复] 解包探测未产出主程序，保留原 bin: {saved_bin}")
+                    with open(manifest_path_str, "w", encoding="utf-8") as f:
+                        json.dump(manifest, f, indent=4, ensure_ascii=False)
+                        f.write("\n")
+
+    return manifest_path_str
+
+
+def substitute_version(value, version):
+    """递归替换结构中的 $version 模板为实际版本号"""
+    if isinstance(value, str):
+        return value.replace("$version", version)
+    if isinstance(value, list):
+        return [substitute_version(v, version) for v in value]
+    if isinstance(value, dict):
+        return {k: substitute_version(v, version) for k, v in value.items()}
+    return value
+
+
+def _update_pair_block(blk, tmpl, old_url, version, assets):
+    """逐项更新"配对资产"（--more 生成）的数组型 url/hash，返回命中项数。
+
+    数组顺序= [主程序, cudart 运行时]。逐项：$version 模板替换 → match_asset →
+    回写同下标的 url/hash。cudart 名称不含版本号（CUDA 版本段写死），强制精确匹配，
+    禁用 match_asset 的 _norm_base 归一，防止上游停发某个 CUDA 版本时跨版本误配。
+    配对清单的构建号内嵌在 tag（=$version）里，同版本内无 +N 漂移，故不做 drift 处理。"""
+    tlist = substitute_version(tmpl if isinstance(tmpl, list) else old_url, version)
+    urls = list(blk["url"])
+    hashes = list(blk["hash"]) if isinstance(blk.get("hash"), list) else [""] * len(urls)
+    n = 0
+    for i, t in enumerate(tlist):
+        if i >= len(urls):
+            break
+        a = match_asset(t, assets)
+        tmpl_i = tmpl[i] if isinstance(tmpl, list) and i < len(tmpl) else ""
+        if a and "$version" not in (tmpl_i or "") and a["name"] != unquote(t.split("/")[-1]):
+            a = None  # cudart 项：只认精确同名
+        if a:
+            urls[i] = a.get("browser_download_url") or t
+            hashes[i] = a.get("digest", "")
+            n += 1
+        else:
+            print(f"      [警告] 配对项 {i} 未匹配，保留旧值")
+    if n:
+        blk["url"] = urls
+        blk["hash"] = hashes
+    return n
+
+
+def sync_autoupdate_fields(au_block, target, version):
+    """把 autoupdate 块内除 url/hash/architecture/note 外的模板字段
+    （如 bin、shortcuts、extract_dir）替换 $version 后写回主清单对应位置，
+    与 scoop 官方 autoupdate 行为保持一致：仅同步主清单中已存在的字段；
+    note 在 scoop 中是特殊追加语义，不在此同步。"""
+    changed = []
+    for key in au_block:
+        if key in ("url", "hash", "architecture", "note"):
+            continue
+        if key not in target:
+            continue  # 与 scoop 一致：主清单没有该字段则不同步
+        new_val = substitute_version(au_block[key], version)
+        if target[key] != new_val:
+            target[key] = new_val
+            changed.append(key)
+    return changed
+
+
+def _url_platform(url):
+    """从清单 url 推断目标平台（多平台仓库用）：优先 mac/linux 特征，其次 windows；无特征返回 None。"""
+    if isinstance(url, list):
+        url = " ".join(str(x) for x in url)
+    u = str(url or "").lower()
+    if any(k in u for k in ("macos", "darwin", "osx", "-mac", "mac-")) and "macbook" not in u:
+        return "mac"
+    if any(k in u for k in ("linux", "ubuntu", "debian")):
+        return "linux"
+    if any(k in u for k in ("windows", "win-x64", "win-x86", "win64", "win32", "-win")):
+        return "windows"
+    return None
+
+
+def _platform_tag_passes(tag, platform):
+    """release tag 是否属于 target 平台（排除明显的外平台词）。"""
+    if platform is None:
+        return True
+    t = str(tag or "").lower()
+    foreign = {
+        "windows": ("macos", "darwin", "osx", "linux", "ubuntu"),
+        "mac": ("windows", "win-x64", "win-x86", "win32", "win64", "linux", "ubuntu"),
+        "linux": ("windows", "win-x64", "win-x86", "win32", "win64", "macos", "darwin", "osx"),
+    }
+    return not any(f in t for f in foreign[platform])
+
+
+def sync_bin_version(manifest, old_version, new_version):
+    """版本升级时，把 bin/shortcuts/pre_install 等字段中出现的旧版本号子串更正为新版本号。
+
+    背景：安装包/主程序文件名常含版本号（如 Finch-1.6.3-setup-x64.exe），autoupdate
+    只更新 version/url/hash，bin 若硬编码版本号会在升级后失配（启动器找不到文件）。
+    这里做精确子串替换：old_version → new_version（固定名如 Finch.exe 无版本号则零影响）。
+    """
+    if not old_version or old_version == new_version:
+        return []
+    changed = []
+
+    def walk(o):
+        if isinstance(o, str):
+            return o.replace(old_version, new_version)
+        if isinstance(o, list):
+            return [walk(x) for x in o]
+        return o
+
+    for key in ("bin", "shortcuts", "extract_dir", "installer", "pre_install", "post_install"):
+        if key not in manifest:
+            continue
+        before = json.dumps(manifest[key], ensure_ascii=False)
+        manifest[key] = walk(manifest[key])
+        if json.dumps(manifest[key], ensure_ascii=False) != before:
+            changed.append(key)
+    return changed
+
+
+def _update_by_regex(manifest, cv, manifest_path, dry_run):
+    """"文本正则" checkver：抓页面/接口 → 正则取版本 → 下载（`$version` 模板或静态直链）→ 写回。
+
+    适用于上游安装包不在 GitHub Release 的场景（Release 无资产/全 prerelease），
+    仅用接口或页面取版本；静态直链（模板无 `$version`，如 .../dsh-latest-windows-x64.exe）
+    时 URL 原样下载、重算 hash，内容未变则不提升版本（防"幽灵更新"）。"""
+    try:
+        page = fetch_text(cv["url"], headers=PAGE_UA)
+        rm = re.search(cv["regex"], page)
+    except Exception as e:
+        print(f"  [错误] {manifest_path.name}: checkver 页面抓取失败: {e}")
+        return None
+    if not rm:
+        print(f"  [跳过] {manifest_path.name}: checkver 正则 {cv['regex']} 未匹配")
+        return None
+    latest_version = rm.group(1) if rm.groups() else rm.group(0)
+    current_version = manifest["version"]
+    if latest_version == current_version:
+        return None
+    print(f"  {manifest_path.name}: {current_version} → {latest_version}")
+    if dry_run:
+        return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
+    au = manifest.get("autoupdate", {})
+    tpl = au.get("url", manifest.get("url", ""))
+    if not isinstance(tpl, str) or not tpl:
+        print(f"  [警告] {manifest_path.name}: autoupdate 模板缺失/异常，跳过")
+        return None
+    static = "$version" not in tpl
+    new_url = tpl if static else tpl.replace("$version", latest_version)
+    tmp = manifest_path.parent / f".{manifest_path.stem}_dl.tmp"
+    try:
+        print(f"  [下载] {new_url.split('#')[0]}" + ("（静态 latest 直链）" if static else ""))
+        download_to(new_url, tmp)
+        size = tmp.stat().st_size
+        digest = sha256_hex(tmp)
+        tmp.unlink(missing_ok=True)
+        print(f"  [下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
+    except Exception as e:
+        tmp.unlink(missing_ok=True)
+        print(f"  [错误] {manifest_path.name}: 下载失败 {e}")
+        return None
+    if static:
+        old = str(manifest.get("hash", "")).lower()
+        if old.startswith("sha256:"):
+            old = old[7:]
+        if digest.lower() == old:
+            print(f"  [跳过] 内容未变（sha256 相同），版本不提升：{latest_version}")
+            return None
+    manifest["url"] = new_url
+    manifest["hash"] = "sha256:" + digest
+    chg = sync_autoupdate_fields(au, manifest, latest_version)
+    if chg:
+        print(f"    同步字段: {', '.join(chg)}")
+    chg2 = sync_bin_version(manifest, current_version, latest_version)
+    if chg2:
+        print(f"    版本化字段更正: {', '.join(chg2)} ({current_version} → {latest_version})")
+    manifest["version"] = latest_version
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=4, ensure_ascii=False)
+        f.write("\n")
+    return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
+
+
+def update_manifest(manifest_path, dry_run=False):
+    """更新单个 manifest"""
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        manifest = json.load(f)
+
+    if "checkver" not in manifest:
+        return None
+
+    cv = manifest["checkver"]
+    github_url = cv.get("github")
+    custom_url = cv.get("url", "")
+    platform = "github"
+
+    # 显式 url+regex 的"文本正则 checkver"优先（含指向 GitHub API 的端点）：上游安装包常不在
+    # GitHub Release（无资产/全 prerelease），只能用接口/页面取版本（如 dsh：包在
+    # download.deepseek.com，版本取自 deepseek-harness 的 release tag）。
+    if custom_url and cv.get("regex") and not github_url:
+        return _update_by_regex(manifest, cv, manifest_path, dry_run)
+
+    if github_url:
+        m = re.match(r"https?://github\.com/([^/]+)/([^/]+)", github_url)
+    elif "api.github.com/repos" in custom_url or "github.com" in custom_url:
+        m = re.match(r"https?://(?:api\.)?github\.com/repos/([^/]+)/([^/]+)", custom_url)
+    elif "gitee.com/api" in custom_url or "gitee.com" in custom_url:
+        m = re.match(r"https?://gitee\.com/api/v5/repos/([^/]+)/([^/]+)", custom_url)
+        if m:
+            platform = "gitee"
+    else:
+        print(f"  [跳过] {manifest_path.name}: 无法识别的 checkver")
+        return None
+
+    if not m:
+        print(f"  [跳过] {manifest_path.name}: 无法解析 repo 地址")
+        return None
+    owner, repo = m.group(1), m.group(2)
+
+    current_version = manifest["version"]
+
+    # 可选 tag_regex：按 tag 形态在 releases 列表里选 release（可含 prerelease；正则带捕获组时版本取该组）。
+    # 用于"tag 命名特殊 / 要跟 beta / 多产品共仓"的清单——仍走 GitHub 分支，
+    # 保留 API digest 免下载与资产匹配（不必退到"文本正则分支"去下载算 hash）。
+    tag_rx = cv.get("tag_regex")
+    if tag_rx:
+        try:
+            rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=30")
+        except Exception as e:
+            print(f"  [错误] {manifest_path.name}: {e}")
+            return None
+        release = next((r for r in rels
+                        if not r.get("draft")
+                        and not str(r.get("tag_name", "")).startswith("untagged-")
+                        and re.search(tag_rx, str(r.get("tag_name", "")))), None)
+        if not release:
+            print(f"  [跳过] {manifest_path.name}: 近期没有匹配 tag_regex 的 release")
+            return None
+    else:
+        try:
+            release = get_latest_release(owner, repo, platform)
+        except urllib.error.HTTPError as e:
+            print(f"  [HTTP {e.code}] {manifest_path.name}: {owner}/{repo}")
+            return None
+        except Exception as e:
+            print(f"  [错误] {manifest_path.name}: {e}")
+            return None
+
+        # 多平台仓库过滤：最新 release 若与清单平台不符（如 qingjian 的 macos tag），
+        # 遍历 releases 列表找一个平台匹配的（非 draft、非 untagged）
+        want_platform = _url_platform(manifest.get("url", ""))
+        if want_platform and not _platform_tag_passes(release.get("tag_name", ""), want_platform):
+            print(f"  [平台] 最新 {release.get('tag_name')} 与清单平台({want_platform})不符，查找匹配 release…")
+            try:
+                rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=20")
+                release = next((r for r in rels
+                                if not r.get("draft")
+                                and not str(r.get("tag_name", "")).startswith("untagged-")
+                                and _platform_tag_passes(r.get("tag_name", ""), want_platform)), None)
+            except Exception as e:
+                print(f"  [错误] {manifest_path.name}: {e}")
+                return None
+            if not release:
+                print(f"  [跳过] {manifest_path.name}: 上游近期没有 {want_platform} 平台 release")
+                return None
+
+        # 加固：latest release 若无可用 Windows 资产（如零资产的空 release / monorepo 子包
+        # 噪音 tag），回退到最近的带 Windows 资产的 release；仍无则跳过不更新。
+        if not _release_has_windows_asset(release):
+            print(f"  [资产] 最新 {release.get('tag_name')} 无可下载 Windows 资产，回退查找…")
+            release = pick_effective_release(owner, repo, platform, want_platform=want_platform)
+            if not release:
+                print(f"  [跳过] {manifest_path.name}: 上游近期没有带 Windows 资产的 release")
+                return None
+
+    latest_tag = release["tag_name"]
+    # 剥离平台前缀（windows-v0.1.0 / macos-v1.2 等），与清单 version 对齐；
+    # tag_regex 带捕获组时以该组为版本（如 ^aivault-v([\d.]+)$ → 0.3.0）
+    if tag_rx:
+        _rm = re.search(tag_rx, latest_tag)
+        latest_version = _rm.group(1) if _rm and _rm.groups() else _ver_of_tag(latest_tag)
+    else:
+        latest_version = _ver_of_tag(latest_tag)
+
+    # 兼容"tag 带后缀而清单 version 只写主版本"的项目（如 v0.6.8-experimental.1 vs 0.6.8）：
+    # 视为同一版本，不触发伪更新（仅当后缀不同时）
+    if latest_version.startswith(current_version + "-"):
+        return None
+    if latest_version == current_version:
+        # 版本未变：检查 URL 构建号是否漂移（如 Cinetry_0.8.4+47 → +48），漂移则自愈
+        assets_now = release.get("assets", [])
+        if assets_now and heal_url_drift(manifest, assets_now):
+            with open(manifest_path, "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=4, ensure_ascii=False)
+                f.write("\n")
+            _u = manifest.get("url") or ""
+            _u = _u[0] if isinstance(_u, list) else _u
+            print(f"  {manifest_path.name}: 版本未变，URL 构建号漂移已自愈 → {_u.split('/')[-1]}")
+            return {"manifest": manifest_path.name, "old": current_version,
+                    "new": latest_version, "drift": True}
+        return None
+    print(f"  {manifest_path.name}: {current_version} → {latest_version}")
+
+    assets = release.get("assets", [])
+
+    if dry_run:
+        return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
+
+    au = manifest.get("autoupdate", {})
+
+    if "architecture" in manifest:
+        to_del = []
+        matched_any = False
+        for arch in manifest["architecture"]:
+            old_url = manifest["architecture"][arch]["url"]
+            # 配对资产（--more）：url/hash 为数组，逐项更新后跳过下方标量逻辑
+            if isinstance(old_url, list):
+                blk = manifest["architecture"][arch]
+                au_t = au.get("architecture", {}).get(arch, {}).get("url", old_url)
+                if _update_pair_block(blk, au_t, old_url, latest_version, assets):
+                    matched_any = True
+                    print(f"    {arch}: 配对资产 {len(blk['url'])} 项已更新")
+                else:
+                    print(f"    {arch}: 配对资产未匹配，标记待删")
+                    to_del.append(arch)
+                continue
+            au_arch = au.get("architecture", {}).get(arch, {})
+            au_url_template = au_arch.get("url", old_url)
+            new_url = resolve_autoupdate_url(au_url_template, latest_version)
+            asset = match_asset(new_url, assets)
+            if asset:
+                matched_any = True
+                digest = asset.get("digest", "")
+                real = asset.get("browser_download_url") or new_url
+                manifest["architecture"][arch]["url"] = real
+                manifest["architecture"][arch]["hash"] = digest
+                drift = handle_build_drift(manifest, asset, new_url, arch=arch)
+                if drift == "refresh":
+                    print(f"    {arch}: {digest[:16]}... [+构建号: autoupdate 模板已刷新为新构建号，保留模板]")
+                elif drift == "removed":
+                    print(f"    {arch}: {digest[:16]}... [+构建号漂移: 已回写真实资产并移除该架构 autoupdate 模板]")
+                else:
+                    print(f"    {arch}: {digest[:16]}...")
+            else:
+                new_url2 = resolve_autoupdate_url(old_url, latest_version)
+                asset2 = match_asset(new_url2, assets)
+                if asset2:
+                    matched_any = True
+                    digest2 = asset2.get("digest", "")
+                    real2 = asset2.get("browser_download_url") or new_url2
+                    manifest["architecture"][arch]["url"] = real2
+                    manifest["architecture"][arch]["hash"] = digest2
+                    drift2 = handle_build_drift(manifest, asset2, new_url2, arch=arch)
+                    if drift2 == "refresh":
+                        print(f"    {arch}: {digest2[:16]}... (fallback, +构建号: autoupdate 模板已刷新，保留模板)")
+                    elif drift2 == "removed":
+                        print(f"    {arch}: {digest2[:16]}... (fallback, +构建号漂移: 已回写真实资产并移除该架构 autoupdate 模板)")
+                    else:
+                        print(f"    {arch}: {digest2[:16]}... (fallback)")
+                else:
+                    to_del.append(arch)
+        # 资产守卫：所有架构都未匹配到任何资产 → 视为无效更新，跳过不写入。
+        # 防止上游噪音 tag（无资产）触发下方"规则③ 删架构"把整个清单改坏。
+        if not matched_any:
+            print(f"  [跳过] {manifest_path.name}: {latest_tag} 无任何架构可匹配的资产，跳过不写入（资产守卫）")
+            return None
+        # 规则③：上游缺失该架构资产 → 删除该架构块（该架构用户自动回退 64bit/通用包）
+        for arch in to_del:
+            print(f"    [删除架构] {arch}: 上游缺少该架构资产（规则③）")
+            del manifest["architecture"][arch]
+            if isinstance(au.get("architecture"), dict):
+                au["architecture"].pop(arch, None)
+        if not manifest["architecture"]:
+            del manifest["architecture"]
+            print("    [提示] architecture 块已清空，已整体移除")
+        elif len(manifest["architecture"]) == 1:
+            print("    [提示] 仅剩 1 个架构，可考虑转顶层 url")
+
+        # 同步 autoupdate 模板字段（bin/shortcuts/extract_dir 等）到各架构块，
+        # 与 scoop 官方 autoupdate 的 arch_specific 行为一致
+        for arch in manifest.get("architecture", {}):
+            au_arch_block = au.get("architecture", {}).get(arch, {})
+            chg = sync_autoupdate_fields(au_arch_block, manifest["architecture"][arch], latest_version)
+            if chg:
+                print(f"    {arch} 同步: {', '.join(chg)}")
+    else:
+        old_url = manifest["url"]
+        # 配对资产（--more，单架构）：顶层 url/hash 为数组，逐项更新后跳过标量逻辑
+        if isinstance(old_url, list):
+            au_t = au.get("url", old_url)
+            if not _update_pair_block(manifest, au_t, old_url, latest_version, assets):
+                print("    [警告] 配对资产未匹配")
+                return None
+            print(f"    配对资产 {len(manifest['url'])} 项已更新")
+            chg = sync_autoupdate_fields(au, manifest, latest_version)
+            if chg:
+                print(f"    同步字段: {', '.join(chg)}")
+        else:
+            au_url_template = au.get("url", old_url)
+            new_url = resolve_autoupdate_url(au_url_template, latest_version)
+            asset = match_asset(new_url, assets)
+            if asset:
+                digest = asset.get("digest", "")
+                real = asset.get("browser_download_url") or new_url
+                manifest["url"] = real
+                manifest["hash"] = digest
+                drift = handle_build_drift(manifest, asset, new_url)
+                if drift == "refresh":
+                    print(f"    hash: {digest[:16]}... [+构建号: autoupdate 模板已刷新为新构建号，保留模板]")
+                elif drift == "removed":
+                    print(f"    hash: {digest[:16]}... [+构建号漂移: 已回写真实资产 {asset['name']} 并移除 autoupdate 模板]")
+                else:
+                    print(f"    hash: {digest[:16]}...")
+            else:
+                new_url2 = resolve_autoupdate_url(old_url, latest_version)
+                asset2 = match_asset(new_url2, assets)
+                if asset2:
+                    digest2 = asset2.get("digest", "")
+                    real2 = asset2.get("browser_download_url") or new_url2
+                    manifest["url"] = real2
+                    manifest["hash"] = digest2
+                    drift2 = handle_build_drift(manifest, asset2, new_url2)
+                    if drift2 == "refresh":
+                        print(f"    hash: {digest2[:16]}... (fallback, +构建号: autoupdate 模板已刷新，保留模板)")
+                    elif drift2 == "removed":
+                        print(f"    hash: {digest2[:16]}... (fallback, +构建号漂移: 已回写真实资产 {asset2['name']} 并移除 autoupdate 模板)")
+                    else:
+                        print(f"    hash: {digest2[:16]}... (fallback)")
+                else:
+                    print(f"    [警告] 无法匹配")
+                    return None  # 资产匹配失败：不写入、不计入已更新
+
+            # 同步顶层 autoupdate 模板字段（bin/shortcuts/extract_dir 等）
+            chg = sync_autoupdate_fields(au, manifest, latest_version)
+            if chg:
+                print(f"    同步字段: {', '.join(chg)}")
+
+    chg2 = sync_bin_version(manifest, current_version, latest_version)
+    if chg2:
+        print(f"    版本化字段更正: {', '.join(chg2)} ({current_version} → {latest_version})")
+
+    manifest["version"] = latest_version
+
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=4, ensure_ascii=False)
+        f.write("\n")
+
+    return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
+
+
+def arg_value(flag, default=None):
+    """从 sys.argv 取 --flag 的值"""
+    argv = sys.argv[1:]
+    if flag in argv:
+        i = argv.index(flag)
+        if i + 1 < len(argv):
+            return argv[i + 1]
+    return default
+
+
+PAGE_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"}
+
+# ========== GitHub 镜像加速（与 Scoop download.ps1 补丁同一套机制） ==========
+# GitHub Release 文件下载优先走加速镜像：依次探测可用镜像，全部不可达回退原始 URL。
+# 镜像列表来源（优先级）：
+#   1) 环境变量 MYSCOOP_GH_MIRRORS（逗号分隔，可写完整 URL 或裸域名，CI/跨机可用）
+#   2) Scoop config.json 的 aria2-mirrors 数组（本机与 download.ps1 补丁共用同一列表）
+# 无镜像配置时行为与原来完全一致。镜像地址自动补 https:// 前缀。
+GH_DOWNLOAD_RE = re.compile(r"^https://github\.com/.+/releases/download/", re.I)
+
+
+def gh_mirror_list(config_path=None):
+    """返回镜像列表（去空）；环境变量优先，其次读 Scoop config.json 的 aria2-mirrors。
+    兼容字符串形式（逗号/空格分隔）；读取失败或无配置返回 []。"""
+    env = os.environ.get("MYSCOOP_GH_MIRRORS", "").strip()
+    if env:
+        return [m.strip() for m in env.replace(",", " ").split() if m.strip()]
+    cfg_path = Path(config_path) if config_path else (Path.home() / ".config" / "scoop" / "config.json")
+    try:
+        cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+        ms = cfg.get("aria2-mirrors", [])
+        if isinstance(ms, str):
+            ms = [x for x in ms.replace(",", " ").split() if x]
+        return [str(m).strip() for m in ms if str(m).strip()]
+    except Exception:
+        return []
+
+
+def mirror_candidates(url, mirrors):
+    """GitHub release 下载 URL 的镜像候选列表（拼接 + 自动补协议）。
+    非 GitHub release 链接或无镜像配置 → []。"""
+    if not mirrors or not GH_DOWNLOAD_RE.match(url):
+        return []
+    out = []
+    for m in mirrors:
+        base = str(m).strip().rstrip("/")
+        if not re.match(r"^https?://", base):
+            base = "https://" + base
+        out.append(f"{base}/{url}")
+    return out
+
+
+def probe_mirror_url(url, timeout=8):
+    """返回第一个可达镜像 URL（range 1KB 探测，同 download.ps1）；
+    全部不可达或非 GitHub release 链接返回原 URL。"""
+    candidates = mirror_candidates(url, gh_mirror_list())
+    if not candidates:
+        return url
+    for murl in candidates:
+        try:
+            req = urllib.request.Request(murl, headers={
+                "User-Agent": "myscoop-updater", "Range": "bytes=0-1023"})
+            with _open(req, timeout) as resp:
+                if resp.status in (200, 206):
+                    return murl
+        except Exception:
+            continue
+    return url
+# ========== GitHub 镜像加速结束 ==========
+
+
+def _open(req, timeout):
+    """urlopen 封装：SSL 证书校验失败时打印警告并降级为不校验证书重试一次。
+    安全性说明：本脚本下载的任何文件都会与清单 sha256 比对，内容完整性由 hash 兜底；
+    --insecure 或环境变量 MYSCOOP_INSECURE=1 可令首次请求即跳过证书校验。"""
+    import ssl
+    insecure = "--insecure" in sys.argv[1:] or os.environ.get("MYSCOOP_INSECURE") == "1"
+    ctx = ssl._create_unverified_context() if insecure else ssl.create_default_context()
+    try:
+        return urllib.request.urlopen(req, timeout=timeout, context=ctx)
+    except (ssl.SSLCertVerificationError, urllib.error.URLError) as e:
+        reason = getattr(e, "reason", e)
+        if not isinstance(reason, ssl.SSLCertVerificationError) and not isinstance(e, ssl.SSLCertVerificationError):
+            raise
+        if insecure:
+            raise
+        print(f"[安全] SSL 证书校验失败（{getattr(reason, 'reason', reason)}），"
+              f"已降级为不校验证书重试；内容完整性由 sha256 清单比对兜底"
+              f"（可加 --insecure 或设 MYSCOOP_INSECURE=1 跳过提示）")
+        return urllib.request.urlopen(req, timeout=timeout,
+                                      context=ssl._create_unverified_context())
+
+
+def fetch_text(url, timeout=60, headers=None):
+    """抓取网页文本（用于 checkver 页面验证等）。
+    与 fetch_json 同样：仅在 GitHub 官方 API 上附带 token，绝不发给其他域名。"""
+    hdrs = dict(headers or {"User-Agent": "myscoop-updater"})
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if token and url.startswith("https://api.github.com/") and "Authorization" not in hdrs:
+        hdrs["Authorization"] = f"Bearer {token}"
+    req = urllib.request.Request(url, headers=hdrs)
+    with _open(req, timeout) as resp:
+        return resp.read().decode("utf-8", "replace")
+
+
+def download_to(url, dest, timeout=180):
+    """下载文件到 dest（自动去除 #fragment）。
+    GitHub release 下载优先走加速镜像（MYSCOOP_GH_MIRRORS 环境变量或
+    Scoop config.json 的 aria2-mirrors，与 download.ps1 补丁同一套列表），
+    镜像全部不可达自动回退原始 URL；无镜像配置时行为与原来完全一致。"""
+    clean = url.split("#", 1)[0]
+    target = probe_mirror_url(clean)
+    if target != clean:
+        print(f"[镜像] 使用 {target.split('/')[2]} 加速: {clean}")
+    req = urllib.request.Request(target, headers={"User-Agent": "myscoop-updater"})
+    with _open(req, timeout) as resp, open(dest, "wb") as f:
+        while True:
+            chunk = resp.read(65536)
+            if not chunk:
+                break
+            f.write(chunk)
+
+
+def sha256_hex(path):
+    """计算文件 sha256"""
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        while True:
+            chunk = f.read(65536)
+            if not chunk:
+                break
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def is_nsis(path, max_scan=64 * 1024 * 1024):
+    """检测 NSIS（Nullsoft）安装器特征串，流式扫描前 64MB（is_innosetup 同款骨架）"""
+    sigs = (b"Nullsoft Inst", b"NullsoftInst")
+    prev = b""
+    read = 0
+    with open(path, "rb") as f:
+        while True:
+            chunk = f.read(1024 * 1024)
+            if not chunk:
+                break
+            read += len(chunk)
+            buf = prev + chunk
+            if any(s in buf for s in sigs):
+                return True
+            if read >= max_scan:
+                break
+            prev = chunk[-64:]
+    return False
+
+
+def find_7z():
+    """定位 7-Zip 可执行（PATH / scoop shims / scoop 7zip 安装目录）"""
+    import shutil
+    p = shutil.which("7z")
+    if p:
+        return p
+    for c in ("D:/scoop/shims/7z.exe", "D:/scoop/apps/7zip/current/7z.exe",
+              "C:/Program Files/7-Zip/7z.exe"):
+        if os.path.exists(c):
+            return c
+    return None
+
+
+NSIS_PRE_INSTALL = [
+    "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+    "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+    "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }",
+]
+
+# zip 单顶层目录扁平化：把唯一的顶层打包目录内容平铺到 $dir 根（版本无关通配）。
+# 条件：该目录内必须含 .exe（真打包目录）才移动——资源目录（如 src/）不含 exe，
+# 盲移会破坏程序目录语义（tubatools 事故）。必须用 pre_install（scoop 源码 install.ps1
+# 先 create_shims 后 post_install，bin 布局操作在 post_install 里永远来不及）。
+FLATTEN_PRE_INSTALL = (
+    "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; "
+    "if ($d -and (Get-ChildItem \"$d\\*\" -Filter *.exe | Select-Object -First 1)) { "
+    "Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; "
+    "Remove-Item $d.FullName -Recurse -Force }"
+)
+
+# --unzip 显式解压拍平：无条件把唯一顶层目录内容上移一层（不检测 exe，cinetry 式）。
+# 仅当用户显式加 --unzip 时使用（用户确认过是单层打包目录、内部层级保留
+# ——如 kvmem-*/bin/llama-kvmem-server.exe 会变成 $dir/bin/llama-kvmem-server.exe，
+# bin 字段需写子路径）。默认路径仍走 FLATTEN_PRE_INSTALL（带 exe 守卫）。
+UNZIP_PRE_INSTALL = (
+    "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; "
+    "if ($d) { "
+    "Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; "
+    "Remove-Item $d.FullName -Recurse -Force }"
+)
+
+
+# 助手/工具类 exe：不作为主程序候选（7z 自解包、卸载器、更新器、运行库等）
+_HELPER_EXE_RE = re.compile(r"(?i)(uninstall|unins\d|^7z|7za|7z\.|updater|update-helper|"
+                            r"vc_?redist|vcredist|crashpad|crashreport|-setup\.exe$)")
+
+
+def _is_helper_exe(name):
+    return bool(_HELPER_EXE_RE.search(name))
+
+
+def probe_nsis_exes(tmp, app_name):
+    """NSIS 安装器：用 7z 直接解包（无需真安装，无副作用）收集真实 exe 名，排除助手 exe。
+
+    双层结构（`app-*.7z`，Electron/Tauri 常见）：**只要存在 `app-*.7z` 就二次解包，且只用内层
+    exe 作候选**——因为配套的 pre_install 会把 `app-*.7z` 解到 `$dir` 并丢弃外层，外层 exe
+    （如 dsh 的 7z 助手 `dsh-7za.exe`）在安装后并不存在于 `$dir`，误选会导致建 shim 失败。
+    内层为空时返回空（宁可留空也不误用外层）；无 `app-*.7z` 时才用外层。"""
+    import subprocess
+    import shutil
+    z = find_7z()
+    if not z:
+        print("[警告] 未找到 7z，无法解包 NSIS（可先 scoop install 7zip）")
+        return []
+    work = FALLBACK_OUT_DIR / ".probe_tmp" / app_name
+    shutil.rmtree(work, ignore_errors=True)
+    work.mkdir(parents=True, exist_ok=True)
+    try:
+        r = subprocess.run([z, "x", "-y", f"-o{work}", str(tmp)],
+                           capture_output=True, timeout=600)
+        if r.returncode != 0:
+            print(f"[警告] 7z 解包退出码 {r.returncode}")
+
+        def collect(root):
+            paths = {p for p in root.rglob("*.exe") if not _is_helper_exe(p.name)}
+            top = {p for p in paths if p.parent == root}
+            if top:
+                paths = top  # 主程序通常在应用根目录；有根级 exe 就只取根级（滤掉 resources 下的依赖）
+            return sorted(paths, key=lambda p: (p.parent != root, p.name.lower()))
+
+        app7zs = sorted(work.rglob("app-*.7z"),
+                        key=lambda p: (0 if "64" in p.name else 1, p.name.lower()))
+        if app7zs:
+            print(f"        检测到双层结构 {app7zs[0].name}，二次解包取内层 exe…")
+            subprocess.run([z, "x", "-y", f"-o{work / 'app'}", str(app7zs[0])],
+                           capture_output=True, timeout=900)
+            exes = collect(work / "app")
+        else:
+            exes = collect(work)
+        return [p.name for p in exes]
+    except subprocess.TimeoutExpired:
+        print("[错误] 7z 解包超时")
+        return []
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def pick_or_interactive(fexes, app_name, indent="        "):
+    """探测出多个 exe 时选择主程序：--select 编号|关键词 优先，否则交互输入（回车默认第 1 个）。
+    列表去重保序，交互前逐行打印编号（102 个候选时无编号无法对上号）。返回 picked 名称或 None；
+    非交互环境（EOFError）自动取第 1 个。"""
+    uniq = list(dict.fromkeys(fexes))  # 去重保序（NSIS 解包常现同名牌多份，如 git.exe×2）
+    sel = arg_value("--select")
+    if sel:
+        if sel.isdigit() and 1 <= int(sel) <= len(uniq):
+            return uniq[int(sel) - 1]
+        picked = next((e for e in uniq if sel.lower() in e.lower()), None)
+        if not picked:
+            print(f"{indent}[错误] 未找到匹配 '{sel}'，未写入（可选：{' / '.join(uniq)}）")
+        return picked
+    try:
+        print(f"{indent}可用主程序候选（共 {len(uniq)} 个）:")
+        for i, e in enumerate(uniq, 1):
+            print(f"{indent}  {i:2d}: {e}")
+        ans = input(f"{indent}请选择主程序编号或关键词（1-{len(uniq)}，回车默认 1）: ").strip()
+    except EOFError:
+        ans = ""
+    idx = 0
+    if ans:
+        if ans.isdigit() and 1 <= int(ans) <= len(uniq):
+            idx = int(ans) - 1
+        else:
+            hit = next((i for i, e in enumerate(uniq) if ans.lower() in e.lower()), None)
+            idx = hit if hit is not None else 0
+    return uniq[idx]
+
+
+# ---------- 注册型软件（输入法/驱动/右键菜单/Shell 扩展）识别与 installer 模式 ----------
+# 强信号词（弱信号词如 text service / shell extension 不入名单，避免误伤普通软件）
+REG_NEED_KEYWORDS = (
+    "ime", "input method", "input-method", "inputmethod", "输入法", "tsf",
+    "driver", "驱动",
+    "context menu", "右键", "registry", "注册表", "注册",
+)
+# 输入法专属子集：命中则用「TSF 按进程加载」激活指引
+REG_IME_KEYWORDS = ("ime", "input method", "input-method", "inputmethod", "输入法", "tsf")
+
+NOTE_IME_ACTIVATE = (
+    "系统注册已完成；若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），"
+    "任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe）或重新启动资源管理器，"
+    "仍无效再注销或重启。"
+)
+NOTE_REG_ACTIVATE = (
+    "系统注册由安装器完成；若功能未即时生效，先重开目标窗口或重启资源管理器，"
+    "仍无效再注销或重启（驱动类设备可能需要重启后完成安装）。"
+)
+
+
+def needs_registration(template):
+    """启发式：清单文本（name/description/homepage/url）命中注册型软件关键词。
+    注册型软件不适合 7z 解包安装（解包不执行安装器的系统注册脚本，如 TSF/服务/右键菜单注册）。"""
+    blob = " ".join(str(template.get(k, "")) for k in ("name", "description", "homepage", "url")).lower()
+    return any(k in blob for k in REG_NEED_KEYWORDS)
+
+
+def _is_portable_asset(name):
+    """资产名是否明示"便携版"（如 Xtranslate-portable.exe）。
+
+    便携包**不跑安装器**：即便描述命中"输入法/驱动"等注册型关键词，也应走 7z 解包（pre_install）
+    而不是 installer 模式——否则 Scoop 会把便携 exe 当安装器执行（/S /D=$dir 不被识别），
+    结果是程序被直接启动、而 $dir 里并没有 bin 指向的文件 → 建 shim 失败。
+    （教训：xtranslate 的 Xtranslate-portable.exe；此前本地维护的 zip 版无 installer 块故正常）"""
+    return bool(re.search(r"(?i)(?:^|[-_.])portable(?:[-_.]|$)", str(name or "")))
+
+
+def _note_for_template(template):
+    """按命中关键词分档：输入法类 → TSF 激活指引；其他注册型 → 通用激活指引。"""
+    blob = " ".join(str(template.get(k, "")) for k in ("name", "description", "homepage", "url")).lower()
+    if any(k in blob for k in REG_IME_KEYWORDS):
+        return NOTE_IME_ACTIVATE
+    return NOTE_REG_ACTIVATE
+
+
+def _merge_notes(existing, note):
+    """合并 notes：既有 str/list 保留，追加激活提示（去重）。"""
+    if not existing:
+        return [note]
+    items = [existing] if isinstance(existing, str) else list(existing)
+    if note not in items:
+        items.append(note)
+    return items
+
+
+def installer_mode_fields(is_inno, template=None):
+    """生成 installer 模式字段：真跑安装器（注册脚本随安装执行）+ 卸载器清理注册 + 激活提示。
+    Inno: /VERYSILENT /NORESTART /DIR=$dir；NSIS: /S /D=$dir。"""
+    if is_inno:
+        fields = {
+            "installer": {"args": ["/VERYSILENT", "/NORESTART", "/DIR=$dir"]},
+            "post_uninstall": [
+                "Start-Process \"$dir\\unins000.exe\" -Wait -ArgumentList '/VERYSILENT','/NORESTART'"],
+        }
+    else:
+        fields = {
+            "installer": {"args": ["/S", "/D=$dir"]},
+            "post_uninstall": [
+                "$u = Get-ChildItem \"$dir\\unins*.exe\" | Select-Object -First 1; if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S' }"],
+        }
+    if template is not None:
+        fields["notes"] = _merge_notes(template.get("notes"), _note_for_template(template))
+    return fields
+
+
+def migrate_installer_mode(manifest_path, dry_run=False):
+    """存量清单迁移：innosetup:true / pre_install 解包形态 → installer 模式（注册型软件修复形态）。
+    有 innosetup:true → Inno 参数；有 pre_install → NSIS 参数。返回 True 表示有迁移。"""
+    p = Path(manifest_path)
+    m = json.loads(p.read_text(encoding="utf-8"))
+    is_inno = m.get("innosetup") is True
+    has_pre = "pre_install" in m
+    if not (is_inno or has_pre):
+        print(f"  [跳过] {p.name}: 非解包形态清单（无需迁移）")
+        return False
+    kind = "Inno(innosetup)" if is_inno else "NSIS(pre_install 解包)"
+    if dry_run:
+        print(f"  [待迁移] {p.name}: {kind} → installer 模式")
+        return True
+    m.pop("innosetup", None)
+    m.pop("pre_install", None)
+    m.update(installer_mode_fields(is_inno, template=m))
+    p.write_text(json.dumps(m, indent=4, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"  [迁移] {p.name}: {kind} → installer 模式（真安装自动注册）")
+    return True
+
+
+def is_innosetup(path, max_scan=64 * 1024 * 1024):
+    """检测 Inno Setup 安装器特征串（可能出现在文件深处，流式扫描，最多前 64MB）"""
+    sigs = (b"Inno Setup Setup Data", b"This installation was built with Inno Setup")
+    prev = b""
+    read = 0
+    with open(path, "rb") as f:
+        while True:
+            chunk = f.read(1024 * 1024)
+            if not chunk:
+                break
+            read += len(chunk)
+            buf = prev + chunk
+            if any(s in buf for s in sigs):
+                return True
+            if read >= max_scan:
+                break
+            prev = chunk[-64:]  # 防止特征串跨块
+    return False
+
+
+def make_url_template(url, version):
+    """把下载 URL 中的版本号替换成 $version（query 参数值优先，其次路径段；
+    路径段替换后若文件名中仍有版本号，同样替换——修复 cc-haha 类文件名版本固定的问题）。
+    手动拼接 query 以免 urlencode 把 $version 编码成 %24version。"""
+    clean, frag = url.split("#", 1)[0], ("#" + url.split("#", 1)[1]) if "#" in url else ""
+    from urllib.parse import parse_qsl, urlsplit, urlunsplit
+    parts = urlsplit(clean)
+    q = parse_qsl(parts.query, keep_blank_values=True)
+    if any(v == version for _, v in q):
+        nq = [(k, "$version" if v == version else v) for k, v in q]
+        return urlunsplit((parts.scheme, parts.netloc, parts.path,
+                           "&".join(f"{k}={v}" for k, v in nq), "")) + frag
+    if version in parts.path:
+        tpl_path = parts.path.replace(version, "$version", 1)
+        head, _, fname = tpl_path.rpartition("/")
+        # 文件名段优先替换完整版本串（含 -rc3 等后缀，防 kvmem-v$version-rc3 残留），
+        # 无完整串时回退点号版本段替换（原逻辑）
+        if version in fname:
+            new_fname = fname.replace(version, "$version", 1)
+        else:
+            new_fname = re.sub(r"\d+\.\d+(?:\.\d+)*", "$version", fname)
+        if new_fname != fname:
+            tpl_path = head + "/" + new_fname
+        return urlunsplit((parts.scheme, parts.netloc,
+                           tpl_path, parts.query, "")) + frag
+    return None
+
+
+def strip_top_dir(subpath, top):
+    """--unzip 只拍平唯一顶层目录一层：bin 子路径 = exe 路径去掉该层前缀。
+    如 ("kvmem-x/bin", "kvmem-x") → "bin"；前缀不匹配原样返回。"""
+    if top and subpath and subpath.startswith(top + "/"):
+        return subpath[len(top) + 1:]
+    return subpath
+
+
+def locate_exe_subpath(names, exe_name):
+    """--unzip 模式：从 zip 条目中定位 exe 所在子路径（取最短/最浅层）。
+    如 "bin/llama-kvmem-server.exe" → "bin"；多条同名校名路径取最浅的。
+    已位于顶层、未找到或 exe_name 为空 → None。"""
+    if not exe_name:
+        return None
+    target = exe_name.lower()
+    best = None
+    for n in names:
+        parts = n.replace("\\", "/").split("/")
+        if len(parts) > 1 and parts[-1].lower() == target:
+            if best is None or len(parts) - 1 < len(best):
+                best = parts[:-1]
+    return "/".join(best) if best else None
+
+
+def finalize_direct_manifest(template, out_dir, app_name):
+    """非 GitHub 直链模板补全：下载算 hash + Inno Setup 检测 + checkver/autoupdate 校验。
+    多架构清单以 64bit 主架构 url 为准做探测与模板校验（不写顶层 hash/url）。"""
+    url, _tmpl_digest = arch_url_hash(template)
+    if not url:
+        print("[错误] 模板缺少 url（多架构清单需含 64bit 分支）")
+        return None
+    _warn_if_prerelease(template.get("version") or version_from_link(url), "（直链/模板模式）")
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    tmp = out_dir / f".{app_name}_dl.tmp"
+    keep_cached = False
+    existing_hash = template.get("hash")
+    force_dl = "--force-download" in sys.argv[1:]
+    downloaded = not (existing_hash and not force_dl)
+    if existing_hash and not force_dl:
+        # 模板已含 hash：跳过重复下载，直接信任既有值（--force-download 可强制重算）
+        given = str(existing_hash).lower()
+        digest = given[7:] if given.startswith("sha256:") else given
+        size = 0
+        print(f"[跳过下载] 模板已含 hash（{given[:24]}...），如需重算请加 --force-download")
+    else:
+        # zip/7z 下载后保留到 staging/.dl_cache/，供 --fill-bin 复用（--no-keep 可关闭保留）
+        keep_cached = (url.lower().endswith((".zip", ".7z"))
+                       and "--no-keep" not in sys.argv[1:])
+        if keep_cached:
+            cache_dir = FALLBACK_OUT_DIR / ".dl_cache"
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            ext = ".7z" if url.lower().endswith(".7z") else ".zip"
+            tmp = cache_dir / f"{app_name}{ext}"
+            print(f"[缓存] 压缩包将保留到 {tmp}")
+        print(f"[下载] {url.split('#')[0]}")
+        try:
+            download_to(url, tmp)
+        except Exception as e:
+            print(f"[错误] 下载失败: {e}")
+            return None
+        size = tmp.stat().st_size
+        digest = sha256_hex(tmp)
+        print(f"[下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
+        # zip 探测：顶层 exe 提示 + 单顶层目录自动扁平化（版本无关，--no-flatten 禁用）
+        if url.lower().endswith(".zip"):
+            try:
+                import zipfile
+                with zipfile.ZipFile(tmp) as z:
+                    names = z.namelist()
+                if not template.get("bin"):
+                    exes = sorted({n for n in names if n.lower().endswith(".exe")
+                                   and "/" not in n and "\\" not in n})
+                    if exes:
+                        print(f"[zip探测] 顶层 exe: {', '.join(exes[:6])}"
+                              f"{'...' if len(exes) > 6 else ''}")
+                        print(f"          如需补 bin/shortcuts，可用 --exe-name {exes[0]} 重新生成，或手动添加")
+                if (template.get("bin") and "pre_install" not in template
+                        and "--no-flatten" not in sys.argv[1:]):
+                    files = [n for n in names if not n.endswith("/")]
+                    tops = sorted({n.split("/")[0] for n in files if "/" in n})
+                    has_top_files = any("/" not in n for n in files)  # 顶层散文件（文件夹+文件并列 → 不扁平）
+                    # 判据：顶层恰好只有一个文件夹（无散文件）→ 真打包目录 → 扁平化；
+                    # 文件夹+文件并列 / 多文件夹（如 src/ + exe 并列）→ 保持原生结构
+                    if len(tops) == 1 and tops[0] and not has_top_files:
+                        if "--unzip" in sys.argv[1:]:
+                            # --unzip：无条件解压拍平（不检测 exe，内部层级保留），
+                            # 自动从 zip 定位 exe 子路径补全 bin/shortcuts
+                            template["pre_install"] = [UNZIP_PRE_INSTALL]
+                            tip = (f"[zip探测] 单层打包目录「{tops[0]}」：已按 --unzip 添加无条件解压拍平 "
+                                   f"pre_install（不检测 exe，内部层级保留）")
+                            if "--flatten" in sys.argv[1:]:
+                                tip += "；--flatten 被忽略（--unzip 优先）"
+                            print(tip)
+                            sub = locate_exe_subpath(names, template.get("bin"))
+                            if sub:
+                                # --unzip 去掉唯一顶层目录一层 → bin 子路径需剥离该层
+                                sub = strip_top_dir(sub, tops[0])
+                                newbin = f"{sub}/{template['bin']}"
+                                print(f"          bin 已补全子路径: {template['bin']} → {newbin}")
+                                template["bin"] = newbin
+                                if isinstance(template.get("shortcuts"), list) and template["shortcuts"]:
+                                    template["shortcuts"][0][0] = newbin
+                        else:
+                            template["pre_install"] = [FLATTEN_PRE_INSTALL]
+                            print(f"[zip探测] 单层打包目录「{tops[0]}」：已自动添加扁平化 pre_install"
+                                  f"（bin 直接落在 $dir 根，版本升级免维护；--no-flatten 可禁用）")
+            except Exception:
+                pass
+
+    if template.get("architecture"):
+        # 多架构：顶层无 hash；64bit 已实测（--dl/--fill-bin）→ 用实测值；否则校验既有
+        arch64 = (template.get("architecture") or {}).setdefault("64bit", {})
+        digest64 = arch64.get("hash", "")
+        if digest64:
+            g = str(digest64).lower()
+            g = g[7:] if g.startswith("sha256:") else g
+            if g == digest:
+                print("[hash] 与 64bit 架构 hash 一致 (OK)")
+            else:
+                print(f"[hash] 实测与 64bit 架构 hash 不一致（清单 {g[:16]}... vs 实测 "
+                      f"{digest[:16]}...），已在填充实测值")
+        else:
+            if not arch64.get("url"):
+                print("[hash] 多架构清单 64bit 分支缺失，未处理")
+            else:
+                arch64["hash"] = "sha256:" + digest
+                print(f"[hash] 64bit 分支无 hash（API 无 digest），已用实测值补全 "
+                      f"sha256:{digest[:16]}...")
+    elif template.get("hash"):
+        given = str(template["hash"]).lower()
+        given = given[7:] if given.startswith("sha256:") else given
+        if given == digest:
+            print("[hash] 与模板提供的 hash 一致 (OK)")
+        else:
+            print(f"[hash] 不一致！模板给出 {given[:16]}...，已改用实测值")
+            template["hash"] = "sha256:" + digest
+    else:
+        template["hash"] = "sha256:" + digest
+        print(f"[hash] 已自动填充 sha256:{digest[:16]}...")
+
+    if downloaded:
+        inno = is_innosetup(tmp)
+        nsis = is_nsis(tmp) if not inno else False
+        if inno:
+            print("[InnoSetup] 检测到 Inno Setup 安装器特征")
+            if needs_registration(template):
+                template.update(installer_mode_fields(is_inno=True, template=template))
+                print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
+            elif template.get("innosetup") is not True:
+                template["innosetup"] = True
+                print("            已自动添加 \"innosetup\": true")
+            # 方案B：Inno 命中且未指定 bin 时自动静默探测真实主程序（唯一则写入，多个则提示）
+            if not template.get("bin") and url.lower().endswith(".exe"):
+                print("[探测] 自动静默安装探测真实 exe 名…")
+                fexes = probe_installer_exes(tmp, app_name)
+                if len(fexes) == 1:
+                    template["bin"] = fexes[0]
+                    template["shortcuts"] = [[fexes[0], app_name]]
+                    print(f"        唯一主程序 {fexes[0]}，已自动写入 bin/shortcuts")
+                elif fexes:
+                    print(f"        发现多个 exe（共 {len(fexes)} 个，含依赖工具）：")
+                    picked = pick_or_interactive(fexes, app_name)
+                    if picked:
+                        template["bin"] = picked
+                        template["shortcuts"] = [[picked, app_name]]
+                        print(f"        已写入主程序 bin={picked}")
+                else:
+                    print("        未发现 exe（服务/驱动类？），请人工补充 bin")
+                print("        （临时安装已回滚清理）")
+        elif nsis:
+            print("[NSIS] 检测到 NSIS 安装器特征（7z 解包方式，非 Inno，无需 innosetup）")
+            if not template.get("bin") and url.lower().endswith(".exe"):
+                print("[探测] 7z 解包探测真实 exe 名…")
+                fexes = probe_nsis_exes(tmp, app_name)
+                if len(fexes) == 1:
+                    picked = fexes[0]
+                elif fexes:
+                    print(f"        发现多个 exe（共 {len(fexes)} 个，含依赖工具）：")
+                    picked = pick_or_interactive(fexes, app_name)
+                else:
+                    picked = None
+                    print("        未发现 exe，请人工补充 bin")
+                if picked:
+                    template["bin"] = picked
+                    template["shortcuts"] = [[picked, app_name]]
+                    print(f"        已写入主程序 bin={picked}")
+                fname = url.split("/")[-1].split("#")[0].split("?")[0]
+                portable = _is_portable_asset(fname)
+                if needs_registration(template) and not portable:
+                    template.update(installer_mode_fields(is_inno=False, template=template))
+                    print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
+                elif "pre_install" not in template:
+                    if needs_registration(template) and portable:
+                        print(f"        [提示] {fname} 是便携版 → 不做 installer 模式，改用 7z 解包 pre_install")
+                    template["pre_install"] = list(NSIS_PRE_INSTALL)
+                    print(f"        已自动添加 pre_install（7z 动态解包 $dir\\*.exe，兼容 app-*.7z 双层结构，版本升级免改）")
+        elif template.get("innosetup") is True:
+            print("[警告] 模板声明 innosetup:true 但文件中未检测到 Inno Setup 特征，请人工确认")
+    else:
+        print("[InnoSetup] 跳过检测（未下载文件，模板已 hash 齐备）")
+    if not keep_cached:
+        tmp.unlink(missing_ok=True)
+
+    cv = template.get("checkver") or {}
+    if cv.get("github"):
+        print(f"[checkver] 使用 GitHub 官方 API（{cv['github']}），--all 每晚自动更新")
+    elif cv.get("url") and cv.get("regex"):
+        try:
+            page = fetch_text(cv["url"])
+            m = re.search(cv["regex"], page)
+            if m:
+                got = m.group(1)
+                ver = str(template.get("version", ""))
+                if got == ver:
+                    print(f"[checkver] {cv['url']} -> V{got} 与 version 一致 (OK)")
+                else:
+                    print(f"[checkver] 页面版本 V{got} 与清单 version={ver} 不一致，请确认")
+            else:
+                print(f"[checkver] 正则未匹配到内容: {cv['regex']}")
+        except Exception as e:
+            print(f"[checkver] 抓取失败: {e}")
+    else:
+        print("[checkver] 模板无 checkver（如需自动更新请补充 url+regex）")
+
+    au = template.get("autoupdate") or {}
+    ver = str(template.get("version", ""))
+    if template.get("architecture"):
+        # 多架构：autoupdate 逐架构模板由 --add/直链生成器负责，此处不改动
+        au_ok = (au.get("architecture") or {}).get("64bit", {}).get("url", "")
+        if au_ok:
+            print(f"[autoupdate] 多架构模板已存在（64bit: {au_ok[:72]}…）")
+        else:
+            print("[autoupdate] 多架构清单缺 64bit 模板，请用 --add 生成")
+    elif au.get("url"):
+        tpl = au["url"]
+        if "$version" in tpl:
+            sub = tpl.replace("$version", ver)
+            ok = sub.split("#", 1)[0] == url.split("#", 1)[0]
+            print(f"[autoupdate] 替换后{'与 url 一致 (OK)' if ok else '与 url 不一致，请检查'}: {sub}")
+        else:
+            print("[autoupdate] 模板不含 $version，无法自动更新")
+    elif ver:
+        tpl = make_url_template(url, ver)
+        if tpl:
+            # 保留模板中已有的其他键（如 extract_dir 模板），只补充 url
+            au_new = dict(template.get("autoupdate") or {})
+            au_new["url"] = tpl
+            template["autoupdate"] = au_new
+            print(f"[autoupdate] 已自动生成模板: {tpl}")
+        else:
+            print("[autoupdate] URL 中未找到版本号，无法生成模板（可手动补充）")
+
+    out_path = out_dir / f"{app_name}.json"
+    kept = merge_existing_manifest(out_path, template)
+    if kept:
+        print(f"[提示] 目标 {out_path.name} 已存在，已合并保留: {', '.join(kept)}")
+    # 占位提示清理：bin/shortcuts 已由探测补全时，移除"请手动添加"占位 notes（防 merge 从旧文件带回）
+    if template.get("notes") == "请手动添加 bin 和 shortcuts，或运行脚本后补充。":
+        del template["notes"]
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(template, f, indent=4, ensure_ascii=False)
+        f.write("\n")
+    print(f"\n[成功] 已写入: {out_path}")
+    return out_path
+
+
+def arch_url_hash(manifest):
+    """从清单取探测用 url/hash：顶层 url 优先；多架构清单取 64bit（无 64bit 取 arm64/32bit 首个）。
+    数组型 url/hash（--more 配对）取首项（主程序）。--dl/--fill-bin 多架构探测只下主架构资产。"""
+    def first(u, h):
+        if isinstance(u, list):
+            u = u[0] if u else ""
+            h = h[0] if isinstance(h, list) and h else ""
+        return (u or ""), str(h or "").lower()
+
+    url, digest = first(manifest.get("url", ""), manifest.get("hash", ""))
+    if not url:
+        arch = (manifest.get("architecture") or {}).get("64bit") or {}
+        if arch.get("url"):
+            url, digest = first(arch["url"], arch.get("hash", ""))
+    if not url:
+        for a in ("32bit", "arm64"):
+            blk = (manifest.get("architecture") or {}).get(a) or {}
+            if blk.get("url"):
+                url, digest = first(blk["url"], blk.get("hash", ""))
+                break
+    return url, (digest[7:] if digest.startswith("sha256:") else digest)
+
+
+def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
+    """补全命令：接受 <manifest.json> 或 zip 下载 URL（URL 模式支持
+    --version / --exe-name / --unzip / --flatten，优先复用 staging/.dl_cache/ 缓存免重复下载）。
+    多架构清单自动取 64bit 主架构资产探测（bin/shortcuts/extract_dir 各架构通用）。
+    用法: myscoop-update.py --fill-bin <manifest.json|zip URL> [--out-dir 目录] [--select 编号|exe名]
+    不带 --select 时交互式提问（回车=第 1 个）。"""
+    if str(tpath).startswith(("http://", "https://")):
+        return _fill_bin_from_url(str(tpath), out_dir, app_name, select)
+    template = json.loads(Path(tpath).read_text(encoding="utf-8"))
+    multi_arch = bool(template.get("architecture"))
+    url, tmpl_digest = arch_url_hash(template)
+    if not url:
+        print("[错误] 清单缺少 url（多架构清单需含 64bit 分支）")
+        return None
+    _warn_if_prerelease(template.get("version") or version_from_link(url), "（--fill-bin）")
+    if multi_arch:
+        print(f"[探测] 多架构清单：下载 64bit 主架构资产探测（bin/extract_dir 各架构通用）")
+    if not url.lower().endswith(".zip"):
+        print("[错误] --fill-bin 仅支持 zip 类清单（exe 直链请用 --exe-name 重新 --add）")
+        return None
+    if not app_name:
+        app_name = arg_value("--name") or Path(tpath).stem
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    # 优先使用 --add/--from 下载时保留的缓存包（staging/.dl_cache/{app}.zip），避免二次下载；
+    # hash 能对上就用缓存；对不上或无--force-download 时重新下载并覆盖缓存
+    cache_dir = FALLBACK_OUT_DIR / ".dl_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    ext = ".7z" if url.lower().endswith(".7z") else ".zip"
+    tmp = cache_dir / f"{app_name}{ext}"
+    use_cache = tmp.exists() and "--force-download" not in sys.argv[1:]
+    if use_cache and tmpl_digest:
+        use_cache = sha256_hex(tmp) == tmpl_digest
+    if use_cache:
+        print(f"[缓存] 使用已有压缩包 {tmp}（跳过下载）")
+        digest = sha256_hex(tmp)
+    else:
+        print(f"[下载] {url.split('#')[0]}\n[缓存] 压缩包将保留到 {tmp}")
+        try:
+            download_to(url, tmp)
+        except Exception as e:
+            print(f"[错误] 下载失败: {e}")
+            return None
+        digest = sha256_hex(tmp)
+    try:
+        import zipfile
+        with zipfile.ZipFile(tmp) as z:
+            names = [n for n in z.namelist() if not n.endswith("/")]
+    except Exception as e:
+        tmp.unlink(missing_ok=True)
+        print(f"[错误] 无法读取 zip: {e}")
+        return None
+    if tmpl_digest and tmpl_digest != digest:
+        print(f"[警告] 实测 hash 与清单不一致（{digest[:16]}...），将按实测值更新")
+    elif tmpl_digest:
+        print(f"[hash] 与清单 hash 一致 (OK)  sha256:{digest[:16]}...")
+
+    # 列出全部 exe（顶层优先 + 名称排序）
+    exes = [n for n in names if n.lower().endswith(".exe")]
+    exes.sort(key=lambda n: (("/" in n), n.lower()))
+    if not exes:
+        tmp.unlink(missing_ok=True)
+        print("[提示] zip 内未发现 exe（可能是脚本类应用），无法自动补 bin")
+        return None
+    print(f"[探测] zip 内可执行文件（共 {len(exes)} 个）:")
+    for i, e in enumerate(exes, 1):
+        print(f"    {i}: {e}")
+
+    choice = None
+    if select:
+        if select.isdigit():
+            idx = int(select) - 1
+            if 0 <= idx < len(exes):
+                choice = exes[idx]
+            else:
+                print(f"[错误] 编号超出范围（1-{len(exes)}）")
+        else:
+            low = select.lower()
+            choice = next((e for e in exes if low in e.lower()), None)
+            if not choice:
+                print(f"[错误] 未找到包含 '{select}' 的 exe")
+    else:
+        try:
+            ans = input(f"请选择主程序编号（1-{len(exes)}，回车默认 1）: ").strip()
+            if ans:
+                if ans.isdigit() and 1 <= int(ans) <= len(exes):
+                    choice = exes[int(ans) - 1]
+                else:
+                    choice = next((e for e in exes if ans.lower() in e.lower()), None)
+            else:
+                choice = exes[0]
+        except EOFError:
+            choice = exes[0]
+    if not choice:
+        tmp.unlink(missing_ok=True)
+        return None
+    print(f"[选择] {choice}")
+
+    # 若 exe 在子目录且该目录是唯一顶层目录 -> 自动补 extract_dir（version 模板化）
+    bin_name = choice
+    if "/" in choice:
+        top = choice.split("/", 1)[0]
+        top_files = [n for n in names if "/" not in n]
+        top_dirs = {n.split("/", 1)[0] for n in names if "/" in n}
+        if not top_files and top_dirs == {top}:
+            tpl = re.sub(r"\d+(?:\.\d+)+", "$version", top, count=1)
+            if multi_arch:
+                # 多架构：extract_dir 写入 64bit 分支 + autoupdate 对应分支（各架构同名目录）
+                (template.setdefault("architecture", {}).setdefault("64bit", {}))["extract_dir"] = top
+                au_arch = template.setdefault("autoupdate", {}).setdefault("architecture", {})
+                au_64 = au_arch.setdefault("64bit", {})
+                if tpl != top:
+                    au_64["extract_dir"] = tpl
+                print(f"[extract_dir] {top}（已写入 architecture.64bit，模板: {au_64.get('extract_dir', top)}）")
+            else:
+                template["extract_dir"] = top
+                au = template.setdefault("autoupdate", {})
+                if tpl != top:
+                    au["extract_dir"] = tpl
+                print(f"[extract_dir] {top}（已设置模板: {au.get('extract_dir', top)}）")
+            bin_name = choice.split("/", 1)[1]
+        else:
+            print(f"[警告] zip 结构较复杂（多目录/顶层散文件），未自动设置 extract_dir，"
+                  f"bin 将使用完整相对路径 {choice}")
+    template["bin"] = bin_name
+    template["shortcuts"] = [[bin_name, arg_value("--shortcut-name") or app_name]]
+    # 已确认主程序：移除"请手动添加 bin/shortcuts"占位提示
+    if template.get("notes") == "请手动添加 bin 和 shortcuts，或运行脚本后补充。":
+        del template["notes"]
+    print(f"[写入] bin = {bin_name} | shortcuts 显示名 = {arg_value('--shortcut-name') or app_name}")
+
+    # 压缩包保留在 .dl_cache 供后续复用（不删除）；多架构清单不写顶层 hash（finalize 只校验不覆盖）
+    if not template.get("hash") and not multi_arch:
+        template["hash"] = "sha256:" + digest
+    return finalize_direct_manifest(template, out_dir, app_name)
+
+
+def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
+    """--fill-bin <zip URL> 模式：直接由下载链接生成清单——
+    优先复用 staging/.dl_cache/ 缓存（免重复下载），支持：
+    --version / --exe-name / --shortcut-name / --unzip / --flatten / --select，
+    GitHub 链接自动补全 description/homepage/license/checkver。"""
+    if not url.split("?")[0].lower().endswith((".zip", ".7z")):
+        print("[错误] --fill-bin URL 模式仅支持 zip/7z 链接（exe 直链请用 --add）")
+        return None
+    if not app_name:
+        base = url.split("?")[0].rstrip("/").split("/")[-1].split("#")[0]
+        app_name = re.sub(r"[^0-9a-zA-Z._-]", "-", base) or "app"
+    version = arg_value("--version")
+    if not version:
+        m = re.search(r"/releases/download/v?([^/]+)/", url)
+        version = m.group(1) if m else (version_from_link(url) or "1.0")
+    _warn_if_prerelease(version, "（--fill-bin URL）")
+    template = {
+        "version": version,
+        "description": arg_value("--description") or "",
+        "homepage": arg_value("--homepage") or "",
+        "license": arg_value("--license") or "unknown",
+        "url": url,
+    }
+    # GitHub 直链自动补全仓库信息（与 --add 直链一致）
+    gm = re.match(r"https?://github\.com/([^/]+)/([^/]+?)(?:/|$)", url)
+    cv_url, cv_regex = arg_value("--checkver-url"), arg_value("--checkver-regex")
+    if gm and not (cv_url and cv_regex):
+        owner, repo = gm.group(1), gm.group(2)
+        try:
+            info = get_repo_info(owner, repo, "github")
+            if not template["description"]:
+                template["description"] = info.get("description") or ""
+            if not template["homepage"]:
+                template["homepage"] = info.get("homepage") or f"https://github.com/{owner}/{repo}"
+            lic = info.get("license") or {}
+            spdx = lic.get("spdx_id") if isinstance(lic, dict) else lic
+            if spdx and spdx != "NOASSERTION" and template["license"] == "unknown":
+                template["license"] = spdx
+            if "checkver" not in template:
+                template["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
+            print(f"[仓库信息] {owner}/{repo}：已自动补全 description/homepage/license/checkver")
+        except Exception as e:
+            print(f"[提示] GitHub 仓库信息获取失败（保持用户字段）: {e}")
+    if cv_url and cv_regex:
+        template["checkver"] = {"url": cv_url, "regex": cv_regex}
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cache_dir = FALLBACK_OUT_DIR / ".dl_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    ext = ".7z" if url.lower().endswith(".7z") else ".zip"
+    tmp = cache_dir / f"{app_name}{ext}"
+    if tmp.exists() and "--force-download" not in sys.argv[1:]:
+        print(f"[缓存] 复用已有压缩包 {tmp}（跳过下载）")
+    else:
+        print(f"[下载] {url.split('#')[0]}\n[缓存] 压缩包将保留到 {tmp}")
+        try:
+            download_to(url, tmp)
+        except Exception as e:
+            print(f"[错误] 下载失败: {e}")
+            return None
+    try:
+        import zipfile
+        with zipfile.ZipFile(tmp) as z:
+            names = [n for n in z.namelist() if not n.endswith("/")]
+    except Exception as e:
+        tmp.unlink(missing_ok=True)
+        print(f"[错误] 无法读取 zip: {e}")
+        return None
+    digest = sha256_hex(tmp)
+    template["hash"] = "sha256:" + digest
+    print(f"[hash] sha256:{digest[:16]}...")
+
+    exes = sorted({n for n in names if n.lower().endswith(".exe")}, key=lambda n: n.lower())
+    if not exes:
+        print("[提示] zip 内未发现 exe（可能是脚本类应用），无法自动补 bin")
+        return None
+    print(f"[探测] zip 内可执行文件（共 {len(exes)} 个）:")
+    for i, e in enumerate(exes, 1):
+        print(f"    {i}: {e}")
+
+    # 主程序选择：--exe-name > --select > 交互（回车=1）
+    choice = arg_value("--exe-name")
+    if choice:
+        full = next((e for e in exes if e.lower() == choice.lower()
+                     or e.lower().endswith("/" + choice.lower())), None)
+        if full and full.lower() != choice.lower():
+            print(f"[exe-name] {choice} → 命中 {full}")
+            choice = full
+        elif not full:
+            print(f"[提示] --exe-name {choice} 未在 zip 中找到精确匹配（仍按指定写入）")
+    elif select:
+        if select.isdigit():
+            idx = int(select) - 1
+            if 0 <= idx < len(exes):
+                choice = exes[idx]
+            else:
+                print(f"[错误] 编号超出范围（1-{len(exes)}）")
+                return None
+        else:
+            low = select.lower()
+            choice = next((e for e in exes if low in e.lower()), None)
+            if not choice:
+                print(f"[错误] 未找到包含 '{select}' 的 exe")
+                return None
+    else:
+        try:
+            ans = input(f"请选择主程序编号（1-{len(exes)}，回车默认 1）: ").strip()
+            if ans:
+                if ans.isdigit() and 1 <= int(ans) <= len(exes):
+                    choice = exes[int(ans) - 1]
+                else:
+                    choice = next((e for e in exes if ans.lower() in e.lower()), None)
+            else:
+                choice = exes[0]
+        except EOFError:
+            choice = exes[0]
+    if not choice:
+        return None
+    print(f"[选择] {choice}")
+
+    tops = sorted({n.split("/", 1)[0] for n in names if "/" in n})
+    top_files = [n for n in names if "/" not in n]
+    single_top = len(tops) == 1 and bool(tops[0]) and not top_files
+    if "--unzip" in sys.argv[1:]:
+        # 无条件解压拍平一层（不检测 exe，内部层级保留），bin 补全子路径
+        if single_top:
+            template["pre_install"] = [UNZIP_PRE_INSTALL]
+            sub = strip_top_dir(locate_exe_subpath(names, Path(choice).name), tops[0]) if "/" in choice else None
+            bin_name = f"{sub}/{Path(choice).name}" if sub else Path(choice).name
+            print(f"[unzip] 唯一顶层目录「{tops[0]}」：已添加无条件解压拍平，bin = {bin_name}")
+            if "--flatten" in sys.argv[1:]:
+                print("        --flatten 被忽略（--unzip 优先）")
+        else:
+            print(f"[警告] --unzip 仅支持唯一顶层目录（当前 {len(tops)} 个目录/顶层有散文件），"
+                  f"未加拍平，bin 用完整相对路径")
+            bin_name = choice
+    elif "--flatten" in sys.argv[1:]:
+        # 带 exe 守卫拍平（与 --add 直链默认一致）
+        if single_top:
+            template["pre_install"] = [FLATTEN_PRE_INSTALL]
+            bin_name = Path(choice).name
+            print(f"[flatten] 唯一顶层目录「{tops[0]}」：已添加守卫拍平 pre_install，bin = {bin_name}")
+        else:
+            print(f"[警告] --flatten 仅支持唯一顶层目录（当前 {len(tops)} 个目录/顶层有散文件），本次未加拍平")
+            bin_name = choice
+    else:
+        # 既有 extract_dir 方案（不拍平）
+        bin_name = choice
+        if "/" in choice:
+            top = choice.split("/", 1)[0]
+            top_dirs = {n.split("/", 1)[0] for n in names if "/" in n}
+            if not top_files and top_dirs == {top}:
+                template["extract_dir"] = top
+                bin_name = choice.split("/", 1)[1]
+                au = template.setdefault("autoupdate", {})
+                tpl = re.sub(r"\d+(?:\.\d+)+", "$version", top, count=1)
+                if tpl != top:
+                    au["extract_dir"] = tpl
+                print(f"[extract_dir] {top}（已设置模板: {au.get('extract_dir', top)}）")
+            else:
+                print(f"[警告] zip 结构较复杂（多目录/顶层散文件），未自动设置 extract_dir，"
+                      f"bin 将使用完整相对路径 {choice}")
+    template["bin"] = bin_name
+    template["shortcuts"] = [[bin_name, arg_value("--shortcut-name") or app_name]]
+    print(f"[写入] bin = {bin_name} | shortcuts 显示名 = {arg_value('--shortcut-name') or app_name}")
+    return finalize_direct_manifest(template, out_dir, app_name)
+
+
+def probe_installer_exes(tmp, app_name):
+    """静默安装 Inno 安装器到临时目录，收集真实 exe 名后自动卸载回滚。
+    返回 exe 文件名列表（不含 unins000.exe）；失败/回滚异常不影响流程。"""
+    import subprocess
+    import shutil
+    work = FALLBACK_OUT_DIR / ".probe_tmp" / app_name
+    shutil.rmtree(work, ignore_errors=True)
+    work.mkdir(parents=True, exist_ok=True)
+    exes = []
+    try:
+        r = subprocess.run([str(tmp), "/VERYSILENT", "/NORESTART", f"/DIR={work}"],
+                           capture_output=True, timeout=600)
+        if r.returncode != 0:
+            print(f"[警告] 静默安装退出码 {r.returncode}，安装目录可能不完整")
+        exes = sorted({p.name for p in work.rglob("*.exe") if not _is_helper_exe(p.name)},
+                      key=lambda n: n.lower())
+    except subprocess.TimeoutExpired:
+        print("[错误] 静默安装超时，已中止")
+    finally:
+        un = work / "unins000.exe"
+        try:
+            if un.exists():
+                subprocess.run([str(un), "/VERYSILENT"], capture_output=True, timeout=120)
+        except subprocess.TimeoutExpired:
+            pass
+        shutil.rmtree(work, ignore_errors=True)
+    return exes
+
+
+def probe_exe(src, app_name=None):
+    """--exe-name <下载URL 或 本地exe路径>：探测 Inno 安装器解包后的真实 exe 名。
+    流程：下载（安装包保留到 staging/.dl_cache/ 供复用）→ Inno 特征检测 →
+    - 非 Inno（便携 exe）：直接提示 bin 用文件名即可，不做静默安装；
+    - Inno：静默安装到临时目录 → 列出真实 exe → 自动卸载回滚。
+    用法: myscoop-update.py --exe-name <url|本地文件> [--name 应用名]（旧名 --probe-exe 兼容）"""
+    url = str(src)
+    is_local = not url.lower().startswith(("http://", "https://"))
+    if not is_local and not url.split("?")[0].lower().endswith(".exe"):
+        print("[提示] 链接不是 .exe（不适用探测），按 --add 直链处理即可")
+        return None
+    if is_local and not Path(url).exists():
+        print("[错误] 本地文件不存在")
+        return None
+    if not app_name:
+        app_name = arg_value("--name") or Path(url.split("#")[0].split("?")[0]).stem or "probe"
+    if is_local:
+        tmp = Path(url)
+        print(f"[本地] 使用已有文件: {tmp}")
+    else:
+        cache_dir = FALLBACK_OUT_DIR / ".dl_cache"
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        ext = Path(url.split("?")[0]).suffix or ".exe"
+        tmp = cache_dir / f"{app_name}{ext}"
+        print(f"[下载] {url.split('#')[0]}\n[缓存] 安装包将保留到 {tmp}")
+        try:
+            download_to(url, tmp)
+        except Exception as e:
+            print(f"[错误] 下载失败: {e}")
+            return None
+    print(f"[hash] sha256:{sha256_hex(tmp)[:16]}...")
+    inno = is_innosetup(tmp)
+    nsis = is_nsis(tmp) if not inno else False
+    if not inno and not nsis:
+        print(f"[便携exe] 未检测到安装器特征（Inno/NSIS）——此类直接可运行无需解包，"
+              f"bin 用文件名（{tmp.name}）即可，配合 --exe-name 指定生成清单")
+        return tmp
+    if inno:
+        print("[InnoSetup] 检测到安装器，开始静默安装探测…")
+        exes = probe_installer_exes(tmp, app_name)
+        comment = "Inno 会自动写 innosetup:true"
+    else:
+        print("[NSIS] 检测到 NSIS 安装器，开始 7z 解包探测…（无需真安装）")
+        exes = probe_nsis_exes(tmp, app_name)
+        comment = "NSIS 请配合 --add 自动生成的 pre_install 解包"
+    if exes:
+        roots = [e for e in exes if (tmp.parent / e).exists() or True]
+        print(f"[探测] 安装后的真实 exe（{len(exes)} 个）:")
+        for i, e in enumerate(exes, 1):
+            print(f"    {i}: {e}")
+        print(f"→ 请用 --exe-name <上选主程序名> 重新 --add 生成清单（{comment}）")
+    else:
+        print("[提示] 未发现 exe（可能为服务/驱动类或解包失败）")
+    print("[回滚] 临时文件已清理")
+    return tmp
+
+
+def add_direct_url(url, app_name=None):
+    """非 GitHub 直链新增：由下载链接 + 可选参数组装模板后补全。
+    支持 --version / --checkver-url / --checkver-regex / --exe-name /
+        --shortcut-name / --homepage / --description / --license / --out-dir"""
+    if not app_name:
+        base = url.split("?")[0].rstrip("/").split("/")[-1].split("#")[0]
+        app_name = re.sub(r"[^0-9a-zA-Z._-]", "-", base) or "app"
+    template = {
+        "version": arg_value("--version") or "1.0",
+        "description": arg_value("--description") or "",
+        "homepage": arg_value("--homepage") or "",
+        "license": arg_value("--license") or "unknown",
+        "url": url,
+    }
+    cv_url, cv_regex = arg_value("--checkver-url"), arg_value("--checkver-regex")
+    if cv_url and cv_regex:
+        template["checkver"] = {"url": cv_url, "regex": cv_regex}
+
+    # 若直链属于 GitHub 仓库（github.com/{owner}/{repo}/releases/...），自动获取仓库信息补全
+    # （description/homepage/license/checkver.github），网络失败时保持用户字段不阻断
+    gm = re.match(r"https?://github\.com/([^/]+)/([^/]+?)(?:/|$)", url)
+    if gm and not (cv_url and cv_regex):
+        owner, repo = gm.group(1), gm.group(2)
+        try:
+            info = get_repo_info(owner, repo, "github")
+            if not template["description"]:
+                template["description"] = info.get("description") or ""
+            if not template["homepage"]:
+                template["homepage"] = info.get("homepage") or f"https://github.com/{owner}/{repo}"
+            lic = info.get("license") or {}
+            spdx = lic.get("spdx_id") if isinstance(lic, dict) else lic
+            if spdx and spdx != "NOASSERTION" and template["license"] == "unknown":
+                template["license"] = spdx
+            if "checkver" not in template:
+                template["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
+            print(f"[仓库信息] {owner}/{repo}：已自动补全 description/homepage/license/checkver")
+        except Exception as e:
+            print(f"[提示] GitHub 仓库信息获取失败（保持用户字段）: {e}")
+    exe_name = arg_value("--exe-name")
+    if exe_name:
+        template["bin"] = exe_name
+        template["shortcuts"] = [[exe_name, arg_value("--shortcut-name") or app_name]]
+    out_dir = arg_value("--out-dir") or FALLBACK_OUT_DIR
+    return finalize_direct_manifest(template, out_dir, app_name)
+
+
+def extract_installer_links(html, page_url):
+    """从下载页提取安装包直链（绝对化），按 exe > zip > 其他 排序。
+    href 抓不到时回退扫描裸 URL（搜狗等站的链接写在 JS 字符串里）。"""
+    from urllib.parse import urljoin
+    found = re.findall(r'href=["\']([^"\']+\.(?:exe|msi|zip|7z))(?:\?[^"\']*)?["\']', html, re.I)
+    if not found:
+        found = re.findall(r'https?://[^\s"\'<>]+\.(?:exe|msi|zip|7z)(?:\?[^\s"\'<>]*)?', html)
+    seen, out = set(), []
+    for l in found:
+        absl = urljoin(page_url, l.strip())
+        if absl not in seen:
+            seen.add(absl)
+            out.append(absl)
+
+    def key(u):
+        e = u.rsplit(".", 1)[-1].lower()
+        return (0 if e == "exe" else 1 if e == "zip" else 2, u)
+
+    return sorted(out, key=key)
+
+
+def version_from_link(url):
+    """从安装包链接/文件名提取版本号，如 PixPin_win_3.5.5.1.exe -> 3.5.5.1。
+    拒绝\"前后都是字母数字\"的伪版本（如 lzma2603.7z 里的 2603.7）。"""
+    for m in re.finditer(r"\d+\.\d+(?:\.\d+)*", url):
+        before = url[m.start() - 1] if m.start() > 0 else ""
+        after = url[m.end()] if m.end() < len(url) else ""
+        if before.isalnum() and after.isalnum():
+            continue  # 前/后夹在字符中间，如 2603.7z 的 2603.7
+        return m.group(1) if m.groups() else m.group(0)
+    return None
+
+
+def checkver_regex_from_link(url, version):
+    r"""由链接生成 checkver 正则，按优先级：文件名版本 > URL 路径版本 > 通用。
+    PixPin_win_3.5.5.1.exe -> PixPin_win_([\d.]+)\.exe
+    .../download/26.03/7z2603-x64.exe -> .../download/([\d.]+)/7z2603-x64.exe"""
+    fname = url.rsplit("/", 1)[-1]
+    if version in fname:
+        pos = fname.find(version)
+        return re.escape(fname[:pos]) + r"([\d.]+)" + re.escape(fname[pos + len(version):])
+    pos = url.find(version)
+    if pos >= 0:
+        return re.escape(url[:pos]) + r"([\d.]+)" + re.escape(url[pos + len(version):])
+    return r"([\d.]+)"
+
+
+def best_link(links):
+    """择优：版本最大优先；同版本时 exe > zip、通用/x64 > x86 > arm64"""
+    best = None
+    for l in links:
+        v = version_from_link(l)
+        if not v:
+            continue
+        vt = tuple(int(x) for x in v.split("."))
+        lower = l.lower()
+        arch = 2 if re.search(r"arm64|aarch64|(?:^|[-._])arm(?:[-._]|$)", lower) else (
+            1 if ("x86" in lower or "32bit" in lower or "ia32" in lower) else 0)
+        ext = 0 if lower.rsplit(".", 1)[-1] in ("exe", "msi") else 1
+        # 版本越大越好；ext/arch 偏好越小越好 → 取负参与比较
+        rank = (vt, -ext, -arch)
+        if best is None or rank > best[0]:
+            best = (rank, l)
+    return best[1] if best else links[0]
+
+
+def add_page_mode(page_url, app_name=None):
+    """下载页新增：抓页面 -> 提取安装包链接与版本 -> 组装模板生成 manifest"""
+    try:
+        html = fetch_text(page_url, headers=PAGE_UA)
+    except Exception as e:
+        print(f"[错误] 页面抓取失败: {e}")
+        return None
+    links = extract_installer_links(html, page_url)
+    if not links:
+        print("[错误] 页面中未找到安装包链接（.exe/.msi/.zip/.7z）")
+        return None
+    print(f"[页面] {page_url}")
+    for i, l in enumerate(links, 1):
+        print(f"        链接{i}: {l}")
+
+    link = best_link(links)  # exe 优先 + 版本最大（页面常含历史多版本，如 Vivaldi）
+    version = version_from_link(link) or arg_value("--version") or "1.0"
+    print(f"[提取] 选用: {link}")
+    print(f"[提取] 版本: {version}")
+    if not app_name:
+        base = link.split("?")[0].split("#")[0].rstrip("/").split("/")[-1]
+        app_name = re.sub(r"[^0-9a-zA-Z._-]", "-", base) or "app"
+    template = {
+        "version": version,
+        "description": arg_value("--description") or "",
+        "homepage": arg_value("--homepage") or page_url,
+        "license": arg_value("--license") or "unknown",
+        "url": link,
+        "checkver": {
+            "url": page_url,
+            "regex": checkver_regex_from_link(link, version),
+        },
+    }
+    exe_name = arg_value("--exe-name")
+    if exe_name:
+        template["bin"] = exe_name
+        template["shortcuts"] = [[exe_name, arg_value("--shortcut-name") or app_name]]
+    out_dir = arg_value("--out-dir") or FALLBACK_OUT_DIR
+    return finalize_direct_manifest(template, out_dir, app_name)
+
+
+def _parse_readme_table(text, heading):
+    """解析 README 中 heading 下的清单表格：返回 (rows, problems)。
+    rows = [(序号, 行文本)]；problems = 结构问题（数据行位置 / 缺序号）。
+    只认"表头 → 分隔行 → 数据行"的标准结构：表头之前或表头与分隔行之间出现的表格行会被记入 problems
+    （防止把新行插到表头之前这种"行数对得上但表已破"的情况漏过）。"""
+    problems = []
+    m = re.search(r"^" + re.escape(heading) + r"\s*$", text, re.M)
+    if not m:
+        return [], [f"未找到章节「{heading}」"]
+    rest = text[m.end():]
+    nxt = re.search(r"^#{2,3} ", rest, re.M)
+    block = rest[:nxt.start()] if nxt else rest
+    lines = block.splitlines()
+
+    hdr_i = next((i for i, l in enumerate(lines) if l.startswith("|") and "安装命令" in l), None)
+    if hdr_i is None:
+        return [], [f"「{heading}」下未找到表头（含「安装命令」的 | 行）"]
+    sep_i = next((i for i in range(hdr_i + 1, len(lines))
+                  if re.match(r"^\|[\s\-|:]+\|?\s*$", lines[i])), None)
+    if sep_i is None:
+        return [], [f"「{heading}」表头后未找到分隔行（|---|）"]
+
+    rows = []
+    for i, l in enumerate(lines):
+        if not l.startswith("|") or i in (hdr_i, sep_i):
+            continue
+        if i < sep_i:
+            problems.append(f"「{heading}」表头之前/之中出现表格行（应表头→分隔行→数据行）: {l[:60]}")
+            continue
+        mm = re.match(r"^\|\s*(\d+)\s*\|(.*)$", l)
+        if not mm:
+            problems.append(f"「{heading}」数据行缺少序号: {l[:60]}")
+            continue
+        rows.append((int(mm.group(1)), l))
+    idxs = [i for i, _ in rows]
+    if idxs != list(range(1, len(rows) + 1)):
+        problems.append(f"「{heading}」序号不连续/有重复：{idxs[:12]}{' …' if len(idxs) > 12 else ''}"
+                        f"（应为 1..{len(rows)}）")
+    return rows, problems
+
+
+def check_consistency():
+    """校验 README 两张表 ↔ bucket/*.json ↔ progress.md 计数 是否一致（SKILL 铁律18 自动化）。
+    返回 True=全部一致，False=有偏差。"""
+    repo_root = Path(__file__).resolve().parent
+    bucket = sorted(p.stem for p in BUCKET_DIR.glob("*.json"))
+    ok = True
+
+    text = (repo_root / "README.md").read_text(encoding="utf-8")
+
+    t3_rows, t3_problems = _parse_readme_table(text, "### 第三方官方（引用原项目 Release）")
+    t1_rows, t1_problems = _parse_readme_table(text, "### 本地维护（自托管 Release）")
+    t3 = [l for _, l in t3_rows]
+    t1 = [l for _, l in t1_rows]
+
+    # 结构校验：数据行必须在分隔行之后；序号必须是 1..N 连续（问题由 _parse_readme_table 返回）
+    struct = list(t3_problems) + list(t1_problems)
+
+    readme_names = set()
+    for line in t3 + t1:
+        mm = re.search(r"scoop install\s+([\w.@/+-]+)", line)
+        if mm:
+            readme_names.add(mm.group(1).split("@")[0].split("/")[-1])
+
+    total = len(bucket)
+    print("== 一致性校验（README ↔ bucket ↔ progress）==")
+    if len(t3) + len(t1) != total:
+        ok = False
+        print(f"  [不一致] README 表行数 {len(t3)}+{len(t1)}={len(t3)+len(t1)} != bucket 清单数 {total}")
+    else:
+        print(f"  README 表行数 {len(t3)}+{len(t1)} == bucket 清单数 {total} ✓")
+
+    if struct:
+        ok = False
+        print("  [结构] 表格结构/序号问题:")
+        for p in struct:
+            print(f"      {p}")
+    else:
+        print("  表格结构（数据行紧随分隔行 + 序号 1..N）✓")
+
+    miss = sorted(set(bucket) - readme_names)
+    extra = sorted(readme_names - set(bucket))
+    if miss:
+        ok = False
+        print(f"  [缺行] 清单未出现在 README 表中: {', '.join(miss)}")
+    if extra:
+        ok = False
+        print(f"  [多余] README 表中有 bucket 里没有的条目: {', '.join(extra)}")
+    if not miss and not extra:
+        print("  README 条目与 bucket 清单一一对应 ✓")
+
+    p = repo_root / ".claude" / "skills-myscoop" / "progress.md"
+    if p.exists():
+        pt = p.read_text(encoding="utf-8")
+        m = re.search(r"^## 当前状态.*?(?=^## )", pt, re.M | re.S)
+        sect = m.group(0) if m else pt
+
+        def num(label):
+            mm = re.search(re.escape(label) + r"[^0-9\n]*?(\d+)", sect)
+            return int(mm.group(1)) if mm else None
+
+        for label, exp in (("收录软件总数", total),
+                           ("本地维护（自托管 Release）", len(t1)),
+                           ("第三方官方（引用原项目 Release）", len(t3))):
+            got = num(label)
+            if got != exp:
+                ok = False
+                print(f"  [不一致] progress「{label}」= {got}，应为 {exp}")
+            else:
+                print(f"  progress「{label}」= {got} ✓")
+    print("== 结果: " + ("全部一致 ✓" if ok else "存在不一致 ✗（见上）") + " ==")
+    return ok
+
+
+def main():
+    args = sys.argv[1:]
+    dry_run = "--dry-run" in args
+    all_mode = "--all" in args
+    add_idx = args.index("--add") if "--add" in args else -1
+
+    # --check：一致性校验（README 两表 ↔ bucket 清单 ↔ progress 计数），不一致非零退出
+    if "--check" in args:
+        sys.exit(0 if check_consistency() else 1)
+
+    # --exe-name <url|本地exe>：探测 Inno 安装器解包后的真实 exe 名（便携 exe 直接提示）
+    # （命令置首使用；旧名 --probe-exe 兼容）
+    if args and args[0] in ("--exe-name", "--probe-exe"):
+        src = args[1] if len(args) > 1 else None
+        if not src:
+            print("用法: python3 myscoop-update.py --exe-name <下载URL|本地exe路径> [--name 应用名]")
+            sys.exit(1)
+        result = probe_exe(src, arg_value("--name"))
+        sys.exit(0 if result else 1)
+
+    # --installer-mode <清单.json...|--all>：存量清单迁移为 installer 模式（注册型软件修复形态）
+    if "--installer-mode" in args:
+        im_pos = args.index("--installer-mode")
+        rest = args[im_pos + 1:]
+        if rest and rest[0] == "--all":
+            targets = sorted(BUCKET_DIR.glob("*.json"))
+        else:
+            targets = [Path(a) for a in rest if a and not a.startswith("--")]
+            if not targets:
+                print("用法: python3 myscoop-update.py --installer-mode <清单.json...|--all> [--dry-run]")
+                sys.exit(1)
+            targets = [t if t.exists() else BUCKET_DIR / t.name for t in targets]
+        n = 0
+        for t in targets:
+            try:
+                if migrate_installer_mode(t, dry_run=dry_run):
+                    n += 1
+            except Exception as e:
+                print(f"  [错误] {t}: {e}")
+        print(f"=== 迁移完成 {n} 个 ===")
+        sys.exit(0)
+
+    # --fill-bin <清单.json>：下载 zip 探测 exe，由用户指定主程序，补全 bin/shortcuts
+    if "--fill-bin" in args:
+        fb_pos = args.index("--fill-bin")
+        tpath = args[fb_pos + 1] if fb_pos + 1 < len(args) else None
+        if not tpath:
+            print("用法: python3 myscoop-update.py --fill-bin <manifest.json|zip下载URL> [--name 应用名] "
+                  "[--select 编号|exe名] [--version 版本号] [--exe-name 主程序名] "
+                  "[--unzip|--flatten] [--out-dir 输出目录]")
+            sys.exit(1)
+        result = fill_bin_manifest(tpath, arg_value("--out-dir") or FALLBACK_OUT_DIR,
+                                   arg_value("--name"), arg_value("--select"))
+        sys.exit(0 if result else 1)
+
+    # --from <模板.json>：非 GitHub 直链模板补全（下载算 hash + 检测 + 校验）
+    if "--from" in args:
+        from_pos = args.index("--from")
+        tpath = args[from_pos + 1] if from_pos + 1 < len(args) else None
+        if not tpath:
+            print("用法: python3 myscoop-update.py --from <manifest模板.json> [--name 应用名] [--out-dir 输出目录]")
+            sys.exit(1)
+        try:
+            template = json.loads(Path(tpath).read_text(encoding="utf-8"))
+        except Exception as e:
+            print(f"[错误] 模板解析失败: {e}")
+            sys.exit(1)
+        app_name = arg_value("--name") or Path(tpath).stem
+        out_dir = arg_value("--out-dir") or FALLBACK_OUT_DIR
+        result = finalize_direct_manifest(template, out_dir, app_name)
+        sys.exit(0 if result else 1)
+
+    args = [a for a in args if not a.startswith("--")]
+
+    # --add 模式：GitHub/Gitee 仓库 → 原有流程；非仓库 http(s) 链接 → 直链模式
+    if add_idx >= 0:
+        add_args = sys.argv[1:]
+        add_pos = add_args.index("--add")
+        if add_pos + 1 >= len(add_args):
+            print("用法: python3 myscoop-update.py --add <github-url|下载链接> [--name 应用名] [...其他选项]")
+            sys.exit(1)
+        target = add_args[add_pos + 1]
+        app_name = arg_value("--name")
+        platform, _o, _r = parse_repo_url(target)
+        if platform:
+            result = add_manifest(target, app_name, more="--more" in add_args)
+        elif target.startswith(("http://", "https://")):
+            if re.search(r"\.(?:exe|msi|zip|7z)(?:[?#]|$)", target, re.I):
+                result = add_direct_url(target, app_name)
+            else:
+                result = add_page_mode(target, app_name)
+        else:
+            print(f"[错误] 无法解析 URL: {target}")
+            result = None
+        sys.exit(0 if result else 1)
+
+    # 更新模式
+    if all_mode:
+        paths = sorted(BUCKET_DIR.glob("*.json"))
+    elif args:
+        paths = [Path(a) for a in args]
+        for i, p in enumerate(paths):
+            if not p.exists():
+                alt = BUCKET_DIR / p.name
+                if alt.exists():
+                    paths[i] = alt
+                else:
+                    print(f"文件不存在: {p}")
+                    sys.exit(1)
+    else:
+        print(__doc__)
+        sys.exit(0)
+
+    updated = []
+    errors = []
+    for path in paths:
+        try:
+            result = update_manifest(path, dry_run=dry_run)
+            if result:
+                updated.append(result)
+        except Exception as e:
+            print(f"  [异常] {path.name}: {e}")
+            if not dry_run:
+                import traceback
+                traceback.print_exc()
+            errors.append(path.name)
+
+    print()
+    if dry_run:
+        print(f"=== 共 {len(updated)} 个可更新 ===")
+    else:
+        print(f"=== 已更新 {len(updated)} 个 ===")
+    for u in updated:
+        print(f"  {u['manifest']}: {u['old']} → {u['new']}")
+    if errors:
+        print(f"=== 异常 {len(errors)} 个: {', '.join(errors)} ===")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

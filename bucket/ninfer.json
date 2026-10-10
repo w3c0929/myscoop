@@ -1,0 +1,17 @@
+{
+    "version": "1.2.0",
+    "description": "NInfer - ternary inference engine (Ternary-Bonsai models, CUDA 13.3 sm_89; single-file OpenAI/Anthropic compatible server, bundled runtime)",
+    "homepage": "https://github.com/w3c0929/myscoop",
+    "license": "unknown",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.2.0/ninfer-ternary-ada-sm89-win64-v1.2.0-protable.zip",
+    "hash": "sha256:22da1226a1f77500b39f276774d86bac4601fa899b8846950ce5828be0fcf288",
+    "bin": "ninfer-serve.exe",
+    "shortcuts": [
+        [
+            "ninfer-serve.exe",
+            "NInfer 服务端"
+        ]
+    ],
+    "pre_install": "Remove-Item \"$dir\\CMakeFiles\" -Recurse -Force -ErrorAction SilentlyContinue",
+    "notes": "三元推理引擎，解压即用（自带 cublasLt/cublas/cudart64_13 与 ffmpeg 运行库）。1.2.0 起为单文件服务端 ninfer-serve.exe（OpenAI/Anthropic 兼容）。模型（.ninfer 三元格式）需另行下载，放置路径见包内 README.txt。"
+}

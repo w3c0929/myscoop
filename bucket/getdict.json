@@ -1,0 +1,9 @@
+{
+    "version": "1.0",
+    "description": "Dictionary format conversion tool (GetDict)",
+    "homepage": "https://github.com/w3c0929/myscoop",
+    "license": "proprietary",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0-getdict/getdict-1.0.exe",
+    "hash": "sha256:d705d7761a4b6a079481457e58b4a9deae9cc5ce86c48ba91b5d819a67bf5d13",
+    "post_install": "Start-Process \"$dir\\getdict-1.0.exe\""
+}

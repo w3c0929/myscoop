@@ -1,0 +1,11 @@
+{
+    "version": "2.1.2",
+    "description": "电视时光 - 电视直播软件",
+    "homepage": "https://www.dianshishiguang.com/",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v2.1.2/dianshishiguang-2.1.2.exe",
+    "hash": "sha256:d848a38d194972e3242bd7933f5b9908f183478279e719b73824271d1d63fc33",
+    "post_install": "Start-Process \"$dir\\dianshishiguang-2.1.2.exe\""
+}

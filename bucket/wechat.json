@@ -1,0 +1,10 @@
+{
+    "version": "4.1.11",
+    "description": "WeChat - Tencent social messaging app",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v4.1.11-wechat/wechat-4.1.11.exe",
+    "hash": "sha256:c5fb3c5481a5df5cfbbc53c3ba83c6caa61dfcf72934e6b44e4f40b9a989760d",
+    "post_install": "Start-Process \"$dir\\wechat-4.1.11.exe\""
+}

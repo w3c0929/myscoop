@@ -1,0 +1,26 @@
+{
+    "version": "0.8.4",
+    "description": "Bilibili rust下载器, 支持win mac linux 安卓。4k,up主空间, 批量, 字幕等等",
+    "homepage": "https://apps.yuelili.com/software/bdl",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/Yuelioi/bdl"
+    },
+    "url": "https://github.com/Yuelioi/bdl/releases/download/v0.8.4/BDL_0.8.4_x64-setup.exe",
+    "autoupdate": {
+        "url": "https://github.com/Yuelioi/bdl/releases/download/v$version/BDL_$version_x64-setup.exe"
+    },
+    "hash": "sha256:42496f1646aafd477ac3874dba5d1c43e383919c3d9c04e253c59977cb58200c",
+    "bin": "bdl-desktop.exe",
+    "shortcuts": [
+        [
+            "bdl-desktop.exe",
+            "bdl"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ]
+}

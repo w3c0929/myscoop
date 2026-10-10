@@ -1,0 +1,10 @@
+{
+    "version": "9.7.0",
+    "description": "UltraISO Premium - CD/DVD image file creation, editing, and conversion tool",
+    "license": {
+        "identifier": "Proprietary"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v9.7.0/ultraiso-9.7.0.exe",
+    "hash": "sha256:f1d0eb142075b10d73a670945bd6dc318796ac866cbc3fcb5139b3bc8516e7aa",
+    "post_install": "Start-Process \"$dir\\ultraiso-9.7.0.exe\""
+}

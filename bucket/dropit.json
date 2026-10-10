@@ -1,0 +1,15 @@
+{
+    "version": "8.5.2",
+    "description": "DropIt - flexible tool to automate processing and organizing files and folders",
+    "homepage": "http://www.dropitproject.com/",
+    "license": "GPL-2.0",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v8.5.2/DropIt_v8.5.2_x64_Portable.zip",
+    "hash": "sha256:4da0b22758e23d9c9e6428abbe1ffa8adaea136701d9043e74fa4fa0e8fe2463",
+    "bin": "DropIt.exe",
+    "shortcuts": [
+        [
+            "DropIt.exe",
+            "DropIt"
+        ]
+    ]
+}

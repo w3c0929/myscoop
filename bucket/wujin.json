@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "Wujin - hardware and metal fittings calculator",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vWujin/wujin.exe",
+    "hash": "sha256:84fe580d1f68c27a60960df5a1dcf1a9b75a13f416270713a58978e55db2e785",
+    "post_install": "Start-Process \"$dir\\wujin.exe\""
+}

@@ -1,0 +1,46 @@
+{
+    "version": "0.8.0",
+    "description": "C盘管家 - 给普通人的 Windows 磁盘与内存维护助手 (Tauri 2 + React)",
+    "homepage": "https://github.com/YGTQ3/disk-butler",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/YGTQ3/disk-butler"
+    },
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/YGTQ3/disk-butler/releases/download/v0.8.0/DiskButlerCollector.exe"
+        },
+        "64bit": {
+            "url": "https://github.com/YGTQ3/disk-butler/releases/download/v0.8.0/DiskButler_0.8.0_x64-setup.exe",
+            "hash": "sha256:a1d83e651fdc4fad39cab6ca0eef7a06cfbd557560d286f95b17d895365b53b1"
+        },
+        "arm64": {
+            "url": "https://github.com/YGTQ3/disk-butler/releases/download/v0.8.0/DiskButlerCollector.exe"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/YGTQ3/disk-butler/releases/download/v$version/DiskButlerCollector.exe"
+            },
+            "64bit": {
+                "url": "https://github.com/YGTQ3/disk-butler/releases/download/v$version/DiskButler_$version_x64-setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/YGTQ3/disk-butler/releases/download/v$version/DiskButlerCollector.exe"
+            }
+        }
+    },
+    "bin": "disk-butler.exe",
+    "shortcuts": [
+        [
+            "disk-butler.exe",
+            "diskbutler"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ]
+}

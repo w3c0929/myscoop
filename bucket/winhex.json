@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "WinHex - hexadecimal editor and disk editor",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vWinHex/winhex.exe",
+    "hash": "sha256:af65a35df337a44ae89dcc7f2d272f54471570c9506af969802f834953cd6d01",
+    "post_install": "Start-Process \"$dir\\winhex.exe\""
+}

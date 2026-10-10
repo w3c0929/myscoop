@@ -1,0 +1,21 @@
+{
+    "version": "2.0",
+    "description": "EdgeBlock - disable/enable Microsoft Edge browser with command-line support",
+    "homepage": "https://www.sordum.org/edge-blocker/",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v2.0-edgeblock/edgeblock-2.0.zip",
+    "hash": "sha256:e0d3f1745d46b29eeac7df47d1db634e0868513154f89110a6054fb1c919bb15",
+    "architecture": {
+        "64bit": {
+            "bin": "EdgeBlock_x64.exe"
+        },
+        "32bit": {
+            "bin": "EdgeBlock.exe"
+        }
+    },
+    "shortcuts": [
+        ["EdgeBlock_x64.exe", "Edge 浏览器禁用"]
+    ]
+}

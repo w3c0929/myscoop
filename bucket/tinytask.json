@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0.0",
+    "description": "TinyTask - lightweight macro recorder and automation tool",
+    "homepage": "https://www.tinytask.net/",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.0.0/TinyTask.exe",
+    "hash": "sha256:29c18164bfbb1ab869ad4c43207c8e32ea5ad4c874a22c821dc91b072bcc60a0",
+    "bin": "TinyTask.exe",
+    "shortcuts": [
+        [
+            "TinyTask.exe",
+            "TinyTask"
+        ]
+    ]
+}

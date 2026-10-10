@@ -1,0 +1,10 @@
+{
+    "version": "7.1",
+    "description": "Studio One Pro - professional music production DAW (community-maintained)",
+    "homepage": "https://www.presonus.com/en/studio-one.html",
+    "license": {"identifier": "Proprietary"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vStudioOne7.1/studio-one-7.1-portable.zip",
+    "hash": "sha256:ec3aeba603933cd65ac6ae9c43668e5d857f0d8ea15e28d923f2ef17f9ce88f4",
+    "bin": "Studio One.exe",
+    "shortcuts": [["Studio One.exe", "Studio One Pro 7.1"]]
+}

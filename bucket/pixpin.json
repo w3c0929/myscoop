@@ -1,0 +1,25 @@
+{
+    "version": "3.5.5.1",
+    "description": "PixPin - screenshot and annotation tool",
+    "homepage": "https://pixpin.cn/",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://down.pixpin.cn/PixPin_win_3.5.5.1.exe",
+    "hash": "sha256:5b88ce37a7c3dd244e2e48e0728f7fb03f108e770bf864ca68197a24e9a687e2",
+    "checkver": {
+        "url": "https://pixpin.cn/download/",
+        "regex": "PixPin_win_([\\d.]+)\\.exe"
+    },
+    "bin": "PixPin.exe",
+    "shortcuts": [
+        [
+            "PixPin.exe",
+            "PixPin"
+        ]
+    ],
+    "innosetup": true,
+    "autoupdate": {
+        "url": "https://down.pixpin.cn/PixPin_win_$version.exe"
+    }
+}

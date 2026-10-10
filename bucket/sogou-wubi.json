@@ -1,0 +1,8 @@
+{
+    "version": "1.0",
+    "description": "Sogou Wubi - Chinese Wubi input method",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vSogouWubi/sogou-wubi.exe",
+    "hash": "sha256:b7f58ad60425a9e09f7642d2f4e09ca7b9f90770e90841f32f62255447994957",
+    "post_install": "Start-Process \"$dir\\sogou-wubi.exe\""
+}

@@ -1,0 +1,10 @@
+{
+    "version": "1.0.0.10",
+    "description": "DingTalk Downloader - DingTalk client download tool",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.0.10-dingtalk-downloader/dingtalk-downloader-1.0.0.10.exe",
+    "hash": "sha256:91e6278f9b1756baf0fe3a4f7f6a1897ed1c1811de51ae3934e0360327eeb9ea",
+    "post_install": "Start-Process \"$dir\\dingtalk-downloader-1.0.0.10.exe\""
+}

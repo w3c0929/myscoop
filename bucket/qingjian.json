@@ -1,0 +1,35 @@
+{
+    "version": "0.1.5-beta.1",
+    "description": "青简 Qingjian：用 Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词",
+    "homepage": "https://qingjian.app",
+    "license": "GPL-3.0",
+    "url": "https://github.com/qingjian-team/qingjian/releases/download/v0.1.5-beta.1/qingjian-0.1.5-beta.1-windows-x86_64-setup.exe",
+    "checkver": {
+        "github": "https://github.com/qingjian-team/qingjian",
+        "tag_regex": "^v([\\d.]+(?:-(?:beta|rc)\\.\\d+)?)$"
+    },
+    "hash": "sha256:e3962c503a0b638f26b860ad661a97ac71de231def7d03a39c4972d0b5346f40",
+    "installer": {
+        "args": [
+            "/VERYSILENT",
+            "/NORESTART",
+            "/DIR=$dir"
+        ]
+    },
+    "post_uninstall": [
+        "Start-Process \"$dir\\unins000.exe\" -Wait -ArgumentList '/VERYSILENT','/NORESTART'"
+    ],
+    "notes": [
+        "系统注册已完成；若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe）或重新启动资源管理器，仍无效再注销或重启。"
+    ],
+    "bin": "qingjian-server.exe",
+    "shortcuts": [
+        [
+            "qingjian-server.exe",
+            "qingjian"
+        ]
+    ],
+    "autoupdate": {
+        "url": "https://github.com/qingjian-team/qingjian/releases/download/v$version/qingjian-$version-windows-x86_64-setup.exe"
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "version": "2026.6.850.0",
+    "description": "Cloudflare WARP - network acceleration and security tool",
+    "homepage": "https://one.one.one.one/",
+    "license": {"identifier": "Freeware"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v2026.6.850.0/Cloudflare_WARP_2026.6.850.0.msi",
+    "hash": "sha256:c8814ece9dd91948fe4080f8d1dd08af328d6db98656d118f043e6b94e222a56",
+    "pre_install": [
+        "$appname = Split-Path (Split-Path $dir -Parent) -Leaf",
+        "$cachedir = $dir -replace '\\\\apps\\\\.*$', '\\cache'",
+        "$msi = Get-ChildItem $cachedir -Filter \"$appname#*.msi\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+        "if ($msi) { Copy-Item $msi.FullName \"$dir\\setup.msi\" }"
+    ],
+    "post_install": "Start-Process \"$dir\\setup.msi\"",
+    "notes": "MSI 手动安装包，scoop install 下载后自动启动，用户手动选择安装目录。"
+}

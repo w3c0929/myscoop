@@ -1,0 +1,26 @@
+{
+    "version": "1.0.0-alpha.4",
+    "description": "Raster to Vector Graphics Converter",
+    "homepage": "https://www.visioncortex.org/vtracer/",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/visioncortex/vtracer"
+    },
+    "url": "https://github.com/visioncortex/vtracer/releases/download/1.0.0-alpha.4/VTracer_1.0.0-alpha.4_x64-setup.exe",
+    "autoupdate": {
+        "url": "https://github.com/visioncortex/vtracer/releases/download/$version/VTracer_$version_x64-setup.exe"
+    },
+    "hash": "sha256:3ffff2087fdcfa4e3211a0a2a81f045c136185ca164e0304efd222d6a28a3b01",
+    "bin": "vtracer.exe",
+    "shortcuts": [
+        [
+            "vtracer.exe",
+            "vtracer"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ]
+}

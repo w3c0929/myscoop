@@ -1,0 +1,11 @@
+{
+    "version": "6.0.11.0",
+    "description": "Huorong System Diagnostic Tool - security analysis and system inspection",
+    "homepage": "https://www.huorong.cn/",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.0.11.0/sysdiag-all-x64-6.0.11.0-2026.06.29.1.exe",
+    "hash": "sha256:0552228324e83d0ca0f14f98e8c94dfe9e188f6caf7e90333857355b7190651c",
+    "post_install": "Start-Process \"$dir\\sysdiag-all-x64-6.0.11.0-2026.06.29.1.exe\""
+}

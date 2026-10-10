@@ -1,0 +1,41 @@
+{
+    "version": "2.1.4",
+    "description": "AI productivity studio with smart chat, autonomous agents, and 300+ assistants. Unified access to frontier LLMs",
+    "homepage": "https://cherryai.com",
+    "license": "AGPL-3.0",
+    "checkver": {
+        "github": "https://github.com/CherryHQ/cherry-studio"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.1.4/Cherry-Studio-CN-2.1.4-win-x64-portable.exe",
+            "hash": "sha256:22af009fc5c470fcea1bb563a0e0ec450d78aa62094eb4d463bcdd2769d87195"
+        },
+        "arm64": {
+            "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v2.1.4/Cherry-Studio-CN-2.1.4-win-arm64-portable.exe",
+            "hash": "sha256:5c94e42d1db13a3d66dd60b7c844193e0d5db8963a95f7f21b2fb326199a802c"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v$version/Cherry-Studio-CN-$version-win-x64-portable.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v$version/Cherry-Studio-CN-$version-win-arm64-portable.exe"
+            }
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ],
+    "bin": "Cherry Studio.exe",
+    "shortcuts": [
+        [
+            "Cherry Studio.exe",
+            "cherry"
+        ]
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "version": "6",
+    "description": "Word, Excel, and PowerPoint plugin for QuickLook.",
+    "homepage": "https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer"
+    },
+    "url": "https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer/releases/download/6/QuickLook.Plugin.OfficeViewer.qlplugin",
+    "hash": "sha256:9ea7b49d293f00180fc6e502890a58d51872e3e2c8ff3e739b92ca98468ba4f5",
+    "autoupdate": {
+        "url": "https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer/releases/download/$version/QuickLook.Plugin.OfficeViewer.qlplugin"
+    },
+    "post_install": "Start-Process \"$dir\\QuickLook.Plugin.OfficeViewer.qlplugin\""
+}

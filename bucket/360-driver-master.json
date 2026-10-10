@@ -1,0 +1,10 @@
+{
+    "version": "2.0",
+    "description": "360 Driver Master - driver management and update tool (green portable)",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v360DriverMaster2.0/360-driver-master-v2.0.exe",
+    "hash": "sha256:d21f80a0b99f939aa0df2013c815d6cf5ef59104bd82a933851865911c77a0fa",
+    "post_install": "Start-Process \"$dir\\360-driver-master-v2.0.exe\""
+}

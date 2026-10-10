@@ -1,0 +1,10 @@
+{
+    "version": "5.6.6.174a",
+    "description": "HiPC - PC assistant and remote control tool",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v5.6.6.174a-hipc/hipc-5.6.6.174a.exe",
+    "hash": "sha256:e7dea8db39bea88bd03c83280b9538d1985e2075611d81f8c24747256d9a6c47",
+    "post_install": "Start-Process \"$dir\\hipc-5.6.6.174a.exe\""
+}

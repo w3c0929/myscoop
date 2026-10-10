@@ -1,0 +1,17 @@
+{
+    "version": "7.2.7205",
+    "description": "R-Drive Image - disk imaging and backup tool (portable)",
+    "homepage": "https://www.drive-image.com/",
+    "license": {
+        "identifier": "Proprietary"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vRDI/RDriveImage.zip",
+    "hash": "sha256:e1691866e40eb7b276fe37db783c13a0a8638eb2fc90c0ef7ba3ba6b7193c0f3",
+    "bin": "R-DriveImagePortable.exe",
+    "shortcuts": [
+        [
+            "R-DriveImagePortable.exe",
+            "R-Drive Image"
+        ]
+    ]
+}

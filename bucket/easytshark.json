@@ -1,0 +1,12 @@
+{
+    "version": "1.0.2",
+    "description": "EasyTSHARK - Lightweight desktop network packet capture and analysis tool based on Wireshark/Tshark kernel",
+    "homepage": "https://github.com/xuanyuanzhifeng/easytshark",
+    "license": "Apache-2.0",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.2/EasyTshark-Portable-1.0.2.zip",
+    "hash": "sha256:4c9e09ddba2bb2211f20946d87d0c333b67e2c396d4f0d8bc35e1ab95573628c",
+    "bin": "easytshark.exe",
+    "shortcuts": [
+        ["easytshark.exe", "EasyTSHARK 网络抓包分析"]
+    ]
+}

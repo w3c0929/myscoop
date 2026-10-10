@@ -1,0 +1,57 @@
+# 依赖
+node_modules/
+
+# 其他ai产物
+.workbuddy-ai/
+_qoder_app/
+_qoder_extract/
+
+# 构建产物
+build/
+!build/sea-config.json
+
+# 运行时数据
+data/
+logs/
+
+# 环境变量(含密钥)
+.env
+*.env
+
+# 日志/临时
+*.log
+*.tmp
+*.tmp.mjs
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 清单草稿区（myscoop-update.py 直链/下载页/模板模式的默认输出目录）
+staging/
+
+
+# 端到端测试临时产物
+sumail-vue/e2e/tmp/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+.db-fingerprint
+
+# 构建产物
+*.tar
+*.zip
+*.7z
+*.rar
+*.exe
+
+# 公众号文章目录（铁律：绝不提交）
+gzh/
+
+# tools/ 开发/测试/私人公众号工作流脚本（仅本地维护，不入库；CI 逻辑已内联进 auto-update.yml）
+tools/
+
+# playwright-cli 本地会话文件（截图/快照/控制台日志）
+/.playwright-cli/

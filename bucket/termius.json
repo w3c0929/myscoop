@@ -1,0 +1,18 @@
+{
+    "version": "9.40.1",
+    "description": "Termius - modern SSH client with Chinese localization (community-maintained)",
+    "homepage": "https://termius.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://termius.com/terms-of-use"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v9.40.1/Termius-9.40.1-portable.zip",
+    "hash": "sha256:bed3f322a15f1a341f4454d95aa8a1a517c9e08cde8089e77f7c7a366dd04f94",
+    "bin": "Termius.exe",
+    "shortcuts": [
+        [
+            "Termius.exe",
+            "Termius"
+        ]
+    ]
+}
