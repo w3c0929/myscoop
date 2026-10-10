@@ -4,62 +4,63 @@
 
 ## 收录软件
 
-> 共收录 **137** 款 Windows 软件，其中 **50** 款引用第三方官方 Release，**87** 款为本地维护（自托管 Release）。
+> 共收录 **138** 款 Windows 软件，其中 **51** 款引用第三方官方 Release，**87** 款为本地维护（自托管 Release）。
 
 ### 第三方官方（引用原项目 Release）
 
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
-| 1 | [BDL](https://apps.yuelili.com/software/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.8.4 | 2026-10-10 | 2026-10-10 |
-| 2 | [KeyCrash](https://www.yuelili.com/apps/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.1.1 | 2026-10-10 | 2026-10-10 |
-| 3 | [SuMail](https://github.com/w3c0929/sumail-releases) — SuMail 桌面版（Windows 桌面版安装包与发布资产；源码仓库为私有） | `scoop install sumail` | zip 官方 release | 0.0.1 | 2026-10-10 | 2026-10-10 |
-| 4 | [DiskButler](https://github.com/YGTQ3/disk-butler) — C 盘管家：给普通人的 Windows 磁盘与内存维护助手（Tauri 2 + React） | `scoop install diskbutler` | 多架构 exe 官方 release（Tauri 解包） | 0.8.0 | 2026-10-09 | 2026-10-09 |
-| 5 | [moonup](https://moonup.csu.moe) — MoonBit 多版本管理器（Manage multiple MoonBit installations with ease） | `scoop install moonup` | zip 官方 release | 0.6.1 | 2026-10-08 | 2026-10-08 |
-| 6 | [RustMusic](https://github.com/LingyunStudio/RustMusic) — 精美的高性能桌面音乐播放器（Rust + Tauri 2 + React）：本地曲库 / 网易云 / QQ 音乐 / QRC 逐字歌词 / 桌面歌词 / 10 段均衡器 | `scoop install rustmusic` | Inno Setup 官方 release（解包） | 0.5.3 | 2026-10-08 | 2026-10-08 |
-| 7 | [Kazumi](https://kazumi.app) — 基于自定义规则的番剧采集 APP（流媒体在线观看、弹幕、实时超分辨率） | `scoop install kazumi` | zip 官方 release | 2.3.8 | 2026-10-08 | 2026-10-08 |
-| 8 | [VTracer](https://www.visioncortex.org/vtracer/) — 位图转矢量图工具（Raster to Vector Graphics Converter） | `scoop install vtracer` | 单 exe 官方 release（NSIS 解包） | 1.0.0-alpha.4 | 2026-10-08 | 2026-10-10 |
-| 9 | [OilGit](https://oil-oil.github.io/oil-git/) — 面向 AI 项目开发者的只读 Git 可视化桌面应用（Windows / macOS） | `scoop install oilgit` | 单 exe 官方 release（Tauri 解包） | 0.1.0-test.1 | 2026-10-07 | 2026-10-07 |
-| 10 | [AnClicker](https://github.com/714248411/AnClicker) — Windows 自动化工作台：表格与流程图双编辑、可拖拽指令、深浅主题和长循环缓存保护 | `scoop install anclicker` | zip 官方 release | 1.3.2 | 2026-10-06 | 2026-10-08 |
-| 11 | [Xtranslate](https://github.com/hopechen067/Xtranslate) — 中英互译输入法：热键呼出、打字即译、回车粘贴、口语化 | `scoop install xtranslate` | 单 exe 官方 release（NSIS 解包） | 0.1.6 | 2026-10-04 | 2026-10-08 |
-| 12 | [PawnIO](https://pawnio.eu) — Pawn 语言工具套件（官方安装器） | `scoop install pawnio` | 单 exe 官方 release | 2.2.0 | 2026-10-02 | 2026-10-02 |
-| 13 | [EcoPaste](https://ecopaste.cn) — 跨平台剪贴板管理工具 | `scoop install ecopaste` | 多架构 exe 官方 release（NSIS 解包） | 1.1.0 | 2026-10-01 | 2026-10-02 |
-| 14 | [BongoCat](https://github.com/ayangweb/Awesome-BongoCat) — 跨平台桌面宠物互动小工具（开源） | `scoop install bongocat` | 单 exe 官方 release（NSIS 解包） | 2.2.0 | 2026-10-01 | 2026-10-08 |
-| 15 | [DeepSeek Harness](https://www.deepseek.com/en/harness/) — DeepSeek 桌面客户端（官方直链，NSIS 安装器 7z 解包便携） | `scoop install dsh` | 单 exe 官方直链（NSIS 解包） | 0.2.0-rc.2 | 2026-09-30 | 2026-09-30 |
-| 16 | [kvmem-llama.cpp](https://github.com/kvmem/kvmem-llama.cpp) — llama.cpp KV 缓存压缩分支：8GB 显存跑 Bonsai 2 27B 满 256K 上下文（RC 版） | `scoop install kvllama` | zip 官方 release | 0.16.0-rc3-prism.3 | 2026-09-30 | 2026-09-30 |
-| 17 | [Rayburst](https://rayburst.pages.dev) — 开源下载管理器（基于 Aria2 Next 引擎，NSIS 安装器解包便携） | `scoop install rayburst` | 多架构 exe 官方 release（NSIS 解包） | 4.0.1 | 2026-09-29 | 2026-10-08 |
-| 18 | [ZTools](https://github.com/ZToolsCenter/ZTools) — uTools 的开源实现，高性能可扩展的应用启动器与插件平台 | `scoop install ztools` | zip 官方 release | 3.2.0 | 2026-09-27 | 2026-09-27 |
-| 19 | [AI-Vault (updist)](https://ergeaia.github.io/) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | 0.3.1 | 2026-09-24 | 2026-10-04 |
-| 20 | [llama.cpp Prism](https://github.com/PrismML-Eng/llama.cpp) — llama.cpp 分支（CUDA 主程序 + cudart 运行库配对合并，--more 收录） | `scoop install prllama` | 多架构 zip 官方 release | prism-b10754-2459f68 | 2026-09-21 | 2026-10-03 |
-| 21 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.6.4 | 2026-09-19 | 2026-09-19 |
-| 22 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.7.2 | 2026-09-16 | 2026-10-02 |
-| 23 | [Magpie (实验版)](https://github.com/SAOG0721/Magpie) — 游戏画面缩放/超分工具的非官方实验 fork | `scoop install magpie` | zip 官方直链 | 0.6.9-experimental | 2026-09-16 | 2026-10-03 |
-| 24 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.1.5-beta.1 | 2026-09-16 | 2026-10-04 |
-| 25 | [Windows App SDK 运行时](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时官方直链 | `scoop install winsdk` | 单 exe 官方直链 | 2.4.0 | 2026-09-16 | 2026-09-26 |
-| 26 | [Netcatty](https://github.com/binaricat/Netcatty) — SSH 工作区、SFTP 与终端一体的跨平台客户端 | `scoop install netcatty` | portable zip 官方 release | 1.1.83 | 2026-09-15 | 2026-09-26 |
-| 27 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install cmm-plus` | 多架构 portable zip | 1.7.7 | 2026-09-14 | 2026-10-04 |
-| 28 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral` | 多架构 exe 官方 release | 1.2.0 | 2026-09-14 | 2026-09-26 |
-| 29 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry` | 多架构 portable exe | 2.1.4 | 2026-09-14 | 2026-09-30 |
-| 30 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install etlp` | 多架构 zip 官方 release | 2026.07.18 | 2026-09-14 | 2026-09-26 |
-| 31 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconv` | MSI 官方 release | 2.2 | 2026-09-14 | 2026-09-26 |
-| 32 | [TOKENICODE DeepSeek Alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode` | 单 exe 官方 release | 1.0.8 | 2026-09-14 | 2026-09-26 |
-| 33 | [MSST-GUI](https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI) — 音乐源分离推理工具 | `scoop install msst-gui` | 单 exe 中文版 | 1.4.0 | 2026-09-14 | 2026-09-26 |
-| 34 | [Lertaro](https://github.com/Lertaro/Lertaro) — 本地文件搜索与生产力工具（Everything/Listary 替代品，C# WPF + NT 服务，NTFS MFT 解析与实时 USN 监控） | `scoop install lertaro` | 多架构 portable zip 官方 release | 5.9.1 | 2026-09-12 | 2026-10-08 |
-| 35 | [BeeLlama](https://github.com/Anbeeld/beellama.cpp) — llama.cpp 分支，KV 缓存精度优化，更长上下文同显存更高精度（Windows CUDA 13.3） | `scoop install beellama-cpp` | portable zip 官方 release (CUDA 13.3) | 0.4.7 | 2026-09-09 | 2026-09-25 |
-| 36 | [baulk](https://github.com/baulk/baulk) — Minimal Package Manager for Windows | `scoop install baulk` | 多架构 portable zip | 6.1.0 | 2026-08-31 | 2026-09-26 |
-| 37 | [Keyviz](https://github.com/mulaRahul/keyviz) — 键盘/鼠标操作实时可视化 | `scoop install keyviz` | MSI 官方 release | 2.1.1 | 2026-07-31 | 2026-09-26 |
-| 38 | [Windows磁盘迁移工具](https://github.com/bjfwan/windows-disk-tool) — 智能扫描、批量迁移、符号链接 | `scoop install windisktool` | 单 exe 官方 release | 2.0 | 2026-07-13 | 2026-09-26 |
-| 39 | [QuickLook CAD 插件](https://github.com/emako/QuickLook.Plugin.CADImport) — 预览 CAD 文件格式 | `scoop install qlcad` | qlplugin 官方 release | 1 | 2026-07-09 | 2026-09-26 |
-| 40 | [QuickLook Office 插件](https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer) — 预览 Word/Excel/PPT 文件 | `scoop install qloffice` | qlplugin 官方 release | 6 | 2026-07-09 | 2026-09-26 |
-| 41 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.0 | 2026-07-09 | 2026-09-26 |
-| 42 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.39.0 | 2026-07-06 | 2026-10-07 |
-| 43 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.4 | 2026-07-03 | 2026-09-26 |
-| 44 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | 多架构 zip 官方 release | 5.5.0 | 2026-07-03 | 2026-09-26 |
-| 45 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.25.2733.0 | 2026-07-03 | 2026-10-03 |
-| 46 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 多架构 portable exe | 0.7.0 | 2026-07-02 | 2026-10-09 |
-| 47 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.11 | 2026-07-01 | 2026-09-26 |
-| 48 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 | 2026-06-30 | 2026-09-26 |
-| 49 | [PixPin](https://pixpin.cn/) — 截图标注工具（官方直链，Inno Setup） | `scoop install pixpin` | Inno Setup 官方直链 | 3.5.5.1 | 2026-06-30 | 2026-09-15 |
-| 50 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 | 2026-06-29 | 2026-09-26 |
+| 1 | [CC Switch](https://ccswitch.io) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.7 | 2026-10-10 | 2026-10-10 |
+| 2 | [BDL](https://apps.yuelili.com/software/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.8.4 | 2026-10-10 | 2026-10-10 |
+| 3 | [KeyCrash](https://www.yuelili.com/apps/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.1.1 | 2026-10-10 | 2026-10-10 |
+| 4 | [SuMail](https://github.com/w3c0929/sumail-releases) — SuMail 桌面版（Windows 桌面版安装包与发布资产；源码仓库为私有） | `scoop install sumail` | zip 官方 release | 0.0.1 | 2026-10-10 | 2026-10-10 |
+| 5 | [DiskButler](https://github.com/YGTQ3/disk-butler) — C 盘管家：给普通人的 Windows 磁盘与内存维护助手（Tauri 2 + React） | `scoop install diskbutler` | 多架构 exe 官方 release（Tauri 解包） | 0.8.0 | 2026-10-09 | 2026-10-09 |
+| 6 | [moonup](https://moonup.csu.moe) — MoonBit 多版本管理器（Manage multiple MoonBit installations with ease） | `scoop install moonup` | zip 官方 release | 0.6.1 | 2026-10-08 | 2026-10-08 |
+| 7 | [RustMusic](https://github.com/LingyunStudio/RustMusic) — 精美的高性能桌面音乐播放器（Rust + Tauri 2 + React）：本地曲库 / 网易云 / QQ 音乐 / QRC 逐字歌词 / 桌面歌词 / 10 段均衡器 | `scoop install rustmusic` | Inno Setup 官方 release（解包） | 0.5.3 | 2026-10-08 | 2026-10-08 |
+| 8 | [Kazumi](https://kazumi.app) — 基于自定义规则的番剧采集 APP（流媒体在线观看、弹幕、实时超分辨率） | `scoop install kazumi` | zip 官方 release | 2.3.8 | 2026-10-08 | 2026-10-08 |
+| 9 | [VTracer](https://www.visioncortex.org/vtracer/) — 位图转矢量图工具（Raster to Vector Graphics Converter） | `scoop install vtracer` | 单 exe 官方 release（NSIS 解包） | 1.0.0-alpha.4 | 2026-10-08 | 2026-10-10 |
+| 10 | [OilGit](https://oil-oil.github.io/oil-git/) — 面向 AI 项目开发者的只读 Git 可视化桌面应用（Windows / macOS） | `scoop install oilgit` | 单 exe 官方 release（Tauri 解包） | 0.1.0-test.1 | 2026-10-07 | 2026-10-07 |
+| 11 | [AnClicker](https://github.com/714248411/AnClicker) — Windows 自动化工作台：表格与流程图双编辑、可拖拽指令、深浅主题和长循环缓存保护 | `scoop install anclicker` | zip 官方 release | 1.3.2 | 2026-10-06 | 2026-10-08 |
+| 12 | [Xtranslate](https://github.com/hopechen067/Xtranslate) — 中英互译输入法：热键呼出、打字即译、回车粘贴、口语化 | `scoop install xtranslate` | 单 exe 官方 release（NSIS 解包） | 0.1.6 | 2026-10-04 | 2026-10-08 |
+| 13 | [PawnIO](https://pawnio.eu) — Pawn 语言工具套件（官方安装器） | `scoop install pawnio` | 单 exe 官方 release | 2.2.0 | 2026-10-02 | 2026-10-02 |
+| 14 | [EcoPaste](https://ecopaste.cn) — 跨平台剪贴板管理工具 | `scoop install ecopaste` | 多架构 exe 官方 release（NSIS 解包） | 1.1.0 | 2026-10-01 | 2026-10-02 |
+| 15 | [BongoCat](https://github.com/ayangweb/Awesome-BongoCat) — 跨平台桌面宠物互动小工具（开源） | `scoop install bongocat` | 单 exe 官方 release（NSIS 解包） | 2.2.0 | 2026-10-01 | 2026-10-08 |
+| 16 | [DeepSeek Harness](https://www.deepseek.com/en/harness/) — DeepSeek 桌面客户端（官方直链，NSIS 安装器 7z 解包便携） | `scoop install dsh` | 单 exe 官方直链（NSIS 解包） | 0.2.0-rc.2 | 2026-09-30 | 2026-09-30 |
+| 17 | [kvmem-llama.cpp](https://github.com/kvmem/kvmem-llama.cpp) — llama.cpp KV 缓存压缩分支：8GB 显存跑 Bonsai 2 27B 满 256K 上下文（RC 版） | `scoop install kvllama` | zip 官方 release | 0.16.0-rc3-prism.3 | 2026-09-30 | 2026-09-30 |
+| 18 | [Rayburst](https://rayburst.pages.dev) — 开源下载管理器（基于 Aria2 Next 引擎，NSIS 安装器解包便携） | `scoop install rayburst` | 多架构 exe 官方 release（NSIS 解包） | 4.0.1 | 2026-09-29 | 2026-10-08 |
+| 19 | [ZTools](https://github.com/ZToolsCenter/ZTools) — uTools 的开源实现，高性能可扩展的应用启动器与插件平台 | `scoop install ztools` | zip 官方 release | 3.2.0 | 2026-09-27 | 2026-09-27 |
+| 20 | [AI-Vault (updist)](https://ergeaia.github.io/) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | 0.3.1 | 2026-09-24 | 2026-10-04 |
+| 21 | [llama.cpp Prism](https://github.com/PrismML-Eng/llama.cpp) — llama.cpp 分支（CUDA 主程序 + cudart 运行库配对合并，--more 收录） | `scoop install prllama` | 多架构 zip 官方 release | prism-b10754-2459f68 | 2026-09-21 | 2026-10-03 |
+| 22 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.6.4 | 2026-09-19 | 2026-09-19 |
+| 23 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.7.2 | 2026-09-16 | 2026-10-02 |
+| 24 | [Magpie (实验版)](https://github.com/SAOG0721/Magpie) — 游戏画面缩放/超分工具的非官方实验 fork | `scoop install magpie` | zip 官方直链 | 0.6.9-experimental | 2026-09-16 | 2026-10-03 |
+| 25 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.1.5-beta.1 | 2026-09-16 | 2026-10-04 |
+| 26 | [Windows App SDK 运行时](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时官方直链 | `scoop install winsdk` | 单 exe 官方直链 | 2.4.0 | 2026-09-16 | 2026-09-26 |
+| 27 | [Netcatty](https://github.com/binaricat/Netcatty) — SSH 工作区、SFTP 与终端一体的跨平台客户端 | `scoop install netcatty` | portable zip 官方 release | 1.1.83 | 2026-09-15 | 2026-09-26 |
+| 28 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install cmm-plus` | 多架构 portable zip | 1.7.7 | 2026-09-14 | 2026-10-04 |
+| 29 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral` | 多架构 exe 官方 release | 1.2.0 | 2026-09-14 | 2026-09-26 |
+| 30 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry` | 多架构 portable exe | 2.1.4 | 2026-09-14 | 2026-09-30 |
+| 31 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install etlp` | 多架构 zip 官方 release | 2026.07.18 | 2026-09-14 | 2026-09-26 |
+| 32 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconv` | MSI 官方 release | 2.2 | 2026-09-14 | 2026-09-26 |
+| 33 | [TOKENICODE DeepSeek Alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode` | 单 exe 官方 release | 1.0.8 | 2026-09-14 | 2026-09-26 |
+| 34 | [MSST-GUI](https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI) — 音乐源分离推理工具 | `scoop install msst-gui` | 单 exe 中文版 | 1.4.0 | 2026-09-14 | 2026-09-26 |
+| 35 | [Lertaro](https://github.com/Lertaro/Lertaro) — 本地文件搜索与生产力工具（Everything/Listary 替代品，C# WPF + NT 服务，NTFS MFT 解析与实时 USN 监控） | `scoop install lertaro` | 多架构 portable zip 官方 release | 5.9.1 | 2026-09-12 | 2026-10-08 |
+| 36 | [BeeLlama](https://github.com/Anbeeld/beellama.cpp) — llama.cpp 分支，KV 缓存精度优化，更长上下文同显存更高精度（Windows CUDA 13.3） | `scoop install beellama-cpp` | portable zip 官方 release (CUDA 13.3) | 0.4.7 | 2026-09-09 | 2026-09-25 |
+| 37 | [baulk](https://github.com/baulk/baulk) — Minimal Package Manager for Windows | `scoop install baulk` | 多架构 portable zip | 6.1.0 | 2026-08-31 | 2026-09-26 |
+| 38 | [Keyviz](https://github.com/mulaRahul/keyviz) — 键盘/鼠标操作实时可视化 | `scoop install keyviz` | MSI 官方 release | 2.1.1 | 2026-07-31 | 2026-09-26 |
+| 39 | [Windows磁盘迁移工具](https://github.com/bjfwan/windows-disk-tool) — 智能扫描、批量迁移、符号链接 | `scoop install windisktool` | 单 exe 官方 release | 2.0 | 2026-07-13 | 2026-09-26 |
+| 40 | [QuickLook CAD 插件](https://github.com/emako/QuickLook.Plugin.CADImport) — 预览 CAD 文件格式 | `scoop install qlcad` | qlplugin 官方 release | 1 | 2026-07-09 | 2026-09-26 |
+| 41 | [QuickLook Office 插件](https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer) — 预览 Word/Excel/PPT 文件 | `scoop install qloffice` | qlplugin 官方 release | 6 | 2026-07-09 | 2026-09-26 |
+| 42 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.0 | 2026-07-09 | 2026-09-26 |
+| 43 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.39.0 | 2026-07-06 | 2026-10-07 |
+| 44 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.4 | 2026-07-03 | 2026-09-26 |
+| 45 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | 多架构 zip 官方 release | 5.5.0 | 2026-07-03 | 2026-09-26 |
+| 46 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.25.2733.0 | 2026-07-03 | 2026-10-03 |
+| 47 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — Claude Code 泄露源码本地运行版 | `scoop install cc-haha` | 多架构 portable exe | 0.7.0 | 2026-07-02 | 2026-10-09 |
+| 48 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.11 | 2026-07-01 | 2026-09-26 |
+| 49 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 | 2026-06-30 | 2026-09-26 |
+| 50 | [PixPin](https://pixpin.cn/) — 截图标注工具（官方直链，Inno Setup） | `scoop install pixpin` | Inno Setup 官方直链 | 3.5.5.1 | 2026-06-30 | 2026-09-15 |
+| 51 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 | 2026-06-29 | 2026-09-26 |
 
 ### 本地维护（自托管 Release）
 
