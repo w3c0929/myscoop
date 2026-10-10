@@ -1,6 +1,6 @@
 {
   "scoop_repo": "https://mirror.nju.edu.cn/git/scoop.git",
-  "last_update": "2026-10-10T13:36:46.3981456+08:00",
+  "last_update": "2026-10-10T20:09:36.0867908+08:00",
   "scoop_branch": "master",
   "aria2-enabled": true,
   "aria2-warning-enabled": false,
@@ -17,11 +17,29 @@
   ],
   "alias": {},
   "aria2-mirrors": [
-    "https://ghfast.top",
     "https://hk.gh-proxy.org",
-    "https://gitclone.com",
-    "https://wget.la",
+    "https://cdn.gh-proxy.com",
+    "https://git.yylx.win",
+    "https://gh.monlor.com",
+    "https://gh.my-website.ccwu.cc",
+    "https://tvv.tw",
+    "https://ghfast.top",
+    "https://gh.acmsz.top",
+    "https://github.ednovas.xyz",
+    "https://gh.sixyin.com",
+    "https://ghproxy.imciel.com",
+    "https://cdn.akaere.online",
+    "https://gh-proxy.org",
     "https://gh-proxy.com",
-    "https://gh-proxy.org"
+    "https://free.cn.eu.org",
+    "https://fastgit.cc",
+    "https://github.mxw.qzz.io",
+    "https://xsadwsd.kdns.fr",
+    "https://ghproxy.felicity.land",
+    "https://down.mxw.qzz.io",
+    "https://gh.07150721.xyz",
+    "https://github.tbap.top",
+    "https://gh.noki.icu",
+    "https://ghproxy.net"
   ]
 }

@@ -273,8 +273,8 @@ git config --global --add safe.directory D:/scoop/buckets/*
 > - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
 > - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
 >   - 下载 `https://github.com/*/releases/download/` 资产时，依次探测 `aria2-mirrors` 镜像列表（**数组形式，须直接编辑 config.json 设置**——`scoop config` 命令不支持数组参数），取第一个可达镜像作为下载源；**全部不可达时自动回退官方原始 URL**。
->   - 镜像地址可写完整 URL 或裸域名（自动补 `https://`），数组顺序即优先级（快的放前面）；默认：
->     `["https://hk.gh-proxy.org", "https://gh-proxy.com", "https://gh-proxy.org"]`
+>   - 镜像地址可写完整 URL 或裸域名（自动补 `https://`），数组顺序即优先级（快的放前面）。当前为 2026-10-10 实测去重排序的 24 个，前 3 名：`hk.gh-proxy.org` > `cdn.gh-proxy.com` > `git.yylx.win`（实测稳定 3.7–5.3 MB/s），慢尾留作兜底。
+>   - **只放"release 资产代理"型镜像**：拼接方式只有一种——**镜像前缀 + 完整原始 URL**（如 `https://hk.gh-proxy.org/https://github.com/…`）。git 克隆加速器（如 `gitclone.com`，写法为 `gitclone.com/github.com/owner/repo`）不代理 release 下载路径，放进列表只会 404/500，勿加。
 >   - 对 aria2（`aria2-enabled: true`）与默认下载器（未启用 aria2 或 aria2 失败回退）两条路径均生效；**Scoop 自更新后补丁会丢失**（链接也会失效），**重新覆盖或重新运行 `symlink.bat`** 即可（原版备份在仓库 `staging/scoop-backup/`）。
 
 ### symlink.bat 一键链接部署（用法）
@@ -957,7 +957,7 @@ python3 myscoop-update.py bucket/amcfy-music.json
 
 ### 非 GitHub 软件的新增（直链 / 下载页 / 模板）
 
-> **GitHub 下载镜像加速（脚本）**：`myscoop-update.py` 的实际下载路径（直链/下载页/补全/hash 实测）对 GitHub release 文件**优先走加速镜像**——依次探测列表取第一个可达镜像，全部不可达自动回退原始 URL（与 Scoop `download.ps1` 补丁同一套机制）。镜像列表来源：
+> **GitHub 下载镜像加速（脚本）**：`myscoop-update.py` 的实际下载路径（直链/下载页/补全/hash 实测）对 GitHub release 文件**优先走加速镜像**——依次探测列表取第一个可达镜像，全部不可达自动回退原始 URL（与 Scoop `download.ps1` 补丁同一套机制，拼接方式也只有一种：镜像前缀 + 完整 URL）。镜像列表来源：
 > - 环境变量 `MYSCOOP_GH_MIRRORS`（逗号分隔，可写完整 URL 或裸域名，跨机/CI 可用）：
 >   ```powershell
 >   $env:MYSCOOP_GH_MIRRORS = "https://hk.gh-proxy.org,https://gh-proxy.com"
