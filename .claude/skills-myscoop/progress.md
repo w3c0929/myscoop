@@ -197,9 +197,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* f74797e (HEAD -> main) 同步 README 第三方版本与日期列
+* 608bb88 (HEAD -> main, origin/main, origin/HEAD) 补丁双基线分发：根补丁升级 v0.6.0 基线，新增 patches/v0.5.3，symlink.bat 按版本自动分发
+* 30ed684 progress.md 更新提交历史
+* f74797e 同步 README 第三方版本与日期列
 * e22de33 自动更新第三方软件
-* 4af5f36 (origin/main) progress.md 更新提交历史
+* 4af5f36 progress.md 更新提交历史
 * 748f7d2 新增收录 CC Switch 4.0.7（多 AI 编程助手桌面配置切换器，多架构 portable zip 官方 release）：README 第三方表置顶补行并重编号（50→51），progress 计数 137→138
 * e4b02ec progress.md 更新提交历史
 * 7202d10 镜像列表去重并按实测速度重排：31 项 → 24 项
