@@ -205,7 +205,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 2aa401e (HEAD -> main, origin/main, origin/HEAD) 智能模式Scoop(3).ps1 桶名匹配修复：兼容 Scoop v0.6.0 的 scoop-install.json 改名
+* d0562bd (HEAD -> main, origin/main, origin/HEAD) Windows 资产判断修复：排除'隐身'的 macOS/Linux 资产（平台清单 + 同名 .dmg 成对）；收录 freellmapi
+* 349fb1e progress.md 更新提交历史
+* 2aa401e 智能模式Scoop(3).ps1 桶名匹配修复：兼容 Scoop v0.6.0 的 scoop-install.json 改名
 * ec09b75 progress.md 更新提交历史
 * ee372ca symlink.bat 版本分发改为数据驱动：git describe 取版本 + baseline.txt 比对，Scoop 新版本零改动
 * b180775 progress.md 更新提交历史
