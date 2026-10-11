@@ -1,16 +1,16 @@
 {
-    "version": "1.3.6",
+    "version": "1.4.0",
     "description": "zhiyi_ime - from github",
     "homepage": "https://github.com/dd1000001000/zhiyi_ime",
     "license": "GPL-3.0",
     "checkver": {
         "github": "https://github.com/dd1000001000/zhiyi_ime"
     },
-    "url": "https://github.com/dd1000001000/zhiyi_ime/releases/download/v1.3.6/zhiyi-v1.3.6-setup.exe",
+    "url": "https://github.com/dd1000001000/zhiyi_ime/releases/download/v1.4.0/zhiyi-v1.4.0-setup.exe",
     "autoupdate": {
         "url": "https://github.com/dd1000001000/zhiyi_ime/releases/download/v$version/zhiyi-v$version-setup.exe"
     },
-    "hash": "sha256:bac3c1e29deef07b89687ad13b88abd36edc984466576b51ae7e123c39a26d14",
+    "hash": "sha256:27d9889c1e707bec86641566da460cd1b6065b362ccd34a734f6939426cd12b5",
     "installer": {
         "args": [
             "/S",
