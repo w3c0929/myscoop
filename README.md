@@ -10,7 +10,7 @@
 
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
-| 1 | [SwitchHosts](https://switchhosts.app) — Hosts 文件快速切换管理工具（自建构建仓库：w3c0929/SwitchHosts） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.0.1 | 2026-10-10 | 2026-10-11 |
+| 1 | [SwitchHosts](https://switchhosts.app) — Hosts 文件快速切换管理工具（自建构建仓库：w3c0929/SwitchHosts） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.0.1 | 2026-10-10 | 2026-10-12 |
 | 2 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.1.0 | 2026-10-12 | 2026-10-12 |
 | 3 | [FreeLLM API](https://freellmapi.co) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.13.7 | 2026-10-11 | 2026-10-11 |
 | 4 | [CC Switch](https://ccswitch.io) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.9 | 2026-10-10 | 2026-10-12 |
