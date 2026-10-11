@@ -508,10 +508,42 @@ def is_windows_asset(name):
     return True
 
 
+def foreign_platform_assets(assets):
+    """识别 release 中属于 macOS/Linux 的资产名（供 Windows 候选排除）。两条规则叠加：
+    ① 权威：electron-builder 平台清单 latest-mac.yml / latest-linux.yml 里列出的文件；
+    ② 启发式：与同名 .dmg 成对的 .zip（去扩展名后相同）视为 macOS。
+    教训：freellmapi 的 -x64.zip/-arm64.zip 实为 macOS 包（名字里没有 mac 标记），
+    被当 Windows 资产选走 → --dl 探测"未发现 exe"（里面是 .app 包），真正的
+    Windows 包 -win.zip 反被通用兜底塞进 32bit 槽位。"""
+    names = [a.get("name", "") for a in assets]
+    out = set()
+    by_name = {a.get("name", ""): a for a in assets}
+    # 规则①：平台清单（只对存在的清单文件发请求，非 electron 项目零开销）
+    for y in ("latest-mac.yml", "latest-linux.yml"):
+        if y in by_name:
+            u = by_name[y].get("browser_download_url", "")
+            try:
+                txt = fetch_text(probe_mirror_url(u))
+            except Exception:
+                continue
+            out |= set(re.findall(r"(?m)^\s*-\s*url:\s*(\S+)", txt))
+            out |= set(re.findall(r"(?m)^\s*path:\s*(\S+)", txt))
+    # 规则②：与 .dmg 同名成对的 .zip（启发式，无需请求）
+    stems = {n[:-4].lower() for n in names if n.lower().endswith(".dmg")}
+    for n in names:
+        if n.lower().endswith(".zip") and n[:-4].lower() in stems:
+            out.add(n)
+    return out
+
+
 def _release_has_windows_asset(release):
     """release 是否含可下载的 Windows 资产。无资产（monorepo/changesets 子包噪音 tag）
-    或仅含非 Windows 资产时返回 False，供更新流程预检跳过/回退。"""
-    return any(is_windows_asset(a.get("name", "")) for a in (release.get("assets") or []))
+    或仅含非 Windows 资产（含实为 macOS/Linux 的资产，见 foreign_platform_assets）时返回
+    False，供更新流程预检跳过/回退。"""
+    assets = release.get("assets") or []
+    foreign = foreign_platform_assets(assets)
+    return any(is_windows_asset(a.get("name", "")) and a.get("name", "") not in foreign
+               for a in assets)
 
 
 # 预发布版本串特征（要求是独立段，避免 premium / arch 之类误判）
@@ -876,8 +908,12 @@ def add_manifest(repo_url, app_name=None, more=False):
     print(f"Tag: {tag} → version: {version}")
     print(f"Assets 数量: {len(assets)}")
 
-    # 筛选 Windows 资产并排序
-    win_assets = [(a, score_asset(a["name"])) for a in assets if is_windows_asset(a["name"])]
+    # 筛选 Windows 资产并排序（排除实为 macOS/Linux 的资产：平台清单 + 同名 .dmg 成对）
+    foreign = foreign_platform_assets(assets)
+    if foreign:
+        print(f"[排除] {len(foreign)} 个 macOS/Linux 资产: {', '.join(sorted(foreign))}")
+    win_assets = [(a, score_asset(a["name"])) for a in assets
+                  if is_windows_asset(a["name"]) and a["name"] not in foreign]
     win_assets.sort(key=lambda x: -x[1])
 
     if not win_assets:
