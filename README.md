@@ -270,7 +270,9 @@ git config --global --add safe.directory D:/scoop/buckets/*
 > - 两个 `.ps1` 链接指向仓库源文件，**`git pull` 更新仓库后立即生效，无需再手动覆盖**；`config.json` 为真实文件拷贝，**仓库改过 config.json 后需重跑一次 `symlink.bat` 才生效**（原因：Scoop 自身会重写 config.json——`scoop config` 写入、更新时写 `last_update`——会把软链接删掉重建为普通文件导致链接失效，故改用拷贝，每次运行重新同步为仓库版本）；
 > - Scoop 自更新会重建 `current` 目录导致链接失效——届时**重新运行一次 `symlink.bat` 即可**（比重新覆盖快，也是一键完成）；
 > - 脚本顺带执行原有功能：把仓库根目录所有 `*.bat` 链接到 `D:\scoop\shims` 供全局命令使用。
-> - **补丁按 Scoop 版本自动分发（双基线）**：`manifest.ps1` / `download.ps1` 补丁维护两个基线——**仓库根目录文件 = v0.6.0 基线**，**`patches\v0.5.3` = v0.5.3 基线**。`symlink.bat` 运行时自动判版本：检测 `lib\core.ps1`（不在补丁范围内、恒为官方原版）是否含 v0.6.0 新增函数 `Get-PEMachine`，含 → 链接仓库根补丁；不含 → 链接 `patches\v0.5.3`。**Scoop 大版本更新后需复核此判据**（并把根补丁更新到新基线）；低版本补丁仅维护到 v0.5.3。
+> - **补丁按 Scoop 版本自动分发（数据驱动）**：`manifest.ps1` / `download.ps1` 补丁维护多个基线——**仓库根目录文件 = 最新基线**（版本号记录在 `patches\baseline.txt`），**`patches\<版本>\` = 该版本冻结补丁**（现有 `patches\v0.5.3\`）。`symlink.bat` 运行时用 `git describe --tags --abbrev=0` 读取当前 Scoop 版本并分发：版本 == 基线 → 根补丁；`patches\<版本>\` 存在 → 该版本专用补丁；都不匹配 → 根补丁 + **明确警告**（Scoop 比补丁新，可能不适用，提示更新仓库）；git 不可用/无标签 → 根补丁 + 警告。
+>   - **Scoop 大版本更新时的维护三步（`symlink.bat` 无需改动）**：① 复制当前根两个补丁文件到 `patches\<旧基线>\`（冻结）② 用新官方文件重建根补丁 ③ 把 `patches\baseline.txt` 改为新版本号。
+>   - 低版本补丁仅维护到 v0.5.3。
 > - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
 > - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
 > - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
@@ -288,7 +290,7 @@ git config --global --add safe.directory D:/scoop/buckets/*
 1. **保持仓库最新**：`git pull` 拉取仓库（链接指向仓库源文件，拉取后自动生效）；
 2. **以管理员身份运行**：右键 `symlink.bat` → **以管理员身份运行**（`mklink` 需要管理员权限；脚本开头会自检，无权限时提示后退出）；
 3. **等待打印过程完成**，脚本分两段执行：
-   - **【1/3】Scoop 库文件软链接**：先按 Scoop 版本选择补丁来源（v0.6.0+ 用仓库根文件，旧版用 `patches\v0.5.3`，并打印所选来源），再依次处理 `manifest.ps1` / `download.ps1`——目标位置若已有旧文件先删除，再 `mklink` 建立软链接指向仓库源文件；每个文件打印 `处理文件：xxx`，成功显示 `[成功] 文件软链接生成完成`，源文件缺失显示 `跳过`，失败显示 `[失败]`；
+   - **【1/3】Scoop 库文件软链接**：先按 Scoop 版本选择补丁来源（`git describe` 取版本：版本==基线用仓库根，`patches\<版本>` 存在用专用补丁，否则根+警告，并打印所选来源），再依次处理 `manifest.ps1` / `download.ps1`——目标位置若已有旧文件先删除，再 `mklink` 建立软链接指向仓库源文件；每个文件打印 `处理文件：xxx`，成功显示 `[成功] 文件软链接生成完成`，源文件缺失显示 `跳过`，失败显示 `[失败]`；
    - **【2/3】config.json 镜像拷贝**：源（仓库 `config.json`）为权威，删除目标旧文件后 `copy /Y` 覆盖为**真实文件**（避免 Scoop 重写配置时破坏软链接），成功显示 `[成功] … 镜像拷贝完成`；
    - **【3/3】仓库 .bat → shims 链接**：把仓库根目录所有 `*.bat` 链接到 `D:\scoop\shims`（供 `cd-comfyui`、`cd-models`、`myscoop-update` 等全局命令直接调用）；
    - 结尾打印 `所有任务完成`。
@@ -486,6 +488,7 @@ myscoop/
 ├── manifest.ps1                     ← Scoop 库补丁（v0.6.0 基线）：调整仓库下载优先级顺序
 ├── download.ps1                     ← Scoop 库补丁（v0.6.0 基线）：GitHub 下载镜像加速
 ├── patches/
+│   ├── baseline.txt                 ← 根补丁基线版本号（symlink.bat 版本分发用）
 │   └── v0.5.3/                      ← 旧版 Scoop 专用补丁（v0.5.3 基线，symlink.bat 自动分发）
 │       ├── manifest.ps1
 │       └── download.ps1

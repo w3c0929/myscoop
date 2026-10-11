@@ -42,10 +42,11 @@ GitHub: https://github.com/w3c0929/myscoop
 ## Scoop 库补丁与版本分发（symlink.bat）
 
 - **三件套部署（软链接 + 拷贝混合）**：`manifest.ps1`（bucketlist 桶优先级）+ `download.ps1`（GitHub 镜像加速）以**软链接**部署到 `D:\scoop\apps\scoop\current\lib\`；`config.json`（数据）以**镜像拷贝**部署到 `~\.config\scoop\`——原因：Scoop 自身会重写 config.json（`scoop config` 写入、更新时写 `last_update`），会把软链接删掉重建为普通文件 → 链接失效；拷贝则每次运行 symlink.bat 重新同步为仓库版本（源为权威）。`symlink.bat`（需管理员）分三段：①库文件软链接 ②config.json 镜像拷贝 ③仓库 .bat → shims 链接；Scoop 自更新重建 current 后需重跑一次。
-- **双基线版本分发**（2026-10-11）：Scoop v0.6.0 大改 `manifest.ps1`——`Get-Manifest` 的桶遍历抽到新函数 `Find-AppBucket`（`$buckets` 变量消失），旧补丁直接失效；`download.ps1` 的镜像补丁 3 处插入点未变（仅需重挂到新基线）。现维护两个基线：**仓库根 = v0.6.0 基线**，**`patches\v0.5.3\` = v0.5.3 基线**；`symlink.bat` 运行时自动判版本分发。
-- **判据**：`findstr /c:"Get-PEMachine" "...\lib\core.ps1"`——core.ps1 不在补丁范围内（恒为官方原版），`Get-PEMachine` 为 v0.6.0 新增（v0.5.3 无）。含 → 根补丁；不含 → `patches\v0.5.3`。**Scoop 大版本更新后需复核此判据**并更新根补丁基线。
+- **多基线版本分发（数据驱动）**：Scoop v0.6.0 大改 `manifest.ps1`——`Get-Manifest` 的桶遍历抽到新函数 `Find-AppBucket`（`$buckets` 变量消失），旧补丁直接失效；`download.ps1` 的镜像补丁 3 处插入点未变（仅需重挂到新基线）。现维护：**仓库根 = 最新基线**（版本号记录在 `patches\baseline.txt`），**`patches\<版本>\` = 该版本冻结补丁**（现有 `patches\v0.5.3`）。
+- **分发逻辑**：`git describe --tags --abbrev=0` 取 Scoop 版本 → 版本==基线 → 根补丁；`patches\<版本>\` 存在 → 专用补丁；否则 → 根补丁 + 警告（Scoop 比补丁新）；git 不可用/无标签 → 根 + 警告。实测四分支：v0.6.0→根、v0.5.3→专用、v0.9.9→根+警告、无 git→根+警告（沙盒脚本 + 假 tag 仓库）。**已废弃特征嗅探判据**（`Get-PEMachine` / 更早的 `buckets.ps1`）——判据函数每版本都要重新研究，且 `buckets.ps1` 在 v0.5.3 也存在曾致误判；版本号匹配无需研究。
+- **Scoop 大版本更新维护三步（symlink.bat 零改动）**：① 根补丁两个文件复制到 `patches\<旧基线>\` 冻结 ② 用新官方文件重建根补丁 ③ 改 `patches\baseline.txt` 为新版本号。
 - **编码**：补丁 ps1 = UTF-8 **带 BOM** + CRLF（PS 5.1 无 BOM 按 GBK 读，中文注释乱码）；`symlink.bat` = UTF-8 **无 BOM** + CRLF + 开头 `chcp 65001`（bat 加 BOM 会使首行 `@echo off` 失效）。
-- **验证方法**：根分支实跑链接到仓库根文件；低版本分支用沙盒脚本（判据/目标路径替换为临时目录，不触碰真实 Scoop）实测链接到 `patches\v0.5.3`；功能复验 `Find-AppBucket cc-switch` → 选中 myscoop/4.0.8（bucketlist 生效，无补丁时首个是 extras）、`Get-GitHubMirrorUrl` → 返回镜像 URL。
+- **验证方法**：功能复验 `Find-AppBucket cc-switch` → 选中 myscoop/4.0.8（bucketlist 生效，无补丁时首个是 extras）、`Get-GitHubMirrorUrl` → 返回镜像 URL；分发分支用沙盒脚本（git 路径指向假 tag 仓库、目标路径替换为临时目录，不触碰真实 Scoop）。
 
 ## 核心规则
 

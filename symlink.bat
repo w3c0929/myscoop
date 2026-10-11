@@ -20,13 +20,22 @@ echo ==============================================
 echo 【1/3】Scoop 库文件软链接（manifest/download）
 echo ==============================================
 
-set "PATCH_SRC=D:\scoop\buckets\myscoop"
-findstr /c:"Get-PEMachine" "D:\scoop\apps\scoop\current\lib\core.ps1" >nul 2>&1
-if errorlevel 1 (
-    echo 低版本 Scoop，使用 patches\v0.5.3 补丁
-    set "PATCH_SRC=D:\scoop\buckets\myscoop\patches\v0.5.3"
+set "REPO=D:\scoop\buckets\myscoop"
+set "SCOOP_VER="
+for /f "delims=" %%v in ('git -C "D:\scoop\apps\scoop\current" describe --tags --abbrev^=0 2^>nul') do set "SCOOP_VER=%%v"
+set "BASELINE=unknown"
+if exist "%REPO%\patches\baseline.txt" for /f "usebackq delims=" %%b in ("%REPO%\patches\baseline.txt") do set "BASELINE=%%b"
+
+set "PATCH_SRC=%REPO%"
+if not defined SCOOP_VER (
+    echo 警告：未检测到 Scoop 版本（git 不可用或无标签），按最新基线使用根补丁
+) else if /i "!SCOOP_VER!"=="!BASELINE!" (
+    echo 使用根补丁（基线 !BASELINE!）
+) else if exist "%REPO%\patches\!SCOOP_VER!\manifest.ps1" (
+    set "PATCH_SRC=%REPO%\patches\!SCOOP_VER!"
+    echo 使用 !SCOOP_VER! 专用补丁
 ) else (
-    echo 使用仓库根补丁（v0.6.0 基线）
+    echo 警告：Scoop !SCOOP_VER! 无专用补丁（根补丁基线 !BASELINE!），可能不适用，建议更新仓库后重跑
 )
 
 for %%i in (
