@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-10）
 
-- **收录软件总数**: 140 款
+- **收录软件总数**: 141 款
 - **本地维护（自托管 Release）**: 86 款
-- **第三方官方（引用原项目 Release）**: 54 款
+- **第三方官方（引用原项目 Release）**: 55 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -29,6 +29,7 @@ GitHub: https://github.com/w3c0929/myscoop
 - **配对资产自动更新**（`--more` 生成的数组型 url/hash，如 prllama）：`_update_pair_block` 逐项 `$version` 替换 → `match_asset` → 回写同下标 url/hash；cudart 项（名不含版本）强制精确匹配，防跨 CUDA 版本误配。数组走独立分支，标量清单行为不变（回归测试 `tools/test_pair_update.py`）
 - **收录预检（`--add`，与更新共用 `pick_effective_release`）**：只取"非 draft/untagged + 含 Windows 资产"的**最新** release——**只按资产判定，不看 prerelease/rc**；最新版若是零资产空 release 会自动往下探到最近带 Windows 资产的（如 kvllama `v0.17.0` 空 → 取 `v0.16.0-rc3-prism.3`）；全无则打印候选表后跳过、不写文件。archived/fork 默认警告（`--allow-archived` 静音）；直链/`--from`/`--fill-bin` 只提示不阻断（回归测试 `tools/test_effective_release.py`）
 - **便携资产不做 installer 模式**（`_is_portable_asset`）：`--dl` 的 NSIS 分支里，资产名明示 portable（`-portable`/`_portable` 段）时，即便描述命中"输入法/驱动"等注册型关键词也不套 `installer` 模式，改走 `NSIS_PRE_INSTALL` 7z 解包——否则 Scoop 把便携 exe 当安装器执行（`/S /D=$dir` 不识别）→ 程序被直接启动、`$dir` 无 bin 目标 → 建 shim 失败（修 `xtranslate`；实测解包产出 `Xtranslate.exe` 可达；回归测试 `tools/test_guards.py`）
+- **installer 模式卸载脚本三级回退 + 自管理式安装器支持**（2026-10-12，`_uninstall_script`）：`post_uninstall` 不再只找 `$dir\unins*.exe`——① `$dir\unins*.exe` ② 注册表 `Uninstall` 键搜索（`InstallLocation`/`InstallBaseLocation`/`DisplayIcon` 含应用名 → 定位 `unins*.exe` RunAs 运行；Inno 的 `unins000.exe` 与 NSIS 的 `uninstall.exe` 同被 `unins*` 覆盖）③ 找不到则打印提示（防静默空转）。**自管理式安装器**（忽略 `/D`、固定装 `C:\Program Files\<名称>\<版本>.<哈希>\`，如知意输入法 zhiyiime）在探针处选 **`0`**（不建 bin/shortcuts；`--select 0` 免交互；zip 路径同样支持）——三层防占位回填：清模板占位 + `merge_existing_manifest(drop=…)` 阻止旧占位合并 + `_bin_skipped` 标记阻止 `--dl` finally 恢复。`installer-helper` 加入助手 exe 排除（zhiyi 探针候选 3→2）。教训：zhiyi 安装器忽略 `/D`、卸载器在 Program Files 版本目录，且 `Uninstall\ZhiyiIME` 键**仅成功安装后才写入**（早期失败安装时不存在，曾误判"网友卸载脚本不成立"）
 - **资产筛选加固**：`is_windows_asset` 排除源码包（`-source`/`-src` 独立段）、脚本（`.ps1/.sh/.bat/.cmd/.py` 等）、校验/元数据；**校验和文件的其他写法**（`*.SHA256SUMS`/`*.sha512sums`/`*.md5sums`/`*.checksums`/`*.digest`/`*.sums`，正则大小写不敏感）也排除——原后缀匹配只覆盖 `.sum`/`.sha256`，`…x64.SHA256SUMS` 会漏且带 x64 时得 +2 分，可能被当成主资产（修 `vtracer`；回归测试 `tools/test_guards.py`）；generic 兜底仅限可安装包（防源码包被兜底进缺失架构）；`description` 为 null 时回退；`--add` 检测同一 checkver 来源重复（防重复收录/上游改名）；`arch_url_hash` 支持数组型 url（配对清单取主资产）
 - **"隐身"的 macOS/Linux 资产排除（`foreign_platform_assets`，两条规则叠加）**：① 权威——release 含 `latest-mac.yml` / `latest-linux.yml`（electron-builder 平台清单）时解析其列出的文件名排除；② 启发式——与同名 `.dmg` 成对的 `.zip`（去扩展名后相同）视为 macOS。接入两个判断点：`--add` 的 Windows 候选筛选 + `_release_has_windows_asset`（资产守卫，防"只发 mac 包"的 release 被误判为有 Windows 资产）。教训：`freellmapi` 的 `-x64.zip`/`-arm64.zip` 实为 macOS 包（名字无 mac 标记）被当 Windows 资产 → `--dl` 探测"未发现 exe"、真 Windows 包 `-win.zip` 被兜底塞进 32bit。影响实测：47 个 GitHub-release 型清单全扫，仅 freellmapi 受影响、0 误伤
 - **一致性校验 `--check`**：校验 README 两表行数之和 == `bucket/` 清单数、逐条一一对应、`progress.md` 计数一致，**外加表格结构**（数据行须紧随分隔行之后、序号须 1..N 连续）；不一致非零退出（已挂 CI）。结构校验补旧盲点：只数行数时"新行插到表头之前"与"序号 | 0 |"都会被漏过（`_parse_readme_table`，回归测试 `tools/test_check_struct.py`）。`--all` 逐文件异常打印 traceback + 汇总并以非零退出码报告（不再静默）；`fetch_json` 支持 `GH_TOKEN`/`GITHUB_TOKEN` 并对 429/5xx 退避重试（回归测试 `tools/test_guards.py`）

@@ -345,9 +345,10 @@ KEEP_FIELDS = ("bin", "shortcuts", "extract_dir", "notes", "pre_install", "post_
                "installer", "post_uninstall", "pre_uninstall", "env_add_path")
 
 
-def merge_existing_manifest(out_path, template):
+def merge_existing_manifest(out_path, template, drop=()):
     """--add 目标已存在时合并保留人工字段（bin/shortcuts/extract_dir/notes 等），
-    由新模板覆盖 version/url/hash/checkver/autoupdate。返回保留字段列表。"""
+    由新模板覆盖 version/url/hash/checkver/autoupdate。返回保留字段列表。
+    drop：显式丢弃的字段——如 `--select 0`（不建 bin/shortcuts）时防止旧占位 bin 被合并带回。"""
     out_path = Path(out_path)
     if not out_path.exists():
         return []
@@ -357,6 +358,8 @@ def merge_existing_manifest(out_path, template):
         return []
     kept = []
     for k in KEEP_FIELDS:
+        if k in drop:
+            continue
         if k in old and k not in template:
             template[k] = old[k]
             kept.append(k)
@@ -1166,7 +1169,9 @@ def add_manifest(repo_url, app_name=None, more=False):
             try:
                 finalize_direct_manifest(manifest, BUCKET_DIR, app_name)
             finally:
-                if not manifest.get("bin") and saved_bin:
+                if manifest.pop("_bin_skipped", None):
+                    print("[跳过] 0：不建立 bin/shortcuts（不恢复原占位 bin）")
+                elif not manifest.get("bin") and saved_bin:
                     manifest["bin"] = saved_bin
                     manifest["shortcuts"] = saved_sc
                     print(f"[恢复] 解包探测未产出主程序，保留原 bin: {saved_bin}")
@@ -1821,7 +1826,7 @@ UNZIP_PRE_INSTALL = (
 
 # 助手/工具类 exe：不作为主程序候选（7z 自解包、卸载器、更新器、运行库等）
 _HELPER_EXE_RE = re.compile(r"(?i)(uninstall|unins\d|^7z|7za|7z\.|updater|update-helper|"
-                            r"vc_?redist|vcredist|crashpad|crashreport|-setup\.exe$)")
+                            r"vc_?redist|vcredist|crashpad|crashreport|-setup\.exe$|installer-helper)")
 
 
 def _is_helper_exe(name):
@@ -1876,24 +1881,31 @@ def probe_nsis_exes(tmp, app_name):
 
 def pick_or_interactive(fexes, app_name, indent="        "):
     """探测出多个 exe 时选择主程序：--select 编号|关键词 优先，否则交互输入（回车默认第 1 个）。
-    列表去重保序，交互前逐行打印编号（102 个候选时无编号无法对上号）。返回 picked 名称或 None；
-    非交互环境（EOFError）自动取第 1 个。"""
+    **输入 0 = 不建立 bin/shortcuts**（自管理式安装器：安装器自建快捷方式/自注册，无需 shim）。
+    列表去重保序，交互前逐行打印编号（102 个候选时无编号无法对上号）。
+    返回 (picked 名称或 None, 是否"跳过 bin"标记)；非交互环境（EOFError）自动取第 1 个。"""
     uniq = list(dict.fromkeys(fexes))  # 去重保序（NSIS 解包常现同名牌多份，如 git.exe×2）
     sel = arg_value("--select")
     if sel:
+        if sel.strip() == "0":
+            print(f"{indent}[跳过] --select 0：不建立 bin/shortcuts")
+            return None, True
         if sel.isdigit() and 1 <= int(sel) <= len(uniq):
-            return uniq[int(sel) - 1]
+            return uniq[int(sel) - 1], False
         picked = next((e for e in uniq if sel.lower() in e.lower()), None)
         if not picked:
             print(f"{indent}[错误] 未找到匹配 '{sel}'，未写入（可选：{' / '.join(uniq)}）")
-        return picked
+        return picked, False
     try:
         print(f"{indent}可用主程序候选（共 {len(uniq)} 个）:")
         for i, e in enumerate(uniq, 1):
             print(f"{indent}  {i:2d}: {e}")
-        ans = input(f"{indent}请选择主程序编号或关键词（1-{len(uniq)}，回车默认 1）: ").strip()
+        ans = input(f"{indent}请选择主程序编号或关键词（0=不建 bin/shortcuts，1-{len(uniq)}，回车默认 1）: ").strip()
     except EOFError:
         ans = ""
+    if ans == "0":
+        print(f"{indent}[跳过] 0：不建立 bin/shortcuts（安装器自管快捷方式/注册，或人工后补）")
+        return None, True
     idx = 0
     if ans:
         if ans.isdigit() and 1 <= int(ans) <= len(uniq):
@@ -1901,7 +1913,7 @@ def pick_or_interactive(fexes, app_name, indent="        "):
         else:
             hit = next((i for i, e in enumerate(uniq) if ans.lower() in e.lower()), None)
             idx = hit if hit is not None else 0
-    return uniq[idx]
+    return uniq[idx], False
 
 
 # ---------- 注册型软件（输入法/驱动/右键菜单/Shell 扩展）识别与 installer 模式 ----------
@@ -1960,21 +1972,43 @@ def _merge_notes(existing, note):
     return items
 
 
-def installer_mode_fields(is_inno, template=None):
-    """生成 installer 模式字段：真跑安装器（注册脚本随安装执行）+ 卸载器清理注册 + 激活提示。
-    Inno: /VERYSILENT /NORESTART /DIR=$dir；NSIS: /S /D=$dir。"""
-    if is_inno:
-        fields = {
-            "installer": {"args": ["/VERYSILENT", "/NORESTART", "/DIR=$dir"]},
-            "post_uninstall": [
-                "Start-Process \"$dir\\unins000.exe\" -Wait -ArgumentList '/VERYSILENT','/NORESTART'"],
-        }
+def _uninstall_script(app_name=None):
+    """卸载脚本（installer 模式）三级回退——
+    ① `$dir\\unins*.exe`（尊重 /D 的安装器，卸载器在 $dir）
+    ② 注册表 Uninstall 键搜索（InstallLocation/InstallBaseLocation/DisplayIcon 含应用名）——
+       自管理式安装器（忽略 /D、固定装 Program Files）用这条
+    ③ 均未找到 → 打印提示（不再静默空转）。
+    教训：zhiyi 安装器忽略 /D、卸载器在 C:\\Program Files\\ZhiyiIME\\<版本>.<哈希>\\uninstall.exe，
+    旧逻辑只找 $dir\\unins*.exe → 卸载空转；实测其注册表键 InstallBaseLocation 命中应用名。"""
+    lines = [
+        "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
+        "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
+    ]
+    if app_name:
+        pat = str(app_name).replace("'", "''")
+        lines += [
+            "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
+            "  $k = Get-ChildItem $roots -ErrorAction SilentlyContinue | Get-ItemProperty -ErrorAction SilentlyContinue |",
+            f"       Where-Object {{ ($_.InstallLocation -like '*{pat}*') -or ($_.InstallBaseLocation -like '*{pat}*') -or ($_.DisplayIcon -like '*{pat}*') }} | Select-Object -First 1",
+            "  $exe = if ($k -and $k.InstallLocation) { Get-ChildItem $k.InstallLocation -Filter 'unins*.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName } }",
+            "  if ($exe) { Start-Process $exe -Wait -ArgumentList '/S' -Verb RunAs }",
+            "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理（Program Files / 注册表）' }",
+        ]
     else:
-        fields = {
-            "installer": {"args": ["/S", "/D=$dir"]},
-            "post_uninstall": [
-                "$u = Get-ChildItem \"$dir\\unins*.exe\" | Select-Object -First 1; if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S' }"],
-        }
+        lines += ["  Write-Host '[卸载] 未在 $dir 找到卸载器（unins*.exe）'"]
+    lines += ["}"]
+    return lines
+
+
+def installer_mode_fields(is_inno, template=None, app_name=None):
+    """生成 installer 模式字段：真跑安装器（注册脚本随安装执行）+ 卸载器清理注册 + 激活提示。
+    Inno: /VERYSILENT /NORESTART /DIR=$dir；NSIS: /S /D=$dir。
+    卸载脚本三级回退见 `_uninstall_script`（app_name 用于注册表搜索，自管理式安装器必需）。"""
+    fields = {
+        "installer": ({"args": ["/VERYSILENT", "/NORESTART", "/DIR=$dir"]} if is_inno
+                      else {"args": ["/S", "/D=$dir"]}),
+        "post_uninstall": _uninstall_script(app_name),
+    }
     if template is not None:
         fields["notes"] = _merge_notes(template.get("notes"), _note_for_template(template))
     return fields
@@ -1996,7 +2030,7 @@ def migrate_installer_mode(manifest_path, dry_run=False):
         return True
     m.pop("innosetup", None)
     m.pop("pre_install", None)
-    m.update(installer_mode_fields(is_inno, template=m))
+    m.update(installer_mode_fields(is_inno, template=m, app_name=p.stem))
     p.write_text(json.dumps(m, indent=4, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"  [迁移] {p.name}: {kind} → installer 模式（真安装自动注册）")
     return True
@@ -2074,9 +2108,10 @@ def locate_exe_subpath(names, exe_name):
     return "/".join(best) if best else None
 
 
-def finalize_direct_manifest(template, out_dir, app_name):
+def finalize_direct_manifest(template, out_dir, app_name, drop=()):
     """非 GitHub 直链模板补全：下载算 hash + Inno Setup 检测 + checkver/autoupdate 校验。
-    多架构清单以 64bit 主架构 url 为准做探测与模板校验（不写顶层 hash/url）。"""
+    多架构清单以 64bit 主架构 url 为准做探测与模板校验（不写顶层 hash/url）。
+    drop：透传给 merge_existing_manifest 的丢弃字段（zip 路径 `--select 0` 跳过 bin 时用）。"""
     url, _tmpl_digest = arch_url_hash(template)
     if not url:
         print("[错误] 模板缺少 url（多架构清单需含 64bit 分支）")
@@ -2086,6 +2121,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
     out_dir.mkdir(parents=True, exist_ok=True)
     tmp = out_dir / f".{app_name}_dl.tmp"
     keep_cached = False
+    skip_bin = False  # exe 探测选 0（不建 bin/shortcuts）时置位：阻止占位 bin 被合并/恢复带回
     existing_hash = template.get("hash")
     force_dl = "--force-download" in sys.argv[1:]
     downloaded = not (existing_hash and not force_dl)
@@ -2197,7 +2233,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
         if inno:
             print("[InnoSetup] 检测到 Inno Setup 安装器特征")
             if needs_registration(template):
-                template.update(installer_mode_fields(is_inno=True, template=template))
+                template.update(installer_mode_fields(is_inno=True, template=template, app_name=app_name))
                 print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
             elif template.get("innosetup") is not True:
                 template["innosetup"] = True
@@ -2212,7 +2248,9 @@ def finalize_direct_manifest(template, out_dir, app_name):
                     print(f"        唯一主程序 {fexes[0]}，已自动写入 bin/shortcuts")
                 elif fexes:
                     print(f"        发现多个 exe（共 {len(fexes)} 个，含依赖工具）：")
-                    picked = pick_or_interactive(fexes, app_name)
+                    picked, skipped = pick_or_interactive(fexes, app_name)
+                    if skipped:
+                        skip_bin = True
                     if picked:
                         template["bin"] = picked
                         template["shortcuts"] = [[picked, app_name]]
@@ -2229,7 +2267,9 @@ def finalize_direct_manifest(template, out_dir, app_name):
                     picked = fexes[0]
                 elif fexes:
                     print(f"        发现多个 exe（共 {len(fexes)} 个，含依赖工具）：")
-                    picked = pick_or_interactive(fexes, app_name)
+                    picked, skipped = pick_or_interactive(fexes, app_name)
+                    if skipped:
+                        skip_bin = True
                 else:
                     picked = None
                     print("        未发现 exe，请人工补充 bin")
@@ -2240,7 +2280,7 @@ def finalize_direct_manifest(template, out_dir, app_name):
                 fname = url.split("/")[-1].split("#")[0].split("?")[0]
                 portable = _is_portable_asset(fname)
                 if needs_registration(template) and not portable:
-                    template.update(installer_mode_fields(is_inno=False, template=template))
+                    template.update(installer_mode_fields(is_inno=False, template=template, app_name=app_name))
                     print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
                 elif "pre_install" not in template:
                     if needs_registration(template) and portable:
@@ -2304,7 +2344,12 @@ def finalize_direct_manifest(template, out_dir, app_name):
             print("[autoupdate] URL 中未找到版本号，无法生成模板（可手动补充）")
 
     out_path = out_dir / f"{app_name}.json"
-    kept = merge_existing_manifest(out_path, template)
+    if skip_bin:
+        # 0 = 不建 bin/shortcuts：清掉模板内可能存在的占位，并禁止 merge 从旧清单带回
+        template.pop("bin", None)
+        template.pop("shortcuts", None)
+        drop = tuple(set(drop) | {"bin", "shortcuts"})
+    kept = merge_existing_manifest(out_path, template, drop=drop)
     if kept:
         print(f"[提示] 目标 {out_path.name} 已存在，已合并保留: {', '.join(kept)}")
     # 占位提示清理：bin/shortcuts 已由探测补全时，移除"请手动添加"占位 notes（防 merge 从旧文件带回）
@@ -2313,6 +2358,8 @@ def finalize_direct_manifest(template, out_dir, app_name):
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(template, f, indent=4, ensure_ascii=False)
         f.write("\n")
+    if skip_bin:
+        template["_bin_skipped"] = True  # 仅内存标记（文件已写盘）：供 --dl 的 finally 不恢复占位 bin
     print(f"\n[成功] 已写入: {out_path}")
     return out_path
 
@@ -2409,8 +2456,12 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
         print(f"    {i}: {e}")
 
     choice = None
+    skip_bin = False
     if select:
-        if select.isdigit():
+        if select.strip() == "0":
+            skip_bin = True
+            print("[跳过] --select 0：不建立 bin/shortcuts")
+        elif select.isdigit():
             idx = int(select) - 1
             if 0 <= idx < len(exes):
                 choice = exes[idx]
@@ -2423,8 +2474,11 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
                 print(f"[错误] 未找到包含 '{select}' 的 exe")
     else:
         try:
-            ans = input(f"请选择主程序编号（1-{len(exes)}，回车默认 1）: ").strip()
-            if ans:
+            ans = input(f"请选择主程序编号（0=不建 bin/shortcuts，1-{len(exes)}，回车默认 1）: ").strip()
+            if ans == "0":
+                skip_bin = True
+                print("[跳过] 0：不建立 bin/shortcuts")
+            elif ans:
                 if ans.isdigit() and 1 <= int(ans) <= len(exes):
                     choice = exes[int(ans) - 1]
                 else:
@@ -2433,6 +2487,13 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
                 choice = exes[0]
         except EOFError:
             choice = exes[0]
+    if skip_bin:
+        # 0 = 不建 bin/shortcuts：清占位 + 跳过 extract_dir 自动推断，直接 finalize（压缩包保留缓存）
+        template.pop("bin", None)
+        template.pop("shortcuts", None)
+        if not template.get("hash") and not multi_arch:
+            template["hash"] = "sha256:" + digest
+        return finalize_direct_manifest(template, out_dir, app_name, drop=("bin", "shortcuts"))
     if not choice:
         tmp.unlink(missing_ok=True)
         return None
@@ -2558,8 +2619,9 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
     for i, e in enumerate(exes, 1):
         print(f"    {i}: {e}")
 
-    # 主程序选择：--exe-name > --select > 交互（回车=1）
+    # 主程序选择：--exe-name > --select > 交互（回车=1；0=不建 bin/shortcuts）
     choice = arg_value("--exe-name")
+    skip_bin = False
     if choice:
         full = next((e for e in exes if e.lower() == choice.lower()
                      or e.lower().endswith("/" + choice.lower())), None)
@@ -2569,7 +2631,10 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
         elif not full:
             print(f"[提示] --exe-name {choice} 未在 zip 中找到精确匹配（仍按指定写入）")
     elif select:
-        if select.isdigit():
+        if select.strip() == "0":
+            skip_bin = True
+            print("[跳过] --select 0：不建立 bin/shortcuts")
+        elif select.isdigit():
             idx = int(select) - 1
             if 0 <= idx < len(exes):
                 choice = exes[idx]
@@ -2584,8 +2649,11 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
                 return None
     else:
         try:
-            ans = input(f"请选择主程序编号（1-{len(exes)}，回车默认 1）: ").strip()
-            if ans:
+            ans = input(f"请选择主程序编号（0=不建 bin/shortcuts，1-{len(exes)}，回车默认 1）: ").strip()
+            if ans == "0":
+                skip_bin = True
+                print("[跳过] 0：不建立 bin/shortcuts")
+            elif ans:
                 if ans.isdigit() and 1 <= int(ans) <= len(exes):
                     choice = exes[int(ans) - 1]
                 else:
@@ -2594,6 +2662,11 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
                 choice = exes[0]
         except EOFError:
             choice = exes[0]
+    if skip_bin:
+        # 0 = 不建 bin/shortcuts：清占位后直接 finalize（hash 已写；drop 防旧清单占位带回）
+        template.pop("bin", None)
+        template.pop("shortcuts", None)
+        return finalize_direct_manifest(template, out_dir, app_name, drop=("bin", "shortcuts"))
     if not choice:
         return None
     print(f"[选择] {choice}")

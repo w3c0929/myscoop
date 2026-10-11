@@ -1,0 +1,34 @@
+{
+    "version": "1.3.6",
+    "description": "zhiyi_ime - from github",
+    "homepage": "https://github.com/dd1000001000/zhiyi_ime",
+    "license": "GPL-3.0",
+    "checkver": {
+        "github": "https://github.com/dd1000001000/zhiyi_ime"
+    },
+    "url": "https://github.com/dd1000001000/zhiyi_ime/releases/download/v1.3.6/zhiyi-v1.3.6-setup.exe",
+    "autoupdate": {
+        "url": "https://github.com/dd1000001000/zhiyi_ime/releases/download/v$version/zhiyi-v$version-setup.exe"
+    },
+    "hash": "sha256:bac3c1e29deef07b89687ad13b88abd36edc984466576b51ae7e123c39a26d14",
+    "installer": {
+        "args": [
+            "/S",
+            "/D=$dir"
+        ]
+    },
+    "post_uninstall": [
+        "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
+        "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
+        "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
+        "  $k = Get-ChildItem $roots -ErrorAction SilentlyContinue | Get-ItemProperty -ErrorAction SilentlyContinue |",
+        "       Where-Object { ($_.InstallLocation -like '*zhiyiime*') -or ($_.InstallBaseLocation -like '*zhiyiime*') -or ($_.DisplayIcon -like '*zhiyiime*') } | Select-Object -First 1",
+        "  $exe = if ($k -and $k.InstallLocation) { Get-ChildItem $k.InstallLocation -Filter 'unins*.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName } }",
+        "  if ($exe) { Start-Process $exe -Wait -ArgumentList '/S' -Verb RunAs }",
+        "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理（Program Files / 注册表）' }",
+        "}"
+    ],
+    "notes": [
+        "系统注册已完成；若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe）或重新启动资源管理器，仍无效再注销或重启。"
+    ]
+}
