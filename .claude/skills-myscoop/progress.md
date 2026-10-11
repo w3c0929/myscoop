@@ -204,7 +204,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* ee372ca (HEAD -> main, origin/main, origin/HEAD) symlink.bat 版本分发改为数据驱动：git describe 取版本 + baseline.txt 比对，Scoop 新版本零改动
+* 2aa401e (HEAD -> main, origin/main, origin/HEAD) 智能模式Scoop(3).ps1 桶名匹配修复：兼容 Scoop v0.6.0 的 scoop-install.json 改名
+* ec09b75 progress.md 更新提交历史
+* ee372ca symlink.bat 版本分发改为数据驱动：git describe 取版本 + baseline.txt 比对，Scoop 新版本零改动
 * b180775 progress.md 更新提交历史
 * 9d796a9 symlink.bat 精简注释：移除版本分发说明（README 已有完整说明）
 * 8f0ff71 progress.md 更新提交历史
