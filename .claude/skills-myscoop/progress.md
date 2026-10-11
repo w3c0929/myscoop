@@ -13,8 +13,8 @@ GitHub: https://github.com/w3c0929/myscoop
 ## 当前状态（截至 2026-10-10）
 
 - **收录软件总数**: 140 款
-- **本地维护（自托管 Release）**: 87 款
-- **第三方官方（引用原项目 Release）**: 53 款
+- **本地维护（自托管 Release）**: 86 款
+- **第三方官方（引用原项目 Release）**: 54 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -76,7 +76,8 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ### 模式 2：单 exe / zip 便携（自托管）
 - 本地文件上传到 GitHub Release
-- 示例：windowsclear, tinytask, 360bwtest, btsou（更新 26.08.26.01）, hibituninstaller, gzh-formatter（单 exe 便携）, bcompare（汉化便携 zip）, easytshark（便携 zip）, switchhosts（便携 zip）
+- 示例：windowsclear, tinytask, 360bwtest, btsou（更新 26.08.26.01）, hibituninstaller, gzh-formatter（单 exe 便携）, bcompare（汉化便携 zip）, easytshark（便携 zip）
+- **模式 2b：自建独立构建仓库**（2026-10-11 起）：个别应用不再挂在 myscoop 仓库 release，而是上传到**独立构建仓库**（如 `switchhosts` → `w3c0929/SwitchHosts`，自建 zip 便携 + 完整 checkver/autoupdate）——清单按**第三方官方**管理（README 第三方表），myscoop 侧的自托管资产/release 一并移除
 
 ### 模式 5：安装器解包/静默安装 → 自托管
 - NSIS: `7z l file.exe | grep "Type = 7z"` → 7z x 直接提取
