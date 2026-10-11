@@ -66,6 +66,7 @@ GitHub: https://github.com/w3c0929/myscoop
 7. **改动文件必须全部提交推送**：所有内容改动过的需提交文件（含 README.md、progress.md、SKILL.md 及仓库内其他跟踪文件）一律提交推送，不得遗留未提交改动；即使改动与本任务无关（如历史遗留改动）也一并提交。未跟踪文件（发布资产、临时文件）不在此列。
 8. **README 软件表必须与 bucket/ 全量对齐**：每次新增/更新 manifest 后，提交前必须核对 README 两张表（第三方官方 + 本地维护）的行数之和等于 `bucket/` 清单总数，**缺漏必须补上**（含记录在 top 且重新编号）；总量计数（收录总数/第三方/本地）同步修正，不允许任何已入库 manifest 在 README 表中缺席。
 9. **自动更新资产守卫**：`myscoop-update.py` 更新单清单时，latest release 无可下载 Windows 资产（如 monorepo 子包噪音 tag，assets 为空）→ 自动回退 releases 列表找带资产的 release，仍无则跳过；架构分支所有架构都匹配失败时跳过不写入（防删架构块 + 写垃圾 version 改坏清单）。详见 SKILL 规则 19。
+10. **README 第三方表跳转链接必须指向"引用项目地址"**：每行软件名链接 = 清单实际引用的项目仓库（`checkver.github` → `https://github.com/<owner>/<repo>`），不用官网/产品页/文档站；无 GitHub 仓库的官方直链型（dsh/winsdk/pixpin）保持其官网/项目页。详见 SKILL 规则 22。
 
 ## 标准处理流程
 
