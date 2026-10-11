@@ -207,7 +207,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* e4e9a1f (HEAD -> main, origin/main, origin/HEAD) README 第三方表跳转链接修正：14 行改为清单引用的项目地址（GitHub 仓库）
+* ba20693 (HEAD -> main, origin/main, origin/HEAD) 铁律新增第 22 条：README 第三方表跳转链接必须指向'引用项目地址'（清单 checkver.github 仓库）
+* 5c594d9 progress.md 更新提交历史
+* e4e9a1f README 第三方表跳转链接修正：14 行改为清单引用的项目地址（GitHub 仓库）
 * 0776562 progress.md 更新提交历史
 * 84ca7ef 同步 README 第三方版本与日期列
 * 667b4ee progress.md 更新提交历史
