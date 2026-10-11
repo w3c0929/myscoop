@@ -208,7 +208,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 7bf4fd1 (HEAD -> main, origin/main, origin/HEAD) 铁律清理：修订 8 处与现状不符的条目（规则 1/6/7/13/14/20/21）
+* fb7e96a (HEAD -> main, origin/main, origin/HEAD) installer 模式适配：卸载脚本三级回退 + 探针 0 跳过 bin（自管理式安装器）；收录知意输入法 zhiyiime
+* ce0aaa6 progress.md 更新提交历史
+* 7bf4fd1 铁律清理：修订 8 处与现状不符的条目（规则 1/6/7/13/14/20/21）
 * 332e86b progress.md 更新提交历史
 * ba20693 铁律新增第 22 条：README 第三方表跳转链接必须指向'引用项目地址'（清单 checkver.github 仓库）
 * 5c594d9 progress.md 更新提交历史
