@@ -266,8 +266,8 @@ git config --global --add safe.directory D:/scoop/buckets/*
 
 > **部署方式一（覆盖）**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `download.ps1` 覆盖到 Scoop 的 `lib\download.ps1`，将 `config.json` 覆盖到上述 `.config\scoop\` 目录即可。
 >
-> **部署方式二（链接，推荐）**：运行仓库根目录的 `symlink.bat`（**需管理员权限**），脚本会自动把上述 3 个文件以 **mklink 软链接**方式部署到目标位置（参考 `E:\09.同步\目录链接.bat` 的写法），目标位置原有的旧文件会被删除后重建链接：
-> - 链接指向仓库源文件，**`git pull` 更新仓库后立即生效，无需再手动覆盖**；
+> **部署方式二（脚本部署，推荐）**：运行仓库根目录的 `symlink.bat`（**需管理员权限**），脚本分三段执行——`manifest.ps1` / `download.ps1` 以 **mklink 软链接**部署（参考 `E:\09.同步\目录链接.bat` 的写法），`config.json` 以**镜像拷贝**部署（真实文件，源为权威）；目标位置原有的旧文件会被删除后重建：
+> - 两个 `.ps1` 链接指向仓库源文件，**`git pull` 更新仓库后立即生效，无需再手动覆盖**；`config.json` 为真实文件拷贝，**仓库改过 config.json 后需重跑一次 `symlink.bat` 才生效**（原因：Scoop 自身会重写 config.json——`scoop config` 写入、更新时写 `last_update`——会把软链接删掉重建为普通文件导致链接失效，故改用拷贝，每次运行重新同步为仓库版本）；
 > - Scoop 自更新会重建 `current` 目录导致链接失效——届时**重新运行一次 `symlink.bat` 即可**（比重新覆盖快，也是一键完成）；
 > - 脚本顺带执行原有功能：把仓库根目录所有 `*.bat` 链接到 `D:\scoop\shims` 供全局命令使用。
 > - **补丁按 Scoop 版本自动分发（双基线）**：`manifest.ps1` / `download.ps1` 补丁维护两个基线——**仓库根目录文件 = v0.6.0 基线**，**`patches\v0.5.3` = v0.5.3 基线**。`symlink.bat` 运行时自动判版本：检测 `lib\core.ps1`（不在补丁范围内、恒为官方原版）是否含 v0.6.0 新增函数 `Get-PEMachine`，含 → 链接仓库根补丁；不含 → 链接 `patches\v0.5.3`。**Scoop 大版本更新后需复核此判据**（并把根补丁更新到新基线）；低版本补丁仅维护到 v0.5.3。
@@ -281,21 +281,22 @@ git config --global --add safe.directory D:/scoop/buckets/*
 
 ### symlink.bat 一键链接部署（用法）
 
-`symlink.bat` 位于仓库根目录，用 **mklink 软链接**替代手动覆盖，一键完成三个部署文件的链接 + 仓库 `*.bat` 全局链接。
+`symlink.bat` 位于仓库根目录，一键完成两个部署文件的软链接 + `config.json` 镜像拷贝 + 仓库 `*.bat` 全局链接。
 
 **使用步骤**：
 
 1. **保持仓库最新**：`git pull` 拉取仓库（链接指向仓库源文件，拉取后自动生效）；
 2. **以管理员身份运行**：右键 `symlink.bat` → **以管理员身份运行**（`mklink` 需要管理员权限；脚本开头会自检，无权限时提示后退出）；
 3. **等待打印过程完成**，脚本分两段执行：
-   - **【1/2】Scoop 部署文件软链接**：先按 Scoop 版本选择补丁来源（v0.6.0+ 用仓库根文件，旧版用 `patches\v0.5.3`，并打印所选来源），再依次处理 `manifest.ps1` / `download.ps1` / `config.json` 三个文件——目标位置若已有旧文件先删除，再 `mklink` 建立软链接指向仓库源文件；每个文件打印 `处理文件：xxx`，成功显示 `[成功] 文件软链接生成完成`，源文件缺失显示 `跳过`，失败显示 `[失败]`；
-   - **【2/2】仓库 .bat → shims 链接**：把仓库根目录所有 `*.bat` 链接到 `D:\scoop\shims`（供 `cd-comfyui`、`cd-models`、`myscoop-update` 等全局命令直接调用）；
+   - **【1/3】Scoop 库文件软链接**：先按 Scoop 版本选择补丁来源（v0.6.0+ 用仓库根文件，旧版用 `patches\v0.5.3`，并打印所选来源），再依次处理 `manifest.ps1` / `download.ps1`——目标位置若已有旧文件先删除，再 `mklink` 建立软链接指向仓库源文件；每个文件打印 `处理文件：xxx`，成功显示 `[成功] 文件软链接生成完成`，源文件缺失显示 `跳过`，失败显示 `[失败]`；
+   - **【2/3】config.json 镜像拷贝**：源（仓库 `config.json`）为权威，删除目标旧文件后 `copy /Y` 覆盖为**真实文件**（避免 Scoop 重写配置时破坏软链接），成功显示 `[成功] … 镜像拷贝完成`；
+   - **【3/3】仓库 .bat → shims 链接**：把仓库根目录所有 `*.bat` 链接到 `D:\scoop\shims`（供 `cd-comfyui`、`cd-models`、`myscoop-update` 等全局命令直接调用）；
    - 结尾打印 `所有任务完成`。
-4. **验证**：目标位置文件带链接标识即成功（命令行 `dir /A:L` 可列出 `<SYMLINK>`）；或查看 `D:\scoop\apps\scoop\current\lib\manifest.ps1` 属性确认类型为"符号链接"。
+4. **验证**：两个 `.ps1` 目标位置带链接标识即成功（命令行 `dir /A:L` 可列出 `<SYMLINK>`）；`config.json` 为普通文件（无链接标识），其内容应与仓库副本一致（`fc` 或哈希比对）。
 
 **日常维护**：
 
-- 仓库 `git pull` 更新后补丁**立即生效**——链接指向仓库文件，无需重新覆盖；
+- 仓库 `git pull` 更新后两个 `.ps1` 补丁**立即生效**（链接指向仓库文件）；**改过 `config.json` 后需重跑一次 `symlink.bat`**（拷贝部署，非链接）；
 - **Scoop 自更新后** `current` 目录重建、链接失效——**重新以管理员身份运行一次 `symlink.bat`** 即可恢复；
 - **还原为官方原版**：删除目标位置的链接文件，再 `scoop update scoop` 让 Scoop 恢复官方文件；或改用上文"部署方式一（覆盖）"。
 
@@ -479,7 +480,7 @@ myscoop/
 ├── cd-comfyui.bat                   ← 启动 ComfyUI（HF 镜像）
 ├── cd-models.bat                    ← 切换到 llama.cpp 模型目录
 ├── down-node.bat                    ← ComfyUI 插件批量安装（入口，逻辑在 down-node.py）
-├── symlink.bat                      ← 一键链接部署：manifest/download/config 软链接 + 仓库 .bat 链接到 shims
+├── symlink.bat                      ← 一键部署：manifest/download 软链接 + config.json 镜像拷贝 + 仓库 .bat 链接到 shims
 ├── 添加gitbash右键菜单.reg           ← 右键菜单添加 "Git Bash Here" 入口
 ├── win11右键菜单转win10菜单.bat      ← Win11/Win10 右键菜单模式切换工具
 ├── manifest.ps1                     ← Scoop 库补丁（v0.6.0 基线）：调整仓库下载优先级顺序

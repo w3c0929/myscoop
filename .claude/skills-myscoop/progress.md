@@ -41,7 +41,7 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## Scoop 库补丁与版本分发（symlink.bat）
 
-- **三件套部署**：`manifest.ps1`（bucketlist 桶优先级）+ `download.ps1`（GitHub 镜像加速）+ `config.json`（数据），由 `symlink.bat`（需管理员）软链接部署到 `D:\scoop\apps\scoop\current\lib\` 与 `~\.config\scoop\`；Scoop 自更新重建 current 后需重跑一次。
+- **三件套部署（软链接 + 拷贝混合）**：`manifest.ps1`（bucketlist 桶优先级）+ `download.ps1`（GitHub 镜像加速）以**软链接**部署到 `D:\scoop\apps\scoop\current\lib\`；`config.json`（数据）以**镜像拷贝**部署到 `~\.config\scoop\`——原因：Scoop 自身会重写 config.json（`scoop config` 写入、更新时写 `last_update`），会把软链接删掉重建为普通文件 → 链接失效；拷贝则每次运行 symlink.bat 重新同步为仓库版本（源为权威）。`symlink.bat`（需管理员）分三段：①库文件软链接 ②config.json 镜像拷贝 ③仓库 .bat → shims 链接；Scoop 自更新重建 current 后需重跑一次。
 - **双基线版本分发**（2026-10-11）：Scoop v0.6.0 大改 `manifest.ps1`——`Get-Manifest` 的桶遍历抽到新函数 `Find-AppBucket`（`$buckets` 变量消失），旧补丁直接失效；`download.ps1` 的镜像补丁 3 处插入点未变（仅需重挂到新基线）。现维护两个基线：**仓库根 = v0.6.0 基线**，**`patches\v0.5.3\` = v0.5.3 基线**；`symlink.bat` 运行时自动判版本分发。
 - **判据**：`findstr /c:"Get-PEMachine" "...\lib\core.ps1"`——core.ps1 不在补丁范围内（恒为官方原版），`Get-PEMachine` 为 v0.6.0 新增（v0.5.3 无）。含 → 根补丁；不含 → `patches\v0.5.3`。**Scoop 大版本更新后需复核此判据**并更新根补丁基线。
 - **编码**：补丁 ps1 = UTF-8 **带 BOM** + CRLF（PS 5.1 无 BOM 按 GBK 读，中文注释乱码）；`symlink.bat` = UTF-8 **无 BOM** + CRLF + 开头 `chcp 65001`（bat 加 BOM 会使首行 `@echo off` 失效）。

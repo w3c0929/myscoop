@@ -12,15 +12,15 @@ if %errorlevel% neq 0 (
 )
 
 :: ==============================================
-:: 第一部分：Scoop 部署文件软链接（链接方式替代覆盖）
+:: 第一部分：Scoop 库文件软链接（链接方式替代覆盖）
 :: 格式："目标文件路径|仓库真实源文件路径"
 :: ==============================================
 echo.
 echo ==============================================
-echo 【1/2】Scoop 部署文件软链接（manifest/download/config）
+echo 【1/3】Scoop 库文件软链接（manifest/download）
 echo ==============================================
 :: manifest/download 按 Scoop 版本分发：v0.6.0+ 用仓库根补丁（基线 v0.6.0），
-:: 低版本用 patches\v0.5.3 下对应文件（基线 v0.5.3）。config.json 与版本无关。
+:: 低版本用 patches\v0.5.3 下对应文件（基线 v0.5.3）。config.json 见第二部分（镜像拷贝）。
 :: 判据：core.ps1（不在补丁范围内，恒为官方文件）是否含 v0.6.0 新增函数 Get-PEMachine。
 :: 注意：Scoop 大版本更新时需复核本判据（旧版文件仅维护到 v0.5.3）。
 set "PATCH_SRC=D:\scoop\buckets\myscoop"
@@ -35,7 +35,6 @@ if errorlevel 1 (
 for %%i in (
 "D:\scoop\apps\scoop\current\lib\manifest.ps1|!PATCH_SRC!\manifest.ps1"
 "D:\scoop\apps\scoop\current\lib\download.ps1|!PATCH_SRC!\download.ps1"
-"C:\Users\Administrator\.config\scoop\config.json|D:\scoop\buckets\myscoop\config.json"
 ) do (
     set "pair=%%~i"
     for /f "tokens=1,2 delims=^|" %%a in ("!pair!") do (
@@ -61,11 +60,48 @@ for %%i in (
 )
 
 :: ==============================================
-:: 第二部分：仓库 .bat → shims 链接
+:: 第二部分：config.json 镜像拷贝（真实文件，避免软链接崩溃）
+:: 目标文件以源为权威，每次运行脚本都把源当前内容覆盖到目标。
+:: 原因：Scoop 自身会重写 config.json（scoop config 写入、更新时写 last_update），
+:: 会把软链接删掉重建为普通文件 → 链接失效；拷贝则每次运行都重新同步为仓库版本。
 :: ==============================================
 echo.
 echo ==============================================
-echo 【2/2】仓库 .bat -^> D:\scoop\shims 链接
+echo 【2/3】config.json 镜像拷贝（真实文件，避免软链接崩溃）
+echo ==============================================
+for %%i in (
+"C:\Users\Administrator\.config\scoop\config.json|D:\scoop\buckets\myscoop\config.json"
+) do (
+    set "pair=%%~i"
+    for /f "tokens=1,2 delims=^|" %%a in ("!pair!") do (
+        set "DEST_FILE=%%a"
+        set "SRC_FILE=%%b"
+        echo.
+        echo 处理文件：!SRC_FILE!
+
+        if not exist "!SRC_FILE!" (
+            echo  跳过：源文件不存在 !SRC_FILE!
+        ) else (
+            if exist "!DEST_FILE!" (
+                echo  删除旧文件 !DEST_FILE!
+                del /f /q "!DEST_FILE!"
+            )
+            copy /Y "!SRC_FILE!" "!DEST_FILE!" >nul
+            if errorlevel 1 (
+                echo  [失败] !DEST_FILE! 拷贝失败
+            ) else (
+                echo  [成功] !DEST_FILE! 镜像拷贝完成
+            )
+        )
+    )
+)
+
+:: ==============================================
+:: 第三部分：仓库 .bat → shims 链接
+:: ==============================================
+echo.
+echo ==============================================
+echo 【3/3】仓库 .bat -^> D:\scoop\shims 链接
 echo ==============================================
 set "SOURCE_DIR=D:\scoop\buckets\myscoop"
 set "TARGET_DIR=D:\scoop\shims"
