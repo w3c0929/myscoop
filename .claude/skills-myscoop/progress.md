@@ -39,6 +39,14 @@ GitHub: https://github.com/w3c0929/myscoop
 - **`checkver.tag_regex`（GitHub 分支可选 tag 过滤，首选）**：`{"github": …}` 再加 `tag_regex` → 在 releases 列表里按 tag 形态选 release（可含 prerelease），**捕获组即版本**（`^aivault-v([\d.]+)$` → `0.3.0`，自动去产品前缀）。覆盖三场景：多产品共仓 / tag 命名特殊或方案变更（`windows-v*`→`v*`）/ 跟 beta·rc（`^v([\d.]+(?:-(?:beta|rc)\.\d+)?)$`）。**仍走 GitHub 分支 → API digest 免下载**（实测 qingjian `0.1.4→0.1.5-beta.1`、updist `0.3.0→0.3.1` 均无 `[下载]` 行、hash 与上游 digest 一致）。已迁移 `updist`/`qingjian`；文本正则分支只在"包不在 GitHub Release"（如 dsh）时用
 - **`find_duplicate_source` 增强**：也扫描 `checkver.url` 的 API 形式（归一 `/repos/` 段）——修"改用文本正则后重复来源检测失效"的副作用；`updist` 迁回 `checkver.github` 后该项也恢复
 
+## Scoop 库补丁与版本分发（symlink.bat）
+
+- **三件套部署**：`manifest.ps1`（bucketlist 桶优先级）+ `download.ps1`（GitHub 镜像加速）+ `config.json`（数据），由 `symlink.bat`（需管理员）软链接部署到 `D:\scoop\apps\scoop\current\lib\` 与 `~\.config\scoop\`；Scoop 自更新重建 current 后需重跑一次。
+- **双基线版本分发**（2026-10-11）：Scoop v0.6.0 大改 `manifest.ps1`——`Get-Manifest` 的桶遍历抽到新函数 `Find-AppBucket`（`$buckets` 变量消失），旧补丁直接失效；`download.ps1` 的镜像补丁 3 处插入点未变（仅需重挂到新基线）。现维护两个基线：**仓库根 = v0.6.0 基线**，**`patches\v0.5.3\` = v0.5.3 基线**；`symlink.bat` 运行时自动判版本分发。
+- **判据**：`findstr /c:"Get-PEMachine" "...\lib\core.ps1"`——core.ps1 不在补丁范围内（恒为官方原版），`Get-PEMachine` 为 v0.6.0 新增（v0.5.3 无）。含 → 根补丁；不含 → `patches\v0.5.3`。**Scoop 大版本更新后需复核此判据**并更新根补丁基线。
+- **编码**：补丁 ps1 = UTF-8 **带 BOM** + CRLF（PS 5.1 无 BOM 按 GBK 读，中文注释乱码）；`symlink.bat` = UTF-8 **无 BOM** + CRLF + 开头 `chcp 65001`（bat 加 BOM 会使首行 `@echo off` 失效）。
+- **验证方法**：根分支实跑链接到仓库根文件；低版本分支用沙盒脚本（判据/目标路径替换为临时目录，不触碰真实 Scoop）实测链接到 `patches\v0.5.3`；功能复验 `Find-AppBucket cc-switch` → 选中 myscoop/4.0.8（bucketlist 生效，无补丁时首个是 extras）、`Get-GitHubMirrorUrl` → 返回镜像 URL。
+
 ## 核心规则
 
 1. **Release 命名规范**：包名（文件名）必须英文 → 标题中英结合 → 描述纯中文

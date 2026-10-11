@@ -270,6 +270,7 @@ git config --global --add safe.directory D:/scoop/buckets/*
 > - 链接指向仓库源文件，**`git pull` 更新仓库后立即生效，无需再手动覆盖**；
 > - Scoop 自更新会重建 `current` 目录导致链接失效——届时**重新运行一次 `symlink.bat` 即可**（比重新覆盖快，也是一键完成）；
 > - 脚本顺带执行原有功能：把仓库根目录所有 `*.bat` 链接到 `D:\scoop\shims` 供全局命令使用。
+> - **补丁按 Scoop 版本自动分发（双基线）**：`manifest.ps1` / `download.ps1` 补丁维护两个基线——**仓库根目录文件 = v0.6.0 基线**，**`patches\v0.5.3` = v0.5.3 基线**。`symlink.bat` 运行时自动判版本：检测 `lib\core.ps1`（不在补丁范围内、恒为官方原版）是否含 v0.6.0 新增函数 `Get-PEMachine`，含 → 链接仓库根补丁；不含 → 链接 `patches\v0.5.3`。**Scoop 大版本更新后需复核此判据**（并把根补丁更新到新基线）；低版本补丁仅维护到 v0.5.3。
 > - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
 > - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
 > - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
@@ -287,7 +288,7 @@ git config --global --add safe.directory D:/scoop/buckets/*
 1. **保持仓库最新**：`git pull` 拉取仓库（链接指向仓库源文件，拉取后自动生效）；
 2. **以管理员身份运行**：右键 `symlink.bat` → **以管理员身份运行**（`mklink` 需要管理员权限；脚本开头会自检，无权限时提示后退出）；
 3. **等待打印过程完成**，脚本分两段执行：
-   - **【1/2】Scoop 部署文件软链接**：依次处理 `manifest.ps1` / `download.ps1` / `config.json` 三个文件——目标位置若已有旧文件先删除，再 `mklink` 建立软链接指向仓库源文件；每个文件打印 `处理文件：xxx`，成功显示 `[成功] 文件软链接生成完成`，源文件缺失显示 `跳过`，失败显示 `[失败]`；
+   - **【1/2】Scoop 部署文件软链接**：先按 Scoop 版本选择补丁来源（v0.6.0+ 用仓库根文件，旧版用 `patches\v0.5.3`，并打印所选来源），再依次处理 `manifest.ps1` / `download.ps1` / `config.json` 三个文件——目标位置若已有旧文件先删除，再 `mklink` 建立软链接指向仓库源文件；每个文件打印 `处理文件：xxx`，成功显示 `[成功] 文件软链接生成完成`，源文件缺失显示 `跳过`，失败显示 `[失败]`；
    - **【2/2】仓库 .bat → shims 链接**：把仓库根目录所有 `*.bat` 链接到 `D:\scoop\shims`（供 `cd-comfyui`、`cd-models`、`myscoop-update` 等全局命令直接调用）；
    - 结尾打印 `所有任务完成`。
 4. **验证**：目标位置文件带链接标识即成功（命令行 `dir /A:L` 可列出 `<SYMLINK>`）；或查看 `D:\scoop\apps\scoop\current\lib\manifest.ps1` 属性确认类型为"符号链接"。
@@ -298,7 +299,7 @@ git config --global --add safe.directory D:/scoop/buckets/*
 - **Scoop 自更新后** `current` 目录重建、链接失效——**重新以管理员身份运行一次 `symlink.bat`** 即可恢复；
 - **还原为官方原版**：删除目标位置的链接文件，再 `scoop update scoop` 让 Scoop 恢复官方文件；或改用上文"部署方式一（覆盖）"。
 
-> 注：`symlink.bat` 为 GBK 编码（本机系统代码页 936/conhost），在中文 Windows 控制台显示正常；若在 UTF-8 控制台（如 Windows Terminal 默认）下运行时打印乱码，属正常现象，不影响链接功能。
+> 注：`symlink.bat` 为 **UTF-8 无 BOM** 编码（与仓库其他 `.bat` 一致），开头自带 `chcp 65001` 切换到 UTF-8 代码页，中文在中文控制台与 UTF-8 控制台（Windows Terminal 默认）下均正常显示。
 ---
 
 ## 右键菜单工具（可选）
@@ -481,7 +482,12 @@ myscoop/
 ├── symlink.bat                      ← 一键链接部署：manifest/download/config 软链接 + 仓库 .bat 链接到 shims
 ├── 添加gitbash右键菜单.reg           ← 右键菜单添加 "Git Bash Here" 入口
 ├── win11右键菜单转win10菜单.bat      ← Win11/Win10 右键菜单模式切换工具
-├── manifest.ps1                     ← Scoop 库补丁：调整仓库下载优先级顺序
+├── manifest.ps1                     ← Scoop 库补丁（v0.6.0 基线）：调整仓库下载优先级顺序
+├── download.ps1                     ← Scoop 库补丁（v0.6.0 基线）：GitHub 下载镜像加速
+├── patches/
+│   └── v0.5.3/                      ← 旧版 Scoop 专用补丁（v0.5.3 基线，symlink.bat 自动分发）
+│       ├── manifest.ps1
+│       └── download.ps1
 ├── config.json                      ← Scoop 配置：bucketlist 控制仓库优先级顺序
 └── README.md                        ← 此文件
 ```

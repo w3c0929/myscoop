@@ -19,9 +19,22 @@ echo.
 echo ==============================================
 echo 【1/2】Scoop 部署文件软链接（manifest/download/config）
 echo ==============================================
+:: manifest/download 按 Scoop 版本分发：v0.6.0+ 用仓库根补丁（基线 v0.6.0），
+:: 低版本用 patches\v0.5.3 下对应文件（基线 v0.5.3）。config.json 与版本无关。
+:: 判据：core.ps1（不在补丁范围内，恒为官方文件）是否含 v0.6.0 新增函数 Get-PEMachine。
+:: 注意：Scoop 大版本更新时需复核本判据（旧版文件仅维护到 v0.5.3）。
+set "PATCH_SRC=D:\scoop\buckets\myscoop"
+findstr /c:"Get-PEMachine" "D:\scoop\apps\scoop\current\lib\core.ps1" >nul 2>&1
+if errorlevel 1 (
+    echo 低版本 Scoop，使用 patches\v0.5.3 补丁
+    set "PATCH_SRC=D:\scoop\buckets\myscoop\patches\v0.5.3"
+) else (
+    echo 使用仓库根补丁（v0.6.0 基线）
+)
+
 for %%i in (
-"D:\scoop\apps\scoop\current\lib\manifest.ps1|D:\scoop\buckets\myscoop\manifest.ps1"
-"D:\scoop\apps\scoop\current\lib\download.ps1|D:\scoop\buckets\myscoop\download.ps1"
+"D:\scoop\apps\scoop\current\lib\manifest.ps1|!PATCH_SRC!\manifest.ps1"
+"D:\scoop\apps\scoop\current\lib\download.ps1|!PATCH_SRC!\download.ps1"
 "C:\Users\Administrator\.config\scoop\config.json|D:\scoop\buckets\myscoop\config.json"
 ) do (
     set "pair=%%~i"
