@@ -206,7 +206,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 8794903 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 84ca7ef (HEAD -> main) 同步 README 第三方版本与日期列
+* 667b4ee (origin/main) progress.md 更新提交历史
+* 8794903 progress.md 更新提交历史
 * d5d6bbf SwitchHosts 改归第三方官方：迁移到自建构建仓库 w3c0929/SwitchHosts
 * c154302 progress.md 更新提交历史
 * 333f642 同步 README 第三方版本与日期列
