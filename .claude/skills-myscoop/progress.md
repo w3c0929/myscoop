@@ -204,7 +204,7 @@ scoop cat myscoop/appname
 
 ## 提交历史
 
-每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
+每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
 * ba20693 (HEAD -> main, origin/main, origin/HEAD) 铁律新增第 22 条：README 第三方表跳转链接必须指向'引用项目地址'（清单 checkver.github 仓库）

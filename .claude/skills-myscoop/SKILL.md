@@ -510,19 +510,19 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
 
 ## 关键规则
 
-1. **永远优先 portable/zip**，避免使用安装包
+1. **优先 portable/zip**：上游同时提供便携版（portable/zip/7z）与安装包时选便携（打分见规则 20 / README 收录策略）；**仅发安装包时照用**——能解包就解包便携化（NSIS/Inno 7z 解包，如 bdl/vtracer/dsh），注册型（输入法/驱动/右键菜单）走 `installer` 模式完成系统注册（如 qingjian）。安装包在打分中**降级 -10（排后，非排除）**
 2. **优先 self-contained**（自带运行时），少用 framework-dependent（需额外依赖）
 3. **Hash 格式固定**：`sha256:xxxx`（全小写）
 4. **版本号去 v 前缀**：tag `v1.2.3` → version `1.2.3`
 5. **autoupdate 中的 URL**：tag 部分用 `v$version`（如果 tag 带 v），文件名部分用 `$version`（单版本、每版本独立 release 的情形）。**多版本共用一个 release 的情形见规则 15**
-6. **autoupdate hash 规则**：**不要用 `$url.sha256`**（大部分项目不提供 `.sha256` 文件）。不写 hash 规则时 `checkver -u` 会自动下载计算。如果项目提供 `checksums.txt`，用 `"hash": { "url": "$baseurl/checksums.txt" }` 放在 autoupdate 顶层
-7. **description 用英文**，保持国际通用性
+6. **autoupdate 不需要 hash 规则**：hash 由 **API digest（免下载，见规则 8）**或自有脚本（`myscoop-update.py --all`）计算；Scoop 侧 `@版本` 安装也走 GitHub Mode digest。实测 bucket 中 **0 个清单**使用 `autoupdate.hash`——旧指引（`$url.sha256` / `checksums.txt`+`$baseurl` / `checkver -u`）已废弃：流程不再调用 Scoop 的 checkver 工具
+7. **description 用英文（限本地维护 manifest）**，保持国际通用性；**第三方官方保持上游原样**（上游为中文则保留，如 kazumi），见规则 10
 8. **Hash 优先使用 GitHub API digest**：`curl -s api.github.com/repos/{o}/{r}/releases/latest` 直接读取 asset 的 `digest: sha256:xxx`，无需下载。仅 API 不可用时才下载计算
 9. **manifest 提交前必须验证**，确保 scoop 能正确解析
 10. **Release 命名规范（本地维护 manifest）**：**包名（文件名）必须用英文**（中文会导致 URL 下载失败）；**标题必须中英结合**（如"压缩工具 Bandizip 6.18"）；**描述必须纯中文**。本地维护 manifest 中 `description` 用英文，`shortcuts` 名称用中文。**第三方官方 manifest 不需要处理此规则**，保持上游原样不动。
 11. **禁止敏感字样**：git commit 信息、Release 标题/描述、manifest description、README 等所有对外文本**不得出现"破解"等敏感字样**。涉及此类版本时用中性词替代（如"汉化版"、"精简优化版"、"便携版"）。
 12. **每次制作/更新完成后**，提交前必须同步更新 `README.md`、`.claude/skills-myscoop/progress.md`（项目进展，含收录总数/版本）和 SKILL.md。
-13. **每次提交完成后**，运行 `git log --oneline --decorate --graph`，将完整输出更新到 `progress.md` 的"提交历史"章节。
+13. **每次提交完成后**，运行 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*`，将完整输出更新到 `progress.md` 的"提交历史"章节。**必须排除标签装饰**——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符（实测最长 1759 字符 → 排除后 123）
 14. **下载方式优先用 `curl.exe -L`**：Windows 系统自带 `C:\Windows\System32\curl.exe`（Win10 1803+），无需安装、无需额外工具。下载文件一律使用：
     ```powershell
     curl.exe -L -o "文件名" "下载地址"
@@ -532,6 +532,7 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
     - `-o` 指定本地保存文件名，保持文件名与 Release 包名一致（英文）
     - 下载完成后用 `certutil -hashfile 文件 SHA256` 计算哈希（同为系统自带）
     - 仅在 curl.exe 不可用时（如旧版系统）才退化为其他下载方式
+    - **GitHub release 资产可经镜像加速**：下载慢/失败时用镜像前缀拼接（如 `https://hk.gh-proxy.org/https://github.com/…`；列表见 `config.json` 的 `aria2-mirrors`，与脚本 / `download.ps1` 同一套机制）。只认"release 资产代理"型镜像（写法只有"镜像前缀 + 完整 URL"一种），失败自动回退直连
 15. **多版本软件资产（自托管）**：同一软件需保留多个历史版本时，**用一个 release（固定 tag）下挂多个资产**（文件名含版本号区分，如 `sublime-text-4200-x64.zip`、`sublime-text-4207-x64.zip`），**不要**每版本各建一个 release。
     - manifest 的 `version` 固定为**默认（最新）版本**；`url`/`hash` 字段**硬编码默认版本的具体地址**，**不要**在 `url` 里写 `$version`——Scoop 普通安装不会替换它，会直接 404
     - `autoupdate.url` 中 **tag 固定**，仅文件名部分用 `$version` 模板（供 Scoop 动态生成其他版本）
@@ -551,7 +552,7 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
     - **`--add` 收录预检（与更新共用 `pick_effective_release`）**：收录新清单时只在 **非 draft/untagged 且含可下载 Windows 资产**的 release 里取**最新**一个——**只按"资产"判定，不看 prerelease/rc**（上游常把发布标成预发布但资产完整；且最新版可能恰是**零资产的空 release**，需往下探到最近一个带 Windows 资产的：如 `kvmem-llama.cpp` 的 `v0.17.0` 为空 → 自动取 `v0.16.0-rc3-prism.3`）。完全没有带 Windows 资产的 release → 打印**候选表**（tag/预发布?/win资产数）后跳过、**不写文件**。archived/fork 仓库默认**警告**（`--allow-archived` 静音）。直链/模板入口（`--add 直链`、下载页、`--from`、`--fill-bin`）无 release 列表可选，只做预发布**提示**、不阻断（回归测试 `tools/test_effective_release.py`）。
     - 背景：`CherryHQ/cherry-studio` 的 `latest` 长期指向子包噪音 tag `@cherrystudio/remote-transport@0.1.1`（assets 为空），曾把 `cherry.json` 的 2.1.3 双架构块整体删成空 `autoupdate.architecture`（提交 8134b2a）。
 20. **收录质量与一致性护栏**：
-    - **资产筛选**：`is_windows_asset` 排除源码包（`-source`/`-src` 独立段）、脚本（`.ps1/.sh/.bat/.cmd/.py` 等）、校验与元数据；generic 兜底仅限"可安装包"——防源码包被规则②兜底进缺失架构（教训：`kvllama` 的 `-source.zip` 曾被塞进 32bit/arm64）。`description` 为 null 时回退为 `owner/repo`。
+    - **资产筛选**：`is_windows_asset` 排除源码包（`-source`/`-src` 独立段）、脚本（`.ps1/.sh/.bat/.cmd/.py` 等）、校验与元数据；generic 兜底仅限"可安装包"——防源码包被规则②兜底进缺失架构（教训：`kvllama` 的 `-source.zip` 曾被塞进 32bit/arm64）。`description` 为 null 时回退为 **`<仓库名> - from github`**（实测实现 `f"{repo} - from {platform}"`，如 `TaskbarPopup - from github`）。
     - **"隐身"的 macOS/Linux 资产排除（`foreign_platform_assets`，两条规则叠加）**：① 权威——release 含 `latest-mac.yml`/`latest-linux.yml`（electron-builder 平台清单）时解析其列出的文件名排除；② 启发式——与同名 `.dmg` 成对的 `.zip`（去扩展名后相同）视为 macOS。接入 `--add` 候选筛选 + `_release_has_windows_asset` 资产守卫两个判断点（后者防"只发 mac 包"的 release 被误判为有 Windows 资产）。教训：`freellmapi` 的 `-x64.zip`/`-arm64.zip` 实为 macOS 包（名字无 mac 标记）被当 Windows 资产选走 → `--dl` 探测"未发现 exe"（里面是 .app）、真 Windows 包 `-win.zip` 反被通用兜底塞进 32bit 槽位。识别信号：electron-builder 的 mac zip 与 .dmg 同名成对、且列在 latest-mac.yml。
     - **便携资产不做 installer 模式（`_is_portable_asset`）**：`--dl` 走 NSIS 分支时，若**资产名明示 portable**（`-portable`/`_portable` 独立段，如 `Xtranslate-portable.exe`），即使描述命中"输入法/驱动/右键菜单"等注册型关键词（`needs_registration`）也**不套 `installer` 模式**，改走 `NSIS_PRE_INSTALL`（7z 解包 `app-*.7z` 到 `$dir`）。原因：installer 模式会让 Scoop 把**便携 exe 当安装器执行**（`/S /D=$dir` 不被识别）→ **程序被直接启动**、而 `$dir` 里没有 `bin` 指向的文件 → 建 shim 失败（教训：`xtranslate` 上游改发 `Xtranslate-portable.exe` 后，`--add --dl` 误套 installer 模式；此前本地维护的 zip 版无 installer 块故正常）。判据只认"名字里的 portable 段"，不误伤 `myportableapp.exe` 这类词中匹配。
     - **校验和文件的"其他写法"也要排除**：原来的后缀匹配只覆盖 `.sum`/`.sha256`/`.sig`，`*.SHA256SUMS`（点后是 `SHA256SUMS`）会漏——且带 `x64` 时还能拿 +2 分，若 release 只发校验文件和 mac/linux 包就会被当成主资产选走。现用正则统一排除 `\.(?:sha\d{0,3}sums?|md5sums?|checksums?|digests?|sums?)$`（大小写不敏感；教训：`vtracer` 的 `VTracer_1.0.0-alpha.4_x64.SHA256SUMS` 曾进候选，实测修复后 19 个资产只剩真包与安装器）。
@@ -562,11 +563,11 @@ git add bucket/ && git commit -m "批量更新第三方软件" && git push
     - **文本正则分支（`{"url": …, "regex": …}`）只在"包不在 GitHub Release"时用**：如 `dsh`（包在 download.deepseek.com，**根本不存在 API digest**）。它把 checkver url 当纯文本取版本，**hash 只能靠下载计算**；若上游在 GitHub 有 release，优先用上面的 `tag_regex`。
     - 教训：`updist` 的版本曾被写成 `aivault-v0.3.0`（tag 前缀未剥离）→ 模板代入后 URL 不存在 → 回退分支靠数字归一化命中新资产 → 被 `handle_build_drift` 误判为"构建号漂移" → `sync_build_asset` 删除 `autoupdate`；改用 `tag_regex` 后版本直接得 `0.3.0`，主匹配精确命中，模板保得住。
     - **API 健壮性**：`fetch_json` 支持 `GH_TOKEN`/`GITHUB_TOKEN`（GitHub 配额 60→5000/时）并对 429/5xx 与网络错误退避重试；`arch_url_hash` 支持数组型 url（配对清单取主资产，修 `--fill-bin` 对 prllama 这类清单崩溃）。
-    - **GPU 资产优先级（`score_asset`）**：NVIDIA 通用(+8) > 指定 CUDA(+6) > 通用包(0) > **非 N 卡专用(-4：AMD HIP / ROCm / Radeon)**。非 N 卡专用构建降级到通用包之下——教训：`Strata` 的 `strata-windows-x64-hip.zip` 因名字不含任何 GPU 关键词而与通用包同为 7 分，平手后按列表顺序被选中（非 N 卡包反而优先）。仅当上游只发非 N 卡包时才会选中它（降级≠排除）。
+    - **GPU 资产优先级（`score_asset`）**：NVIDIA 通用(+8) > 指定 CUDA(+6) > 通用包(0) > **非 N 卡专用(-4：AMD HIP / ROCm / Radeon)**。非 N 卡专用构建降级到通用包之下——历史案例（清单已不在 bucket，不可复现）：`Strata` 的 `strata-windows-x64-hip.zip` 曾因名字不含 GPU 关键词而与通用包同为 7 分、平手后被顺序选中（非 N 卡包反而优先）。仅当上游只发非 N 卡包时才会选中它（降级≠排除）。
     - **CLI / 裸二进制降级（`score_asset`，-20）**：名字含独立段 `cli`/`msvc`/`gnu`（`(?:^|[-_.])(?:cli|msvc|gnu)(?:[-_.]|$)`）的资产**降到安装器之后**（-20 低于 installer 档 -10）——GUI 应用常同时发 CLI 包与安装器，CLI/裸二进制不是桌面应用的替代品。教训：`bdl` 曾选中 `bdl-cli-0.8.4-windows-x64.zip`、`vtracer` 曾选中 `vtracer-x86_64-pc-windows-msvc.zip`，把 GUI 应用装成了命令行工具。降级≠排除：上游只发 CLI 包时仍会选中（全 bucket 扫描仅 `moonup` 唯一候选、`beellama-cpp` 的 `bin` 字段命中，均无功能影响）。
     - **静态 latest 直链 + 文本正则 checkver**：上游只发**免版本别名**、且安装包**不在 GitHub Release** 时（如 `dsh`：包在 `download.deepseek.com/.../dsh-latest-windows-x64.exe`，版本取自 `deepseek-ai/deepseek-harness` 的 release tag）——`checkver` 用 `url`(接口/页面)+`regex` 取版本；**显式 `url`+`regex` 优先走"文本正则分支"**（即使 url 指向 GitHub API，也不走仓库 release 分支，因为 Release 无资产）；`autoupdate.url` 写**静态直链**（无 `$version`），版本变化时**原样下载重算 hash，内容未变则不提升版本**（防"幽灵更新"）。`fetch_text` 与 `fetch_json` 一样只在 GitHub 官方 API 上附带 token（回归测试 `tools/test_static_au.py`）。
     - **NSIS 双层探测修复（`probe_nsis_exes`）**：**只要存在 `app-*.7z` 就二次解包，并只用内层 exe 作候选**（内层为空则留空、不用外层）——因为配套的 `pre_install` 会把 `app-*.7z` 解到 `$dir` 并丢弃外层，外层 exe 安装后并不存在；同时排除助手 exe（`7z/7za/uninstall/updater/vc_redist/crashpad` 等）并**优先取根级 exe**（滤掉 `resources/` 下的依赖）。教训：`dsh`（DeepSeek Harness）安装器自带 7z 助手 `dsh-7za.exe` 被误当主程序 → 装后该文件已被删 → 建 shim 失败；修复后实测得到单候选 `DeepSeek Harness.exe`。
-21. **Scoop 库补丁的版本耦合与双基线分发**：仓库三件套（`manifest.ps1` bucketlist 优先级 / `download.ps1` 镜像加速 / `config.json`）注入 Scoop 本体——两个 `.ps1` 用**软链接**（`git pull` 即生效），`config.json` 用**镜像拷贝**（真实文件：Scoop 自身会重写 config.json——`scoop config` 写入、更新时写 `last_update`——会把软链接删掉重建为普通文件，故每次运行 symlink.bat 重新拷贝同步）；**补丁与 Scoop 版本强耦合**——Scoop 大版本更新会改这两个文件的内部结构，旧补丁直接失效（教训：v0.6.0 把 `Get-Manifest` 的桶遍历抽到新函数 `Find-AppBucket`、`$buckets` 变量消失，v0.5.3 基线的 bucketlist 补丁整段失效；`download.ps1` 镜像补丁 3 处插入点则未变、可原样迁移）。
+21. **Scoop 库补丁的版本耦合与多基线分发**：仓库三件套（`manifest.ps1` bucketlist 优先级 / `download.ps1` 镜像加速 / `config.json`）注入 Scoop 本体——两个 `.ps1` 用**软链接**（`git pull` 即生效），`config.json` 用**镜像拷贝**（真实文件：Scoop 自身会重写 config.json——`scoop config` 写入、更新时写 `last_update`——会把软链接删掉重建为普通文件，故每次运行 symlink.bat 重新拷贝同步）；**补丁与 Scoop 版本强耦合**——Scoop 大版本更新会改这两个文件的内部结构，旧补丁直接失效（教训：v0.6.0 把 `Get-Manifest` 的桶遍历抽到新函数 `Find-AppBucket`、`$buckets` 变量消失，v0.5.3 基线的 bucketlist 补丁整段失效；`download.ps1` 镜像补丁 3 处插入点则未变、可原样迁移）。
     - **多基线（数据驱动）**：仓库根 = **最新 Scoop 基线**（版本号记录在 `patches\baseline.txt`）；`patches\<版本>\` = 该版本冻结补丁（现 `patches\v0.5.3\`）。`symlink.bat` 用 `git describe --tags --abbrev=0` 读 Scoop 版本后分发：版本==基线 → 根；`patches\<版本>\` 存在 → 专用补丁；否则 → 根 + 警告（Scoop 比补丁新，提示更新仓库）；git 不可用/无标签 → 根 + 警告。**已废弃特征嗅探判据**（`findstr Get-PEMachine` / 更早的 `buckets.ps1`）——判据函数每个版本都要重新研究，且 `buckets.ps1` 在 v0.5.3 也存在曾致误判；版本号匹配无需研究。
     - **升级流程（symlink.bat 零改动）**：Scoop 大版本更新后 → ① 当前根两个补丁复制到 `patches\<旧基线>\` 冻结 ② 用新官方文件重建根补丁（最小插入：只保留 `# ========== …补丁开始/结束 ==========` 标记段 + 调用点替换，**不要把旧版整个函数搬过来**）③ 改 `patches\baseline.txt` 为新版本号 → 实跑 symlink.bat 验证（含沙盒分支测试）→ 更新 README/progress/SKILL。
     - **大版本还会改文件命名，读安装信息的脚本要兼容新旧名**：v0.6.0 把 `install.json` 改名 `scoop-install.json`（旧文件在应用更新时被删）。教训：`智能模式Scoop(3).ps1` 的桶名匹配只读旧名 → 升级后更新过的应用丢失桶前缀。现改为优先用 `scoop export` 的 `Source` 字段（校验桶名，排除 `<auto-generated>`），文件读取仅作回退。
