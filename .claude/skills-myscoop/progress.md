@@ -206,12 +206,13 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* 277841b (HEAD -> main, origin/main, origin/HEAD) SwitchHosts 改归第三方官方：迁移到自建构建仓库 w3c0929/SwitchHosts
-* c3687be progress.md 更新提交历史
-* 09026a1 同步 README 第三方版本与日期列
-* 78b780f 自动更新第三方软件
-* 70d1c29 progress.md 更新提交历史
-* 236a204 新增收录 TaskbarPopup 1.1.1（Windows 11 任务栏增强：最大化隐藏任务栏 + 长按 Win 迷你任务栏）：README 第三方表置顶补行并重编号（52→53），progress 计数 139→140
+* 8794903 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* d5d6bbf SwitchHosts 改归第三方官方：迁移到自建构建仓库 w3c0929/SwitchHosts
+* c154302 progress.md 更新提交历史
+* 333f642 同步 README 第三方版本与日期列
+* 0eec077 自动更新第三方软件
+* 3429767 progress.md 更新提交历史
+* 50eeea4 新增收录 TaskbarPopup 1.1.0（Windows 11 任务栏增强：最大化隐藏任务栏 + 长按 Win 迷你任务栏）：README 第三方表置顶补行并重编号（52→53），progress 计数 139→140
 * f13ab3b progress.md 更新提交历史
 * d0562bd Windows 资产判断修复：排除'隐身'的 macOS/Linux 资产（平台清单 + 同名 .dmg 成对）；收录 freellmapi
 * 349fb1e progress.md 更新提交历史
