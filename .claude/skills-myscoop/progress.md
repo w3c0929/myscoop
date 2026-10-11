@@ -197,7 +197,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
 
 ```
-* e391d1a (HEAD -> main, origin/main, origin/HEAD) symlink.bat 改造：config.json 改用镜像拷贝（真实文件），避免 Scoop 重写配置破坏软链接
+* 9d796a9 (HEAD -> main, origin/main, origin/HEAD) symlink.bat 精简注释：移除版本分发说明（README 已有完整说明）
+* 8f0ff71 progress.md 更新提交历史
+* e391d1a symlink.bat 改造：config.json 改用镜像拷贝（真实文件），避免 Scoop 重写配置破坏软链接
 * 361558d progress.md 更新提交历史
 * 608bb88 补丁双基线分发：根补丁升级 v0.6.0 基线，新增 patches/v0.5.3，symlink.bat 按版本自动分发
 * 30ed684 progress.md 更新提交历史
