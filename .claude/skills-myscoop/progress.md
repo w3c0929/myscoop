@@ -207,7 +207,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* ba20693 (HEAD -> main, origin/main, origin/HEAD) 铁律新增第 22 条：README 第三方表跳转链接必须指向'引用项目地址'（清单 checkver.github 仓库）
+* 7bf4fd1 (HEAD -> main, origin/main, origin/HEAD) 铁律清理：修订 8 处与现状不符的条目（规则 1/6/7/13/14/20/21）
+* 332e86b progress.md 更新提交历史
+* ba20693 铁律新增第 22 条：README 第三方表跳转链接必须指向'引用项目地址'（清单 checkver.github 仓库）
 * 5c594d9 progress.md 更新提交历史
 * e4e9a1f README 第三方表跳转链接修正：14 行改为清单引用的项目地址（GitHub 仓库）
 * 0776562 progress.md 更新提交历史
@@ -239,7 +241,7 @@ scoop cat myscoop/appname
 * 748f7d2 新增收录 CC Switch 4.0.7（多 AI 编程助手桌面配置切换器，多架构 portable zip 官方 release）：README 第三方表置顶补行并重编号（50→51），progress 计数 137→138
 * e4b02ec progress.md 更新提交历史
 * 7202d10 镜像列表去重并按实测速度重排：31 项 → 24 项
-* dacf399 (tag: vWujin, tag: vWinHex, tag: vWPS26899, tag: vVBA7.0.1590, tag: vVAM1.22, tag: vTickeys1.2.0, tag: vSystemCleaner, tag: vSysHelper3.0, tag: vSublimeText, tag: vStudioOne7.1, tag: vSogouWubi, tag: vRobocopyGUI1.3, tag: vRDI, tag: vPointerStick, tag: vPDFMergeSplit, tag: vPDF24Converter, tag: vNumpadPractice, tag: vMdxBuilder, tag: vKeyCastOW, tag: vGstarCAD2022, tag: vGoogleTranslateChecker, tag: vGoldenDict, tag: vGIFTool, tag: vFolderEncrypt, tag: vEpicPen3.7.31, tag: vDriverGenius9.70, tag: vDnsTools1.2.3, tag: vDisableGamebar, tag: vCutSilence, tag: vBeatEdit2.1, tag: vBOOTICE1.3.4, tag: vAudioRecorder4.2.3, tag: vAnytxt1.3.1952, tag: v9.9.31-qq, tag: v9.7.0, tag: v9.40.1, tag: v9.0, tag: v8.5.2, tag: v8.5.1, tag: v8.2.2.2531, tag: v8.0.28, tag: v6.4.3, tag: v6.18, tag: v6.0.11.0, tag: v5.6.6.174a-hipc, tag: v5.2.5.32528, tag: v5.2.3, tag: v5.0.9.6029-wecom, tag: v5.0.1, tag: v42.3.0, tag: v4.30.1, tag: v4.13-athena, tag: v4.1.11-wechat, tag: v4.0.10, tag: v360bw, tag: v360DriverMaster2.0, tag: v3.9.3.5, tag: v3.7.3, tag: v3.7.2, tag: v3.4.3, tag: v3.3.0, tag: v3.2.3.1, tag: v26.08.26.01, tag: v25.11.12, tag: v2026.6.850.0, tag: v2.4.5-miaomi, tag: v2.4.0, tag: v2.1.2, tag: v2.0-edgeblock, tag: v2.0-beta33-mykeymap, tag: v18.7.11925.98, tag: v16.6.0.4385, tag: v147.0.7703.0, tag: v10.8.0.9683, tag: v1.8.5.0, tag: v1.3.3-video-captioner, tag: v1.3.213.7, tag: v1.3.0.11, tag: v1.2.0, tag: v1.0.9.0, tag: v1.0.9, tag: v1.0.50481.0, tag: v1.0.260708, tag: v1.0.2, tag: v1.0.0.10-dingtalk-downloader, tag: v1.0.0.0, tag: v1.0-wcap, tag: v1.0-waifu2x-caffe, tag: v1.0-pcmaster, tag: v1.0-getdict, tag: v1.0-fps-keeper, tag: v1.0-btseed, tag: v1.0, tag: v0.9.2, tag: v0.4.6) myscoop 快照：137 款 Windows 软件 Scoop 清单（历史重写为单 commit）
+* dacf399 myscoop 快照：137 款 Windows 软件 Scoop 清单（历史重写为单 commit）
 ```
 
 ## 新会话启动指南
