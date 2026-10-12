@@ -303,6 +303,67 @@ def match_asset(resolved_url, assets):
     return None  # 基础名同但家族不同（zip↔exe）：不匹配，防形态误配
 
 
+def repick_by_prefix(current_name, assets):
+    """第三重匹配：前缀重选。资产名含**每版变化的非数字标记**（如构建 sha：
+    `…-ui-938c2f1.zip` → `…-ui-ae48ec0.zip`）时数字归一化无法命中——按"公共前缀最长"重选。
+    护栏（全部满足才采用）：① 仅同扩展名家族的 Windows 资产；② 前缀 ≥12 字符且止于分隔符
+    `-_./`（不截断在词中）；③ **唯一最优**（严格大于次优，防歧义如 `-windows-x64` vs
+    `-linux-x64` 平手）；④ 架构判定与当前资产一致（防 x64→arm64 误切）。"""
+    if not current_name:
+        return None
+    cur = str(current_name).lower()
+    fam = _ext_family(cur)
+    cur_arch = detect_arch(cur)
+    cands = [a for a in assets
+             if is_windows_asset(a.get("name", ""))
+             and _ext_family(a.get("name", "")) == fam
+             and detect_arch(str(a.get("name", "")).lower()) == cur_arch]
+    best, best_len, second = None, 0, 0
+    for a in cands:
+        n = str(a.get("name", "")).lower()
+        m = 0
+        for x, y in zip(cur, n):
+            if x != y:
+                break
+            m += 1
+        if m > best_len:
+            best, second, best_len = a, best_len, m
+        elif m > second:
+            second = m
+    if not best or best_len < 12 or best_len <= second:
+        return None
+    if best_len < len(best["name"]) and best["name"][best_len - 1] not in "-_./":
+        return None
+    return best
+
+
+def refresh_filename_in_template(manifest, old_name, new_name):
+    """前缀重选后：把 autoupdate 模板（含架构）与顶层 extract_dir 里的旧资产文件名/目录名
+    替换为新名——模板保活（下次更新继续命中），Scoop 客户端自更新不 404。"""
+    if not old_name or not new_name or old_name == new_name:
+        return False
+    changed = False
+    old_stem, new_stem = old_name.rsplit(".", 1)[0], new_name.rsplit(".", 1)[0]
+    au = manifest.get("autoupdate") or {}
+    for key in ("url", "extract_dir"):
+        v = au.get(key)
+        if isinstance(v, str) and old_stem in v:
+            au[key] = v.replace(old_stem, new_stem)
+            changed = True
+    for blk in (au.get("architecture") or {}).values():
+        if isinstance(blk, dict):
+            for key in ("url", "extract_dir"):
+                v = blk.get(key)
+                if isinstance(v, str) and old_stem in v:
+                    blk[key] = v.replace(old_stem, new_stem)
+                    changed = True
+    v = manifest.get("extract_dir")
+    if isinstance(v, str) and old_stem in v:
+        manifest["extract_dir"] = v.replace(old_stem, new_stem)
+        changed = True
+    return changed
+
+
 def refresh_build_in_template(manifest, asset, current_url):
     """方案A：模板构建号随资产刷新。资产名含 {版本}+{build} 段且清单有 autoupdate 模板时，
     把模板（url/extract_dir，含架构）与精确 extract_dir 中的旧 build 替换为新 build——
@@ -1407,13 +1468,22 @@ def update_manifest(manifest_path, dry_run=False):
         except Exception as e:
             print(f"  [错误] {manifest_path.name}: {e}")
             return None
-        release = next((r for r in rels
-                        if not r.get("draft")
-                        and not str(r.get("tag_name", "")).startswith("untagged-")
-                        and re.search(tag_rx, str(r.get("tag_name", "")))), None)
-        if not release:
+        cands = [r for r in rels
+                 if not r.get("draft")
+                 and not str(r.get("tag_name", "")).startswith("untagged-")
+                 and re.search(tag_rx, str(r.get("tag_name", "")))]
+        if not cands:
             print(f"  [跳过] {manifest_path.name}: 近期没有匹配 tag_regex 的 release")
             return None
+        release = cands[0]
+        # 资产守卫（与 GitHub 常规分支一致）：最新匹配 tag 若无 Windows 资产（如空 release），
+        # 回退到下一个"匹配 tag 且有 Windows 资产"的 release；仍无则跳过不更新。
+        if not _release_has_windows_asset(release):
+            print(f"  [资产] 最新 {release.get('tag_name')} 无可下载 Windows 资产，回退查找…")
+            release = next((r for r in cands if _release_has_windows_asset(r)), None)
+            if not release:
+                print(f"  [跳过] {manifest_path.name}: 匹配 tag_regex 的 release 均无 Windows 资产")
+                return None
     else:
         try:
             release = get_latest_release(owner, repo, platform)
@@ -1536,7 +1606,20 @@ def update_manifest(manifest_path, dry_run=False):
                     else:
                         print(f"    {arch}: {digest2[:16]}... (fallback)")
                 else:
-                    to_del.append(arch)
+                    # 第三重：前缀重选（该架构，同单资产路径——资产名含每版变化的非数字标记）
+                    cur_name = unquote(old_url.split("/")[-1])
+                    asset3 = repick_by_prefix(cur_name, assets)
+                    if asset3:
+                        matched_any = True
+                        digest3 = asset3.get("digest", "")
+                        real3 = asset3.get("browser_download_url") or new_url
+                        manifest["architecture"][arch]["url"] = real3
+                        manifest["architecture"][arch]["hash"] = digest3
+                        rf = refresh_filename_in_template(manifest, cur_name, asset3["name"])
+                        print(f"    {arch}: {digest3[:16]}... [前缀重选: {asset3['name']}"
+                              + ("，autoupdate 模板文件名已刷新]" if rf else "]"))
+                    else:
+                        to_del.append(arch)
         # 资产守卫：所有架构都未匹配到任何资产 → 视为无效更新，跳过不写入。
         # 防止上游噪音 tag（无资产）触发下方"规则③ 删架构"把整个清单改坏。
         if not matched_any:
@@ -1605,8 +1688,20 @@ def update_manifest(manifest_path, dry_run=False):
                     else:
                         print(f"    hash: {digest2[:16]}... (fallback)")
                 else:
-                    print(f"    [警告] 无法匹配")
-                    return None  # 资产匹配失败：不写入、不计入已更新
+                    # 第三重：前缀重选（资产名含每版变化的非数字标记，如构建 sha：ui-938c2f1→ui-ae48ec0）
+                    cur_name = unquote(old_url.split("/")[-1])
+                    asset3 = repick_by_prefix(cur_name, assets)
+                    if asset3:
+                        digest3 = asset3.get("digest", "")
+                        real3 = asset3.get("browser_download_url") or new_url
+                        manifest["url"] = real3
+                        manifest["hash"] = digest3
+                        rf = refresh_filename_in_template(manifest, cur_name, asset3["name"])
+                        print(f"    hash: {digest3[:16]}... [前缀重选: {asset3['name']}"
+                              + ("，autoupdate 模板文件名已刷新]" if rf else "]"))
+                    else:
+                        print(f"    [警告] 无法匹配")
+                        return None  # 资产匹配失败：不写入、不计入已更新
 
             # 同步顶层 autoupdate 模板字段（bin/shortcuts/extract_dir 等）
             chg = sync_autoupdate_fields(au, manifest, latest_version)

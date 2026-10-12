@@ -30,7 +30,7 @@
 | 18 | [EcoPaste](https://github.com/EcoPasteHub/EcoPaste) — 跨平台剪贴板管理工具 | `scoop install ecopaste` | 多架构 exe 官方 release（NSIS 解包） | 1.1.0 | 2026-10-10 | 2026-10-10 |
 | 19 | [BongoCat](https://github.com/ayangweb/BongoCat) — 跨平台桌面宠物互动小工具（开源） | `scoop install bongocat` | 单 exe 官方 release（NSIS 解包） | 2.2.0 | 2026-10-10 | 2026-10-10 |
 | 20 | [DeepSeek Harness](https://www.deepseek.com/en/harness/) — DeepSeek 桌面客户端（官方直链，NSIS 安装器 7z 解包便携） | `scoop install dsh` | 单 exe 官方直链（NSIS 解包） | 0.2.0-rc.2 | 2026-10-10 | 2026-10-10 |
-| 21 | [kvmem-llama.cpp](https://github.com/kvmem/kvmem-llama.cpp) — llama.cpp KV 缓存压缩分支：8GB 显存跑 Bonsai 2 27B 满 256K 上下文（RC 版） | `scoop install kvllama` | zip 官方 release | 0.16.0-rc3-prism.3 | 2026-10-10 | 2026-10-10 |
+| 21 | [kvmem-llama.cpp](https://github.com/kvmem/kvmem-llama.cpp) — NInfer：三元 .ninfer 模型推理服务端 + KVMem 缓存压缩（上游 NInfer 线；RTX 30/40/50 预编译，内嵌 Web UI） | `scoop install kvninfer` | zip 官方 release | 0.18.0-ninfer-rc3 | 2026-10-10 | 2026-10-12 |
 | 22 | [Rayburst](https://github.com/AnInsomniacy/rayburst) — 开源下载管理器（基于 Aria2 Next 引擎，NSIS 安装器解包便携） | `scoop install rayburst` | 多架构 exe 官方 release（NSIS 解包） | 4.0.1 | 2026-10-10 | 2026-10-10 |
 | 23 | [ZTools](https://github.com/ZToolsCenter/ZTools) — uTools 的开源实现，高性能可扩展的应用启动器与插件平台 | `scoop install ztools` | zip 官方 release | 3.2.0 | 2026-10-10 | 2026-10-10 |
 | 24 | [AI-Vault (updist)](https://github.com/ErgeAIA/updates-dist) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | 0.3.1 | 2026-10-10 | 2026-10-10 |
@@ -530,7 +530,7 @@ myscoop/
 5. **生成**：最终候选架构 ≥2 时生成 `architecture` 块（逐架构 url/hash/autoupdate），否则用顶层 url；
 6. **更新容错**：某版本上游缺失某架构资产时，自动删除该架构块（该架构用户自动回退 64bit/通用包）；上游补回时 CI 全量重算自动恢复。
 
-> 打分规则仅作用于 `--add` 收录时的资产选择；既有清单的日常更新走名称匹配（`match_asset`），不受影响。
+> 打分规则仅作用于 `--add` 收录时的资产选择；既有清单的日常更新走名称匹配（`match_asset`：精确 → 忽略大小写 → 数字归一化 → **前缀重选兜底**，覆盖资产名挂构建 sha 等每版变化的标记），不受影响。
 > 自托管包（本地维护 87 款）维持单包不变，不参与分组。
 
 ---
