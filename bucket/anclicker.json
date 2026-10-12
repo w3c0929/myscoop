@@ -6,10 +6,16 @@
     "checkver": {
         "github": "https://github.com/714248411/AnClicker"
     },
-    "url": "https://github.com/714248411/AnClicker/releases/download/v1.5.2/AnClicker-v1.5.2-win-DaiMa.zip",
-    "hash": "sha256:e10c6e1c5e3c451aa72956c3e2efafbb1cd065de09f8dd874001c071a9b606fa",
+    "url": "https://github.com/714248411/AnClicker/releases/download/v1.5.2/AnClicker-v1.5.2-win.zip",
+    "hash": "sha256:43a7c59b0ac860d27dc02f8cff837845e2a1a7f2019b3a935c3d4e6859fb19d1",
     "autoupdate": {
-        "url": "https://github.com/714248411/AnClicker/releases/download/v$version/AnClicker-v$version-win-DaiMa.zip"
+        "url": "https://github.com/714248411/AnClicker/releases/download/v$version/AnClicker-v$version-win.zip"
     },
-    "notes": "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
+    "bin": "An Clicker.exe",
+    "shortcuts": [
+        [
+            "An Clicker.exe",
+            "anclicker"
+        ]
+    ]
 }
