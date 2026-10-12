@@ -10,7 +10,7 @@
 
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
-| 1 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：固定装 Program Files + 注册 IME，探针 0 跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.4.0 | 2026-10-12 | 2026-10-12 |
+| 1 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：固定装 Program Files + 注册 IME，探针 0 跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.4.1 | 2026-10-12 | 2026-10-12 |
 | 2 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.0.1 | 2026-10-10 | 2026-10-12 |
 | 3 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.1.0 | 2026-10-12 | 2026-10-12 |
 | 4 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.13.9 | 2026-10-11 | 2026-10-12 |
