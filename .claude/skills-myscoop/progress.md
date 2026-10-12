@@ -212,7 +212,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 242e33a (HEAD -> main, origin/main, origin/HEAD) 同步遗留改动：anclicker 1.4.9（上游资产再改名 -win.zip）/ bongocat 2.3.0
+* 6f54195 (HEAD -> main, origin/main, origin/HEAD) 更新第三方软件：anclicker 1.5.2 / filee 1.10.1 / freellmapi 0.13.10 / taskbarpopup 1.1.1 / zhiyiime 1.4.4（--all 更新，README 版本列由内置同步自动跟随）
+* a80bd48 资产打分新增源码包（拼音标记）降级：score_asset 对独立段 daima/yuanma 记 -20（与 CLI 档同级、只降级不排除）——修 anclicker 的 -win-DaiMa.zip 与 -win.zip 同分被顺序选中；README 打分表 / SKILL 规则 20 / progress 同步，test_guards 加 6b 回归
+* 046891e progress.md 更新提交历史
+* 242e33a 同步遗留改动：anclicker 1.4.9（上游资产再改名 -win.zip）/ bongocat 2.3.0
 * 6a025f6 myscoop-update 更新后自动同步 README（内置 sync_readme_after_update：版本列 + 创建/更新日期列，本次变更清单取当天，本地 --all 一步到位；与 CI 内联步骤逻辑等价、CI 行为不变）；顺带同步 4 处 README 落后项，zhiyiime 1.4.2
 * f8c1eb8 progress.md 更新提交历史
 * 3312f4c 新增收录 Filee 1.10.0（免费开源文件转换器：拖拽即转 180+ 格式，全程离线无需上传）：README 第三方表置顶补行并重编号（55→56），progress 计数 141→142
