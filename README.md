@@ -1101,13 +1101,16 @@ Scoop 的 `innosetup: true` / `pre_install` 解包安装只是 7z 解文件，**
 
 升级时 installer 模式会重跑安装器 → 注册自动指向新版本组件，版本化文件名不失配。
 
-**自管理式安装器（忽略 `/D`、固定装 Program Files）**：个别安装器（如知意输入法）自带版本生命周期管理、忽略 `/D` 参数，固定装到 `C:\Program Files\<名称>\<版本>.<哈希>\`。此时：
-- 探针处选 **`0`（不建立 bin/shortcuts）**——安装器自建快捷方式/自注册，无需 shim（`--select 0` 免交互）；`0` 对 zip 路径同样可用
-- 卸载靠三级回退的第②层（注册表搜索）定位真实卸载器（实测：知意输入法成功安装后写 `Uninstall\ZhiyiIME` 键，`InstallBaseLocation` 含应用名）
+**自管理式安装器（载荷含 `*installer-helper.exe` 标记）**：个别安装器（如知意输入法）自带版本生命周期管理。`--add --dl` 探针在 NSIS 载荷中发现 `installer-helper` 时**自动判定**：
+- **不建立 bin/shortcuts**（安装器自建快捷方式/自注册，无需 shim；也不再提示选择主程序）
+- 生成 **script 形态 installer**：`RunAs` 提权 + `/D=$persist_dir\<应用名>`（persist 下的**全新稳定**目录——安装器尊重 `/D` 后，指向已存在目录会直接拒绝退出 1；persist 路径跨版本稳定，应用自管版本退休）
+- 卸载走三级回退的第②层（注册表搜索；实测 `InstallLocation`/`InstallBaseLocation` 含应用名可命中 persist 落点）
+- 手动场景：探针处也可直接输入 **`0`**（不建 bin/shortcuts；`--select 0` 免交互，zip 路径同样可用）
 
 **自动处理**：`myscoop-update.py --add` 检测到 Inno/NSIS 安装器且名称/描述命中
 注册型关键词（ime 输入法 tsf driver 驱动 右键 context menu registry 等）时，
-**自动生成 installer 模式**（卸载脚本含三级回退），无需手工改造。
+**自动生成 installer 模式**（卸载脚本含三级回退）；载荷含 `installer-helper` 的自管理式
+安装器自动生成 script 形态（RunAs + persist `/D`），无需手工改造。
 
 **存量清单一键迁移**（把已入库的 `innosetup`/`pre_install` 解包形态转 installer 模式，幂等）：
 

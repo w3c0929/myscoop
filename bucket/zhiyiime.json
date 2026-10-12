@@ -12,9 +12,11 @@
     },
     "hash": "sha256:27d9889c1e707bec86641566da460cd1b6065b362ccd34a734f6939426cd12b5",
     "installer": {
-        "args": [
-            "/S",
-            "/D=$dir"
+        "script": [
+            "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
+            "$p = Start-Process \"$dir\\$fname\" -ArgumentList '/S',\"/D=$persist_dir\\zhiyiime\" -Verb RunAs -PassThru",
+            "$p.WaitForExit()",
+            "if ($p.ExitCode -ne 0) { throw \"zhiyiime 安装失败（$($p.ExitCode)）\" }"
         ]
     },
     "post_uninstall": [

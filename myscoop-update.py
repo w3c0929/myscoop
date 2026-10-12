@@ -1839,13 +1839,15 @@ def probe_nsis_exes(tmp, app_name):
     双层结构（`app-*.7z`，Electron/Tauri 常见）：**只要存在 `app-*.7z` 就二次解包，且只用内层
     exe 作候选**——因为配套的 pre_install 会把 `app-*.7z` 解到 `$dir` 并丢弃外层，外层 exe
     （如 dsh 的 7z 助手 `dsh-7za.exe`）在安装后并不存在于 `$dir`，误选会导致建 shim 失败。
-    内层为空时返回空（宁可留空也不误用外层）；无 `app-*.7z` 时才用外层。"""
+    内层为空时返回空（宁可留空也不误用外层）；无 `app-*.7z` 时才用外层。
+    返回 (exe 名列表, 是否自管理式安装器)——载荷含 `*installer-helper.exe`（如知意输入法的
+    `zhiyi-installer-helper.exe`）即自管理式：安装器自带版本生命周期管理、/D 需指向全新目录。"""
     import subprocess
     import shutil
     z = find_7z()
     if not z:
         print("[警告] 未找到 7z，无法解包 NSIS（可先 scoop install 7zip）")
-        return []
+        return [], False
     work = FALLBACK_OUT_DIR / ".probe_tmp" / app_name
     shutil.rmtree(work, ignore_errors=True)
     work.mkdir(parents=True, exist_ok=True)
@@ -1856,11 +1858,13 @@ def probe_nsis_exes(tmp, app_name):
             print(f"[警告] 7z 解包退出码 {r.returncode}")
 
         def collect(root):
-            paths = {p for p in root.rglob("*.exe") if not _is_helper_exe(p.name)}
+            all_exes = list(root.rglob("*.exe"))
+            selfm = any("installer-helper" in p.name.lower() for p in all_exes)
+            paths = {p for p in all_exes if not _is_helper_exe(p.name)}
             top = {p for p in paths if p.parent == root}
             if top:
                 paths = top  # 主程序通常在应用根目录；有根级 exe 就只取根级（滤掉 resources 下的依赖）
-            return sorted(paths, key=lambda p: (p.parent != root, p.name.lower()))
+            return sorted(paths, key=lambda p: (p.parent != root, p.name.lower())), selfm
 
         app7zs = sorted(work.rglob("app-*.7z"),
                         key=lambda p: (0 if "64" in p.name else 1, p.name.lower()))
@@ -1868,13 +1872,13 @@ def probe_nsis_exes(tmp, app_name):
             print(f"        检测到双层结构 {app7zs[0].name}，二次解包取内层 exe…")
             subprocess.run([z, "x", "-y", f"-o{work / 'app'}", str(app7zs[0])],
                            capture_output=True, timeout=900)
-            exes = collect(work / "app")
+            exes, self_managing = collect(work / "app")
         else:
-            exes = collect(work)
-        return [p.name for p in exes]
+            exes, self_managing = collect(work)
+        return [p.name for p in exes], self_managing
     except subprocess.TimeoutExpired:
         print("[错误] 7z 解包超时")
-        return []
+        return [], False
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
@@ -2007,6 +2011,28 @@ def installer_mode_fields(is_inno, template=None, app_name=None):
     fields = {
         "installer": ({"args": ["/VERYSILENT", "/NORESTART", "/DIR=$dir"]} if is_inno
                       else {"args": ["/S", "/D=$dir"]}),
+        "post_uninstall": _uninstall_script(app_name),
+    }
+    if template is not None:
+        fields["notes"] = _merge_notes(template.get("notes"), _note_for_template(template))
+    return fields
+
+
+def self_managing_installer_fields(app_name=None, template=None):
+    """自管理式安装器（载荷含 `*installer-helper.exe`）的 installer 形态：script 形态——
+    RunAs 提权 + `/D` 指向 persist 下全新子目录（跨版本稳定，应用自管版本生命周期，
+    且必须是**不存在**的目录——1.4.0 起安装器尊重 /D，指向已存在目录会直接 exit 1）
+    + 退出码检查；卸载走 `_uninstall_script`（注册表回退，实测命中 persist 落点）。无 bin/shortcuts。
+    教训：zhiyiime 1.4.0 起尊重 /D，Scoop args 形态的 `/D=$dir`（已存在且含安装器副本）
+    → 安装器拒绝（exit 1、1.1s）；改 script 形态 + `/D=$persist_dir\\<app>` 实测通过。"""
+    sub = str(app_name or "app")
+    fields = {
+        "installer": {"script": [
+            "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
+            f"$p = Start-Process \"$dir\\$fname\" -ArgumentList '/S',\"/D=$persist_dir\\{sub}\" -Verb RunAs -PassThru",
+            "$p.WaitForExit()",
+            f"if ($p.ExitCode -ne 0) {{ throw \"{sub} 安装失败（$($p.ExitCode)）\" }}",
+        ]},
         "post_uninstall": _uninstall_script(app_name),
     }
     if template is not None:
@@ -2260,10 +2286,15 @@ def finalize_direct_manifest(template, out_dir, app_name, drop=()):
                 print("        （临时安装已回滚清理）")
         elif nsis:
             print("[NSIS] 检测到 NSIS 安装器特征（7z 解包方式，非 Inno，无需 innosetup）")
+            self_managing = False
             if not template.get("bin") and url.lower().endswith(".exe"):
                 print("[探测] 7z 解包探测真实 exe 名…")
-                fexes = probe_nsis_exes(tmp, app_name)
-                if len(fexes) == 1:
+                picked = None
+                fexes, self_managing = probe_nsis_exes(tmp, app_name)
+                if self_managing:
+                    skip_bin = True
+                    print("        检测到自管理式安装器标记（installer-helper）→ 不建立 bin/shortcuts（安装器自管快捷方式/注册）")
+                elif len(fexes) == 1:
                     picked = fexes[0]
                 elif fexes:
                     print(f"        发现多个 exe（共 {len(fexes)} 个，含依赖工具）：")
@@ -2279,9 +2310,13 @@ def finalize_direct_manifest(template, out_dir, app_name, drop=()):
                     print(f"        已写入主程序 bin={picked}")
                 fname = url.split("/")[-1].split("#")[0].split("?")[0]
                 portable = _is_portable_asset(fname)
-                if needs_registration(template) and not portable:
-                    template.update(installer_mode_fields(is_inno=False, template=template, app_name=app_name))
-                    print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
+                if (needs_registration(template) or self_managing) and not portable:
+                    if self_managing:
+                        template.update(self_managing_installer_fields(app_name=app_name, template=template))
+                        print("            已自动采用 installer 模式（自管理式：script 形态，RunAs + /D=$persist_dir\\<app>，卸载走注册表回退）")
+                    else:
+                        template.update(installer_mode_fields(is_inno=False, template=template, app_name=app_name))
+                        print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
                 elif "pre_install" not in template:
                     if needs_registration(template) and portable:
                         print(f"        [提示] {fname} 是便携版 → 不做 installer 模式，改用 7z 解包 pre_install")
@@ -2791,7 +2826,9 @@ def probe_exe(src, app_name=None):
         comment = "Inno 会自动写 innosetup:true"
     else:
         print("[NSIS] 检测到 NSIS 安装器，开始 7z 解包探测…（无需真安装）")
-        exes = probe_nsis_exes(tmp, app_name)
+        exes, _self_managing = probe_nsis_exes(tmp, app_name)
+        if _self_managing:
+            print("        [提示] 载荷含 installer-helper：自管理式安装器，建议走 --add --dl 自动生成 script 形态")
         comment = "NSIS 请配合 --add 自动生成的 pre_install 解包"
     if exes:
         roots = [e for e in exes if (tmp.parent / e).exists() or True]
