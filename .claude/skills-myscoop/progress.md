@@ -210,9 +210,12 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 9a9d9ff (HEAD -> main) 同步 README 第三方版本与日期列
+* ab10d9c (HEAD -> main, origin/main, origin/HEAD) README 知意输入法行描述同步：自管理式安装器 script 形态（装到 persist），非'固定装 Program Files'
+* b63e9a8 修复 CI 两个'无法匹配'：anclicker 资产改名适配 + kvllama→kvninfer（上游双产品线拆分）；新增前缀重选第三重匹配 + tag_regex 资产守卫
+* 3338e0c progress.md 更新提交历史
+* 9a9d9ff 同步 README 第三方版本与日期列
 * 48eef51 自动更新第三方软件
-* c3bd99d (origin/main) progress.md 更新提交历史
+* c3bd99d progress.md 更新提交历史
 * 585c8ae CI 提交历史重建对齐铁律 13：log 命令加 --decorate-refs-exclude=refs/tags/*
 * 2a93c0c progress.md 更新提交历史
 * 1619fbc 自管理式安装器自动判定：installer-helper 标记 → script 形态（RunAs + persist /D）；zhiyiime 清单修复为 script 形态
