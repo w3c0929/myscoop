@@ -210,7 +210,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* ab10d9c (HEAD -> main, origin/main, origin/HEAD) README 知意输入法行描述同步：自管理式安装器 script 形态（装到 persist），非'固定装 Program Files'
+* 3312f4c (HEAD -> main, origin/main, origin/HEAD) 新增收录 Filee 1.10.0（免费开源文件转换器：拖拽即转 180+ 格式，全程离线无需上传）：README 第三方表置顶补行并重编号（55→56），progress 计数 141→142
+* 194467a progress.md 更新提交历史
+* ab10d9c README 知意输入法行描述同步：自管理式安装器 script 形态（装到 persist），非'固定装 Program Files'
 * b63e9a8 修复 CI 两个'无法匹配'：anclicker 资产改名适配 + kvllama→kvninfer（上游双产品线拆分）；新增前缀重选第三重匹配 + tag_regex 资产守卫
 * 3338e0c progress.md 更新提交历史
 * 9a9d9ff 同步 README 第三方版本与日期列
