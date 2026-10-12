@@ -26,6 +26,7 @@ GitHub: https://github.com/w3c0929/myscoop
 - `--add <直链|下载页|模板>`：直链/下载页/模板新增强（含 Inno/NSIS 探测、--fill-bin URL 模式）
 - `--installer-mode`：注册型软件存量清单迁移 installer 模式
 - `--all` / 单清单更新：GitHub API digest 免下载更新；CI 每晚 1 点自动执行；**资产守卫**：latest 无可下载 Windows 资产（如 monorepo 子包噪音 tag，assets 为空）时回退 releases 列表取带资产者，全架构匹配失败则跳过不写入
+  - **更新后自动同步 README**（2026-10-12，`sync_readme_after_update` 内置）：版本列（第三方表=清单 version）+ 创建列（git 首次提交日期）+ 更新列（**本次真正变更的清单取当天**——随后即提交，与提交日一致；其余取最近提交日期）；幂等、`--dry-run` 不写、异常只警告。原先需单独跑 `tools/sync_readme_versions.py`（CI 用其内联副本），现本地一条 `--all` 到位；与 CI 内联步骤逻辑等价 → **CI 行为不变**（其内联步骤变幂等空操作）。首次实跑修正了 4 处 README 落后（zhiyiime 1.4.2 / anclicker 1.4.9 / bongocat 2.3.0 / kvninfer 创建日）
 - **配对资产自动更新**（`--more` 生成的数组型 url/hash，如 prllama）：`_update_pair_block` 逐项 `$version` 替换 → `match_asset` → 回写同下标 url/hash；cudart 项（名不含版本）强制精确匹配，防跨 CUDA 版本误配。数组走独立分支，标量清单行为不变（回归测试 `tools/test_pair_update.py`）
 - **收录预检（`--add`，与更新共用 `pick_effective_release`）**：只取"非 draft/untagged + 含 Windows 资产"的**最新** release——**只按资产判定，不看 prerelease/rc**；最新版若是零资产空 release 会自动往下探到最近带 Windows 资产的（如 kvllama `v0.17.0` 空 → 取 `v0.16.0-rc3-prism.3`）；全无则打印候选表后跳过、不写文件。archived/fork 默认警告（`--allow-archived` 静音）；直链/`--from`/`--fill-bin` 只提示不阻断（回归测试 `tools/test_effective_release.py`）
 - **便携资产不做 installer 模式**（`_is_portable_asset`）：`--dl` 的 NSIS 分支里，资产名明示 portable（`-portable`/`_portable` 段）时，即便描述命中"输入法/驱动"等注册型关键词也不套 `installer` 模式，改走 `NSIS_PRE_INSTALL` 7z 解包——否则 Scoop 把便携 exe 当安装器执行（`/S /D=$dir` 不识别）→ 程序被直接启动、`$dir` 无 bin 目标 → 建 shim 失败（修 `xtranslate`；实测解包产出 `Xtranslate.exe` 可达；回归测试 `tools/test_guards.py`）

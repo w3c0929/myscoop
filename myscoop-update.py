@@ -3204,6 +3204,90 @@ def check_consistency():
     return ok
 
 
+def _readme_git_date(app_file, first):
+    """清单文件的首次/最近提交日期（YYYY-MM-DD）；无 git 历史（未提交/浅克隆）返回 None。"""
+    import subprocess
+    args = ["git", "log"]
+    args += ["--diff-filter=A", "-1"] if first else ["-1"]
+    args += ["--format=%ad", "--date=short", "--", str(BUCKET_DIR / app_file)]
+    try:
+        out = subprocess.run(args, capture_output=True, text=True,
+                             cwd=BUCKET_DIR.parent, timeout=30).stdout.strip()
+        return out or None
+    except Exception:
+        return None
+
+
+def sync_readme_after_update(updated_files):
+    """更新后同步 README 软件表，免去再跑一次 tools/sync_readme_versions.py。
+
+    - 版本列：仅第三方官方表 = 清单 version 原样
+    - 创建列：两表 = 清单首次提交日期（git log --diff-filter=A）
+    - 更新列：本次真正变更的清单 = 今天（这些文件随后会被提交，与提交日期一致）；
+      其余 = 最近提交日期
+    幂等：无差异不写文件；任一异常只警告，不影响清单更新结果。
+    """
+    from datetime import date
+    today = date.today().isoformat()
+    names = set(updated_files)
+    readme = BUCKET_DIR.parent / "README.md"
+    try:
+        lines = readme.read_text(encoding="utf-8").splitlines()
+    except Exception as e:
+        print(f"  [README] 读取失败，跳过同步: {e}")
+        return
+    new_lines = list(lines)
+    in_third = False
+    changed = 0
+    for i, line in enumerate(lines):
+        if line.startswith("### 第三方官方"):
+            in_third = True
+            continue
+        if line.startswith("### 本地维护"):
+            in_third = False
+            continue
+        if not re.match(r"^\|\s*\d+\s*\|", line):
+            continue
+        m = re.search(r"`scoop install ([a-z0-9._-]+)(?:@[^`\s]+)?`", line)
+        if not m:
+            continue
+        app = m.group(1)
+        mf = f"{app}.json"
+        mp = BUCKET_DIR / mf
+        if not mp.exists():
+            continue
+        cells = [c.strip() for c in line.split("|")]
+        while len(cells) < 8:
+            cells.append("")
+        edits = []
+        if in_third:
+            try:
+                ver = str(json.loads(mp.read_text(encoding="utf-8")).get("version") or "")
+            except Exception:
+                ver = ""
+            if ver and cells[5] != ver:
+                edits.append((5, ver))
+        created = _readme_git_date(mf, True) or today
+        updated = today if (mf in names or app in names) else (_readme_git_date(mf, False) or today)
+        if cells[6] != created:
+            edits.append((6, created))
+        if cells[7] != updated:
+            edits.append((7, updated))
+        if edits:
+            tag = "第三方" if in_third else "本地"
+            print(f"  [README] {tag} {app}: " + ", ".join(
+                f"{'版本' if idx == 5 else '创建' if idx == 6 else '更新'}→{v}" for idx, v in edits))
+            changed += 1
+            for idx, v in edits:
+                cells[idx] = v
+            new_lines[i] = "| " + " | ".join(cells[1:8]) + " |"
+    if changed:
+        readme.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+        print(f"  [README] 版本/日期列已同步 {changed} 行")
+    else:
+        print("  [README] 版本/日期列无需更新")
+
+
 def main():
     args = sys.argv[1:]
     dry_run = "--dry-run" in args
@@ -3338,6 +3422,9 @@ def main():
         print(f"=== 已更新 {len(updated)} 个 ===")
     for u in updated:
         print(f"  {u['manifest']}: {u['old']} → {u['new']}")
+    if not dry_run:
+        # 更新完清单顺手同步 README（版本列 + 创建/更新日期列），省一次单独调用
+        sync_readme_after_update({u["manifest"] for u in updated})
     if errors:
         print(f"=== 异常 {len(errors)} 个: {', '.join(errors)} ===")
         sys.exit(1)

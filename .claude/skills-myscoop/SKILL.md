@@ -499,14 +499,16 @@ powershell -NoProfile -Command "scoop search {appname}"
 # 检查更新
 python3 myscoop-update.py --all --dry-run
 
-# 自动更新全部
+# 自动更新全部（顺带同步 README 的版本列与创建/更新日期列，无需再单独跑同步脚本）
 python3 myscoop-update.py --all
 
 # 提交
-git add bucket/ && git commit -m "批量更新第三方软件" && git push
+git add bucket/ README.md && git commit -m "批量更新第三方软件" && git push
 ```
 
 **原理**：GitHub Release API 返回的每个 asset 包含 `digest: sha256:xxx`，脚本直接读取，无需下载文件。
+
+**README 自动同步（内置，`sync_readme_after_update`）**：`--all` 与单清单更新结束后自动刷新 README 软件表——版本列（第三方表 = 清单 `version` 原样）、创建列（清单首次提交日期）、更新列（**本次真正变更的清单取当天**——这些文件随后即被提交，日期与提交日一致；其余取最近提交日期）。幂等（无差异不写），`--dry-run` 不触发；失败只警告不影响清单更新。与 CI 内联的同名步骤逻辑等价——CI 行为不变（其内联步骤变为幂等空操作）。
 
 ## 关键规则
 
