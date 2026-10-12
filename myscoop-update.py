@@ -736,6 +736,13 @@ def score_asset(name):
     # 教训：bdl 曾选中 bdl-cli-…zip、vtracer 曾选中 -msvc.zip，把 GUI 应用装成了命令行工具。
     if re.search(r'(?i)(?:^|[-_.])(?:cli|msvc|gnu)(?:[-_.]|$)', lower):
         score -= 20
+    # 源码包（拼音标记）降级：中文项目常用 DaiMa / YuanMa 命名源码包（= -source/-src 同义，
+    # 只是用拼音），不是可安装的 Windows 包。这里只降级、不排除（与 is_windows_asset 的
+    # src/source 排除不同）：上游仅发源码包时仍可兜底选中。降幅同 CLI 档（-20）。
+    # 教训：AnClicker 的 AnClicker-v1.5.2-win-DaiMa.zip 与 AnClicker-v1.5.2-win.zip 同为 5 分，
+    # 平手后按列表顺序被选走（源码包反被优先）。
+    if re.search(r'(?i)(?:^|[-_.])(?:daima|yuanma)(?:[-_.]|$)', lower):
+        score -= 20
     # x64 优先
     if "x64" in lower or "64bit" in lower or "amd64" in lower:
         score += 2
