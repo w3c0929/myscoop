@@ -211,7 +211,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 3312f4c (HEAD -> main, origin/main, origin/HEAD) 新增收录 Filee 1.10.0（免费开源文件转换器：拖拽即转 180+ 格式，全程离线无需上传）：README 第三方表置顶补行并重编号（55→56），progress 计数 141→142
+* 242e33a (HEAD -> main, origin/main, origin/HEAD) 同步遗留改动：anclicker 1.4.9（上游资产再改名 -win.zip）/ bongocat 2.3.0
+* 6a025f6 myscoop-update 更新后自动同步 README（内置 sync_readme_after_update：版本列 + 创建/更新日期列，本次变更清单取当天，本地 --all 一步到位；与 CI 内联步骤逻辑等价、CI 行为不变）；顺带同步 4 处 README 落后项，zhiyiime 1.4.2
+* f8c1eb8 progress.md 更新提交历史
+* 3312f4c 新增收录 Filee 1.10.0（免费开源文件转换器：拖拽即转 180+ 格式，全程离线无需上传）：README 第三方表置顶补行并重编号（55→56），progress 计数 141→142
 * 194467a progress.md 更新提交历史
 * ab10d9c README 知意输入法行描述同步：自管理式安装器 script 形态（装到 persist），非'固定装 Program Files'
 * b63e9a8 修复 CI 两个'无法匹配'：anclicker 资产改名适配 + kvllama→kvninfer（上游双产品线拆分）；新增前缀重选第三重匹配 + tag_regex 资产守卫
