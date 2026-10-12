@@ -62,7 +62,7 @@ GitHub: https://github.com/w3c0929/myscoop
 2. **git commit 信息必须用中文**
 3. **每次制作/更新后，提交前必须同步更新 README.md、progress.md（本项目进展）和 SKILL.md**
 4. **Hash 获取优先使用 GitHub API**：GitHub Release API 返回的每个 asset 包含 `digest: sha256:xxx` 字段，可直接读取无需下载文件。仅在 API 不可用时才下载计算。
-5. **每次提交完成后**，必须运行 `git log --oneline --decorate --graph` 并将完整输出更新到本文件的"提交历史"章节。
+5. **每次提交完成后**，必须运行 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 并将完整输出更新到本文件的"提交历史"章节（必须排除标签装饰，防超长行）。
 6. **多版本软件资产（自托管）**：同一软件需保留多个版本时，用一个 release（固定 tag）下挂多个资产（文件名含版本号区分），不要每版本各建一个 release。manifest 的 `version` 为默认（最新）版本，`url`/`hash` 硬编码默认版具体地址（`url` 里写 `$version` 会导致 Scoop 普通安装 404），`autoupdate.url` 仅文件名用 `$version` 模板。安装默认版 `scoop install myscoop/<app>`；指定版 `scoop install myscoop/<app>@<版本>`（触发 autoupdate 动态生成、GitHub digest 取 hash）；切换 `scoop reset myscoop/<app>@<版本>`。搜索工具只显示默认版，必须同步 README 标注多版本及 `@版本` 用法。示例：Sublime Text（release `vSublimeText` 挂 4200/4207）。详见 SKILL 规则 15。
 7. **改动文件必须全部提交推送**：所有内容改动过的需提交文件（含 README.md、progress.md、SKILL.md 及仓库内其他跟踪文件）一律提交推送，不得遗留未提交改动；即使改动与本任务无关（如历史遗留改动）也一并提交。未跟踪文件（发布资产、临时文件）不在此列。
 8. **README 软件表必须与 bucket/ 全量对齐**：每次新增/更新 manifest 后，提交前必须核对 README 两张表（第三方官方 + 本地维护）的行数之和等于 `bucket/` 清单总数，**缺漏必须补上**（含记录在 top 且重新编号）；总量计数（收录总数/第三方/本地）同步修正，不允许任何已入库 manifest 在 README 表中缺席。
@@ -205,7 +205,7 @@ scoop cat myscoop/appname
 
 ## 提交历史
 
-每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：
+每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
 * 1619fbc (HEAD -> main, origin/main, origin/HEAD) 自管理式安装器自动判定：installer-helper 标记 → script 形态（RunAs + persist /D）；zhiyiime 清单修复为 script 形态

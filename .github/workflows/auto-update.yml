@@ -151,8 +151,8 @@ jobs:
           end = '## 新会话启动指南'.encode('utf-8')
           hdr_pos = data.index(hdr); end_pos = data.index(end)
           head = data[:hdr_pos]; tail = data[end_pos:]
-          desc = '每次提交完成后，将 `git log --oneline --decorate --graph` 输出更新到此处：'.encode('utf-8')
-          graph = subprocess.run(['git', '-c', 'i18n.logOutputEncoding=utf-8', 'log', '--oneline', '--decorate', '--graph'], capture_output=True).stdout
+          desc = '每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：'.encode('utf-8')
+          graph = subprocess.run(['git', '-c', 'i18n.logOutputEncoding=utf-8', 'log', '--oneline', '--decorate', '--graph', '--decorate-refs-exclude=refs/tags/*'], capture_output=True).stdout
           graph = graph.replace(b'\n', nl)
           if not graph.endswith(nl): graph += nl
           block = hdr + nl + nl + desc + nl + nl + b'```' + nl + graph + b'```' + nl + nl
