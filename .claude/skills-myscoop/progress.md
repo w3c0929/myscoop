@@ -208,7 +208,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 1619fbc (HEAD -> main, origin/main, origin/HEAD) 自管理式安装器自动判定：installer-helper 标记 → script 形态（RunAs + persist /D）；zhiyiime 清单修复为 script 形态
+* 585c8ae (HEAD -> main, origin/main, origin/HEAD) CI 提交历史重建对齐铁律 13：log 命令加 --decorate-refs-exclude=refs/tags/*
+* 2a93c0c progress.md 更新提交历史
+* 1619fbc 自管理式安装器自动判定：installer-helper 标记 → script 形态（RunAs + persist /D）；zhiyiime 清单修复为 script 形态
 * 8ad73d1 progress.md 更新提交历史
 * 6b94699 同步 README 第三方版本与日期列
 * c1dcf59 自动更新第三方软件
