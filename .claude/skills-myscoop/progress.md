@@ -212,7 +212,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* e3a82fb (HEAD -> main, origin/main, origin/HEAD) 修 zhiyiime 更新必失败：自管理式安装器 /D 目标装前清空（更新/重装时 persist 残留目录 → 安装器 exit 1）——清单加 Remove-Item，self_managing_installer_fields 生成器同步（以后收录自动带此步）；SKILL/progress 记录教训
+* c5ebbeb (HEAD -> main) 同步 README 第三方版本与日期列
+* af8ffe8 自动更新第三方软件
+* 25bc0cf (origin/main) progress.md 更新提交历史
+* e3a82fb 修 zhiyiime 更新必失败：自管理式安装器 /D 目标装前清空（更新/重装时 persist 残留目录 → 安装器 exit 1）——清单加 Remove-Item，self_managing_installer_fields 生成器同步（以后收录自动带此步）；SKILL/progress 记录教训
 * 64c3d51 myps推送
 * ee11d8b mypsh推送
 * edbbf9c progress.md 更新提交历史
