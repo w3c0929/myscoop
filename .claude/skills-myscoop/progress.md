@@ -10,11 +10,11 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 
 GitHub: https://github.com/w3c0929/myscoop
 
-## 当前状态（截至 2026-10-12）
+## 当前状态（截至 2026-10-13）
 
-- **收录软件总数**: 142 款
+- **收录软件总数**: 143 款
 - **本地维护（自托管 Release）**: 86 款
-- **第三方官方（引用原项目 Release）**: 56 款
+- **第三方官方（引用原项目 Release）**: 57 款
 
 ## 脚本能力（myscoop-update.py 最新）
 

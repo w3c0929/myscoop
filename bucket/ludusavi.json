@@ -1,0 +1,43 @@
+{
+    "version": "0.31.0",
+    "description": "Backup tool for PC game saves",
+    "homepage": "https://github.com/mtkennerly/ludusavi",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/mtkennerly/ludusavi"
+    },
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/mtkennerly/ludusavi/releases/download/v0.31.0/ludusavi-v0.31.0-legal.zip",
+            "hash": "sha256:9fce11fc44942efdd5969928d89b106c229f9a041d7a713c424a6da981660ebf"
+        },
+        "64bit": {
+            "url": "https://github.com/mtkennerly/ludusavi/releases/download/v0.31.0/ludusavi-v0.31.0-win64.zip",
+            "hash": "sha256:f47a8ad8c708f01d2eb124704973beffab205e292f5287a10fc4a101f8d68706"
+        },
+        "arm64": {
+            "url": "https://github.com/mtkennerly/ludusavi/releases/download/v0.31.0/ludusavi-v0.31.0-legal.zip",
+            "hash": "sha256:9fce11fc44942efdd5969928d89b106c229f9a041d7a713c424a6da981660ebf"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/mtkennerly/ludusavi/releases/download/v$version/ludusavi-v$version-legal.zip"
+            },
+            "64bit": {
+                "url": "https://github.com/mtkennerly/ludusavi/releases/download/v$version/ludusavi-v$version-win64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/mtkennerly/ludusavi/releases/download/v$version/ludusavi-v$version-legal.zip"
+            }
+        }
+    },
+    "bin": "ludusavi.exe",
+    "shortcuts": [
+        [
+            "ludusavi.exe",
+            "ludusavi"
+        ]
+    ]
+}
