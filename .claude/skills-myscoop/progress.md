@@ -212,7 +212,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* b902bc5 (HEAD -> main, origin/main, origin/HEAD) 新增收录 StarPie 1.8.0-beta.7（现代化 Windows 鼠标轮盘手势系统，Lightweight 便携 zip 官方 release）：README 第三方表置顶补行并重编号（57→58），progress 计数 143→144
+* 6f2673c (HEAD -> main) 同步 README 第三方版本与日期列
+* ffee9cf 自动更新第三方软件
+* 9723b84 (origin/main) mypsh推送
+* 3e974e5 progress.md 更新提交历史
+* b902bc5 新增收录 StarPie 1.8.0-beta.7（现代化 Windows 鼠标轮盘手势系统，Lightweight 便携 zip 官方 release）：README 第三方表置顶补行并重编号（57→58），progress 计数 143→144
 * be7c272 progress.md 更新提交历史
 * 3cdff3b 新增收录 Ludusavi 0.31.0（PC 游戏存档备份与恢复工具，多架构 zip 官方 release）：README 第三方表置顶补行并重编号（56→57），progress 计数 142→143
 * c66ec38 progress.md 更新提交历史（含用户更新的 filee 1.10.2）
