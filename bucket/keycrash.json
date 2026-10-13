@@ -1,13 +1,13 @@
 {
-    "version": "0.2.2",
+    "version": "0.2.4",
     "description": "A Windows shortcut conflict detector / 一按，找到快捷键冲突",
     "homepage": "https://www.yuelili.com/apps/keycrash",
     "license": "unknown",
     "checkver": {
         "github": "https://github.com/Yuelioi/keycrash"
     },
-    "url": "https://github.com/Yuelioi/keycrash/releases/download/v0.2.2/keycrash-v0.2.2-windows-x64.zip",
-    "hash": "sha256:aa3bb4e053779854705e282cfcbec26c95921eebe2d4be505b0cde3bd40dd6ba",
+    "url": "https://github.com/Yuelioi/keycrash/releases/download/v0.2.4/keycrash-v0.2.4-windows-x64.zip",
+    "hash": "sha256:ad70c62abe6159857d5accc624a328ff9e3ed5b8d9aa25aeab78fa9c2b2b3d6a",
     "autoupdate": {
         "url": "https://github.com/Yuelioi/keycrash/releases/download/v$version/keycrash-v$version-windows-x64.zip"
     },
