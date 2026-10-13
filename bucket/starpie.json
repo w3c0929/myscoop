@@ -1,0 +1,21 @@
+{
+    "version": "1.8.0-beta.7",
+    "description": "StarPie 现代化 Windows 鼠标轮盘手势系统 ",
+    "homepage": "https://github.com/Star-Pie/StarPie",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/Star-Pie/StarPie"
+    },
+    "url": "https://github.com/Star-Pie/StarPie/releases/download/v1.8.0-beta.7/StarPie-v1.8.0-beta.7-Lightweight-win-x64.zip",
+    "hash": "sha256:6fa458a1e4c159589b93b255868aa790c5a3e6cde6f3245b51d41087627b263d",
+    "autoupdate": {
+        "url": "https://github.com/Star-Pie/StarPie/releases/download/v$version/StarPie-v$version-Lightweight-win-x64.zip"
+    },
+    "bin": "StarPie.exe",
+    "shortcuts": [
+        [
+            "StarPie.exe",
+            "starpie"
+        ]
+    ]
+}
