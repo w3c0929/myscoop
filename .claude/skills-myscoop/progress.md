@@ -212,7 +212,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 6f54195 (HEAD -> main, origin/main, origin/HEAD) 更新第三方软件：anclicker 1.5.2 / filee 1.10.1 / freellmapi 0.13.10 / taskbarpopup 1.1.1 / zhiyiime 1.4.4（--all 更新，README 版本列由内置同步自动跟随）
+* e3a82fb (HEAD -> main, origin/main, origin/HEAD) 修 zhiyiime 更新必失败：自管理式安装器 /D 目标装前清空（更新/重装时 persist 残留目录 → 安装器 exit 1）——清单加 Remove-Item，self_managing_installer_fields 生成器同步（以后收录自动带此步）；SKILL/progress 记录教训
+* 64c3d51 myps推送
+* ee11d8b mypsh推送
+* edbbf9c progress.md 更新提交历史
+* 6f54195 更新第三方软件：anclicker 1.5.2 / filee 1.10.1 / freellmapi 0.13.10 / taskbarpopup 1.1.1 / zhiyiime 1.4.4（--all 更新，README 版本列由内置同步自动跟随）
 * a80bd48 资产打分新增源码包（拼音标记）降级：score_asset 对独立段 daima/yuanma 记 -20（与 CLI 档同级、只降级不排除）——修 anclicker 的 -win-DaiMa.zip 与 -win.zip 同分被顺序选中；README 打分表 / SKILL 规则 20 / progress 同步，test_guards 加 6b 回归
 * 046891e progress.md 更新提交历史
 * 242e33a 同步遗留改动：anclicker 1.4.9（上游资产再改名 -win.zip）/ bongocat 2.3.0
