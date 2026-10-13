@@ -2126,11 +2126,16 @@ def self_managing_installer_fields(app_name=None, template=None):
     且必须是**不存在**的目录——1.4.0 起安装器尊重 /D，指向已存在目录会直接 exit 1）
     + 退出码检查；卸载走 `_uninstall_script`（注册表回退，实测命中 persist 落点）。无 bin/shortcuts。
     教训：zhiyiime 1.4.0 起尊重 /D，Scoop args 形态的 `/D=$dir`（已存在且含安装器副本）
-    → 安装器拒绝（exit 1、1.1s）；改 script 形态 + `/D=$persist_dir\\<app>` 实测通过。"""
+    → 安装器拒绝（exit 1、1.1s）；改 script 形态 + `/D=$persist_dir\\<app>` 实测通过。
+    再教训（2026-10-12）：/D 目标**每次装前都要清空**——script 形态只解决首次安装，更新/重装时
+    `$persist_dir\\<app>` 已存在（上次安装残留）→ 照样 exit 1（症状：scoop update 每次必失败）。"""
     sub = str(app_name or "app")
     fields = {
         "installer": {"script": [
             "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
+            # /D 目标必须不存在（跨版本稳定目录，但安装器要求全新）：装前清掉上次安装的残留，
+            # 否则更新/重装必失败。persist 只装程序文件（用户配置在 %USERPROFILE%），删除安全。
+            f"if (Test-Path \"$persist_dir\\{sub}\") {{ Remove-Item \"$persist_dir\\{sub}\" -Recurse -Force }}",
             f"$p = Start-Process \"$dir\\$fname\" -ArgumentList '/S',\"/D=$persist_dir\\{sub}\" -Verb RunAs -PassThru",
             "$p.WaitForExit()",
             f"if ($p.ExitCode -ne 0) {{ throw \"{sub} 安装失败（$($p.ExitCode)）\" }}",

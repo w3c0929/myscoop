@@ -14,6 +14,7 @@
     "installer": {
         "script": [
             "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
+            "if (Test-Path \"$persist_dir\\zhiyiime\") { Remove-Item \"$persist_dir\\zhiyiime\" -Recurse -Force }",
             "$p = Start-Process \"$dir\\$fname\" -ArgumentList '/S',\"/D=$persist_dir\\zhiyiime\" -Verb RunAs -PassThru",
             "$p.WaitForExit()",
             "if ($p.ExitCode -ne 0) { throw \"zhiyiime 安装失败（$($p.ExitCode)）\" }"
