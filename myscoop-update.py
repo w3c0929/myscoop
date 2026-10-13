@@ -2128,17 +2128,25 @@ def self_managing_installer_fields(app_name=None, template=None):
     教训：zhiyiime 1.4.0 起尊重 /D，Scoop args 形态的 `/D=$dir`（已存在且含安装器副本）
     → 安装器拒绝（exit 1、1.1s）；改 script 形态 + `/D=$persist_dir\\<app>` 实测通过。
     再教训（2026-10-12）：/D 目标**每次装前都要清空**——script 形态只解决首次安装，更新/重装时
-    `$persist_dir\\<app>` 已存在（上次安装残留）→ 照样 exit 1（症状：scoop update 每次必失败）。"""
+    `$persist_dir\\<app>` 已存在（上次安装残留）→ 照样 exit 1（症状：scoop update 每次必失败）。
+    三教训（2026-10-12）：残留目录里的 DLL 常被占用（TSF/资源 DLL 在 explorer 等进程里）→
+    Remove-Item 报 Access denied（**管理员也删不掉**，是文件锁不是权限）→ 必须改名绕过
+    （Windows 允许重命名正在使用的 DLL 所在目录，实测通过），装完再清残留。"""
     sub = str(app_name or "app")
     fields = {
         "installer": {"script": [
             "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
-            # /D 目标必须不存在（跨版本稳定目录，但安装器要求全新）：装前清掉上次安装的残留，
-            # 否则更新/重装必失败。persist 只装程序文件（用户配置在 %USERPROFILE%），删除安全。
-            f"if (Test-Path \"$persist_dir\\{sub}\") {{ Remove-Item \"$persist_dir\\{sub}\" -Recurse -Force }}",
+            # /D 目标必须不存在（跨版本稳定目录，但安装器要求全新）：先清上次残留；删不掉说明
+            # 文件被占用（TSF/资源 DLL 正被 explorer 等加载，管理员也删不掉）→ 改名绕过
+            # （Windows 允许重命名正在使用的 DLL 所在目录，实测通过），装完再清残留。
+            # persist 只装程序文件（用户配置在 %USERPROFILE%），删除/改名安全。
+            f"Get-ChildItem $persist_dir -Directory -Filter '{sub}.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue",
+            f"if (Test-Path \"$persist_dir\\{sub}\") {{ Remove-Item \"$persist_dir\\{sub}\" -Recurse -Force -ErrorAction SilentlyContinue }}",
+            f"if (Test-Path \"$persist_dir\\{sub}\") {{ Rename-Item \"$persist_dir\\{sub}\" \"{sub}.busy-$(Get-Date -Format yyyyMMddHHmmss)\" -Force }}",
             f"$p = Start-Process \"$dir\\$fname\" -ArgumentList '/S',\"/D=$persist_dir\\{sub}\" -Verb RunAs -PassThru",
             "$p.WaitForExit()",
             f"if ($p.ExitCode -ne 0) {{ throw \"{sub} 安装失败（$($p.ExitCode)）\" }}",
+            f"Get-ChildItem $persist_dir -Directory -Filter '{sub}.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue",
         ]},
         "post_uninstall": _uninstall_script(app_name),
     }

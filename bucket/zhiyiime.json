@@ -14,10 +14,13 @@
     "installer": {
         "script": [
             "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
-            "if (Test-Path \"$persist_dir\\zhiyiime\") { Remove-Item \"$persist_dir\\zhiyiime\" -Recurse -Force }",
+            "Get-ChildItem $persist_dir -Directory -Filter 'zhiyiime.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue",
+            "if (Test-Path \"$persist_dir\\zhiyiime\") { Remove-Item \"$persist_dir\\zhiyiime\" -Recurse -Force -ErrorAction SilentlyContinue }",
+            "if (Test-Path \"$persist_dir\\zhiyiime\") { Rename-Item \"$persist_dir\\zhiyiime\" \"zhiyiime.busy-$(Get-Date -Format yyyyMMddHHmmss)\" -Force }",
             "$p = Start-Process \"$dir\\$fname\" -ArgumentList '/S',\"/D=$persist_dir\\zhiyiime\" -Verb RunAs -PassThru",
             "$p.WaitForExit()",
-            "if ($p.ExitCode -ne 0) { throw \"zhiyiime 安装失败（$($p.ExitCode)）\" }"
+            "if ($p.ExitCode -ne 0) { throw \"zhiyiime 安装失败（$($p.ExitCode)）\" }",
+            "Get-ChildItem $persist_dir -Directory -Filter 'zhiyiime.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
         ]
     },
     "post_uninstall": [
