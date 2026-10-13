@@ -212,9 +212,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 0173e74 (HEAD -> main) 同步 README 第三方版本与日期列
+* 774ad41 (HEAD -> main, origin/main, origin/HEAD) 修 zhiyiime 更新失败（DLL 占用场景）：/D 清理改「先删，删不掉则 Rename-Item 改名绕过」——残留 TSF/资源 DLL 被 explorer 等加载时 Remove-Item 报 Access denied（管理员亦然，属文件锁非权限），重命名目录实测可行；生成器同步 + SKILL/progress 记录
+* 793ce61 progress.md 更新提交历史
+* 0173e74 同步 README 第三方版本与日期列
 * c32121a 自动更新第三方软件
-* e812d1c (origin/main) progress.md 更新提交历史
+* e812d1c progress.md 更新提交历史
 * 9b947c1 progress.md 更新提交历史
 * c5ebbeb 同步 README 第三方版本与日期列
 * af8ffe8 自动更新第三方软件
