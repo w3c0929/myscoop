@@ -213,7 +213,21 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 6a67021 (HEAD -> main, origin/main, origin/HEAD) 新增收录 SVCode 0.3.2（轻量的编辑优先文本与代码编辑器，Tauri 解包）：README 第三方表置顶补行并重编号（59→60），progress 计数 145→146
+* a1a012a (HEAD -> main, origin/main, origin/HEAD) 自管理式安装器升级为「停服务」形态（参考 zhiyuime.json）：装前 ① 旧版 *-installer-helper force-stop-server ② 按路径杀掉 persist 内进程 ③ sleep 800ms——停服务后可直接删（rename 仅兜底）；post_uninstall 同样先停服务 + 注册表搜索补 HKCU；装后校验 InstallLocation；zhiyiime.json 与生成器同步
+* 9e1be96 zhiyuime manifest: UTF-8 with a BOM
+* 3c7f798 zhiyuime 1.7.7 test build (local only)
+* a3d6817 zhiyuime 1.7.6 test build (local only)
+* a85be0d zhiyuime: smarter upgrade (stop the old service first, verify it took)
+* aebed92 zhiyuime 1.7.5 test build (local only)
+* 4913042 zhiyuime 1.7.4 test build (local only)
+* 674e456 zhiyuime 1.7.3 test build (local only)
+* be581ba zhiyuime 1.7.2 test build (local only)
+* ad15eb7 zhiyuime 1.7.1 test build (local only)
+* cb77183 zhiyuime 1.7.0 test build 2 (local only)
+* 9311e2e zhiyuime 1.7.0 (local test build; do not push until the release is published)
+* d42d1eb mypsh推送
+* 38b5dbd progress.md 更新提交历史
+* 6a67021 新增收录 SVCode 0.3.2（轻量的编辑优先文本与代码编辑器，Tauri 解包）：README 第三方表置顶补行并重编号（59→60），progress 计数 145→146
 * 249a9e8 zhiyuime 1.6.6
 * a132fcb zhiyuime 1.6.5
 * 52d6a92 zhiyuime 1.6.4
