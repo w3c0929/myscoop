@@ -14,16 +14,24 @@
     "installer": {
         "script": [
             "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
+            "$ub = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
+            "$old = (Get-ChildItem $ub -ErrorAction SilentlyContinue | Get-ItemProperty -ErrorAction SilentlyContinue | Where-Object { $_.InstallLocation -like \"*$persist_dir*\" } | Select-Object -First 1).InstallLocation",
+            "if ($old) { $h = Get-ChildItem \"$old\\*-installer-helper.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1; if ($h) { & $h.FullName force-stop-server $old 2>$null | Out-Null } }",
+            "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$persist_dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
+            "Start-Sleep -Milliseconds 800",
             "Get-ChildItem $persist_dir -Directory -Filter 'zhiyiime.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue",
             "if (Test-Path \"$persist_dir\\zhiyiime\") { Remove-Item \"$persist_dir\\zhiyiime\" -Recurse -Force -ErrorAction SilentlyContinue }",
             "if (Test-Path \"$persist_dir\\zhiyiime\") { Rename-Item \"$persist_dir\\zhiyiime\" \"zhiyiime.busy-$(Get-Date -Format yyyyMMddHHmmss)\" -Force }",
             "$p = Start-Process \"$dir\\$fname\" -ArgumentList '/S',\"/D=$persist_dir\\zhiyiime\" -Verb RunAs -PassThru",
             "$p.WaitForExit()",
             "if ($p.ExitCode -ne 0) { throw \"zhiyiime 安装失败（$($p.ExitCode)）\" }",
+            "$new = (Get-ChildItem $ub -ErrorAction SilentlyContinue | Get-ItemProperty -ErrorAction SilentlyContinue | Where-Object { $_.InstallLocation -like \"*$persist_dir*\" } | Select-Object -First 1).InstallLocation",
+            "if (-not $new) { Write-Host '[警告] 安装可能没生效：注册表中未找到安装位置' -ForegroundColor Yellow } else { Write-Host \"[已安装] $new\" }",
             "Get-ChildItem $persist_dir -Directory -Filter 'zhiyiime.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
         ]
     },
     "post_uninstall": [
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$persist_dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
         "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
         "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
         "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
@@ -35,6 +43,6 @@
         "}"
     ],
     "notes": [
-        "系统注册已完成；若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe）或重新启动资源管理器，仍无效再注销或重启。"
+        "升级时会先停掉正在运行的后台服务（zhiyi-server）再安装，不会出现旧服务还在跑的情况。若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe），仍无效再注销或重启。"
     ]
 }
