@@ -212,7 +212,13 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* af20294 (HEAD -> main, origin/main, origin/HEAD) 新增收录 知语输入法 zhiyuime 1.6.3（zhiyi_ime 的自研进阶版：语音输入 / 划词翻译，与知意输入法共存；自管理式安装器 script 形态 + 装前清 /D 目标）：README 第三方表置顶补行并重编号（58→59），progress 计数 144→145
+* 6a67021 (HEAD -> main, origin/main, origin/HEAD) 新增收录 SVCode 0.3.2（轻量的编辑优先文本与代码编辑器，Tauri 解包）：README 第三方表置顶补行并重编号（59→60），progress 计数 145→146
+* 249a9e8 zhiyuime 1.6.6
+* a132fcb zhiyuime 1.6.5
+* 52d6a92 zhiyuime 1.6.4
+* 9145f86 mypsh推送
+* 5ce07c0 progress.md 更新提交历史
+* af20294 新增收录 知语输入法 zhiyuime 1.6.3（zhiyi_ime 的自研进阶版：语音输入 / 划词翻译，与知意输入法共存；自管理式安装器 script 形态 + 装前清 /D 目标）：README 第三方表置顶补行并重编号（58→59），progress 计数 144→145
 * c235790 zhiyuime 1.6.3
 * fe1fcf7 zhiyuime 1.6.2
 * a998dc8 bucket: zhiyuime 1.6.1; zhiyiime also looks under HKCU for the uninstaller
