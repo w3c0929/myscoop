@@ -26,7 +26,7 @@
     "post_uninstall": [
         "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
         "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
-        "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
+        "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
         "  $k = Get-ChildItem $roots -ErrorAction SilentlyContinue | Get-ItemProperty -ErrorAction SilentlyContinue |",
         "       Where-Object { ($_.InstallLocation -like '*zhiyiime*') -or ($_.InstallBaseLocation -like '*zhiyiime*') -or ($_.DisplayIcon -like '*zhiyiime*') } | Select-Object -First 1",
         "  $exe = if ($k -and $k.InstallLocation) { Get-ChildItem $k.InstallLocation -Filter 'unins*.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName } }",
