@@ -2087,13 +2087,15 @@ def _uninstall_script(app_name=None):
     教训：zhiyi 安装器忽略 /D、卸载器在 C:\\Program Files\\ZhiyiIME\\<版本>.<哈希>\\uninstall.exe，
     旧逻辑只找 $dir\\unins*.exe → 卸载空转；实测其注册表键 InstallBaseLocation 命中应用名。"""
     lines = [
+        # 先停掉从 persist 运行的进程（服务/常驻组件），否则卸载器可能删不动
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$persist_dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
         "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
         "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
     ]
     if app_name:
         pat = str(app_name).replace("'", "''")
         lines += [
-            "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
+            "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
             "  $k = Get-ChildItem $roots -ErrorAction SilentlyContinue | Get-ItemProperty -ErrorAction SilentlyContinue |",
             f"       Where-Object {{ ($_.InstallLocation -like '*{pat}*') -or ($_.InstallBaseLocation -like '*{pat}*') -or ($_.DisplayIcon -like '*{pat}*') }} | Select-Object -First 1",
             "  $exe = if ($k -and $k.InstallLocation) { Get-ChildItem $k.InstallLocation -Filter 'unins*.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName } }",
@@ -2136,16 +2138,26 @@ def self_managing_installer_fields(app_name=None, template=None):
     fields = {
         "installer": {"script": [
             "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
-            # /D 目标必须不存在（跨版本稳定目录，但安装器要求全新）：先清上次残留；删不掉说明
-            # 文件被占用（TSF/资源 DLL 正被 explorer 等加载，管理员也删不掉）→ 改名绕过
-            # （Windows 允许重命名正在使用的 DLL 所在目录，实测通过），装完再清残留。
-            # persist 只装程序文件（用户配置在 %USERPROFILE%），删除/改名安全。
+            # 升级时先停掉从 persist 运行的进程（服务/常驻组件）释放文件占用：
+            #   ① 注册表里旧版安装器自带的 *-installer-helper.exe（优雅停服务；不支持该子命令/不存在则跳过）
+            #   ② 兜底：按路径杀掉所有从 $persist_dir 运行的进程
+            "$ub = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
+            "$old = (Get-ChildItem $ub -ErrorAction SilentlyContinue | Get-ItemProperty -ErrorAction SilentlyContinue | Where-Object { $_.InstallLocation -like \"*$persist_dir*\" } | Select-Object -First 1).InstallLocation",
+            "if ($old) { $h = Get-ChildItem \"$old\\*-installer-helper.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1; if ($h) { & $h.FullName force-stop-server $old 2>$null | Out-Null } }",
+            "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$persist_dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
+            "Start-Sleep -Milliseconds 800",
             f"Get-ChildItem $persist_dir -Directory -Filter '{sub}.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue",
+            # /D 目标必须不存在（跨版本稳定目录，但安装器要求全新）：停服务后一般可直接删；仍有占用
+            # （TSF/资源 DLL 在 explorer 等进程里，管理员也删不掉）则改名绕过（Windows 允许重命名
+            # 正在使用的 DLL 所在目录），装完再清残留。persist 只装程序文件（用户配置在 %USERPROFILE%）。
             f"if (Test-Path \"$persist_dir\\{sub}\") {{ Remove-Item \"$persist_dir\\{sub}\" -Recurse -Force -ErrorAction SilentlyContinue }}",
             f"if (Test-Path \"$persist_dir\\{sub}\") {{ Rename-Item \"$persist_dir\\{sub}\" \"{sub}.busy-$(Get-Date -Format yyyyMMddHHmmss)\" -Force }}",
             f"$p = Start-Process \"$dir\\$fname\" -ArgumentList '/S',\"/D=$persist_dir\\{sub}\" -Verb RunAs -PassThru",
             "$p.WaitForExit()",
             f"if ($p.ExitCode -ne 0) {{ throw \"{sub} 安装失败（$($p.ExitCode)）\" }}",
+            # 装后校验：注册表里的安装位置应指向 persist 下的目录（没变说明安装可能没生效）
+            "$new = (Get-ChildItem $ub -ErrorAction SilentlyContinue | Get-ItemProperty -ErrorAction SilentlyContinue | Where-Object { $_.InstallLocation -like \"*$persist_dir*\" } | Select-Object -First 1).InstallLocation",
+            "if (-not $new) { Write-Host '[警告] 安装可能没生效：注册表中未找到安装位置' -ForegroundColor Yellow } else { Write-Host \"[已安装] $new\" }",
             f"Get-ChildItem $persist_dir -Directory -Filter '{sub}.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue",
         ]},
         "post_uninstall": _uninstall_script(app_name),
