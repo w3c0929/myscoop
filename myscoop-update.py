@@ -414,7 +414,7 @@ def merge_existing_manifest(out_path, template, drop=()):
     if not out_path.exists():
         return []
     try:
-        old = json.loads(out_path.read_text(encoding="utf-8"))
+        old = json.loads(out_path.read_text(encoding="utf-8-sig"))
     except Exception:
         return []
     kept = []
@@ -865,7 +865,7 @@ def find_duplicate_source(owner, repo, exclude_app=None):
         if exclude_app and p.stem == exclude_app:
             continue
         try:
-            m = json.load(open(p, encoding="utf-8"))
+            m = json.load(open(p, encoding="utf-8-sig"))
         except Exception:
             continue
         cv = m.get("checkver") or {}
@@ -1429,7 +1429,7 @@ def _update_by_regex(manifest, cv, manifest_path, dry_run):
 
 def update_manifest(manifest_path, dry_run=False):
     """更新单个 manifest"""
-    with open(manifest_path, "r", encoding="utf-8") as f:
+    with open(manifest_path, "r", encoding="utf-8-sig") as f:
         manifest = json.load(f)
 
     if "checkver" not in manifest:
@@ -1757,7 +1757,7 @@ def gh_mirror_list(config_path=None):
         return [m.strip() for m in env.replace(",", " ").split() if m.strip()]
     cfg_path = Path(config_path) if config_path else (Path.home() / ".config" / "scoop" / "config.json")
     try:
-        cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+        cfg = json.loads(cfg_path.read_text(encoding="utf-8-sig"))
         ms = cfg.get("aria2-mirrors", [])
         if isinstance(ms, str):
             ms = [x for x in ms.replace(",", " ").split() if x]
@@ -2171,7 +2171,7 @@ def migrate_installer_mode(manifest_path, dry_run=False):
     """存量清单迁移：innosetup:true / pre_install 解包形态 → installer 模式（注册型软件修复形态）。
     有 innosetup:true → Inno 参数；有 pre_install → NSIS 参数。返回 True 表示有迁移。"""
     p = Path(manifest_path)
-    m = json.loads(p.read_text(encoding="utf-8"))
+    m = json.loads(p.read_text(encoding="utf-8-sig"))
     is_inno = m.get("innosetup") is True
     has_pre = "pre_install" in m
     if not (is_inno or has_pre):
@@ -2557,7 +2557,7 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
     不带 --select 时交互式提问（回车=第 1 个）。"""
     if str(tpath).startswith(("http://", "https://")):
         return _fill_bin_from_url(str(tpath), out_dir, app_name, select)
-    template = json.loads(Path(tpath).read_text(encoding="utf-8"))
+    template = json.loads(Path(tpath).read_text(encoding="utf-8-sig"))
     multi_arch = bool(template.get("architecture"))
     url, tmpl_digest = arch_url_hash(template)
     if not url:
@@ -3170,7 +3170,7 @@ def check_consistency():
     bucket = sorted(p.stem for p in BUCKET_DIR.glob("*.json"))
     ok = True
 
-    text = (repo_root / "README.md").read_text(encoding="utf-8")
+    text = (repo_root / "README.md").read_text(encoding="utf-8-sig")
 
     t3_rows, t3_problems = _parse_readme_table(text, "### 第三方官方（引用原项目 Release）")
     t1_rows, t1_problems = _parse_readme_table(text, "### 本地维护（自托管 Release）")
@@ -3215,7 +3215,7 @@ def check_consistency():
 
     p = repo_root / ".claude" / "skills-myscoop" / "progress.md"
     if p.exists():
-        pt = p.read_text(encoding="utf-8")
+        pt = p.read_text(encoding="utf-8-sig")
         m = re.search(r"^## 当前状态.*?(?=^## )", pt, re.M | re.S)
         sect = m.group(0) if m else pt
 
@@ -3264,7 +3264,7 @@ def sync_readme_after_update(updated_files):
     names = set(updated_files)
     readme = BUCKET_DIR.parent / "README.md"
     try:
-        lines = readme.read_text(encoding="utf-8").splitlines()
+        lines = readme.read_text(encoding="utf-8-sig").splitlines()
     except Exception as e:
         print(f"  [README] 读取失败，跳过同步: {e}")
         return
@@ -3294,7 +3294,7 @@ def sync_readme_after_update(updated_files):
         edits = []
         if in_third:
             try:
-                ver = str(json.loads(mp.read_text(encoding="utf-8")).get("version") or "")
+                ver = str(json.loads(mp.read_text(encoding="utf-8-sig")).get("version") or "")
             except Exception:
                 ver = ""
             if ver and cells[5] != ver:
@@ -3383,7 +3383,7 @@ def main():
             print("用法: python3 myscoop-update.py --from <manifest模板.json> [--name 应用名] [--out-dir 输出目录]")
             sys.exit(1)
         try:
-            template = json.loads(Path(tpath).read_text(encoding="utf-8"))
+            template = json.loads(Path(tpath).read_text(encoding="utf-8-sig"))
         except Exception as e:
             print(f"[错误] 模板解析失败: {e}")
             sys.exit(1)
