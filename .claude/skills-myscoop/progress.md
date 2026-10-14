@@ -216,7 +216,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* fd4c750 (HEAD -> main, origin/main, origin/HEAD) myscoop-update.py 顶部用法补 --check 一致性速查（README ↔ bucket ↔ progress；不一致非零退出）；镜像项编号顺延为 11
+* b564509 (HEAD -> main, origin/main, origin/HEAD) myscoop-update.py 顶部用法：补全「六、可选参数速查」（新增模式入口/--dl/--allow-archived/--probe-exe 等，29 个参数全覆盖，脚本核对无缺失）；修正示例笔误 --prllama → --name prllama
+* 7142899 progress.md 更新提交历史
+* fd4c750 myscoop-update.py 顶部用法补 --check 一致性速查（README ↔ bucket ↔ progress；不一致非零退出）；镜像项编号顺延为 11
 * 7eaacec progress.md 更新提交历史
 * 6723b4b progress.md 更新提交历史
 * f2490fb 修 --dl 探测丢子目录路径：probe_installer_exes / probe_nsis_exes 改用相对路径（str(p.relative_to(root))）——原用 p.name 只取文件名，Inno/NSIS 子目录入口（如 sunpack 的 bin\\sunpack.exe）被写成顶级 bin=sunpack.exe → 建 shim 失败；实跑 --add --dl 验证重新生成的清单与手改逐字一致
