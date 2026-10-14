@@ -214,9 +214,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 66c3c4e (HEAD -> main) progress.md 更新提交历史
+* 868b869 (HEAD -> main, origin/main) CI 给更新脚本注入 GITHUB_TOKEN（Actions 自带临时令牌，配额 5000/h）——消除 --all 查 140+ 清单时的 403 rate limit；无新增 secret、仅本仓库运行期权限
+* d51b07d progress.md 更新提交历史
+* 66c3c4e progress.md 更新提交历史
 * b02ce8a 文档：记录清单 BOM 防线（bucket/*.json 必须 UTF-8 无 BOM；工具读取端 utf-8-sig 容错 11 处）
-* 4240ca4 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 4240ca4 progress.md 更新提交历史
 * c7b7c49 同步 README 第三方版本与日期列
 * db28d6c 修 zhiyuime.json 带 UTF-8 BOM 导致 CI 每晚报异常（Unexpected UTF-8 BOM）：① 去 BOM ② myscoop-update.py 读取端统一 utf-8-sig 容错（11 处读；写入仍 utf-8、不写 BOM）——实测带 BOM 文件不再报错
 * 8ee61ed progress.md 更新提交历史
