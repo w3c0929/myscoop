@@ -33,6 +33,10 @@ jobs:
       - name: 运行更新脚本（免下载，读取 GitHub API digest）
         id: upd
         continue-on-error: true
+        env:
+          # Actions 自动提供的临时令牌：仅本仓库、只在本次 job 运行期有效、无需手工配置 secret。
+          # 把 GitHub API 配额从匿名 60 次/小时提到 5000 次/小时——否则 --all 查 140+ 清单必然 403 限流。
+          GH_TOKEN: ${{ github.token }}
         run: python3 myscoop-update.py --all
 
       - name: 一致性校验（README ↔ bucket ↔ progress）
