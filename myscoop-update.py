@@ -1936,7 +1936,7 @@ def _is_helper_exe(name):
 
 
 def probe_nsis_exes(tmp, app_name):
-    """NSIS 安装器：用 7z 直接解包（无需真安装，无副作用）收集真实 exe 名，排除助手 exe。
+    """NSIS 安装器：用 7z 直接解包（无需真安装，无副作用）收集真实 exe 的**相对路径**，排除助手 exe。
 
     双层结构（`app-*.7z`，Electron/Tauri 常见）：**只要存在 `app-*.7z` 就二次解包，且只用内层
     exe 作候选**——因为配套的 pre_install 会把 `app-*.7z` 解到 `$dir` 并丢弃外层，外层 exe
@@ -1966,7 +1966,9 @@ def probe_nsis_exes(tmp, app_name):
             top = {p for p in paths if p.parent == root}
             if top:
                 paths = top  # 主程序通常在应用根目录；有根级 exe 就只取根级（滤掉 resources 下的依赖）
-            return sorted(paths, key=lambda p: (p.parent != root, p.name.lower())), selfm
+            # 保留相对路径（子目录入口写成 bin\xxx.exe；顶层即文件名；根级优先）
+            return sorted((str(p.relative_to(root)) for p in paths),
+                          key=lambda s: (("\\" in s or "/" in s), s.lower())), selfm
 
         app7zs = sorted(work.rglob("app-*.7z"),
                         key=lambda p: (0 if "64" in p.name else 1, p.name.lower()))
@@ -1977,7 +1979,7 @@ def probe_nsis_exes(tmp, app_name):
             exes, self_managing = collect(work / "app")
         else:
             exes, self_managing = collect(work)
-        return [p.name for p in exes], self_managing
+        return list(exes), self_managing
     except subprocess.TimeoutExpired:
         print("[错误] 7z 解包超时")
         return [], False
@@ -2882,8 +2884,10 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
 
 
 def probe_installer_exes(tmp, app_name):
-    """静默安装 Inno 安装器到临时目录，收集真实 exe 名后自动卸载回滚。
-    返回 exe 文件名列表（不含 unins000.exe）；失败/回滚异常不影响流程。"""
+    """静默安装 Inno 安装器到临时目录，收集真实 exe 后自动卸载回滚。
+    返回**相对路径**列表（顶层即文件名，子目录形如 `bin\\xxx.exe`——入口常在子目录，
+    如 sunpack 的 `bin\\sunpack.exe`；写进 bin/shortcuts 时直接用这个相对路径）；
+    不含 unins000.exe；失败/回滚异常不影响流程。"""
     import subprocess
     import shutil
     work = FALLBACK_OUT_DIR / ".probe_tmp" / app_name
@@ -2895,8 +2899,11 @@ def probe_installer_exes(tmp, app_name):
                            capture_output=True, timeout=600)
         if r.returncode != 0:
             print(f"[警告] 静默安装退出码 {r.returncode}，安装目录可能不完整")
-        exes = sorted({p.name for p in work.rglob("*.exe") if not _is_helper_exe(p.name)},
-                      key=lambda n: n.lower())
+        # 用相对路径而非纯文件名：否则子目录入口（bin\xxx.exe）会被写成顶级 bin=xxx.exe，
+        # 安装后根目录没有该文件 → 建 shim 失败
+        exes = sorted({str(p.relative_to(work)) for p in work.rglob("*.exe")
+                       if not _is_helper_exe(p.name)},
+                      key=lambda n: (("\\" in n or "/" in n), n.lower()))
     except subprocess.TimeoutExpired:
         print("[错误] 静默安装超时，已中止")
     finally:
