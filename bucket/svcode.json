@@ -1,0 +1,26 @@
+{
+    "version": "0.3.2",
+    "description": "A lightweight, edit-first text & code editor with built-in previews — Windows first.",
+    "homepage": "https://github.com/mnigc/SVCode",
+    "license": "unknown",
+    "checkver": {
+        "github": "https://github.com/mnigc/SVCode"
+    },
+    "url": "https://github.com/mnigc/SVCode/releases/download/v0.3.2/SVCode_0.3.2_x64-setup.exe",
+    "autoupdate": {
+        "url": "https://github.com/mnigc/SVCode/releases/download/v$version/SVCode_$version_x64-setup.exe"
+    },
+    "hash": "sha256:3566a9effc9b63bc1869c80f316aec24a0fec080a8650581c4df5dff09504c77",
+    "bin": "svcode.exe",
+    "shortcuts": [
+        [
+            "svcode.exe",
+            "svcode"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ]
+}
