@@ -1,13 +1,13 @@
 {
-    "version": "1.5.7",
+    "version": "1.5.9",
     "description": "Windows 自动化工作台：表格与流程图双编辑、可拖拽指令、深浅主题和长循环缓存保护。",
     "homepage": "https://github.com/714248411/AnClicker",
     "license": "MulanPSL-2.0",
     "checkver": {
         "github": "https://github.com/714248411/AnClicker"
     },
-    "url": "https://github.com/714248411/AnClicker/releases/download/v1.5.7/AnClicker-v1.5.7-win.zip",
-    "hash": "sha256:c9bddc9597d3b69b60ed1631381080ba1588c8ac36be2057d18bcae4045ee468",
+    "url": "https://github.com/714248411/AnClicker/releases/download/v1.5.9/AnClicker-v1.5.9-win.zip",
+    "hash": "sha256:6d0631d2acf23b499605c13b70488befc92f06ce22072608204804610169be60",
     "autoupdate": {
         "url": "https://github.com/714248411/AnClicker/releases/download/v$version/AnClicker-v$version-win.zip"
     },
