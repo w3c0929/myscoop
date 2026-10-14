@@ -14,16 +14,21 @@
     "installer": {
         "script": [
             "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
+            "$old = (Get-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ZhiyuIME' -ErrorAction SilentlyContinue).InstallLocation",
+            "if ($old -and (Test-Path \"$old\\zhiyu-installer-helper.exe\")) { & \"$old\\zhiyu-installer-helper.exe\" force-stop-server $old 2>$null | Out-Null }",
+            "Get-Process zhiyu-server -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue",
+            "Start-Sleep -Milliseconds 800",
             "Get-ChildItem $persist_dir -Directory -Filter 'zhiyuime.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue",
-            "if (Test-Path \"$persist_dir\\zhiyuime\") { Remove-Item \"$persist_dir\\zhiyuime\" -Recurse -Force -ErrorAction SilentlyContinue }",
-            "if (Test-Path \"$persist_dir\\zhiyuime\") { Rename-Item \"$persist_dir\\zhiyuime\" \"zhiyuime.busy-$(Get-Date -Format yyyyMMddHHmmss)\" -Force }",
             "$p = Start-Process \"$dir\\$fname\" -ArgumentList '/S',\"/D=$persist_dir\\zhiyuime\" -Verb RunAs -PassThru",
             "$p.WaitForExit()",
             "if ($p.ExitCode -ne 0) { throw \"zhiyuime 安装失败（$($p.ExitCode)）\" }",
+            "$new = (Get-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ZhiyuIME' -ErrorAction SilentlyContinue).InstallLocation",
+            "if (-not $new -or $new -eq $old) { Write-Host '[警告] 安装可能没生效：注册表仍指向旧版本' -ForegroundColor Yellow } else { Write-Host \"[知语] 已安装到 $new\" }",
             "Get-ChildItem $persist_dir -Directory -Filter 'zhiyuime.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
         ]
     },
     "post_uninstall": [
+        "Get-Process zhiyu-server -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue",
         "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
         "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
         "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
@@ -31,10 +36,10 @@
         "       Where-Object { ($_.InstallLocation -like '*zhiyuime*') -or ($_.InstallBaseLocation -like '*zhiyuime*') -or ($_.DisplayIcon -like '*zhiyuime*') } | Select-Object -First 1",
         "  $exe = if ($k -and $k.InstallLocation) { Get-ChildItem $k.InstallLocation -Filter 'unins*.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName } }",
         "  if ($exe) { Start-Process $exe -Wait -ArgumentList '/S' -Verb RunAs }",
-        "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理（Program Files / 注册表）' }",
+        "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理' }",
         "}"
     ],
     "notes": [
-        "系统注册已完成；若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe）或重新启动资源管理器，仍无效再注销或重启。"
+        "升级时会先停掉正在运行的后台服务（zhiyu-server）再安装，所以不会出现旧服务还在跑的情况。若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe），仍无效再注销或重启。"
     ]
 }
