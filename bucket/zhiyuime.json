@@ -1,16 +1,16 @@
 ﻿{
-    "version": "1.7.9",
+    "version": "1.7.10",
     "description": "知语输入法 - from github",
     "homepage": "https://github.com/w3c0929/zhiyi_ime",
     "license": "GPL-3.0",
     "checkver": {
         "github": "https://github.com/w3c0929/zhiyi_ime"
     },
-    "url": "https://github.com/w3c0929/zhiyi_ime/releases/download/v1.7.9/zhiyu-v1.7.9-setup.exe",
+    "url": "https://github.com/w3c0929/zhiyi_ime/releases/download/v1.7.10/zhiyu-v1.7.10-setup.exe",
     "autoupdate": {
         "url": "https://github.com/w3c0929/zhiyi_ime/releases/download/v$version/zhiyu-v$version-setup.exe"
     },
-    "hash": "sha256:581695ef35a6bd84c211f528aacd62d8313923d5e1242d2b7465a9d578878194",
+    "hash": "sha256:0aa6ff0fab5533938abb5a1b1be8f8f0b1a0fdddfe83d7bcfb049dedbad9a8d1",
     "installer": {
         "script": [
             "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
