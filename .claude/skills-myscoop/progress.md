@@ -213,7 +213,24 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* a1a012a (HEAD -> main, origin/main, origin/HEAD) 自管理式安装器升级为「停服务」形态（参考 zhiyuime.json）：装前 ① 旧版 *-installer-helper force-stop-server ② 按路径杀掉 persist 内进程 ③ sleep 800ms——停服务后可直接删（rename 仅兜底）；post_uninstall 同样先停服务 + 注册表搜索补 HKCU；装后校验 InstallLocation；zhiyiime.json 与生成器同步
+* 0afa7ca (HEAD -> main, origin/main) mypsh推送
+* dc8cb26 zhiyuime 1.7.23 test build (local only)
+* 9af5723 mypsh推送
+* fbe6532 zhiyuime 1.7.22 test build (local only)
+* c536986 zhiyuime 1.7.21 test build (local only)
+* 7f2dd35 zhiyuime 1.7.20 test build (local only)
+* 8b60215 zhiyuime 1.7.18 test build (local only)
+* e8dfe2f zhiyuime 1.7.17 test build (local only)
+* 85e00ac zhiyuime 1.7.16 test build (local only)
+* f0e9476 zhiyuime 1.7.15 test build (local only)
+* 5f8ad11 zhiyuime 1.7.14 test build (local only)
+* 84d937f zhiyuime 1.7.12 test build (local only)
+* f8016d9 zhiyuime 1.7.11 test build (local only)
+* 746f962 zhiyuime 1.7.10 test build (local only)
+* 12dbde3 zhiyuime 1.7.9 test build (local only)
+* a253e3f zhiyuime 1.7.8 test build (local only)
+* ab43791 progress.md 更新提交历史
+* a1a012a 自管理式安装器升级为「停服务」形态（参考 zhiyuime.json）：装前 ① 旧版 *-installer-helper force-stop-server ② 按路径杀掉 persist 内进程 ③ sleep 800ms——停服务后可直接删（rename 仅兜底）；post_uninstall 同样先停服务 + 注册表搜索补 HKCU；装后校验 InstallLocation；zhiyiime.json 与生成器同步
 * 9e1be96 zhiyuime manifest: UTF-8 with a BOM
 * 3c7f798 zhiyuime 1.7.7 test build (local only)
 * a3d6817 zhiyuime 1.7.6 test build (local only)
