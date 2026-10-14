@@ -216,7 +216,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 74ca969 (HEAD -> main, origin/main, origin/HEAD) 文档：记录解包类清单 bin 入口路径教训（sunpack 真实入口在 bin\\sunpack.exe；写 bin 前先列解包目录含子目录）
+* f2490fb (HEAD -> main, origin/main, origin/HEAD) 修 --dl 探测丢子目录路径：probe_installer_exes / probe_nsis_exes 改用相对路径（str(p.relative_to(root))）——原用 p.name 只取文件名，Inno/NSIS 子目录入口（如 sunpack 的 bin\\sunpack.exe）被写成顶级 bin=sunpack.exe → 建 shim 失败；实跑 --add --dl 验证重新生成的清单与手改逐字一致
+* 941c002 progress.md 更新提交历史
+* 74ca969 文档：记录解包类清单 bin 入口路径教训（sunpack 真实入口在 bin\\sunpack.exe；写 bin 前先列解包目录含子目录）
 * 2fe479e 修 sunpack 清单：bin/shortcuts 指向 bin\\sunpack.exe——实际入口在 bin/ 子目录（根目录 sunpack-runtime.exe 是嵌入式 Python 运行时，非入口），修 shim 创建失败（Can't shim 'sunpack.exe': File doesn't exist）
 * 2f99e25 progress.md 更新提交历史
 * d47aec9 新增收录 Sunpack 1.1.8（Windows 全自动压缩包处理工具：后台监控/解压/递归/崩溃恢复，多架构 Inno Setup 解包）：README 第三方表置顶补行并重编号（60→61），progress 计数 146→147；顺带同步 README 版本列（zhiyuime 1.7.25）
