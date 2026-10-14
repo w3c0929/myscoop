@@ -13,7 +13,7 @@
 | 1 | [知语输入法](https://github.com/w3c0929/zhiyi_ime) — 知意输入法的自研进阶版（语音输入 / 划词翻译等，与知意输入法可共存）：自管理式安装器 script 形态装到 persist + 注册 IME | `scoop install zhiyuime` | 单 exe 官方 release（installer 注册） | 1.6.3 | 2026-10-14 | 2026-10-14 |
 | 2 | [StarPie](https://github.com/Star-Pie/StarPie) — 现代化 Windows 鼠标轮盘手势系统：按住键呼出轮盘、自定义手势动作与快捷键（Lightweight 便携版 zip） | `scoop install starpie` | zip 官方 release | 1.7.4 | 2026-10-13 | 2026-10-14 |
 | 3 | [Ludusavi](https://github.com/mtkennerly/ludusavi) — PC 游戏存档备份与恢复工具：自动扫描识别游戏、批量备份/还原存档、支持 6000+ 游戏清单与多存档槽位 | `scoop install ludusavi` | 多架构 zip 官方 release | 0.31.0 | 2026-10-13 | 2026-10-13 |
-| 4 | [Filee](https://github.com/KnifeLemon/Filee) — 免费开源文件转换器：拖拽即转 180+ 格式（图片 / PDF / Word / Excel / PPT / HWP / 视频 / 音频 / 电子书 / 压缩包），全程离线、无需上传 | `scoop install filee` | portable zip 官方 release | 1.10.2 | 2026-10-12 | 2026-10-13 |
+| 4 | [Filee](https://github.com/KnifeLemon/Filee) — 免费开源文件转换器：拖拽即转 180+ 格式（图片 / PDF / Word / Excel / PPT / HWP / 视频 / 音频 / 电子书 / 压缩包），全程离线、无需上传 | `scoop install filee` | portable zip 官方 release | 1.10.3 | 2026-10-12 | 2026-10-14 |
 | 5 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.5.5 | 2026-10-12 | 2026-10-14 |
 | 6 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.0.1 | 2026-10-10 | 2026-10-12 |
 | 7 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.1.2 | 2026-10-12 | 2026-10-13 |
@@ -28,7 +28,7 @@
 | 16 | [Kazumi](https://github.com/Predidit/Kazumi) — 基于自定义规则的番剧采集 APP（流媒体在线观看、弹幕、实时超分辨率） | `scoop install kazumi` | zip 官方 release | 2.3.8 | 2026-10-10 | 2026-10-10 |
 | 17 | [VTracer](https://github.com/visioncortex/vtracer) — 位图转矢量图工具（Raster to Vector Graphics Converter） | `scoop install vtracer` | 单 exe 官方 release（NSIS 解包） | 1.0.0-alpha.4 | 2026-10-10 | 2026-10-10 |
 | 18 | [OilGit](https://github.com/oil-oil/oil-git) — 面向 AI 项目开发者的只读 Git 可视化桌面应用（Windows / macOS） | `scoop install oilgit` | 单 exe 官方 release（Tauri 解包） | 0.1.0-test.1 | 2026-10-10 | 2026-10-10 |
-| 19 | [AnClicker](https://github.com/714248411/AnClicker) — Windows 自动化工作台：表格与流程图双编辑、可拖拽指令、深浅主题和长循环缓存保护 | `scoop install anclicker` | zip 官方 release | 1.5.6 | 2026-10-10 | 2026-10-14 |
+| 19 | [AnClicker](https://github.com/714248411/AnClicker) — Windows 自动化工作台：表格与流程图双编辑、可拖拽指令、深浅主题和长循环缓存保护 | `scoop install anclicker` | zip 官方 release | 1.5.7 | 2026-10-10 | 2026-10-14 |
 | 20 | [Xtranslate](https://github.com/hopechen067/Xtranslate) — 中英互译输入法：热键呼出、打字即译、回车粘贴、口语化 | `scoop install xtranslate` | 单 exe 官方 release（NSIS 解包） | 0.1.6 | 2026-10-10 | 2026-10-10 |
 | 21 | [PawnIO](https://github.com/namazso/PawnIO.Setup) — Pawn 语言工具套件（官方安装器） | `scoop install pawnio` | 单 exe 官方 release | 2.2.0 | 2026-10-10 | 2026-10-10 |
 | 22 | [EcoPaste](https://github.com/EcoPasteHub/EcoPaste) — 跨平台剪贴板管理工具 | `scoop install ecopaste` | 多架构 exe 官方 release（NSIS 解包） | 1.1.0 | 2026-10-10 | 2026-10-10 |
@@ -42,7 +42,7 @@
 | 30 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.6.4 | 2026-10-10 | 2026-10-14 |
 | 31 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.7.2 | 2026-10-10 | 2026-10-10 |
 | 32 | [Magpie (实验版)](https://github.com/SAOG0721/Magpie) — 游戏画面缩放/超分工具的非官方实验 fork | `scoop install magpie` | zip 官方直链 | 0.6.9-experimental | 2026-10-10 | 2026-10-10 |
-| 33 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.2.0 | 2026-10-10 | 2026-10-11 |
+| 33 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.2.1 | 2026-10-10 | 2026-10-14 |
 | 34 | [Windows App SDK 运行时](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时官方直链 | `scoop install winsdk` | 单 exe 官方直链 | 2.4.0 | 2026-10-10 | 2026-10-10 |
 | 35 | [Netcatty](https://github.com/binaricat/Netcatty) — SSH 工作区、SFTP 与终端一体的跨平台客户端 | `scoop install netcatty` | portable zip 官方 release | 1.1.83 | 2026-10-10 | 2026-10-10 |
 | 36 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install cmm-plus` | 多架构 portable zip | 1.7.8 | 2026-10-10 | 2026-10-13 |
@@ -60,7 +60,7 @@
 | 48 | [QuickLook CAD 插件](https://github.com/emako/QuickLook.Plugin.CADImport) — 预览 CAD 文件格式 | `scoop install qlcad` | qlplugin 官方 release | 1 | 2026-10-10 | 2026-10-10 |
 | 49 | [QuickLook Office 插件](https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer) — 预览 Word/Excel/PPT 文件 | `scoop install qloffice` | qlplugin 官方 release | 6 | 2026-10-10 | 2026-10-10 |
 | 50 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.0 | 2026-10-10 | 2026-10-10 |
-| 51 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.39.0 | 2026-10-10 | 2026-10-10 |
+| 51 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.40.0 | 2026-10-10 | 2026-10-14 |
 | 52 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.4 | 2026-10-10 | 2026-10-10 |
 | 53 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | 多架构 zip 官方 release | 5.5.0 | 2026-10-10 | 2026-10-10 |
 | 54 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.25.2733.0 | 2026-10-10 | 2026-10-10 |
