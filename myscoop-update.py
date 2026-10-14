@@ -90,7 +90,7 @@ myscoop 管理脚本
   #     --select 编号|exe名 免交互，含扁平化 pre_install 判定）；exe（portable/setup 统一）
   #     Inno/NSIS 检测 + 解包探测内部主程序并补 pre_install；msi 实测下载回填 hash；
   #     多架构自动下载 64bit 主架构；压缩包留 staging/.dl_cache/ 复用
-  python3 myscoop-update.py --add https://github.com/PrismML-Eng/llama.cpp.git --more --prllama
+  python3 myscoop-update.py --add https://github.com/PrismML-Eng/llama.cpp.git --more --name prllama
   python3 myscoop-update.py --add https://github.com/CherryHQ/cherry-studio.git --name cherry --dl
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -118,16 +118,24 @@ myscoop 管理脚本
   六、可选参数速查
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+  · 模式入口（用法详见「一」「二」）：
+      --add <仓库链接|直链|下载页>        --from <模板.json>       --fill-bin <清单|zip URL>
+      --exe-name <URL|本地 exe>           --all                    --check
+      --installer-mode <清单...|--all>
   · 命名/输出：--name 应用名  --out-dir 输出目录（默认 staging/）
   · 版本与信息：--version 版本号（应与 tag 完全一致，含 -rc3 等后缀）
                  --homepage  --description  --license  --checkver-url  --checkver-regex
   · 主程序：--exe-name 主程序名（zip 可带子路径如 bin/xxx.exe）  --shortcut-name 快捷方式名
+                 （--probe-exe 是 --exe-name 的旧名，兼容保留）
   · zip 拍平：--unzip / --flatten / --no-flatten（见「三」，仅 zip 类生效）
-  · 合并/覆盖：--force-new 覆盖重建（默认合并保留 bin/shortcuts 等人工字段）
-  · 下载：--force-download 强制重下  --no-keep 不保留 zip 缓存（默认留到 staging/.dl_cache/）
-  · 交互：--select 编号|名称 免交互选择 exe
-  · 特殊模式：--more 主程序+cudart 配对合并  --installer-mode 存量清单迁移注册型
-  · 全局：--dry-run 只检查不写盘  --insecure 跳过 SSL 校验
+  · 收录/下载：--dl 生成后强制下载探测（清 API digest 实测重算 hash，补 bin/shortcuts/pre_install）
+                 --more 主程序+cudart 配对合并（见「三」）  --force-download 强制重下
+                 --no-keep 不保留 zip 缓存（默认留到 staging/.dl_cache/ 供复用）
+  · 清单合并/覆盖：--force-new 覆盖重建（默认合并，保留 bin/shortcuts/extract_dir/notes 等人工字段）
+  · 宽松/校验：--allow-archived 静音 archived/fork 仓库警告（默认提示）  --insecure 跳过 SSL 校验
+                 （等价环境变量 MYSCOOP_INSECURE=1，见「五」）
+  · 交互：--select 编号|名称 免交互选择 exe（配合 --add --dl / --fill-bin）
+  · 全局：--dry-run 只检查不写盘
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   七、输出约定
