@@ -26,10 +26,10 @@
         }
     },
     "innosetup": true,
-    "bin": "sunpack.exe",
+    "bin": "bin\\sunpack.exe",
     "shortcuts": [
         [
-            "sunpack.exe",
+            "bin\\sunpack.exe",
             "sunpack"
         ]
     ]
