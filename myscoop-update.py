@@ -66,6 +66,11 @@ myscoop 管理脚本
   #    （--add 新增时自动采用；ting 解包不执行注册脚本导致输入法/右键菜单缺失的场景）
   python3 myscoop-update.py --installer-mode bucket/qingjian.json   # 多个文件或 --all
 
+  # 10) 一致性速查（改动/提交前跑一下）：README 两张表 ↔ bucket 清单 ↔ progress 计数
+  #     校验行数之和、表格结构（数据行紧随分隔行 + 序号 1..N 连续）与逐条一一对应；
+  #     不一致时非零退出（CI 已挂）
+  python3 myscoop-update.py --check
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   三、zip 拍平三态与配对（--unzip / --flatten / --no-flatten / --more）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -92,7 +97,7 @@ myscoop 管理脚本
   四、GitHub 下载镜像加速
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  # 10) 实际下载路径（直链/下载页/补全/hash 实测）对 GitHub release 文件优先走加速镜像：
+  # 11) 实际下载路径（直链/下载页/补全/hash 实测）对 GitHub release 文件优先走加速镜像：
   #     依次探测列表取第一个可达镜像，全部不可达自动回退原始 URL（与 Scoop download.ps1 补丁同机制）。
   #     镜像列表：环境变量 MYSCOOP_GH_MIRRORS（逗号分隔，完整 URL 或裸域名）优先，
   #     否则读 Scoop config.json 的 aria2-mirrors 数组（本机零配置复用）；均不设置则不走镜像
