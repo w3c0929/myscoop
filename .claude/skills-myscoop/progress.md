@@ -217,7 +217,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* b564509 (HEAD -> main, origin/main, origin/HEAD) myscoop-update.py 顶部用法：补全「六、可选参数速查」（新增模式入口/--dl/--allow-archived/--probe-exe 等，29 个参数全覆盖，脚本核对无缺失）；修正示例笔误 --prllama → --name prllama
+* a5e5cfb (HEAD -> main, origin/main, origin/HEAD) 修注册型 installer 模式误建 bin：Inno+注册型自动采用 installer 模式时置 skip_bin（安装后安装器自删、应用本体不在 \，写 bin 导致 Can't shim）；新增收录 水杉输入法 msime 0.10.1（README 置顶补行并重编号 61→62，progress 计数 147→148）；重跑 --add --dl 验证产出无 bin/shortcuts
+* 3f543a6 zhiyuime 1.7.26 test build (local only)
+* 858e111 progress.md 更新提交历史
+* b564509 myscoop-update.py 顶部用法：补全「六、可选参数速查」（新增模式入口/--dl/--allow-archived/--probe-exe 等，29 个参数全覆盖，脚本核对无缺失）；修正示例笔误 --prllama → --name prllama
 * 7142899 progress.md 更新提交历史
 * fd4c750 myscoop-update.py 顶部用法补 --check 一致性速查（README ↔ bucket ↔ progress；不一致非零退出）；镜像项编号顺延为 11
 * 7eaacec progress.md 更新提交历史
