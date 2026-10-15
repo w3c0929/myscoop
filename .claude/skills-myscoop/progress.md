@@ -219,8 +219,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* ffe22b8 (HEAD -> main) README 更新第58条 cc-haha 描述：改为本地优先的跨平台 Claude Code / AI Agent 桌面工作台（去敏感表述）
-* b59ec58 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 65eb187 (HEAD -> main) 同步 README 第三方版本与日期列
+* 9c3107b 自动更新第三方软件
+* 21c84b2 (origin/main) progress.md 更新提交历史
+* ffe22b8 README 更新第58条 cc-haha 描述：改为本地优先的跨平台 Claude Code / AI Agent 桌面工作台（去敏感表述）
+* b59ec58 progress.md 更新提交历史
 * d601b6c 新增第四重资产匹配「后缀骨架重选」（repick_by_suffix）：上游调整产品前缀段（如 cherry 2.1.6 去 -CN）时按公共后缀最长重选（护栏：同扩展名家族 + 后缀 ≥15 且首字符为分隔符 + 唯一最优 + 架构一致）；refresh_filename_in_template 增强「版本段→\」配对形态（模板保活）；实测 cherry 坏状态自动修回与人工修正逐字一致；回归 test_guards 6c 段
 * 38bf54c progress.md 更新提交历史
 * ba5f3a0 修 cherry 更新失败：上游 2.1.6 起资产名去掉 -CN 段，autoupdate 模板同步去 -CN 并升到 2.1.6（hash 取 API digest）——dry-run 验证匹配成功；repick 前缀重选因'唯一最优'护栏正确拒绝（portable/setup 平手，命名结构变化属人工确认场景）
