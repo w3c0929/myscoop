@@ -350,30 +350,82 @@ def repick_by_prefix(current_name, assets):
     return best
 
 
+def repick_by_suffix(current_name, assets):
+    """第四重匹配：后缀骨架重选。上游**调整产品前缀段**（增删非版本标记，如 cherry 2.1.6 起
+    去掉 `-CN`：`Cherry-Studio-CN-2.1.4-win-x64-portable.exe` → `Cherry-Studio-2.1.6-win-x64-portable.exe`）
+    时，模板匹配、旧 URL 回退、前缀重选都会失败（公共前缀只到产品名，portable/setup 等形态段平手）
+    ——按"与旧名的**公共后缀**最长"重选。护栏（全部满足才采用）：① 仅同扩展名家族的 Windows 资产；
+    ② 公共后缀 ≥15 字符且起点止于分隔符 `-_./`（不截断在词中，如 `-win-x64-portable.exe`=21）；
+    ③ **唯一最优**（严格大于次优）；④ 架构判定与当前资产一致。命中后由调用方
+    refresh_filename_in_template 刷新 autoupdate 模板（模板保活，下次继续命中）。"""
+    if not current_name:
+        return None
+    cur = str(current_name).lower()
+    fam = _ext_family(cur)
+    cur_arch = detect_arch(cur)
+    cands = [a for a in assets
+             if is_windows_asset(a.get("name", ""))
+             and _ext_family(a.get("name", "")) == fam
+             and detect_arch(str(a.get("name", "")).lower()) == cur_arch]
+    best, best_len, second = None, 0, 0
+    for a in cands:
+        n = str(a.get("name", "")).lower()
+        m = 0
+        for x, y in zip(reversed(cur), reversed(n)):
+            if x != y:
+                break
+            m += 1
+        if m > best_len:
+            best, second, best_len = a, best_len, m
+        elif m > second:
+            second = m
+    if not best or best_len < 15 or best_len <= second:
+        return None
+    n = str(best["name"]).lower()
+    cut = len(n) - best_len          # 公共后缀在新名中的起点
+    # 后缀须从段边界开始（首字符是分隔符），不截断在词中（如公共后缀 x64-portable.exe 的
+    # "x64" 可能是更长词段的尾巴）；cut==0 表示整个名字即后缀
+    if cut > 0 and n[cut] not in "-_./":
+        return None
+    return best
+
+
 def refresh_filename_in_template(manifest, old_name, new_name):
-    """前缀重选后：把 autoupdate 模板（含架构）与顶层 extract_dir 里的旧资产文件名/目录名
-    替换为新名——模板保活（下次更新继续命中），Scoop 客户端自更新不 404。"""
+    """前缀/后缀重选后：把 autoupdate 模板（含架构）与顶层 extract_dir 里的旧资产文件名/目录名
+    替换为新名——模板保活（下次更新继续命中），Scoop 客户端自更新不 404。
+    模板里的文件名通常已模板化（版本段写成 `$version`）——除原样替换外，再尝试
+    "版本段 → `$version`"的配对形态（如 `Cherry-Studio-CN-$version-…` → `Cherry-Studio-$version-…`），
+    否则含具体版本的旧名在模板里根本找不到。"""
     if not old_name or not new_name or old_name == new_name:
         return False
     changed = False
     old_stem, new_stem = old_name.rsplit(".", 1)[0], new_name.rsplit(".", 1)[0]
+    pairs = [(old_stem, new_stem)]
+    mo = re.search(r"\d+(?:\.\d+)+", old_stem)
+    mn = re.search(r"\d+(?:\.\d+)+", new_stem)
+    if mo and mn:
+        pairs.append((old_stem.replace(mo.group(0), "$version", 1),
+                      new_stem.replace(mn.group(0), "$version", 1)))
+
+    def _sub(v):
+        nonlocal changed
+        for o, n in pairs:
+            if isinstance(v, str) and o in v:
+                changed = True
+                return v.replace(o, n)
+        return v
+
     au = manifest.get("autoupdate") or {}
     for key in ("url", "extract_dir"):
-        v = au.get(key)
-        if isinstance(v, str) and old_stem in v:
-            au[key] = v.replace(old_stem, new_stem)
-            changed = True
+        if key in au:
+            au[key] = _sub(au[key])
     for blk in (au.get("architecture") or {}).values():
         if isinstance(blk, dict):
             for key in ("url", "extract_dir"):
-                v = blk.get(key)
-                if isinstance(v, str) and old_stem in v:
-                    blk[key] = v.replace(old_stem, new_stem)
-                    changed = True
-    v = manifest.get("extract_dir")
-    if isinstance(v, str) and old_stem in v:
-        manifest["extract_dir"] = v.replace(old_stem, new_stem)
-        changed = True
+                if key in blk:
+                    blk[key] = _sub(blk[key])
+    if "extract_dir" in manifest:
+        manifest["extract_dir"] = _sub(manifest["extract_dir"])
     return changed
 
 
@@ -1639,7 +1691,19 @@ def update_manifest(manifest_path, dry_run=False):
                         print(f"    {arch}: {digest3[:16]}... [前缀重选: {asset3['name']}"
                               + ("，autoupdate 模板文件名已刷新]" if rf else "]"))
                     else:
-                        to_del.append(arch)
+                        # 第四重：后缀骨架重选（上游调整产品前缀段，如 cherry 2.1.6 去 -CN）
+                        asset4 = repick_by_suffix(cur_name, assets)
+                        if asset4:
+                            matched_any = True
+                            digest4 = asset4.get("digest", "")
+                            real4 = asset4.get("browser_download_url") or new_url
+                            manifest["architecture"][arch]["url"] = real4
+                            manifest["architecture"][arch]["hash"] = digest4
+                            rf4 = refresh_filename_in_template(manifest, cur_name, asset4["name"])
+                            print(f"    {arch}: {digest4[:16]}... [后缀重选: {asset4['name']}"
+                                  + ("，autoupdate 模板文件名已刷新]" if rf4 else "]"))
+                        else:
+                            to_del.append(arch)
         # 资产守卫：所有架构都未匹配到任何资产 → 视为无效更新，跳过不写入。
         # 防止上游噪音 tag（无资产）触发下方"规则③ 删架构"把整个清单改坏。
         if not matched_any:
@@ -1720,8 +1784,19 @@ def update_manifest(manifest_path, dry_run=False):
                         print(f"    hash: {digest3[:16]}... [前缀重选: {asset3['name']}"
                               + ("，autoupdate 模板文件名已刷新]" if rf else "]"))
                     else:
-                        print(f"    [警告] 无法匹配")
-                        return None  # 资产匹配失败：不写入、不计入已更新
+                        # 第四重：后缀骨架重选（上游调整产品前缀段）
+                        asset4 = repick_by_suffix(cur_name, assets)
+                        if asset4:
+                            digest4 = asset4.get("digest", "")
+                            real4 = asset4.get("browser_download_url") or new_url
+                            manifest["url"] = real4
+                            manifest["hash"] = digest4
+                            rf4 = refresh_filename_in_template(manifest, cur_name, asset4["name"])
+                            print(f"    hash: {digest4[:16]}... [后缀重选: {asset4['name']}"
+                                  + ("，autoupdate 模板文件名已刷新]" if rf4 else "]"))
+                        else:
+                            print(f"    [警告] 无法匹配")
+                            return None  # 资产匹配失败：不写入、不计入已更新
 
             # 同步顶层 autoupdate 模板字段（bin/shortcuts/extract_dir 等）
             chg = sync_autoupdate_fields(au, manifest, latest_version)
