@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-15）
 
-- **收录软件总数**: 147 款
+- **收录软件总数**: 148 款
 - **本地维护（自托管 Release）**: 86 款
-- **第三方官方（引用原项目 Release）**: 61 款
+- **第三方官方（引用原项目 Release）**: 62 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -47,6 +47,7 @@ GitHub: https://github.com/w3c0929/myscoop
 - **前缀重选 + tag_regex 资产守卫**（2026-10-12，修 CI 两个"无法匹配"）：① `tag_regex` 分支补齐**资产守卫**（最新匹配 tag 空资产 → 回退下一个匹配且有资产的 tag，与常规分支对称）；② 新增 `repick_by_prefix` **第三重匹配**——资产名含每版变化的非数字标记（构建 sha：`ui-938c2f1`→`ui-ae48ec0`）时数字归一化失效，按**公共前缀最长**重选并 `refresh_filename_in_template` 刷新模板文件名（护栏：同扩展名家族 + 前缀≥12 且止于 `-_./` + 唯一最优 + 架构一致）。实测：`kvninfer` sha 漂移自动重选 rtx40 资产 + 模板刷新 ✓；`anclicker` 改名（多候选平手/平台过滤）被安全拒绝 ✓
 - **解包类清单入口路径修复**（2026-10-15）：`sunpack`（Inno Setup + 嵌入式 Python）真实入口在 **`bin\sunpack.exe`**（根目录 `sunpack-runtime.exe` 是 21MB 的 Python 运行时，非入口），原清单写 `bin: "sunpack.exe"` → shim 失败（`Can't shim 'sunpack.exe': File doesn't exist`）；改 `bin\\sunpack.exe`（shortcuts 同步）后 `scoop install` shim 成功。教训：解包类（Inno/NSIS/Tauri）清单写 `bin` 前**先列解包目录（含子目录）确认入口真实路径**。另：上游 v1.1.8 只有 x64/arm64 两个 setup.exe（无便携包），清单选 x64 正确
 - **根因与工具修复（同日）**：问题出在 `--dl` 的探测函数——`probe_installer_exes`（Inno 静默安装探测）与 `probe_nsis_exes`（7z 解包探测）都用 `p.name` **只取文件名**，子目录入口（`bin\sunpack.exe`）被写成顶级 `bin=sunpack.exe` → shim 失败。两处改为 **`str(p.relative_to(root))` 相对路径**（顶层即文件名，子目录形如 `bin\xxx.exe`；排序键同步改为"有无子目录 + 小写名"）。实跑 `--add https://github.com/Qinjingxue/Sunpack.git --name sunpack --dl --select "bin\sunpack.exe"` 验证：探测输出 `bin=bin\sunpack.exe`，重新生成的清单与手工修正**逐字一致**（`git diff` 空）
+- **注册型 installer 模式不建 bin/shortcuts**（2026-10-15）：Inno + 注册型（输入法/驱动/右键菜单）自动采用 installer 模式（真安装）时**必须置 `skip_bin = True`**——安装后安装器自删、应用本体不在 `$dir`，写 bin 会让 scoop 建 shim 失败。教训：`msime`（水杉输入法）的 bin 被写成 `MetasequoiaIME_Setup_v0.10.1.exe`（安装器名）并被 merge 从旧清单保留 → `Can't shim …: File doesn't exist`。修复（`finalize_direct_manifest` 注册型分支加 `skip_bin = True`，走既有"清模板 + drop 阻止 merge 带回"机制）后重跑 `--add --dl`：产出无 bin/shortcuts（`[跳过] 0：不建立 bin/shortcuts`）✓
 - **清单修复**：**`kvllama` → `kvninfer`**（上游拆双产品线：llamacpp 线已无 sm89 构建、v0.17.0 空 release；改跟 ninfer 线 `tag_regex ^v([\d.]+-ninfer-rc\d+)$` + rtx40-sm89 资产 + `pre_install` 拍平 sha 顶层目录 + `bin=workers/ninfer/ninfer-kvmem-server.exe`；notes 注明 .ninfer 模型需另备、路径必须纯英文）。**`anclicker`**：上游 v1.4.0 起资产改名 `-windows-x64.zip`→`-Portable.zip`（Squirrel 便携布局：根 `An Clicker.exe` 启动器 + `current/` 本体），清单改 url/hash/bin（A/B 实测旧命名无法匹配、新命名正确更新）
 
 ## Scoop 库补丁与版本分发（symlink.bat）

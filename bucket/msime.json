@@ -1,0 +1,36 @@
+{
+    "version": "0.10.1",
+    "description": "水杉输入法 Windows 产品：TSF、Server、GUI、设置页与安装器。内测：tg: https://t.me/msimegroup QQ Group: 829919142",
+    "homepage": "https://msime.app",
+    "license": "GPL-3.0",
+    "checkver": {
+        "github": "https://github.com/metasequoiaime/msime-windows"
+    },
+    "url": "https://github.com/metasequoiaime/msime-windows/releases/download/v0.10.1/MetasequoiaIME_Setup_v0.10.1.exe",
+    "autoupdate": {
+        "url": "https://github.com/metasequoiaime/msime-windows/releases/download/v$version/MetasequoiaIME_Setup_v$version.exe"
+    },
+    "notes": [
+        "系统注册已完成；若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe）或重新启动资源管理器，仍无效再注销或重启。"
+    ],
+    "installer": {
+        "args": [
+            "/VERYSILENT",
+            "/NORESTART",
+            "/DIR=$dir"
+        ]
+    },
+    "post_uninstall": [
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$persist_dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
+        "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
+        "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
+        "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
+        "  $k = Get-ChildItem $roots -ErrorAction SilentlyContinue | Get-ItemProperty -ErrorAction SilentlyContinue |",
+        "       Where-Object { ($_.InstallLocation -like '*msime*') -or ($_.InstallBaseLocation -like '*msime*') -or ($_.DisplayIcon -like '*msime*') } | Select-Object -First 1",
+        "  $exe = if ($k -and $k.InstallLocation) { Get-ChildItem $k.InstallLocation -Filter 'unins*.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName } }",
+        "  if ($exe) { Start-Process $exe -Wait -ArgumentList '/S' -Verb RunAs }",
+        "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理（Program Files / 注册表）' }",
+        "}"
+    ],
+    "hash": "sha256:6bd2484516cf374b1dbd1aad4e5eabe1bdfa93af04f9d745dd8714fdbf543c0b"
+}

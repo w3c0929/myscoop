@@ -2402,6 +2402,11 @@ def finalize_direct_manifest(template, out_dir, app_name, drop=()):
             print("[InnoSetup] 检测到 Inno Setup 安装器特征")
             if needs_registration(template):
                 template.update(installer_mode_fields(is_inno=True, template=template, app_name=app_name))
+                # 注册型=真安装到系统：安装后安装器自删、应用本体不在 $dir，不能建 bin/shortcuts
+                # （否则 shim 指向已不存在的文件）。教训：msime 的 bin 被写成安装器 exe 名 →
+                # scoop install 报 Can't shim 'MetasequoiaIME_Setup_v0.10.1.exe': File doesn't exist。
+                # 置位后 2524 会清模板 bin/shortcuts 并 drop 阻止 merge 从旧清单带回。
+                skip_bin = True
                 print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
             elif template.get("innosetup") is not True:
                 template["innosetup"] = True
