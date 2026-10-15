@@ -219,7 +219,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* ba5f3a0 (HEAD -> main, origin/main, origin/HEAD) 修 cherry 更新失败：上游 2.1.6 起资产名去掉 -CN 段，autoupdate 模板同步去 -CN 并升到 2.1.6（hash 取 API digest）——dry-run 验证匹配成功；repick 前缀重选因'唯一最优'护栏正确拒绝（portable/setup 平手，命名结构变化属人工确认场景）
+* d601b6c (HEAD -> main, origin/main, origin/HEAD) 新增第四重资产匹配「后缀骨架重选」（repick_by_suffix）：上游调整产品前缀段（如 cherry 2.1.6 去 -CN）时按公共后缀最长重选（护栏：同扩展名家族 + 后缀 ≥15 且首字符为分隔符 + 唯一最优 + 架构一致）；refresh_filename_in_template 增强「版本段→\」配对形态（模板保活）；实测 cherry 坏状态自动修回与人工修正逐字一致；回归 test_guards 6c 段
+* 38bf54c progress.md 更新提交历史
+* ba5f3a0 修 cherry 更新失败：上游 2.1.6 起资产名去掉 -CN 段，autoupdate 模板同步去 -CN 并升到 2.1.6（hash 取 API digest）——dry-run 验证匹配成功；repick 前缀重选因'唯一最优'护栏正确拒绝（portable/setup 平手，命名结构变化属人工确认场景）
 * e2f87dc mypsh推送
 * ae226c6 progress.md 更新提交历史
 * a5e5cfb 修注册型 installer 模式误建 bin：Inno+注册型自动采用 installer 模式时置 skip_bin（安装后安装器自删、应用本体不在 \，写 bin 导致 Can't shim）；新增收录 水杉输入法 msime 0.10.1（README 置顶补行并重编号 61→62，progress 计数 147→148）；重跑 --add --dl 验证产出无 bin/shortcuts
