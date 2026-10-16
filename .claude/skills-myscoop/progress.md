@@ -10,11 +10,11 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 
 GitHub: https://github.com/w3c0929/myscoop
 
-## 当前状态（截至 2026-10-15）
+## 当前状态（截至 2026-10-16）
 
-- **收录软件总数**: 148 款
+- **收录软件总数**: 147 款
 - **本地维护（自托管 Release）**: 86 款
-- **第三方官方（引用原项目 Release）**: 62 款
+- **第三方官方（引用原项目 Release）**: 61 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -219,9 +219,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 14164ea (HEAD -> main) 同步 README 第三方版本与日期列
+* 4db1e71 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 14164ea 同步 README 第三方版本与日期列
 * ee6ac4a 自动更新第三方软件
-* fa32b0d (origin/main) zhiyuime 1.7.57
+* fa32b0d zhiyuime 1.7.57
 * 47385e7 zhiyuime 1.7.56 test build (local only)
 * 780c667 progress.md 更新提交历史
 * e4983b1 同步 README 第三方版本与日期列
