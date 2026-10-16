@@ -219,9 +219,19 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 65eb187 (HEAD -> main) 同步 README 第三方版本与日期列
+* 213a39d (HEAD -> main, origin/main, origin/HEAD) zhiyuime 1.7.56 test build (local only)
+* e49afc3 zhiyuime 1.7.55 test build (local only)
+* 8aee2f8 zhiyuime 1.7.32 test build (local only)
+* 47eebe6 zhiyuime 1.7.31 test build (local only)
+* 8f712d8 zhiyuime 1.7.31 test build (local only)
+* 6c9477c zhiyuime 1.7.30 test build (local only)
+* f97500c zhiyuime 1.7.29 test build (local only)
+* 4d8a150 zhiyuime 1.7.28 test build (local only)
+* f1d38b5 zhiyuime 1.7.27 test build (local only)
+* 8e6de36 progress.md 更新提交历史
+* 65eb187 同步 README 第三方版本与日期列
 * 9c3107b 自动更新第三方软件
-* 21c84b2 (origin/main) progress.md 更新提交历史
+* 21c84b2 progress.md 更新提交历史
 * ffe22b8 README 更新第58条 cc-haha 描述：改为本地优先的跨平台 Claude Code / AI Agent 桌面工作台（去敏感表述）
 * b59ec58 progress.md 更新提交历史
 * d601b6c 新增第四重资产匹配「后缀骨架重选」（repick_by_suffix）：上游调整产品前缀段（如 cherry 2.1.6 去 -CN）时按公共后缀最长重选（护栏：同扩展名家族 + 后缀 ≥15 且首字符为分隔符 + 唯一最优 + 架构一致）；refresh_filename_in_template 增强「版本段→\」配对形态（模板保活）；实测 cherry 坏状态自动修回与人工修正逐字一致；回归 test_guards 6c 段
