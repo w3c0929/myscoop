@@ -219,7 +219,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 4db1e71 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 696b108 (HEAD -> main) 同步 README 第三方版本与日期列
+* 6d7f021 自动更新第三方软件
+* da5bca9 (origin/main) 移除 msime（水杉输入法）：删除 bucket/msime.json，README 第三方表删行并重编号（62→61），总数 148→147，progress 计数与提交历史同步
+* 4db1e71 progress.md 更新提交历史
 * 14164ea 同步 README 第三方版本与日期列
 * ee6ac4a 自动更新第三方软件
 * fa32b0d zhiyuime 1.7.57
