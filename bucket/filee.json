@@ -1,13 +1,13 @@
 {
-    "version": "1.10.3",
+    "version": "1.10.4",
     "description": "Free, open-source file converter. Convert 180+ formats offline by drag & drop — images, PDF, Word, Excel, PowerPoint, HWP/HWPX, video, audio, e-books and archives. No upload, no Office needed.",
     "homepage": "https://filee.sh",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/KnifeLemon/Filee"
     },
-    "url": "https://github.com/KnifeLemon/Filee/releases/download/v1.10.3/Filee-1.10.3-win-Portable.zip",
-    "hash": "sha256:d7f6233fca2c6d843c2c8e4ac4337b4a1730a2df6b1578c065572f4c3fac9ccc",
+    "url": "https://github.com/KnifeLemon/Filee/releases/download/v1.10.4/Filee-1.10.4-win-Portable.zip",
+    "hash": "sha256:bc4e73c4c9025157d28e8b94ba83a263a7d8684b23f219b1cb8db382739a8f59",
     "autoupdate": {
         "url": "https://github.com/KnifeLemon/Filee/releases/download/v$version/Filee-$version-win-Portable.zip"
     },
