@@ -2227,6 +2227,45 @@ IME_TAG_REMOVE = (
     "| ForEach-Object { Remove-ItemProperty $_.PSPath -Name '%s' -ErrorAction SilentlyContinue }"
 )
 
+# 探测安装期间抓到的 TSF tag（模块级：单进程工具；probe 开头清空、安装后回滚前填充）
+_LAST_PROBE_IME_TAGS = []
+
+
+def _capture_probe_ime_tags(work):
+    """探测安装**回滚前**抓取本次注册的 TSF 输入法 tag：
+    InprocServer32 指向本次临时安装目录（work）的即是本次安装的产物。
+    （Inno 探测会真跑安装器 → 系统级 TSF 注册在回滚前可读到；NSIS 只解包 → 抓不到。）"""
+    global _LAST_PROBE_IME_TAGS
+    _LAST_PROBE_IME_TAGS = []
+    prefix = str(work).lower().replace("/", "\\").rstrip("\\")
+    for t in scan_tsf_tips():
+        p = (t["inproc"] or "").lower().replace("/", "\\")
+        if p and p.startswith(prefix):
+            _LAST_PROBE_IME_TAGS.append(t["tag"])
+
+
+def find_ime_tip_for_app(app_name):
+    """按 app 名在本机**已注册**的 TSF 输入法里找（InprocServer32 路径或描述含 app_name）。
+    用于 self-management/NSIS 等"探测不真装"的场景兜底（本机已装过该输入法时有效）。"""
+    key = str(app_name or "").lower()
+    if not key:
+        return None
+    for t in scan_tsf_tips():
+        if key in (t["inproc"] or "").lower() or key in (t["description"] or "").lower():
+            return t["tag"]
+    return None
+
+
+def _resolve_ime_tag(template, app_name=None):
+    """IME 类清单的 TSF tag：优先用探测安装期间抓到的，其次按 app 名在本机已注册项里找。
+    非 IME 类（关键词未命中）一律返回 None，不影响普通注册型软件。"""
+    blob = " ".join(str(template.get(k, "")) for k in ("name", "description", "homepage", "url")).lower()
+    if not any(k in blob for k in REG_IME_KEYWORDS):
+        return None
+    if _LAST_PROBE_IME_TAGS:
+        return _LAST_PROBE_IME_TAGS[0]
+    return find_ime_tip_for_app(app_name)
+
 
 def scan_tsf_tips():
     """扫描 HKLM\\SOFTWARE\\Microsoft\\CTF\\TIP，列出本机已注册的 TSF 输入法。
@@ -2346,6 +2385,16 @@ def installer_mode_fields(is_inno, template=None, app_name=None):
     }
     if template is not None:
         fields["notes"] = _merge_notes(template.get("notes"), _note_for_template(template))
+        # 输入法类：自动写入 TSF 登记/清理钩子（tag 来自探测安装期间抓取，或按 app 名匹配本机已注册项）
+        tag = _resolve_ime_tag(template, app_name)
+        if tag:
+            post_i, pre_u, post_u = ime_hook_snippets(tag)
+            fields["post_install"] = post_i
+            fields["post_uninstall"] = pre_u + list(fields["post_uninstall"]) + post_u
+            print(f"[输入法] 已自动写入登记钩子（tag {tag}）—— 装完即出现在语言栏，无需重启")
+        elif _note_for_template(template) == NOTE_IME_ACTIVATE:
+            print("[输入法] 未抓到 TSF tag（本机未装过该输入法）→ 装一次后跑 "
+                  "`--ime-hooks <描述关键词>` 生成登记钩子并粘进清单")
     return fields
 
 
@@ -2391,6 +2440,16 @@ def self_managing_installer_fields(app_name=None, template=None):
     }
     if template is not None:
         fields["notes"] = _merge_notes(template.get("notes"), _note_for_template(template))
+        # 输入法类：自管理式探测不真装（NSIS 解包）→ 走"本机已注册项按 app 名匹配"兜底
+        tag = _resolve_ime_tag(template, app_name)
+        if tag:
+            post_i, pre_u, post_u = ime_hook_snippets(tag)
+            fields["post_install"] = post_i
+            fields["post_uninstall"] = pre_u + list(fields["post_uninstall"]) + post_u
+            print(f"[输入法] 已自动写入登记钩子（tag {tag}）—— 装完即出现在语言栏，无需重启")
+        elif _note_for_template(template) == NOTE_IME_ACTIVATE:
+            print("[输入法] 未找到 TSF tag（本机未装过该输入法）→ 装一次后跑 "
+                  "`--ime-hooks <描述关键词>` 生成登记钩子并粘进清单")
     return fields
 
 
@@ -3124,6 +3183,7 @@ def probe_installer_exes(tmp, app_name):
     shutil.rmtree(work, ignore_errors=True)
     work.mkdir(parents=True, exist_ok=True)
     exes = []
+    _LAST_PROBE_IME_TAGS.clear()          # 清掉上次探测的残留
     try:
         r = subprocess.run([str(tmp), "/VERYSILENT", "/NORESTART", f"/DIR={work}"],
                            capture_output=True, timeout=600)
@@ -3134,6 +3194,8 @@ def probe_installer_exes(tmp, app_name):
         exes = sorted({str(p.relative_to(work)) for p in work.rglob("*.exe")
                        if not _is_helper_exe(p.name)},
                       key=lambda n: (("\\" in n or "/" in n), n.lower()))
+        # 输入法类：趁**回滚前**抓本次安装注册的 TSF（InprocServer32 指向 work）
+        _capture_probe_ime_tags(work)
     except subprocess.TimeoutExpired:
         print("[错误] 静默安装超时，已中止")
     finally:
