@@ -11,10 +11,10 @@
     "autoupdate": {
         "url": "https://github.com/714248411/AnClicker/releases/download/v$version/AnClicker-v$version-win.zip"
     },
-    "bin": "An Clicker.exe",
+    "bin": "AnClicker\\AnClicker.exe",
     "shortcuts": [
         [
-            "An Clicker.exe",
+            "AnClicker\\AnClicker.exe",
             "anclicker"
         ]
     ]
