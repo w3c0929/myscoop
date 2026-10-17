@@ -34,10 +34,11 @@
         "Start-Sleep -Milliseconds 900",
         "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\""
     ],
-    "post_uninstall": [
+    "pre_uninstall": [
         "Stop-Process -Name ctfmon -Force -ErrorAction SilentlyContinue",
-        "Get-ChildItem 'HKCU:\\Control Panel\\International\\User Profile' -ErrorAction SilentlyContinue | ForEach-Object { Remove-ItemProperty $_.PSPath -Name '0804:{94F5F388-9732-439E-A73F-EBC4E6F4A64B}{A549BE94-7073-440D-B293-ACF8820A527B}' -ErrorAction SilentlyContinue }",
-        "Get-Process zhiyu-server -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue",
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
+        "Start-Sleep -Milliseconds 900",
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$persist_dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
         "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
         "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
         "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
@@ -45,8 +46,13 @@
         "       Where-Object { ($_.InstallLocation -like '*zhiyuime*') -or ($_.InstallBaseLocation -like '*zhiyuime*') -or ($_.DisplayIcon -like '*zhiyuime*') } | Select-Object -First 1",
         "  $exe = if ($k -and $k.InstallLocation) { Get-ChildItem $k.InstallLocation -Filter 'unins*.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName } }",
         "  if ($exe) { Start-Process $exe -Wait -ArgumentList '/S' -Verb RunAs }",
-        "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理' }",
+        "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理（Program Files / 注册表）' }",
         "}",
+        "Get-ChildItem 'HKCU:\\Control Panel\\International\\User Profile' -ErrorAction SilentlyContinue | ForEach-Object { Remove-ItemProperty $_.PSPath -Name '0804:{94F5F388-9732-439E-A73F-EBC4E6F4A64B}{A549BE94-7073-440D-B293-ACF8820A527B}' -ErrorAction SilentlyContinue }",
+        "Start-Sleep -Milliseconds 500",
+        "if (Test-Path $dir) { try { Remove-Item $dir -Recurse -Force -ErrorAction Stop } catch { New-Item -ItemType Directory -Force $persist_dir | Out-Null; Move-Item -LiteralPath $dir -Destination \"$persist_dir\\$($app).busy-$(Get-Date -Format yyyyMMddHHmmss)\" -Force -ErrorAction SilentlyContinue } }"
+    ],
+    "post_uninstall": [
         "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\" -ErrorAction SilentlyContinue"
     ],
     "notes": [

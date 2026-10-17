@@ -2330,8 +2330,15 @@ def scan_tsf_tips():
     return sorted(found, key=lambda d: d["description"])
 
 
-def ime_hook_snippets(tag):
-    """给定输入法 tag（`0804:{CLSID}{PROFILE}`），返回 (post_install, 卸载前置, 卸载后置) 命令列表。"""
+def ime_hook_snippets(tag, app_name=None):
+    """给定输入法 tag（`0804:{CLSID}{PROFILE}`），返回 (post_install, pre_uninstall, post_uninstall)。
+    **`pre_uninstall` 是关键**：Scoop 在**进程检查 / 跑卸载器 / `Remove-Item $dir` 之前**执行它
+    （`scoop-uninstall.ps1` 第64行），因此「停 ctfmon → 杀 `$dir` 进程 → 跑 Inno 卸载器（注销 TSF）
+    → 删自己的用户登记 → 删不掉就 Move 到 persist busy」必须都放这里；放 `post_uninstall` 太晚
+    （Scoop 已因 `Couldn't remove ...; it may be in use` 中止卸载，`post_uninstall` 根本不会跑）。
+    实测教训（2026-10-17，qingjian）：TSF DLL 被 ctfmon/其他已加载它的进程锁住 → 目录删不掉 →
+    卸载卡死、`scoop` 状态变 `Install failed`；`Remove-Item` 失败但**同卷 `Move-Item` 成功**
+    （Windows 允许重命名被占用 DLL 所在目录）——故用 Move 作保险。"""
     post_install = [
         IME_INSTALL_API,
         "[W.Inp]::InstallLayoutOrTip('%s', 0) | Out-Null" % tag,
@@ -2339,7 +2346,17 @@ def ime_hook_snippets(tag):
         "Start-Sleep -Milliseconds 900",
         "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\"",
     ]
-    pre_uninstall = [IME_CTFMON_STOP, IME_TAG_REMOVE % tag]
+    pre_uninstall = (
+        [IME_CTFMON_STOP,
+         "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
+         "Start-Sleep -Milliseconds 900"]
+        + list(_uninstall_script(app_name))          # 三级回退：$dir\unins*.exe → 注册表 InstallLocation → 提示
+        + [IME_TAG_REMOVE % tag,
+           "Start-Sleep -Milliseconds 500",
+           ("if (Test-Path $dir) { try { Remove-Item $dir -Recurse -Force -ErrorAction Stop } catch {"
+            " New-Item -ItemType Directory -Force $persist_dir | Out-Null;"
+            " Move-Item -LiteralPath $dir -Destination \"$persist_dir\\$($app).busy-$(Get-Date -Format yyyyMMddHHmmss)\" -Force -ErrorAction SilentlyContinue } }")]
+    )
     post_uninstall = [IME_CTFMON_START]
     return post_install, pre_uninstall, post_uninstall
 
@@ -2363,7 +2380,7 @@ def print_ime_hooks(keyword=None):
         print("    TAG  %s" % t["tag"])
         if t["inproc"]:
             print("    DLL  %s" % t["inproc"])
-        pi, pre_u, post_u = ime_hook_snippets(t["tag"])
+        pi, pre_u, post_u = ime_hook_snippets(t["tag"], keyword)
         print("    post_install:")
         for c in pi:
             print("        %s," % json.dumps(c, ensure_ascii=False))
@@ -2388,10 +2405,11 @@ def installer_mode_fields(is_inno, template=None, app_name=None):
         # 输入法类：自动写入 TSF 登记/清理钩子（tag 来自探测安装期间抓取，或按 app 名匹配本机已注册项）
         tag = _resolve_ime_tag(template, app_name)
         if tag:
-            post_i, pre_u, post_u = ime_hook_snippets(tag)
+            post_i, pre_u, post_u = ime_hook_snippets(tag, app_name)
             fields["post_install"] = post_i
-            fields["post_uninstall"] = pre_u + list(fields["post_uninstall"]) + post_u
-            print(f"[输入法] 已自动写入登记钩子（tag {tag}）—— 装完即出现在语言栏，无需重启")
+            fields["pre_uninstall"] = pre_u      # ★ 清理必须在 pre（Scoop 删目录前），否则文件锁导致卸载卡死
+            fields["post_uninstall"] = post_u
+            print(f"[输入法] 已自动写入登记/卸载钩子（tag {tag}）—— 装完即出现在语言栏；卸载走 pre_uninstall 防文件锁")
         elif _note_for_template(template) == NOTE_IME_ACTIVATE:
             print("[输入法] 未抓到 TSF tag（本机未装过该输入法）→ 装一次后跑 "
                   "`--ime-hooks <描述关键词>` 生成登记钩子并粘进清单")
@@ -2443,10 +2461,11 @@ def self_managing_installer_fields(app_name=None, template=None):
         # 输入法类：自管理式探测不真装（NSIS 解包）→ 走"本机已注册项按 app 名匹配"兜底
         tag = _resolve_ime_tag(template, app_name)
         if tag:
-            post_i, pre_u, post_u = ime_hook_snippets(tag)
+            post_i, pre_u, post_u = ime_hook_snippets(tag, app_name)
             fields["post_install"] = post_i
-            fields["post_uninstall"] = pre_u + list(fields["post_uninstall"]) + post_u
-            print(f"[输入法] 已自动写入登记钩子（tag {tag}）—— 装完即出现在语言栏，无需重启")
+            fields["pre_uninstall"] = pre_u      # ★ 清理必须在 pre（Scoop 删目录前），否则文件锁导致卸载卡死
+            fields["post_uninstall"] = post_u
+            print(f"[输入法] 已自动写入登记/卸载钩子（tag {tag}）—— 装完即出现在语言栏；卸载走 pre_uninstall 防文件锁")
         elif _note_for_template(template) == NOTE_IME_ACTIVATE:
             print("[输入法] 未找到 TSF tag（本机未装过该输入法）→ 装一次后跑 "
                   "`--ime-hooks <描述关键词>` 生成登记钩子并粘进清单")

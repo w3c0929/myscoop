@@ -25,9 +25,10 @@
         "Start-Sleep -Milliseconds 900",
         "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\""
     ],
-    "post_uninstall": [
+    "pre_uninstall": [
         "Stop-Process -Name ctfmon -Force -ErrorAction SilentlyContinue",
-        "Get-ChildItem 'HKCU:\\Control Panel\\International\\User Profile' -ErrorAction SilentlyContinue | ForEach-Object { Remove-ItemProperty $_.PSPath -Name '0804:{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}{8119F8E0-CF81-423B-9189-C0D7374324B3}' -ErrorAction SilentlyContinue }",
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
+        "Start-Sleep -Milliseconds 900",
         "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$persist_dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
         "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
         "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
@@ -38,6 +39,11 @@
         "  if ($exe) { Start-Process $exe -Wait -ArgumentList '/S' -Verb RunAs }",
         "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理（Program Files / 注册表）' }",
         "}",
+        "Get-ChildItem 'HKCU:\\Control Panel\\International\\User Profile' -ErrorAction SilentlyContinue | ForEach-Object { Remove-ItemProperty $_.PSPath -Name '0804:{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}{8119F8E0-CF81-423B-9189-C0D7374324B3}' -ErrorAction SilentlyContinue }",
+        "Start-Sleep -Milliseconds 500",
+        "if (Test-Path $dir) { try { Remove-Item $dir -Recurse -Force -ErrorAction Stop } catch { New-Item -ItemType Directory -Force $persist_dir | Out-Null; Move-Item -LiteralPath $dir -Destination \"$persist_dir\\$($app).busy-$(Get-Date -Format yyyyMMddHHmmss)\" -Force -ErrorAction SilentlyContinue } }"
+    ],
+    "post_uninstall": [
         "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\" -ErrorAction SilentlyContinue"
     ],
     "notes": [
