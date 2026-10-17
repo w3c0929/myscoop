@@ -225,7 +225,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 2e007ad (HEAD -> main, origin/main, origin/HEAD) myscoop-update.py 自动写入输入法登记钩子：--add --dl 判定 IME 类时自动生成 post_install/post_uninstall（tag 来自 Inno 探测安装回滚前的注册表抓取，或按 app 名匹配本机已注册项；都拿不到则提示跑 --ime-hooks）；非 IME 清单不受影响；SKILL 规则 23 与 progress 同步
+* cdb7f61 (HEAD -> main) 同步 README 第三方版本与日期列
+* 9373f27 自动更新第三方软件
+* bd5d6fb (origin/main) 修输入法卸载卡死：清理钩子从 post_uninstall 移到 pre_uninstall（scoop 在删目录前才执行它）——停 ctfmon → 杀进程 → 卸载器三级回退 → 删自己 tag → 删目录失败则 Move 到 persist busy（TSM DLL 文件锁只能靠同卷改名绕过）；qingjian/zhiyuime 各 16 条 pre_uninstall，与 --ime-hooks 输出逐字一致；post_uninstall 只留重启 ctfmon；SKILL 规则 23 与 progress 记录 scoop 卸载顺序与实测事故
+* 2e007ad myscoop-update.py 自动写入输入法登记钩子：--add --dl 判定 IME 类时自动生成 post_install/post_uninstall（tag 来自 Inno 探测安装回滚前的注册表抓取，或按 app 名匹配本机已注册项；都拿不到则提示跑 --ime-hooks）；非 IME 清单不受影响；SKILL 规则 23 与 progress 同步
 * 4744c37 输入法清单共存保证 + 脚本工具：qingjian/zhiyuime 的 post_uninstall 补齐（停 ctfmon 释放占用 → 定向删自己的 tag → 卸载 → 重启 ctfmon；登记用增量 API、清理只删自己 ⇒ 安装/升级/卸载任意组合互不干扰）；myscoop-update.py 新增 --ime-hooks（扫描本机 TSF 输入法并输出可粘贴钩子，实测与两清单逐字一致）；SKILL 规则 23 与 progress 补充共存保证与工具说明
 * 58a6210 知语输入法装完/升级后不再消失：zhiyuime.json 补 post_install（InstallLayoutOrTip 登记 TSF tag + 重启 ctfmon）；更正 SKILL 规则 23/progress——恢复被删输入法必须走 TSF 登记，手工改 Preload 会被系统按 User Profile 覆盖（实测重启 ctfmon 即失效）
 * 707bcdd 修 qingjian post_install：改用 input.dll 的 InstallLayoutOrTip 增量登记（Set-WinUserLanguageList 是全量覆盖，会清掉不在 WinRT 列表里的其他输入法——曾误删 zhiyuime 的 IMM32 登记 E0200804，已恢复）；SKILL 新增规则 23（输入法登记/刷新/取证）；progress 记录事故与恢复法
