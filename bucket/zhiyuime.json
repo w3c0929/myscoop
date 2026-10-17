@@ -27,6 +27,13 @@
             "Get-ChildItem $persist_dir -Directory -Filter 'zhiyuime.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
         ]
     },
+    "post_install": [
+        "Add-Type -Namespace W -Name Inp -MemberDefinition '[DllImport(\"input.dll\", CharSet=CharSet.Unicode, SetLastError=true)] public static extern bool InstallLayoutOrTip(string psz, uint dwFlags);' -ErrorAction SilentlyContinue",
+        "[W.Inp]::InstallLayoutOrTip('0804:{94F5F388-9732-439E-A73F-EBC4E6F4A64B}{A549BE94-7073-440D-B293-ACF8820A527B}', 0) | Out-Null",
+        "Stop-Process -Name ctfmon -Force -ErrorAction SilentlyContinue",
+        "Start-Sleep -Milliseconds 900",
+        "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\""
+    ],
     "post_uninstall": [
         "Get-Process zhiyu-server -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue",
         "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
@@ -40,6 +47,6 @@
         "}"
     ],
     "notes": [
-        "升级时会先停掉正在运行的后台服务（zhiyu-server）再安装，所以不会出现旧服务还在跑的情况。若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe），仍无效再注销或重启。"
+        "升级时会先停掉正在运行的后台服务（zhiyu-server）再安装，所以不会出现旧服务还在跑的情况。安装脚本已自动把「知语输入法」登记到当前用户输入法列表并重启 ctfmon（通常无需重启系统）；若仍未即时生效：新打开的窗口通常直接可用（旧窗口需重开），仍无效可注销或重启。"
     ]
 }
