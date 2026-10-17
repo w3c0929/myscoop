@@ -3,10 +3,12 @@
     "description": "青简 Qingjian：用 Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词",
     "homepage": "https://qingjian.app",
     "license": "GPL-3.0",
-    "url": "https://github.com/qingjian-team/qingjian/releases/download/v0.2.1/qingjian-0.2.1-windows-x86_64-setup.exe",
     "checkver": {
-        "github": "https://github.com/qingjian-team/qingjian",
-        "tag_regex": "^v([\\d.]+(?:-(?:beta|rc)\\.\\d+)?)$"
+        "github": "https://github.com/qingjian-team/qingjian"
+    },
+    "url": "https://github.com/qingjian-team/qingjian/releases/download/v0.2.1/qingjian-0.2.1-windows-x86_64-setup.exe",
+    "autoupdate": {
+        "url": "https://github.com/qingjian-team/qingjian/releases/download/v$version/qingjian-$version-windows-x86_64-setup.exe"
     },
     "hash": "sha256:56ec12396981c654e072c268880a5202a7f90db9ce528ab63a14fa7a7e0fd4d8",
     "installer": {
@@ -16,20 +18,28 @@
             "/DIR=$dir"
         ]
     },
+    "post_install": [
+        "$tag = '0804:{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}{8119F8E0-CF81-423B-9189-C0D7374324B3}'",
+        "$l = Get-WinUserLanguageList",
+        "$cn = $l | Where-Object { $_.LanguageTag -eq 'zh-Hans-CN' }",
+        "if ($cn -and $cn.InputMethodTips -notcontains $tag) { $cn.InputMethodTips.Add($tag); Set-WinUserLanguageList -LanguageList $l -Force }",
+        "Stop-Process -Name ctfmon -Force -ErrorAction SilentlyContinue",
+        "Start-Sleep -Milliseconds 900",
+        "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\""
+    ],
     "post_uninstall": [
-        "Start-Process \"$dir\\unins000.exe\" -Wait -ArgumentList '/VERYSILENT','/NORESTART'"
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$persist_dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
+        "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
+        "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
+        "  $roots = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall','HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall'",
+        "  $k = Get-ChildItem $roots -ErrorAction SilentlyContinue | Get-ItemProperty -ErrorAction SilentlyContinue |",
+        "       Where-Object { ($_.InstallLocation -like '*qingjian*') -or ($_.InstallBaseLocation -like '*qingjian*') -or ($_.DisplayIcon -like '*qingjian*') } | Select-Object -First 1",
+        "  $exe = if ($k -and $k.InstallLocation) { Get-ChildItem $k.InstallLocation -Filter 'unins*.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName } }",
+        "  if ($exe) { Start-Process $exe -Wait -ArgumentList '/S' -Verb RunAs }",
+        "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理（Program Files / 注册表）' }",
+        "}"
     ],
     "notes": [
-        "系统注册已完成；若输入法未即时生效：新打开的窗口通常直接可用（旧窗口需重开），任务栏等系统组件需重启 ctfmon（taskkill /f /im ctfmon.exe）或重新启动资源管理器，仍无效再注销或重启。"
-    ],
-    "bin": "qingjian-server.exe",
-    "shortcuts": [
-        [
-            "qingjian-server.exe",
-            "qingjian"
-        ]
-    ],
-    "autoupdate": {
-        "url": "https://github.com/qingjian-team/qingjian/releases/download/v$version/qingjian-$version-windows-x86_64-setup.exe"
-    }
+        "安装脚本已自动把「青简」加入当前用户输入法列表并重启 ctfmon（通常无需重启系统）；若仍未即时生效：新打开的窗口通常直接可用（旧窗口需重开），仍无效可注销或重启。"
+    ]
 }

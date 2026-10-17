@@ -51,6 +51,7 @@ GitHub: https://github.com/w3c0929/myscoop
 - **注册型 installer 模式不建 bin/shortcuts**（2026-10-15）：Inno + 注册型（输入法/驱动/右键菜单）自动采用 installer 模式（真安装）时**必须置 `skip_bin = True`**——安装后安装器自删、应用本体不在 `$dir`，写 bin 会让 scoop 建 shim 失败。教训：`msime`（水杉输入法）的 bin 被写成 `MetasequoiaIME_Setup_v0.10.1.exe`（安装器名）并被 merge 从旧清单保留 → `Can't shim …: File doesn't exist`。修复（`finalize_direct_manifest` 注册型分支加 `skip_bin = True`，走既有"清模板 + drop 阻止 merge 带回"机制）后重跑 `--add --dl`：产出无 bin/shortcuts（`[跳过] 0：不建立 bin/shortcuts`）✓
 - **cherry 资产改名适配**（2026-10-15）：上游 2.1.6 起去掉资产名里的 `-CN` 段（`Cherry-Studio-CN-2.1.4-win-x64-portable.exe` → `Cherry-Studio-2.1.6-win-x64-portable.exe`），清单 autoupdate 模板同步去 `-CN` 并升到 2.1.6（hash 取 API digest）——dry-run 验证匹配成功（"共 0 个可更新"）。**repick_by_prefix 未介入是正确的**：`-win-x64-portable.exe` 与 `-win-x64-setup.exe` 的共同前缀平手（均止于 `Cherry-Studio-`），"唯一最优"护栏正确拒绝——命名结构变化属人工确认场景（同 anclicker 改名案例）
 - **清单修复**：**`kvllama` → `kvninfer`**（上游拆双产品线：llamacpp 线已无 sm89 构建、v0.17.0 空 release；改跟 ninfer 线 `tag_regex ^v([\d.]+-ninfer-rc\d+)$` + rtx40-sm89 资产 + `pre_install` 拍平 sha 顶层目录 + `bin=workers/ninfer/ninfer-kvmem-server.exe`；notes 注明 .ninfer 模型需另备、路径必须纯英文）。**`anclicker`**：上游 v1.4.0 起资产改名 `-windows-x64.zip`→`-Portable.zip`（Squirrel 便携布局：根 `An Clicker.exe` 启动器 + `current/` 本体），清单改 url/hash/bin（A/B 实测旧命名无法匹配、新命名正确更新）。**`anclicker` 1.6.3 布局再变**（2026-10-17）：上游弃 Squirrel 壳，zip 根变为 `AnClicker/` 子目录直装（另有 `旧版数据迁移工具/`（仅 .cmd/.txt，无需 shim）、`平台使用说明.md`、`BUILD-MANIFEST.json`），入口 = `AnClicker\AnClicker.exe`（8.4MB）→ 旧 `bin: "An Clicker.exe"` 报 `Can't shim 'An Clicker.exe': File doesn't exist`（`scoop update` 自动升级到 1.6.3 时触发）；改 `bin` + `shortcuts` 为 `AnClicker\AnClicker.exe` 后 `scoop uninstall`/`install` 实测成功（`anclicker.exe` → `current\AnClicker\AnClicker.exe`，`Get-Command anclicker` 正常）。注：`scoop reset` **不会**应用新清单（用的是安装时副本），必须重装
+- **输入法类清单：装完即可用、不必重启（`qingjian` 青简，2026-10-17）**：TSF 输入法安装器只做**系统级注册**——`HKLM\SOFTWARE\Microsoft\CTF\TIP\{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}`（`Enable=1`）+ `HKLM\SOFTWARE\Classes\CLSID\{…}\InprocServer32` → `D:\scoop\apps\qingjian\<ver>\qingjian_tsf-<ver>.dll`；但**输入法列表是每用户的**（`HKCU\Control Panel\International\User Profile\<语言>`），安装器没把它加进去，而 `ctfmon`（TSF 宿主）**只在登录时枚举一次**该列表 → 装完语言栏里没有「青简」、打不出字，**必须重启**（重启=重新登录+重新枚举）。修法：清单加 `post_install`，用 `Get-/Set-WinUserLanguageList` 把 `0804:{CLSID}{PROFILE}` 写入当前用户列表（`Set-… -Force` 立即写 HKCU 并广播），再重启 ctfmon（`Stop-Process -Name ctfmon -Force` + `Start-Process "$env:SystemRoot\System32\ctfmon.exe"`）强制重新枚举。实测：执行后列表立即出现「青简」（`HKCU\…\zh-Hans-CN` 出现 `0804:{4FDCA82D-…}{8119F8E0-…}=0x2`），**无需重启**。同类输入法（zhiyuime 等）可复用此法
 
 ## Scoop 库补丁与版本分发（symlink.bat）
 
@@ -219,7 +220,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 9c1fd1d (HEAD -> main, origin/main, origin/HEAD) mypsh推送
+* 31ebd5c (HEAD -> main, origin/main, origin/HEAD) 修 anclicker 1.6.3 shim 失败：上游弃 Squirrel 壳改为 AnClicker\AnClicker.exe 直装目录，同步 bin/shortcuts（实测卸载重装 shim 成功）；SKILL/progress 记录「更新后包内布局漂移」教训
+* 9c1fd1d mypsh推送
 * 8c87183 知语输入法 1.7.60
 * f540d5b 知语输入法 1.7.59
 * 39355d4 mypsh推送
