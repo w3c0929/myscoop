@@ -71,6 +71,13 @@ myscoop 管理脚本
   #     不一致时非零退出（CI 已挂）
   python3 myscoop-update.py --check
 
+  # 11) 输入法类清单的登记钩子：扫描本机已注册的 TSF 输入法（HKLM\\SOFTWARE\\Microsoft\\CTF\\TIP），
+  #     打印可直接粘进清单的 post_install / post_uninstall 片段——安装器只做系统级注册、
+  #     不登记到当前用户输入法列表 → 装完语言栏里没它、必须重启；
+  #     登记用 input.dll 的 InstallLayoutOrTip（增量），绝不能用 Set-WinUserLanguageList（全量覆盖）
+  python3 myscoop-update.py --ime-hooks          # 列出全部
+  python3 myscoop-update.py --ime-hooks 青简      # 按描述过滤
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   三、zip 拍平三态与配对（--unzip / --flatten / --no-flatten / --more）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2198,6 +2205,136 @@ def _uninstall_script(app_name=None):
     return lines
 
 
+# ---------- TSF 输入法登记钩子（--ime-hooks） ----------
+# 背景：TSF 输入法安装器通常只做**系统级注册**（HKLM\\SOFTWARE\\Microsoft\\CTF\\TIP\\{CLSID}
+# + HKLM\\SOFTWARE\\Classes\\CLSID\\{CLSID}\\InprocServer32），不把该输入法登记到**当前用户**的
+# 输入法列表（HKCU\\Control Panel\\International\\User Profile\\<语言>）；ctfmon 只在登录时枚举
+# 该列表 → 装完语言栏里没有它、打不出字，**必须重启**。
+# 登记必须用 input.dll 的 `InstallLayoutOrTip`（**增量**，只添加自己、幂等）；
+# **绝不能用 `Set-WinUserLanguageList`**——它是全量覆盖，会清掉不在 WinRT 列表里的其他输入法
+# （2026-10-17 事故：为登记 qingjian 调用后，用户的 zhiyuime IMM32 登记被一并清除）。
+# 卸载侧：input.dll **没有** UninstallLayoutOrTip，只能定向删除 User Profile 下自己那一项
+# （枚举所有语言子键删该 tag），且要先停 ctfmon 释放 IME/DLL 占用（否则卸载器删文件失败）。
+IME_INSTALL_API = (
+    "Add-Type -Namespace W -Name Inp -MemberDefinition "
+    "'[DllImport(\"input.dll\", CharSet=CharSet.Unicode, SetLastError=true)] "
+    "public static extern bool InstallLayoutOrTip(string psz, uint dwFlags);' -ErrorAction SilentlyContinue"
+)
+IME_CTFMON_STOP = "Stop-Process -Name ctfmon -Force -ErrorAction SilentlyContinue"
+IME_CTFMON_START = "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\" -ErrorAction SilentlyContinue"
+IME_TAG_REMOVE = (
+    "Get-ChildItem 'HKCU:\\Control Panel\\International\\User Profile' -ErrorAction SilentlyContinue "
+    "| ForEach-Object { Remove-ItemProperty $_.PSPath -Name '%s' -ErrorAction SilentlyContinue }"
+)
+
+
+def scan_tsf_tips():
+    """扫描 HKLM\\SOFTWARE\\Microsoft\\CTF\\TIP，列出本机已注册的 TSF 输入法。
+    返回 [{'clsid','profile','tag','description','inproc'}]（按描述排序）。"""
+    import winreg
+
+    def _subkeys(key):
+        out, i = [], 0
+        while True:
+            try:
+                out.append(winreg.EnumKey(key, i))
+            except OSError:
+                return out
+            i += 1
+
+    found = []
+    try:
+        tip = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\CTF\TIP")
+    except OSError:
+        return found
+    try:
+        for clsid in _subkeys(tip):
+            try:
+                lp = winreg.OpenKey(tip, clsid + r"\LanguageProfile")
+            except OSError:
+                continue
+            for langid in _subkeys(lp):
+                try:
+                    lpk = winreg.OpenKey(lp, langid)
+                except OSError:
+                    continue
+                for profile in _subkeys(lpk):
+                    desc = ""
+                    try:
+                        pk = winreg.OpenKey(lpk, profile)
+                        desc = str(winreg.QueryValueEx(pk, "Description")[0])
+                        winreg.CloseKey(pk)
+                    except OSError:
+                        pass
+                    inproc = ""
+                    try:
+                        ck = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                                            "SOFTWARE\\Classes\\CLSID\\%s\\InprocServer32" % clsid)
+                        inproc = str(winreg.QueryValueEx(ck, "")[0])
+                        winreg.CloseKey(ck)
+                    except OSError:
+                        pass
+                    try:
+                        lid = int(langid, 16)
+                    except ValueError:
+                        continue          # LanguageProfile 下不是 langid 层（非常规布局）→ 跳过
+                    found.append({
+                        "clsid": clsid,
+                        "profile": profile,
+                        "tag": "{:04x}:{{{}}}{{{}}}".format(
+                            lid, clsid.strip("{}"), profile.strip("{}")),
+                        "description": desc,
+                        "inproc": inproc,
+                    })
+    finally:
+        winreg.CloseKey(tip)
+    return sorted(found, key=lambda d: d["description"])
+
+
+def ime_hook_snippets(tag):
+    """给定输入法 tag（`0804:{CLSID}{PROFILE}`），返回 (post_install, 卸载前置, 卸载后置) 命令列表。"""
+    post_install = [
+        IME_INSTALL_API,
+        "[W.Inp]::InstallLayoutOrTip('%s', 0) | Out-Null" % tag,
+        IME_CTFMON_STOP,
+        "Start-Sleep -Milliseconds 900",
+        "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\"",
+    ]
+    pre_uninstall = [IME_CTFMON_STOP, IME_TAG_REMOVE % tag]
+    post_uninstall = [IME_CTFMON_START]
+    return post_install, pre_uninstall, post_uninstall
+
+
+def print_ime_hooks(keyword=None):
+    """列出本机 TSF 输入法，并打印可直接粘进清单的登记/清理钩子。"""
+    tips = scan_tsf_tips()
+    if keyword:
+        key = keyword.lower()
+        tips = [t for t in tips if key in t["description"].lower() or key in t["clsid"].lower()]
+    if not tips:
+        print("未发现匹配的 TSF 输入法（HKLM\\SOFTWARE\\Microsoft\\CTF\\TIP 下无语言配置文件）")
+        return False
+    if not keyword:
+        print("本机已注册的 TSF 输入法（共 %d 个；`--ime-hooks <关键词>` 查看某个的登记钩子）：\n" % len(tips))
+        for i, t in enumerate(tips, 1):
+            print("  [%d] %-42s %s" % (i, (t["description"] or "(无描述)")[:42], t["tag"]))
+        return True
+    for t in tips:
+        print("[%s]" % (t["description"] or "(无描述)"))
+        print("    TAG  %s" % t["tag"])
+        if t["inproc"]:
+            print("    DLL  %s" % t["inproc"])
+        pi, pre_u, post_u = ime_hook_snippets(t["tag"])
+        print("    post_install:")
+        for c in pi:
+            print("        %s," % json.dumps(c, ensure_ascii=False))
+        print("    post_uninstall（前两条插到最前，最后一条追加到末尾）:")
+        for c in pre_u + post_u:
+            print("        %s," % json.dumps(c, ensure_ascii=False))
+        print()
+    return True
+
+
 def installer_mode_fields(is_inno, template=None, app_name=None):
     """生成 installer 模式字段：真跑安装器（注册脚本随安装执行）+ 卸载器清理注册 + 激活提示。
     Inno: /VERYSILENT /NORESTART /DIR=$dir；NSIS: /S /D=$dir。
@@ -3439,6 +3576,12 @@ def main():
             sys.exit(1)
         result = probe_exe(src, arg_value("--name"))
         sys.exit(0 if result else 1)
+
+    # --ime-hooks [关键词]：列出本机已注册的 TSF 输入法，并打印可粘进清单的
+    # post_install / post_uninstall 登记钩子（收录输入法类清单用；也用于排查语言栏缺失）
+    if args and args[0] == "--ime-hooks":
+        kw = next((a for a in args[1:] if not a.startswith("--")), None)
+        sys.exit(0 if print_ime_hooks(kw) else 1)
 
     # --installer-mode <清单.json...|--all>：存量清单迁移为 installer 模式（注册型软件修复形态）
     if "--installer-mode" in args:

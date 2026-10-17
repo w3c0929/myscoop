@@ -35,6 +35,8 @@
         "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\""
     ],
     "post_uninstall": [
+        "Stop-Process -Name ctfmon -Force -ErrorAction SilentlyContinue",
+        "Get-ChildItem 'HKCU:\\Control Panel\\International\\User Profile' -ErrorAction SilentlyContinue | ForEach-Object { Remove-ItemProperty $_.PSPath -Name '0804:{94F5F388-9732-439E-A73F-EBC4E6F4A64B}{A549BE94-7073-440D-B293-ACF8820A527B}' -ErrorAction SilentlyContinue }",
         "Get-Process zhiyu-server -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue",
         "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
         "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
@@ -44,7 +46,8 @@
         "  $exe = if ($k -and $k.InstallLocation) { Get-ChildItem $k.InstallLocation -Filter 'unins*.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName } }",
         "  if ($exe) { Start-Process $exe -Wait -ArgumentList '/S' -Verb RunAs }",
         "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理' }",
-        "}"
+        "}",
+        "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\" -ErrorAction SilentlyContinue"
     ],
     "notes": [
         "升级时会先停掉正在运行的后台服务（zhiyu-server）再安装，所以不会出现旧服务还在跑的情况。安装脚本已自动把「知语输入法」登记到当前用户输入法列表并重启 ctfmon（通常无需重启系统）；若仍未即时生效：新打开的窗口通常直接可用（旧窗口需重开），仍无效可注销或重启。"

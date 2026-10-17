@@ -54,6 +54,7 @@ GitHub: https://github.com/w3c0929/myscoop
 - **输入法类清单：装完即可用、且绝不动别人的输入法（`qingjian` 青简，2026-10-17）**：TSF 输入法安装器只做**系统级注册**——`HKLM\SOFTWARE\Microsoft\CTF\TIP\{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}`（`Enable=1`）+ `HKLM\SOFTWARE\Classes\CLSID\{…}\InprocServer32` → `D:\scoop\apps\qingjian\<ver>\qingjian_tsf-<ver>.dll`；但**输入法登记是每用户的**（TSF 走 `HKCU\Control Panel\International\User Profile\<语言>`，IMM32 走 `HKCU\Keyboard Layout\Preload`），安装器没把它加进去，而 `ctfmon`（TSF 宿主）**只在登录时枚举一次** → 装完语言栏里没有「青简」、打不出字，**必须重启**。
     **⚠️ 事故教训：登记必须用 `InstallLayoutOrTip`（增量），绝不能用 `Set-WinUserLanguageList`（全量覆盖）**——首轮修复用了 `Get-/Set-WinUserLanguageList -Force`，它按 WinRT 语言列表**重写整个用户输入法配置**，把**不在该列表里的输入法一并清除**：用户的 **zhiyuime 知语输入法**（IMM32 型，`HKCU\Keyboard Layout\Preload` 的 `E0200804`，另有 `User Profile\zh-Hans` 键）当场从语言栏消失。正确写法（`post_install`）：`Add-Type` P/Invoke `input.dll` 的 `InstallLayoutOrTip('0804:{CLSID}{PROFILE}', 0)`（**只添加、幂等**，实测调用后 `Preload` 未被动过），再重启 ctfmon（`Stop-Process -Name ctfmon -Force` + `Start-Process "$env:SystemRoot\System32\ctfmon.exe"`）强制重新枚举。
     **恢复（关键：必须走 TSF 登记，改 Preload 无效）**：被误删的输入法要用 `InstallLayoutOrTip('0804:{其CLSID}{其PROFILE}', 0)` 登记，**不要手工改 `HKCU\Keyboard Layout\Preload`**——Preload 只是兼容层，系统以 `User Profile`（TSF）为准会把它覆盖回去（实测：手工补回 zhiyuime 的 `E0200804` 后重启 ctfmon 即被抹掉，用户仍找不到）；用 `InstallLayoutOrTip` 登记 zhiyuime 的 tag `{94F5F388-9732-439E-A73F-EBC4E6F4A64B}{A549BE94-7073-440D-B293-ACF8820A527B}` 后，系统**自动同步** Preload（出现 `2 = e0200804`）且 ctfmon 重启后仍保留 ✓。**zhiyuime.json 已同步补 `post_install`**（与 qingjian 同法），避免今后更新后再次消失。取证：`reg query "HKLM\SOFTWARE\Microsoft\CTF\TIP" /s /f "知语输入法" /d`（得 CLSID `{94F5F388-9732-439E-A73F-EBC4E6F4A64B}` + PROFILE `{A549BE94-7073-440D-B293-ACF8820A527B}`）、`reg query "HKCU\Keyboard Layout\Preload"`、`Get-WinUserLanguageList`
+    **共存与清理保证（2026-10-17 补，回答"两输入法会不会互相冲突"）**：两清单的 `post_uninstall` 均已补齐 —— ① **先停 ctfmon**（释放 IME/DLL 占用，否则卸载器删文件失败）② 枚举 `HKCU\Control Panel\International\User Profile` **各语言子键**定向 `Remove-ItemProperty` **自己的 tag**（绝不碰对方）③ 跑卸载器 ④ 重启 ctfmon。登记用**增量** `InstallLayoutOrTip`、清理只删**自己**那一项 ⇒ 两输入法的**安装 / 升级 / 卸载任意组合互不干扰**（升级路径由 scoop 先跑 post_uninstall 覆盖；ctfmon 重启幂等、共享操作无害）。**工具**：`myscoop-update.py --ime-hooks [关键词]` 扫描本机已注册的 TSF 输入法并输出**可直接粘贴**的登记/清理钩子（实测输出与两清单现有内容**逐字一致**；无关键词=摘要列表，带关键词=完整钩子）。边界：tag 是硬编码（上游改 CLSID 则失效但不破坏，用 `--ime-hooks` 一键重生成）。
 
 ## Scoop 库补丁与版本分发（symlink.bat）
 
@@ -222,7 +223,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 707bcdd (HEAD -> main, origin/main, origin/HEAD) 修 qingjian post_install：改用 input.dll 的 InstallLayoutOrTip 增量登记（Set-WinUserLanguageList 是全量覆盖，会清掉不在 WinRT 列表里的其他输入法——曾误删 zhiyuime 的 IMM32 登记 E0200804，已恢复）；SKILL 新增规则 23（输入法登记/刷新/取证）；progress 记录事故与恢复法
+* 58a6210 (HEAD -> main, origin/main, origin/HEAD) 知语输入法装完/升级后不再消失：zhiyuime.json 补 post_install（InstallLayoutOrTip 登记 TSF tag + 重启 ctfmon）；更正 SKILL 规则 23/progress——恢复被删输入法必须走 TSF 登记，手工改 Preload 会被系统按 User Profile 覆盖（实测重启 ctfmon 即失效）
+* 707bcdd 修 qingjian post_install：改用 input.dll 的 InstallLayoutOrTip 增量登记（Set-WinUserLanguageList 是全量覆盖，会清掉不在 WinRT 列表里的其他输入法——曾误删 zhiyuime 的 IMM32 登记 E0200804，已恢复）；SKILL 新增规则 23（输入法登记/刷新/取证）；progress 记录事故与恢复法
 * 55f129e qingjian 装完即可用：manifest 加 post_install —— 写入当前用户输入法列表（Set-WinUserLanguageList -Force）+ 重启 ctfmon 强制重新枚举，免系统重启；notes 同步；progress 记录 TSF 输入法每用户列表机制
 * 31ebd5c 修 anclicker 1.6.3 shim 失败：上游弃 Squirrel 壳改为 AnClicker\AnClicker.exe 直装目录，同步 bin/shortcuts（实测卸载重装 shim 成功）；SKILL/progress 记录「更新后包内布局漂移」教训
 * 9c1fd1d mypsh推送

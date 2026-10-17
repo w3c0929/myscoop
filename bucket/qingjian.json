@@ -26,6 +26,8 @@
         "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\""
     ],
     "post_uninstall": [
+        "Stop-Process -Name ctfmon -Force -ErrorAction SilentlyContinue",
+        "Get-ChildItem 'HKCU:\\Control Panel\\International\\User Profile' -ErrorAction SilentlyContinue | ForEach-Object { Remove-ItemProperty $_.PSPath -Name '0804:{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}{8119F8E0-CF81-423B-9189-C0D7374324B3}' -ErrorAction SilentlyContinue }",
         "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$persist_dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
         "$u = Get-ChildItem \"$dir\\unins*.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1",
         "if ($u) { Start-Process $u.FullName -Wait -ArgumentList '/S','/VERYSILENT','/NORESTART' } else {",
@@ -35,7 +37,8 @@
         "  $exe = if ($k -and $k.InstallLocation) { Get-ChildItem $k.InstallLocation -Filter 'unins*.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { $_.FullName } }",
         "  if ($exe) { Start-Process $exe -Wait -ArgumentList '/S' -Verb RunAs }",
         "  else { Write-Host '[卸载] 未在 $dir 或注册表中找到卸载器，可能需手动清理（Program Files / 注册表）' }",
-        "}"
+        "}",
+        "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\" -ErrorAction SilentlyContinue"
     ],
     "notes": [
         "安装脚本已自动把「青简」加入当前用户输入法列表并重启 ctfmon（通常无需重启系统）；若仍未即时生效：新打开的窗口通常直接可用（旧窗口需重开），仍无效可注销或重启。"
