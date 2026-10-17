@@ -19,10 +19,8 @@
         ]
     },
     "post_install": [
-        "$tag = '0804:{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}{8119F8E0-CF81-423B-9189-C0D7374324B3}'",
-        "$l = Get-WinUserLanguageList",
-        "$cn = $l | Where-Object { $_.LanguageTag -eq 'zh-Hans-CN' }",
-        "if ($cn -and $cn.InputMethodTips -notcontains $tag) { $cn.InputMethodTips.Add($tag); Set-WinUserLanguageList -LanguageList $l -Force }",
+        "Add-Type -Namespace W -Name Inp -MemberDefinition '[DllImport(\"input.dll\", CharSet=CharSet.Unicode, SetLastError=true)] public static extern bool InstallLayoutOrTip(string psz, uint dwFlags);' -ErrorAction SilentlyContinue",
+        "[W.Inp]::InstallLayoutOrTip('0804:{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}{8119F8E0-CF81-423B-9189-C0D7374324B3}', 0) | Out-Null",
         "Stop-Process -Name ctfmon -Force -ErrorAction SilentlyContinue",
         "Start-Sleep -Milliseconds 900",
         "Start-Process \"$env:SystemRoot\\System32\\ctfmon.exe\""
