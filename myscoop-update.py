@@ -1934,6 +1934,25 @@ MIRROR_PROBE_WINDOW = float(os.environ.get("MYSCOOP_MIRROR_WINDOW", "3"))
 MIRROR_MIN_SPEED = float(os.environ.get("MYSCOOP_MIRROR_MIN_SPEED_MB", "1")) * 1048576
 
 
+def _mirror_probe_head(url, timeout=8):
+    """HEAD 探测候选镜像：返回 (是否 2xx, Content-Length 或 None)。
+    用于"坏的（不规范的）镜像"护栏 —— 只提示并换下一个，**不删镜像**（镜像可能自己修好）。"""
+    try:
+        req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "myscoop-updater"})
+        with _open(req, timeout) as resp:
+            ok = 200 <= resp.status < 300
+            raw = resp.headers.get("Content-Length")
+            cl = None
+            if raw:
+                try:
+                    cl = int(raw)
+                except ValueError:
+                    cl = None
+            return ok, cl
+    except Exception:
+        return False, None
+
+
 def download_to(url, dest, timeout=180, probe_window=None, min_speed=None):
     """下载文件到 dest（自动去除 #fragment）。
     GitHub release 下载优先走加速镜像，但**按速度选**：依次尝试候选镜像，在 probe_window 秒
@@ -1951,6 +1970,17 @@ def download_to(url, dest, timeout=180, probe_window=None, min_speed=None):
     last_err = None
     for target, need_probe in plan:
         label = "直链" if target == clean else target.split("/")[2]
+        # 护栏（只提示+跳过，不删镜像）：HEAD 不通过就换下一个 ——
+        #  ① 不可达/非 2xx ② 无 Content-Length（下载界面拿不到总大小 → 无进度条；且可能是残缺文件，
+        #  实测 git.yylx.win 缓存的 anclicker 1.6.7 只有 537MB/正确 636MB → hash 必然失败）
+        if need_probe:
+            ok, cl = _mirror_probe_head(target)
+            if not ok:
+                print(f"[镜像] {label} 不可达 → 换下一个")
+                continue
+            if not cl:
+                print(f"[镜像] {label} 未提供 Content-Length（无进度条、且可能残缺）→ 换下一个")
+                continue
         # 测速阶段的读超时收紧到「窗口+1s」：连接后卡住的镜像不该让我们等满 timeout
         read_timeout = (window + 1) if need_probe else timeout
         try:
