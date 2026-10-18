@@ -1966,10 +1966,13 @@ def download_to(url, dest, timeout=180, probe_window=None, min_speed=None):
     window = MIRROR_PROBE_WINDOW if probe_window is None else probe_window
     floor = MIRROR_MIN_SPEED if min_speed is None else min_speed
     # (目标 URL, 是否测速)：镜像要测速；直链兜底不测速
-    plan = [(m, True) for m in mirror_candidates(clean, gh_mirror_list())] + [(clean, False)]
+    mirrors = mirror_candidates(clean, gh_mirror_list())
+    plan = [(m, True) for m in mirrors] + [(clean, False)]
     last_err = None
     for target, need_probe in plan:
         label = "直链" if target == clean else target.split("/")[2]
+        if mirrors and not need_probe:
+            print("[镜像] 无可用镜像，改用直链下载")
         # 护栏（只提示+跳过，不删镜像）：HEAD 不通过就换下一个 ——
         #  ① 不可达/非 2xx ② 无 Content-Length（下载界面拿不到总大小 → 无进度条；且可能是残缺文件，
         #  实测 git.yylx.win 缓存的 anclicker 1.6.7 只有 537MB/正确 636MB → hash 必然失败）
@@ -2007,8 +2010,7 @@ def download_to(url, dest, timeout=180, probe_window=None, min_speed=None):
                         print(f"[镜像] {label} 测速 {speed / 1048576:.2f}MB/s < "
                               f"{floor / 1048576:.0f}MB/s → 换下一个")
                         continue
-                    print(f"[镜像] {label} 测速 {speed / 1048576:.2f}MB/s ≥ "
-                          f"{floor / 1048576:.0f}MB/s → 使用 {target}")
+                    print(f"[镜像] 使用 {label} 加速下载（测速 {speed / 1048576:.2f} MB/s）")
                 while True:
                     chunk = resp.read(65536)
                     if not chunk:
