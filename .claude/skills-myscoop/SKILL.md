@@ -535,6 +535,7 @@ git add bucket/ README.md && git commit -m "批量更新第三方软件" && git 
     - 下载完成后用 `certutil -hashfile 文件 SHA256` 计算哈希（同为系统自带）
     - 仅在 curl.exe 不可用时（如旧版系统）才退化为其他下载方式
     - **GitHub release 资产可经镜像加速（按速度选源，2026-10-18 起）**：镜像前缀拼接（如 `https://hk.gh-proxy.org/https://github.com/…`；列表见 `config.json` 的 `aria2-mirrors`，与脚本 / `download.ps1` 同一套机制）。只认"release 资产代理"型镜像（写法只有"镜像前缀 + 完整 URL"一种）。**`myscoop-update.py` 的 `download_to` 改为逐个候选测速**：窗口默认 **3 秒**（`MYSCOOP_MIRROR_WINDOW`）内实测速度 ≥ **1MB/s**（`MYSCOOP_MIRROR_MIN_SPEED_MB`）才采用，不达标或不可达换下一个；**全部不达标兜底直链**（原 URL、不测速）。测速与下载同一连接（达标后接着写剩余字节，不浪费已下的部分）；窗口自请求发出计时（含连接/首字节延迟），测速阶段读超时收紧到 窗口+1s（连接后卡住的镜像不会等满 timeout）。教训：旧逻辑只做 1KB range **探可达** → 第一个"能连上但很慢"的镜像被选中（实测 `hk.gh-proxy.org` 0.1–0.25MB/s，而同一时刻直链 ~5MB/s）
+    - **`download.ps1` 补丁（Scoop 端）同款测速**：`Get-GitHubMirrorUrl` 用系统 curl 的 `-r 0-4194303`（最多 4MB ≥ 阈值×窗口，防高速镜像下满整包）+ `--max-time WINDOW` + `-w "%{http_code} %{speed_download}"`，状态码 2xx/3xx 且速度 ≥ MIN 才返回该镜像；全不达标/不可达 → 直链。环境变量与脚本侧同名（`MYSCOOP_MIRROR_WINDOW` / `MYSCOOP_MIRROR_MIN_SPEED_MB`）。**差异**：PS 侧测速与真实下载是**两次独立请求**（不像脚本侧同连接续写），故最多重下 4MB；`patches\v0.5.3\`（冻结旧基线）不动
 15. **多版本软件资产（自托管）**：同一软件需保留多个历史版本时，**用一个 release（固定 tag）下挂多个资产**（文件名含版本号区分，如 `sublime-text-4200-x64.zip`、`sublime-text-4207-x64.zip`），**不要**每版本各建一个 release。
     - manifest 的 `version` 固定为**默认（最新）版本**；`url`/`hash` 字段**硬编码默认版本的具体地址**，**不要**在 `url` 里写 `$version`——Scoop 普通安装不会替换它，会直接 404
     - `autoupdate.url` 中 **tag 固定**，仅文件名部分用 `$version` 模板（供 Scoop 动态生成其他版本）
