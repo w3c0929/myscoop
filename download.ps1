@@ -26,11 +26,11 @@ function Get-GitHubMirrorUrl([string]$url) {
             #   1.6.7 只有 537MB/正确 636MB → hash 校验必然失败）。
             $head = & curl.exe -sIL --connect-timeout 4 --max-time 8 $mirror_url 2>$null | Out-String
             if ($head -notmatch '(?im)^HTTP/\S+\s+2\d\d') {
-                Write-Host "  [镜像] $base 不可达 → 换下一个"
+                Write-Host ("  [镜像] {0} 不可达 → 换下一个" -f ($base -replace '^https?://', ''))
                 continue
             }
             if ($head -notmatch '(?im)^content-length:\s*\d+') {
-                Write-Host "  [镜像] $base 未提供 Content-Length（无进度条、且可能残缺）→ 换下一个"
+                Write-Host ("  [镜像] {0} 未提供 Content-Length（无进度条、且可能残缺）→ 换下一个" -f ($base -replace '^https?://', ''))
                 continue
             }
             $out = & curl.exe -sL -r 0-4194303 --connect-timeout 4 --max-time $window -o NUL `
@@ -39,10 +39,17 @@ function Get-GitHubMirrorUrl([string]$url) {
             if ($parts.Count -ge 2 -and $parts[0] -match '^[23]\d\d$') {
                 $speed = 0.0
                 if (-not [double]::TryParse($parts[1], [ref]$speed)) { $speed = 0.0 }
-                if ($speed -ge $minSpeed) { return $mirror_url }
+                $host_ = $base -replace '^https?://', ''
+                if ($speed -ge $minSpeed) {
+                    # 下载（进度条）开始前提示：本次用哪个镜像
+                    Write-Host ("  [镜像] 使用 {0} 加速下载（测速 {1:N2} MB/s）" -f $host_, ($speed / 1048576)) -ForegroundColor DarkCyan
+                    return $mirror_url
+                }
+                Write-Host ("  [镜像] {0} 测速 {1:N2} MB/s < {2:N0} MB/s → 换下一个" -f $host_, ($speed / 1048576), ($minSpeed / 1048576))
             }
         } catch { }
     }
+    Write-Host "  [镜像] 无可用镜像，改用直链下载"
     return $url
 }
 # ========== GitHub 镜像加速补丁结束 ==========
