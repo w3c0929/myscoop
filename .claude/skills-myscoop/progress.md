@@ -230,7 +230,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* e18ce54 (HEAD -> main, origin/main, origin/HEAD) 下载时在进度条上方提示所用镜像：Get-GitHubMirrorUrl 选中后打印「[镜像] 使用 <域名> 加速下载（测速 N MB/s）」（位于 Start-Download/aria2 之前，正好在进度条上方），无可用镜像时提示「改用直链下载」；跳过提示统一为域名格式；SKILL/progress 同步
+* 7b52bea (HEAD -> main) 同步 README 第三方版本与日期列
+* a1b179a 自动更新第三方软件
+* c600303 (origin/main) myscoop-update.py 镜像提示与 download.ps1 对齐：使用提示改为「[镜像] 使用 <域名> 加速下载（测速 N MB/s）」（原为完整 URL 形式）、新增「无可用镜像，改用直链下载」；未配置镜像时不打印任何镜像行；实测三场景（坏+好 / 全坏兜底直链 / 无配置）均正确；SKILL 与 progress 同步
+* e18ce54 下载时在进度条上方提示所用镜像：Get-GitHubMirrorUrl 选中后打印「[镜像] 使用 <域名> 加速下载（测速 N MB/s）」（位于 Start-Download/aria2 之前，正好在进度条上方），无可用镜像时提示「改用直链下载」；跳过提示统一为域名格式；SKILL/progress 同步
 * f2e2dff 坏镜像改为「提示 + 换下一个」而非删除：download.ps1 与 myscoop-update.py（新增 _mirror_probe_head）在测速前查 HEAD —— 不可达/非 2xx 或无 Content-Length 时打印 [镜像] <域名> … → 换下一个 并 continue；git.yylx.win 保留在 aria2-mirrors（镜像可能自愈，提示让用户知道当下谁不行）；实测两侧判据均正确；SKILL/progress 同步
 * deffb2b 修镜像残缺导致的 hash 校验失败 + 无进度条：移除 git.yylx.win（其缓存的 anclicker 1.6.7 仅 537MB/正确 636MB，且不给 Content-Length → scoop 无进度条且必然 hash 失败）；download.ps1 加护栏——HEAD 无 Content-Length（或非 2xx）的镜像直接跳过；config.json 镜像 24→23 并同步 scoop 侧；SKILL/progress 记录取证过程（清单 hash 与上游 digest 一致，问题在镜像）
 * 7ae68ad mypsh推送
