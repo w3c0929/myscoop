@@ -1,20 +1,20 @@
 {
-    "version": "1.1.83",
+    "version": "1.1.84",
     "description": "SSH workspace, SFTP, and terminals in one",
     "homepage": "https://netcatty.app",
     "license": "GPL-3.0",
     "checkver": {
         "github": "https://github.com/binaricat/Netcatty"
     },
-    "url": "https://github.com/binaricat/Netcatty/releases/download/v1.1.83/Netcatty-1.1.83-portable-win-x64.exe",
-    "hash": "sha256:bb77188b2cd3336d5dfcb122bb3ff43feafec2981ac2f79d7897f68f97bc4647",
+    "url": "https://github.com/binaricat/Netcatty/releases/download/v1.1.84/Netcatty-1.1.84-portable-win-x64.exe",
+    "hash": "sha256:f206e2d074ae443abdcc74b7b42bf9a48f3f01d18a14e1c7573f928bb1328cc9",
     "autoupdate": {
         "url": "https://github.com/binaricat/Netcatty/releases/download/v$version/Netcatty-$version-portable-win-x64.exe"
     },
-    "bin": "Netcatty-1.1.83-portable-win-x64.exe",
+    "bin": "Netcatty-1.1.84-portable-win-x64.exe",
     "shortcuts": [
         [
-            "Netcatty-1.1.83-portable-win-x64.exe",
+            "Netcatty-1.1.84-portable-win-x64.exe",
             "Netcatty"
         ]
     ]
