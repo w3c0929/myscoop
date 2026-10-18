@@ -1928,22 +1928,69 @@ def fetch_text(url, timeout=60, headers=None):
         return resp.read().decode("utf-8", "replace")
 
 
-def download_to(url, dest, timeout=180):
+# 镜像测速参数（可用环境变量覆盖）：probe_window 秒内实测速度 < min_speed 就换下一个镜像；
+# 全部镜像都不达标（或不可达）→ **兜底直链**（原 URL，不测速）。
+MIRROR_PROBE_WINDOW = float(os.environ.get("MYSCOOP_MIRROR_WINDOW", "3"))
+MIRROR_MIN_SPEED = float(os.environ.get("MYSCOOP_MIRROR_MIN_SPEED_MB", "1")) * 1048576
+
+
+def download_to(url, dest, timeout=180, probe_window=None, min_speed=None):
     """下载文件到 dest（自动去除 #fragment）。
-    GitHub release 下载优先走加速镜像（MYSCOOP_GH_MIRRORS 环境变量或
-    Scoop config.json 的 aria2-mirrors，与 download.ps1 补丁同一套列表），
-    镜像全部不可达自动回退原始 URL；无镜像配置时行为与原来完全一致。"""
+    GitHub release 下载优先走加速镜像，但**按速度选**：依次尝试候选镜像，在 probe_window 秒
+    （默认 3s）内实测速度 ≥ min_speed（默认 1MB/s）即采用并继续写完；不达标/不可达则换下一个；
+    **全部镜像都不达标时兜底直链**（原 URL，不测速）。测速与下载同一连接（达标后接着写剩余部分，
+    不浪费已下载的字节）；换源时目标文件重写（从 0 开始）。
+    镜像列表：MYSCOOP_GH_MIRRORS 环境变量或 Scoop config.json 的 aria2-mirrors（与 download.ps1 同一套）。
+    无镜像配置时行为与原来一致（直链直接下载）。"""
+    import time
     clean = url.split("#", 1)[0]
-    target = probe_mirror_url(clean)
-    if target != clean:
-        print(f"[镜像] 使用 {target.split('/')[2]} 加速: {clean}")
-    req = urllib.request.Request(target, headers={"User-Agent": "myscoop-updater"})
-    with _open(req, timeout) as resp, open(dest, "wb") as f:
-        while True:
-            chunk = resp.read(65536)
-            if not chunk:
-                break
-            f.write(chunk)
+    window = MIRROR_PROBE_WINDOW if probe_window is None else probe_window
+    floor = MIRROR_MIN_SPEED if min_speed is None else min_speed
+    # (目标 URL, 是否测速)：镜像要测速；直链兜底不测速
+    plan = [(m, True) for m in mirror_candidates(clean, gh_mirror_list())] + [(clean, False)]
+    last_err = None
+    for target, need_probe in plan:
+        label = "直链" if target == clean else target.split("/")[2]
+        # 测速阶段的读超时收紧到「窗口+1s」：连接后卡住的镜像不该让我们等满 timeout
+        read_timeout = (window + 1) if need_probe else timeout
+        try:
+            req = urllib.request.Request(target, headers={"User-Agent": "myscoop-updater"})
+            with _open(req, read_timeout) as resp, open(dest, "wb") as f:
+                if need_probe:
+                    t0 = time.monotonic()
+                    got = 0
+                    fast = False
+                    while True:
+                        if time.monotonic() - t0 >= window:
+                            break
+                        chunk = resp.read(65536)
+                        if not chunk:
+                            fast = True      # 窗口内读完整个文件（小文件）→ 视为达标
+                            break
+                        f.write(chunk)
+                        got += len(chunk)
+                        if got / max(time.monotonic() - t0, 1e-3) >= floor:
+                            fast = True
+                            break
+                    speed = got / max(time.monotonic() - t0, 1e-3)
+                    if not fast:
+                        print(f"[镜像] {label} 测速 {speed / 1048576:.2f}MB/s < "
+                              f"{floor / 1048576:.0f}MB/s → 换下一个")
+                        continue
+                    print(f"[镜像] {label} 测速 {speed / 1048576:.2f}MB/s ≥ "
+                          f"{floor / 1048576:.0f}MB/s → 使用 {target}")
+                while True:
+                    chunk = resp.read(65536)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+            return
+        except Exception as e:
+            last_err = e
+            if need_probe:
+                print(f"[镜像] {label} 不可用（{e}）→ 换下一个")
+            continue
+    raise last_err or OSError(f"下载失败：{clean}")
 
 
 def sha256_hex(path):
@@ -2566,10 +2613,14 @@ def locate_exe_subpath(names, exe_name):
     return "/".join(best) if best else None
 
 
-def finalize_direct_manifest(template, out_dir, app_name, drop=()):
+def finalize_direct_manifest(template, out_dir, app_name, drop=(), assume_digest=None):
     """非 GitHub 直链模板补全：下载算 hash + Inno Setup 检测 + checkver/autoupdate 校验。
     多架构清单以 64bit 主架构 url 为准做探测与模板校验（不写顶层 hash/url）。
-    drop：透传给 merge_existing_manifest 的丢弃字段（zip 路径 `--select 0` 跳过 bin 时用）。"""
+    drop：透传给 merge_existing_manifest 的丢弃字段（zip 路径 `--select 0` 跳过 bin 时用）。
+    assume_digest：调用方（`--dl` / `--fill-bin` 的 zip 路径）**刚实测下载过**同一资产时的 sha256
+    （不带 `sha256:` 前缀）。给出且 `.dl_cache` 缓存校验一致 → **复用缓存、不再二次下载**
+    （此前多架构 zip 清单必然下两遍：fill_bin 下一遍，finalize 因"顶层无 hash"再下一遍）。
+    默认 None → 行为与不带该参数完全一致。"""
     url, _tmpl_digest = arch_url_hash(template)
     if not url:
         print("[错误] 模板缺少 url（多架构清单需含 64bit 分支）")
@@ -2593,21 +2644,32 @@ def finalize_direct_manifest(template, out_dir, app_name, drop=()):
         # zip/7z 下载后保留到 staging/.dl_cache/，供 --fill-bin 复用（--no-keep 可关闭保留）
         keep_cached = (url.lower().endswith((".zip", ".7z"))
                        and "--no-keep" not in sys.argv[1:])
+        reuse_tmp = None
         if keep_cached:
             cache_dir = FALLBACK_OUT_DIR / ".dl_cache"
             cache_dir.mkdir(parents=True, exist_ok=True)
             ext = ".7z" if url.lower().endswith(".7z") else ".zip"
             tmp = cache_dir / f"{app_name}{ext}"
-            print(f"[缓存] 压缩包将保留到 {tmp}")
-        print(f"[下载] {url.split('#')[0]}")
-        try:
-            download_to(url, tmp)
-        except Exception as e:
-            print(f"[错误] 下载失败: {e}")
-            return None
-        size = tmp.stat().st_size
-        digest = sha256_hex(tmp)
-        print(f"[下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
+            # 调用方已实测下载同一资产 → 复用缓存包（缓存 hash 不符则回落原下载路径）
+            if assume_digest and not force_dl and tmp.exists() and sha256_hex(tmp) == assume_digest:
+                reuse_tmp = tmp
+            else:
+                print(f"[缓存] 压缩包将保留到 {tmp}")
+        if reuse_tmp:
+            tmp = reuse_tmp
+            size = tmp.stat().st_size
+            digest = assume_digest
+            print(f"[复用] 使用已下载的缓存包 {tmp}（跳过重复下载）  sha256:{digest[:16]}...")
+        else:
+            print(f"[下载] {url.split('#')[0]}")
+            try:
+                download_to(url, tmp)
+            except Exception as e:
+                print(f"[错误] 下载失败: {e}")
+                return None
+            size = tmp.stat().st_size
+            digest = sha256_hex(tmp)
+            print(f"[下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
         # zip 探测：顶层 exe 提示 + 单顶层目录自动扁平化（版本无关，--no-flatten 禁用）
         if url.lower().endswith(".zip"):
             try:
@@ -2965,7 +3027,8 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
         template.pop("shortcuts", None)
         if not template.get("hash") and not multi_arch:
             template["hash"] = "sha256:" + digest
-        return finalize_direct_manifest(template, out_dir, app_name, drop=("bin", "shortcuts"))
+        return finalize_direct_manifest(template, out_dir, app_name, drop=("bin", "shortcuts"),
+                                        assume_digest=digest)
     if not choice:
         tmp.unlink(missing_ok=True)
         return None
@@ -3007,7 +3070,8 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
     # 压缩包保留在 .dl_cache 供后续复用（不删除）；多架构清单不写顶层 hash（finalize 只校验不覆盖）
     if not template.get("hash") and not multi_arch:
         template["hash"] = "sha256:" + digest
-    return finalize_direct_manifest(template, out_dir, app_name)
+    # assume_digest：本次已实测下载 → finalize 直接复用缓存（多架构顶层无 hash，否则会再下一遍）
+    return finalize_direct_manifest(template, out_dir, app_name, assume_digest=digest)
 
 
 def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
@@ -3138,7 +3202,8 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
         # 0 = 不建 bin/shortcuts：清占位后直接 finalize（hash 已写；drop 防旧清单占位带回）
         template.pop("bin", None)
         template.pop("shortcuts", None)
-        return finalize_direct_manifest(template, out_dir, app_name, drop=("bin", "shortcuts"))
+        return finalize_direct_manifest(template, out_dir, app_name, drop=("bin", "shortcuts"),
+                                        assume_digest=digest)
     if not choice:
         return None
     print(f"[选择] {choice}")
@@ -3188,7 +3253,7 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
     template["bin"] = bin_name
     template["shortcuts"] = [[bin_name, arg_value("--shortcut-name") or app_name]]
     print(f"[写入] bin = {bin_name} | shortcuts 显示名 = {arg_value('--shortcut-name') or app_name}")
-    return finalize_direct_manifest(template, out_dir, app_name)
+    return finalize_direct_manifest(template, out_dir, app_name, assume_digest=digest)
 
 
 def probe_installer_exes(tmp, app_name):

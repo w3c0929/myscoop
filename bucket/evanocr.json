@@ -1,0 +1,21 @@
+{
+    "version": "1.2.0",
+    "description": "C++ 写了一款比 Snipaste/PixPin 更爽的免费截贴图 OCR 神器",
+    "homepage": "https://github.com/duyuanfu/evan-ocr",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/duyuanfu/evan-ocr"
+    },
+    "url": "https://github.com/duyuanfu/evan-ocr/releases/download/v1.2.0/evan-v1.2.0-windows-x64.zip",
+    "hash": "sha256:520f656dbff0ee81175be69499367edd5d87b80676222a561ae961247f058530",
+    "autoupdate": {
+        "url": "https://github.com/duyuanfu/evan-ocr/releases/download/v$version/evan-v$version-windows-x64.zip"
+    },
+    "bin": "evan.exe",
+    "shortcuts": [
+        [
+            "evan.exe",
+            "evanocr"
+        ]
+    ]
+}

@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-16）
 
-- **收录软件总数**: 147 款
+- **收录软件总数**: 148 款
 - **本地维护（自托管 Release）**: 86 款
-- **第三方官方（引用原项目 Release）**: 61 款
+- **第三方官方（引用原项目 Release）**: 62 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -41,7 +41,9 @@ GitHub: https://github.com/w3c0929/myscoop
 - **GPU 资产优先级**：`score_asset` 非 N 卡专用（**HIP/ROCm/Radeon**）**降一级（-4）**，通用 x64 包优先——优先级为 NVIDIA 通用(+8) > 指定 CUDA(+6) > 通用包(0) > 非 N 卡(-4)；降级≠排除，仅当上游只发非 N 卡包时才选中（修 `strata` 选中 `strata-windows-x64-hip.zip`；回归测试 `tools/test_guards.py`）
 - **CLI / 裸二进制降级**：`score_asset` 名字含独立段 `cli`/`msvc`/`gnu` 的资产 **-20（低于 installer 档 -10）**，排到安装器之后——GUI 应用常同时发 CLI 包/裸二进制与安装器，前者不是桌面应用的替代品（修 `bdl` 曾选中 `bdl-cli-…zip`、`vtracer` 曾选中 `vtracer-x86_64-pc-windows-msvc.zip` 把 GUI 装成命令行工具）；降级≠排除，全 bucket 扫描仅 `moonup`（唯一候选）与 `beellama-cpp`（`bin` 字段，非资产名）命中，均无功能影响
 - **源码包（拼音标记）降级**（2026-10-12）：`score_asset` 名字含独立段 `daima`/`yuanma` 的资产同样 **-20**（中文项目用拼音命名源码包，与 `-source`/`-src` 同义），**只降级不排除**——上游仅发源码包时仍兜底选中（与 `is_windows_asset` 对 `src`/`source` 的排除策略不同）。教训：`anclicker` 的 `AnClicker-v1.5.2-win-DaiMa.zip` 与 `AnClicker-v1.5.2-win.zip` 同为 5 分、平手后按列表顺序被选中；回归测试 `tools/test_guards.py` 6b 段
-- **GitHub 下载镜像加速**：`download_to` 对 GitHub release 资产优先走镜像——顺序探测取第一个可达（1KB range + 8s 超时），全部不可达回退原 URL；列表来源：环境变量 `MYSCOOP_GH_MIRRORS` > Scoop config.json 的 `aria2-mirrors`（与 download.ps1 补丁同一套）。**拼接方式仅支持一种**：镜像前缀 + 完整 `https://github.com/…` URL；git 克隆加速器（`gitclone.com` 等，写法 `镜像/github.com/owner/repo`）不代理 release 路径，实测 404/500，勿加。2026-10-10 实测 31 项 → 去重 + 删 5 个死/类别不符镜像 → **24 项按实测速度排序**（前 3：`hk.gh-proxy.org` / `cdn.gh-proxy.com` / `git.yylx.win`，稳定 3.7–5.3 MB/s；中段镜像轮间抖动 6–9 倍，排序仅概率上更优）；测速工具 `tools/mirror_speed.py`（本地专用，可复跑）
+- **GitHub 下载镜像加速（2026-10-18 改为按速度选源）**：`download_to` 对 GitHub release 资产优先走镜像。**逐个候选测速**：在 `MYSCOOP_MIRROR_WINDOW`（默认 **3 秒**）内实测速度 ≥ `MYSCOOP_MIRROR_MIN_SPEED_MB`（默认 **1MB/s**）才采用并接着写完剩余字节；不达标 → **立即放弃该镜像**（断开、目标文件重写）→ 换下一个；**全部不达标/不可达 → 兜底直链**（原 URL、不测速）。测速与下载同连接（达标续写不浪费）；窗口自请求发出计时（含连接/首字节延迟）；测速阶段读超时收紧到 窗口+1s（防"连上但卡住"镜像拖满 timeout）。实测：`hk.gh-proxy.org` 测速 0.10–0.25MB/s 被判不达标 → 换源直链（~5MB/s）✓；阈值调 0 时第一个镜像即通过 ✓。**旧逻辑（已弃）**：只做 1KB range 探**可达**（8s 超时）→ 选中"第一个能连上"的镜像，哪怕它很慢。列表来源：环境变量 `MYSCOOP_GH_MIRRORS` > Scoop config.json 的 `aria2-mirrors`（与 download.ps1 补丁同一套）。**拼接方式仅支持一种**：镜像前缀 + 完整 `https://github.com/…` URL；git 克隆加速器（`gitclone.com` 等）不代理 release 路径（实测 404/500），勿加。2026-10-10 实测 31 项 → 去重 + 删 5 个死/类别不符镜像 → 24 项；测速工具 `tools/mirror_speed.py`（本地专用）
+- **修"多架构 zip 清单下载两遍"（2026-10-18）**：`--add --dl` 的 zip 路径先由 `fill_bin_manifest` 下载探测，收尾时又调 `finalize_direct_manifest`；而 finalize **只认顶层 `hash`** 判断是否需要下载，多架构清单按设计**不写顶层 hash**（hash 在各架构块）→ finalize 判定"无 hash"→ **又下一遍**（实测 evanocr 178MB 下了两次）。修法：`finalize_direct_manifest` 新增 `assume_digest=None` 参数，4 个 zip 收尾调用点传入本次实测 digest → finalize 校验 `.dl_cache` 缓存包 hash 一致后**复用缓存、跳过下载**（新增分支只插在"下载段"内、**不改动 zip 探测/扁平化判定代码**，其余 4 个不传参的调用路径逐行不变）。实测：evanocr 改后输出 `[缓存] 使用已有压缩包…` + `[复用] 使用已下载的缓存包…（跳过重复下载）`，**全程无第二次 `[下载]`**，且 `[hash] 与 64bit 架构 hash 一致 (OK)`、bin/探测照常；单架构 `filee` 回归走原 `[跳过下载] 模板已含 hash` 分支、行为不变。
+- **收录 evanocr（duyuanfu/evan-ocr 1.2.0，2026-10-18）**：截贴图 OCR 神器，`evan-v1.2.0-windows-x64.zip`（178MB，`bin=evan.exe`）。**资产匹配教训**：上游该 tag 只有 **x64 主程序** + 一个跨架构 **latex 插件包**（`evan-plugin-latex-ocr.zip`，156MB，文件名无平台标记）→ 脚本"generic 兜底填缺失架构"把**插件包塞进了 32bit/arm64**（等于"装 32bit 得到的是 latex 插件"）；已改回**单架构**（顶层 url/hash/bin/shortcuts，不写 architecture）。同类风险：多资产仓库里"非主程序的辅助包"被兜底进空缺架构——**收录后须核对各架构 url 是否都指向主程序**。
 - **`checkver.tag_regex`（GitHub 分支可选 tag 过滤，首选）**：`{"github": …}` 再加 `tag_regex` → 在 releases 列表里按 tag 形态选 release（可含 prerelease），**捕获组即版本**（`^aivault-v([\d.]+)$` → `0.3.0`，自动去产品前缀）。覆盖三场景：多产品共仓 / tag 命名特殊或方案变更（`windows-v*`→`v*`）/ 跟 beta·rc（`^v([\d.]+(?:-(?:beta|rc)\.\d+)?)$`）。**仍走 GitHub 分支 → API digest 免下载**（实测 qingjian `0.1.4→0.1.5-beta.1`、updist `0.3.0→0.3.1` 均无 `[下载]` 行、hash 与上游 digest 一致）。已迁移 `updist`/`qingjian`；文本正则分支只在"包不在 GitHub Release"（如 dsh）时用
 - **`find_duplicate_source` 增强**：也扫描 `checkver.url` 的 API 形式（归一 `/repos/` 段）——修"改用文本正则后重复来源检测失效"的副作用；`updist` 迁回 `checkver.github` 后该项也恢复
 - **前缀重选 + tag_regex 资产守卫**（2026-10-12，修 CI 两个"无法匹配"）：① `tag_regex` 分支补齐**资产守卫**（最新匹配 tag 空资产 → 回退下一个匹配且有资产的 tag，与常规分支对称）；② 新增 `repick_by_prefix` **第三重匹配**——资产名含每版变化的非数字标记（构建 sha：`ui-938c2f1`→`ui-ae48ec0`）时数字归一化失效，按**公共前缀最长**重选并 `refresh_filename_in_template` 刷新模板文件名（护栏：同扩展名家族 + 前缀≥12 且止于 `-_./` + 唯一最优 + 架构一致）。实测：`kvninfer` sha 漂移自动重选 rtx40 资产 + 模板刷新 ✓；`anclicker` 改名（多候选平手/平台过滤）被安全拒绝 ✓
@@ -225,9 +227,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* cdb7f61 (HEAD -> main) 同步 README 第三方版本与日期列
+* e6435f7 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* cdb7f61 同步 README 第三方版本与日期列
 * 9373f27 自动更新第三方软件
-* bd5d6fb (origin/main) 修输入法卸载卡死：清理钩子从 post_uninstall 移到 pre_uninstall（scoop 在删目录前才执行它）——停 ctfmon → 杀进程 → 卸载器三级回退 → 删自己 tag → 删目录失败则 Move 到 persist busy（TSM DLL 文件锁只能靠同卷改名绕过）；qingjian/zhiyuime 各 16 条 pre_uninstall，与 --ime-hooks 输出逐字一致；post_uninstall 只留重启 ctfmon；SKILL 规则 23 与 progress 记录 scoop 卸载顺序与实测事故
+* bd5d6fb 修输入法卸载卡死：清理钩子从 post_uninstall 移到 pre_uninstall（scoop 在删目录前才执行它）——停 ctfmon → 杀进程 → 卸载器三级回退 → 删自己 tag → 删目录失败则 Move 到 persist busy（TSM DLL 文件锁只能靠同卷改名绕过）；qingjian/zhiyuime 各 16 条 pre_uninstall，与 --ime-hooks 输出逐字一致；post_uninstall 只留重启 ctfmon；SKILL 规则 23 与 progress 记录 scoop 卸载顺序与实测事故
 * 2e007ad myscoop-update.py 自动写入输入法登记钩子：--add --dl 判定 IME 类时自动生成 post_install/post_uninstall（tag 来自 Inno 探测安装回滚前的注册表抓取，或按 app 名匹配本机已注册项；都拿不到则提示跑 --ime-hooks）；非 IME 清单不受影响；SKILL 规则 23 与 progress 同步
 * 4744c37 输入法清单共存保证 + 脚本工具：qingjian/zhiyuime 的 post_uninstall 补齐（停 ctfmon 释放占用 → 定向删自己的 tag → 卸载 → 重启 ctfmon；登记用增量 API、清理只删自己 ⇒ 安装/升级/卸载任意组合互不干扰）；myscoop-update.py 新增 --ime-hooks（扫描本机 TSF 输入法并输出可粘贴钩子，实测与两清单逐字一致）；SKILL 规则 23 与 progress 补充共存保证与工具说明
 * 58a6210 知语输入法装完/升级后不再消失：zhiyuime.json 补 post_install（InstallLayoutOrTip 登记 TSF tag + 重启 ctfmon）；更正 SKILL 规则 23/progress——恢复被删输入法必须走 TSF 登记，手工改 Preload 会被系统按 User Profile 覆盖（实测重启 ctfmon 即失效）
