@@ -20,6 +20,12 @@ function Get-GitHubMirrorUrl([string]$url) {
         if ($base -notmatch '^https?://') { $base = "https://$base" }
         $mirror_url = "$base/$url"
         try {
+            # 护栏：HEAD 检查 —— 不返回 Content-Length 的镜像跳过。scoop 拿不到总大小 → 下载界面
+            # 只显示 (-1 B) 而**没有进度条**；这类镜像还可能是"残缺文件"（实测 git.yylx.win 缓存
+            # 的 anclicker 1.6.7 只有 537MB/正确 636MB → hash 校验必然失败）。
+            $head = & curl.exe -sIL --connect-timeout 4 --max-time 8 $mirror_url 2>$null | Out-String
+            if ($head -notmatch '(?im)^HTTP/\S+\s+2\d\d') { continue }
+            if ($head -notmatch '(?im)^content-length:\s*\d+') { continue }
             $out = & curl.exe -sL -r 0-4194303 --connect-timeout 4 --max-time $window -o NUL `
                 -w "%{http_code} %{speed_download}" $mirror_url 2>$null
             $parts = "$out".Trim() -split '\s+'
