@@ -16,13 +16,13 @@
 | 4 | [知语输入法](https://github.com/w3c0929/zhiyi_ime) — 知意输入法的自研进阶版（语音输入 / 划词翻译等，与知意输入法可共存）：自管理式安装器 script 形态装到 persist + 注册 IME | `scoop install zhiyuime` | 单 exe 官方 release（installer 注册） | 1.7.62 | 2026-10-14 | 2026-10-19 |
 | 5 | [StarPie](https://github.com/Star-Pie/StarPie) — 现代化 Windows 鼠标轮盘手势系统：按住键呼出轮盘、自定义手势动作与快捷键（Lightweight 便携版 zip） | `scoop install starpie` | zip 官方 release | 2.0.0 | 2026-10-13 | 2026-10-18 |
 | 6 | [Ludusavi](https://github.com/mtkennerly/ludusavi) — PC 游戏存档备份与恢复工具：自动扫描识别游戏、批量备份/还原存档、支持 6000+ 游戏清单与多存档槽位 | `scoop install ludusavi` | 多架构 zip 官方 release | 0.31.0 | 2026-10-13 | 2026-10-13 |
-| 7 | [Filee](https://github.com/KnifeLemon/Filee) — 免费开源文件转换器：拖拽即转 180+ 格式（图片 / PDF / Word / Excel / PPT / HWP / 视频 / 音频 / 电子书 / 压缩包），全程离线、无需上传 | `scoop install filee` | portable zip 官方 release | 1.11.0 | 2026-10-12 | 2026-10-17 |
+| 7 | [Filee](https://github.com/KnifeLemon/Filee) — 免费开源文件转换器：拖拽即转 180+ 格式（图片 / PDF / Word / Excel / PPT / HWP / 视频 / 音频 / 电子书 / 压缩包），全程离线、无需上传 | `scoop install filee` | portable zip 官方 release | 1.12.0 | 2026-10-12 | 2026-10-19 |
 | 8 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.5.11 | 2026-10-12 | 2026-10-19 |
 | 9 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.0.1 | 2026-10-10 | 2026-10-12 |
 | 10 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.1.3 | 2026-10-12 | 2026-10-17 |
-| 11 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.2 | 2026-10-11 | 2026-10-18 |
+| 11 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.3 | 2026-10-11 | 2026-10-19 |
 | 12 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.15 | 2026-10-10 | 2026-10-18 |
-| 13 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.8.5 | 2026-10-10 | 2026-10-16 |
+| 13 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.9.1 | 2026-10-10 | 2026-10-19 |
 | 14 | [KeyCrash](https://github.com/Yuelioi/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.2.4 | 2026-10-10 | 2026-10-14 |
 | 15 | [SuMail](https://github.com/w3c0929/sumail-releases) — SuMail 桌面版（Windows 桌面版安装包与发布资产；源码仓库为私有） | `scoop install sumail` | zip 官方 release | 0.0.1 | 2026-10-10 | 2026-10-10 |
 | 16 | [DiskButler](https://github.com/YGTQ3/disk-butler) — C 盘管家：给普通人的 Windows 磁盘与内存维护助手（Tauri 2 + React） | `scoop install diskbutler` | 多架构 exe 官方 release（Tauri 解包） | 0.8.0 | 2026-10-10 | 2026-10-10 |
@@ -50,7 +50,7 @@
 | 38 | [Netcatty](https://github.com/binaricat/Netcatty) — SSH 工作区、SFTP 与终端一体的跨平台客户端 | `scoop install netcatty` | portable zip 官方 release | 1.1.85 | 2026-10-10 | 2026-10-19 |
 | 39 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install cmm-plus` | 多架构 portable zip | 1.7.9 | 2026-10-10 | 2026-10-16 |
 | 40 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral` | 多架构 exe 官方 release | 1.2.0 | 2026-10-10 | 2026-10-10 |
-| 41 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry` | 多架构 portable exe | 2.1.6 | 2026-10-10 | 2026-10-15 |
+| 41 | [Cherry Studio](https://github.com/CherryHQ/cherry-studio) — AI 智能助手，支持多种大模型 | `scoop install cherry` | 多架构 portable exe | 2.1.7 | 2026-10-10 | 2026-10-19 |
 | 42 | [embyToLocalPlayer](https://github.com/kjtsune/embyToLocalPlayer) — Emby/Jellyfin 调用外部播放器 | `scoop install etlp` | 多架构 zip 官方 release | 2026.07.18 | 2026-10-10 | 2026-10-10 |
 | 43 | [File Converter](https://github.com/Tichau/FileConverter) — 右键菜单文件转换压缩工具 | `scoop install fileconv` | MSI 官方 release | 2.2 | 2026-10-10 | 2026-10-10 |
 | 44 | [TOKENICODE DeepSeek Alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode` | 单 exe 官方 release | 1.0.8 | 2026-10-10 | 2026-10-10 |
@@ -63,7 +63,7 @@
 | 51 | [QuickLook CAD 插件](https://github.com/emako/QuickLook.Plugin.CADImport) — 预览 CAD 文件格式 | `scoop install qlcad` | qlplugin 官方 release | 1 | 2026-10-10 | 2026-10-10 |
 | 52 | [QuickLook Office 插件](https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer) — 预览 Word/Excel/PPT 文件 | `scoop install qloffice` | qlplugin 官方 release | 6 | 2026-10-10 | 2026-10-10 |
 | 53 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.0 | 2026-10-10 | 2026-10-10 |
-| 54 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.41.0 | 2026-10-10 | 2026-10-16 |
+| 54 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.42.1 | 2026-10-10 | 2026-10-19 |
 | 55 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.4 | 2026-10-10 | 2026-10-10 |
 | 56 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | 多架构 zip 官方 release | 5.5.0 | 2026-10-10 | 2026-10-10 |
 | 57 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.25.2733.0 | 2026-10-10 | 2026-10-10 |
