@@ -239,7 +239,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* bf114ae (HEAD -> main, origin/main, origin/HEAD) 支持 checkver.script（工具新增 _update_by_script）+ uuyc 改用稳定源：工具可运行 PowerShell 取版本（stdout 即版本，可配 regex），版本变化按 autoupdate 下载重算 hash；uuyc 清单改为 checkver 读 dl-infos 的 Windows(key=1) 稳定版号 + 固定 CDN 直链 + autoupdate 走下载接口（规避灰度分流：302 曾随机返回 4.43.0/4.43.1）；dry-run 实测正确
+* f1562be (HEAD -> main, origin/main, origin/HEAD) 清理：删除 uuyc 旧自托管 release v4.30.1（远程桌面 UU远程 4.30.1，资产 uuyc-4.30.1.exe）及标签（本地+远端）；uuyc 已改走第三方官方源，不再需要该发布
+* bf114ae 支持 checkver.script（工具新增 _update_by_script）+ uuyc 改用稳定源：工具可运行 PowerShell 取版本（stdout 即版本，可配 regex），版本变化按 autoupdate 下载重算 hash；uuyc 清单改为 checkver 读 dl-infos 的 Windows(key=1) 稳定版号 + 固定 CDN 直链 + autoupdate 走下载接口（规避灰度分流：302 曾随机返回 4.43.0/4.43.1）；dry-run 实测正确
 * 42ddaa2 uuyc 改为可自动更新：url 指向官方下载 API（302 到最新稳定版）+ checkver.script 从 302 Location 解析版本；版本对齐 API 稳定版 4.43.0（页面 4.43.1 为灰度）；实测 Scoop 端 checkver 正常（不降级）；CI 工具暂不支持 checkver.script（--all 跳过，不影响用户端）；README/progress 同步
 * e5e4f75 收录 uuyc 4.43.1（网易UU远程）：官方直链 NSIS 包 7z 解包并拍平 $_37_ 载荷，bin=GameViewer.exe（排除 aria2c 等组件）；旧版 4.30.1 从「本地维护」表移除，uuyc 提升为「第三方官方」（第三方 62→63、本地 87→86、总数 149 不变）；README/progress 同步；实测 scoop update 升级成功（shim gameviewer + 快捷方式）
 * bc9bccf progress.md 更新提交历史

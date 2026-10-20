@@ -5,18 +5,15 @@
     "license": "Freeware",
     "url": "https://a56.gdl.netease.com/UURemote_Setup_4.43.0.3607_1015144028_gwqd.exe",
     "hash": "sha256:f26f84f01551538b9f6996d5cf0ccbf884fb12731903a4f3efa73be712c44da4",
-    "pre_install": [
-        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
-        "$sub = Get-ChildItem \"$dir\\_extract\" -Directory | Where-Object { $_.Name -like '*37*' } | Select-Object -First 1",
-        "if ($sub) { Move-Item \"$($sub.FullName)\\*\" \"$dir\" -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force }",
-        "Remove-Item \"$dir\\_extract\" -Recurse -Force"
-    ],
-    "bin": "GameViewer.exe",
-    "shortcuts": [
-        [
-            "GameViewer.exe",
-            "网易UU远程"
+    "installer": {
+        "args": [
+            "/S"
         ]
+    },
+    "post_uninstall": [
+        "Stop-Service GameViewerService -Force -ErrorAction SilentlyContinue",
+        "$u = 'C:\\Program Files\\Netease\\GameViewer\\Uninstall.exe'",
+        "if (Test-Path $u) { Start-Process $u -ArgumentList '/S' -Wait -ErrorAction SilentlyContinue }"
     ],
     "checkver": {
         "url": "https://api.nrd.nie.163.com/api/v1/release/dl-infos?channel=gwqd",
@@ -26,8 +23,8 @@
         "url": "https://api.nrd.nie.163.com/api/v1/release/dl/1?channel=gwqd#/uuyc-setup.exe"
     },
     "notes": [
-        "免安装便携版：NSIS 安装包用 7z 解包后拍平载荷目录（$dir 根为程序本体，主程序 GameViewer.exe）。",
-        "自动更新：checkver 读取官方 dl-infos 接口中 Windows（key=1）的稳定版本号；autoupdate 走下载接口（302 到安装包）。",
-        "下载接口在灰度发布期间可能随机返回新旧两个版本，稳定版以 dl-infos 的 key=1 为准。"
+        "真安装模式（installer）：安装器会创建 GameViewerService 服务、虚拟驱动（UUYCInput / nevaudio）与 config/bin/plugins 运行目录；解包成便携版会因缺少这些而无法启动（实测退出码 -1）。",
+        "安装位置由安装器固定为 C:\\Program Files\\Netease\\GameViewer（忽略 /D），卸载由 post_uninstall 调用官方 Uninstall.exe 完成。",
+        "自动更新：checkver 读取官方 dl-infos 接口中 Windows（key=1）的稳定版本号；autoupdate 走下载接口（302 到安装包）。"
     ]
 }
