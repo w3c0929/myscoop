@@ -300,6 +300,7 @@ git config --global --add safe.directory D:/scoop/buckets/*
 - 自动备份 ego 数据到 `User Data.bak-<时间戳>`（默认保留最近 3 个），出问题可回滚
 - **只做单向（Chrome → ego）**：ego 运行后会升级数据库 schema，反向同步可能让 Chrome 打不开；**也不能用 symlink/硬链接**——Chromium 保存文件是"写临时文件 + rename"，会替换掉链接本身，且 SQLite（Cookies/History/Login Data）运行时会加锁，两进程共用会损坏数据库
 - 参数：`-ChromeProfile` / `-EgoProfile`（多配置）、`-KeepBackups N`、`-NoBackup`、`-Force`（跳过进程检测，仅自动化/测试用）
+- ⚠️ **账号书签不适用本脚本**：Chrome 登录账号后，书签可能只存在于同步数据库（`Sync Data`），**不写入本地 `Bookmarks` 文件**（表现为 `chrome://bookmarks` 有书签、但 `Default\Bookmarks` 长期为空/未更新）。此类书签请用 Chrome `chrome://bookmarks` → ⋮ → **导出书签**（HTML），再在 ego 的 `ego://bookmarks` → **导入书签** 选择该文件
 
 ### symlink.bat 一键链接部署（用法）
 
