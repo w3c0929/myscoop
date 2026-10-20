@@ -237,7 +237,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* a461c73 (HEAD -> main, origin/main, origin/HEAD) bat 完全自动化并修复 cmd 解析报错：注释/输出改为纯英文（中文注释在 UTF-8 bat 中被 cmd 按 ANSI 解析，导致 'n' is not recognized / 乱码行被当命令）；扩展目录缺失或为空时自动调用 ps1 同步（复制+junction）后再启动；实测删除扩展目录后双击 bat → 自动重建 22 个并启动（location=8: 22）
+* 8e60fa0 (HEAD -> main) 同步 README 第三方版本与日期列
+* 93c533a 自动更新第三方软件
+* 95301ce (origin/main) 合并同步脚本为一键流程 + egolite 安装自动启动：sync-chrome-to-ego.bat 顺序执行 ①数据同步（备份+书签护栏）②扩展同步（复制+junction）③启动并加载全部扩展（Chrome 运行中自动跳过数据同步只做扩展）；删除旧 sync-chrome-extensions.*；egolite.json 增加 post_install 自动启动（实测重装后自动拉起）；bat 注释/输出改纯英文（修复 cmd 解析 UTF-8 中文注释报错）；README/progress 同步
+* a461c73 bat 完全自动化并修复 cmd 解析报错：注释/输出改为纯英文（中文注释在 UTF-8 bat 中被 cmd 按 ANSI 解析，导致 'n' is not recognized / 乱码行被当命令）；扩展目录缺失或为空时自动调用 ps1 同步（复制+junction）后再启动；实测删除扩展目录后双击 bat → 自动重建 22 个并启动（location=8: 22）
 * d5cfc45 扩展加载改为 bat 一键启动（修正先前误判）：sync-chrome-extensions.bat = 关闭旧 ego + 拼接全部扩展路径 --load-extension 启动（location=8 每次启动都加载）；ps1 只负责同步文件（复制/junction）并在完成后调用 bat；修正 README/progress 中「location=8 持久化」的错误结论（实际正常启动不加载）；开始菜单快捷方式也已写入参数
 * d8d3ad3 新增 sync-chrome-extensions（Chrome 扩展 → ego 一键同步）：解析 Secure Preferences 取用户扩展 → 复制到持久目录（先清空防残留）→ mklink /J 建 ASCII 短路径 → 分批 --load-extension 加载（location=8 持久化）→ 校验并启动；实测 22 个扩展全部加载成功（3 批）；README 增章节、编码按约定（ps1 BOM+CRLF / bat 无 BOM+CRLF）
 * 9a3a87a 实测打通 Chrome 扩展迁移到 ego：复制配置被 HMAC 丢弃；--load-extension 长路径批量只成 1 个；改用持久目录 + junction 纯 ASCII 短路径（ext01..22）+ 分批 --disable-extensions-except/--load-extension → 22 个扩展以 location=8 持久化，正常启动全部保留；IDM 外部扩展自动恢复；progress 记录完整方法
