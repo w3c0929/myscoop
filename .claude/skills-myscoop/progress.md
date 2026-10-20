@@ -12,8 +12,8 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-16）
 
-- **收录软件总数**: 148 款
-- **本地维护（自托管 Release）**: 86 款
+- **收录软件总数**: 149 款
+- **本地维护（自托管 Release）**: 87 款
 - **第三方官方（引用原项目 Release）**: 62 款
 
 ## 脚本能力（myscoop-update.py 最新）
@@ -47,6 +47,7 @@ GitHub: https://github.com/w3c0929/myscoop
 - **`download.ps1`（Scoop 端）同步测速换源（2026-10-18）**：`Get-GitHubMirrorUrl` 从"1KB range 探可达"改为**逐个候选测速**——系统 curl `-r 0-4194303`（最多 4MB，≥ 阈值×窗口）+ `--max-time $window` + `-w "%{http_code} %{speed_download}"`，**状态码 2xx/3xx 且速度 ≥ 1MB/s**（`MYSCOOP_MIRROR_MIN_SPEED_MB`，窗口 `MYSCOOP_MIRROR_WINDOW` 默认 3s）才返回该镜像；否则换下一个；**全部不达标兜底直链**。两个调用点（`Start-Download` 默认下载器 / aria2 urlstxt）共用同一函数，自动受益。**与脚本侧差异**：PS 侧测速与真实下载是两次独立请求（不能像 `download_to` 那样同连接续写），故最多重下 4MB。实测：hk 镜像 1.2s 下完 4MB（≈3.3MB/s）→ 达标采用 ✓；阈值设 0 → 首个镜像即返回 ✓；非 GitHub 链接不动 ✓。`patches\v0.5.3\`（冻结旧基线）保持不动。
 - **镜像残缺导致 hash 校验失败（2026-10-18）**：用户 `scoop update` anclicker 1.6.7 报 `Hash check failed`（Expected `77f628c0…` / Actual `9eb42cd4…`），且下载显示 `(-1 B)`、**无进度条**。取证：清单 hash = **上游 GitHub digest 完全一致**（清单没错）；直链 `206` + `Content-Length 636608236`；镜像 `git.yylx.win` `200`（忽略 Range）、**无 Content-Length**、实际只给 **537,588,567 字节**（19.7MB/s×30s=590MB > 537MB，说明是**响应自然结束**而非超时截断，且两次独立下载同一残缺 hash）。**根因：该镜像缓存的文件本身残缺 + 不返回 Content-Length**（后者同时导致 scoop 无进度条）。修法：**坏镜像只「提示 + 换下一个」，不删镜像**（镜像可能自己修好；用户明确要求）——两侧同款护栏：`Get-GitHubMirrorUrl`（PS，`curl -sIL` 查头）与 `download_to`（Python，新增 `_mirror_probe_head`）在测速前先查 HEAD，① 不可达/非 2xx ② **无 `Content-Length`** → 打印 `[镜像] <域名> … → 换下一个` 并 `continue`。`git.yylx.win` **保留在 `aria2-mirrors` 里**（24 个）。实测：PS 侧列表 `[yylx, hk]` → 输出 `[镜像] https://git.yylx.win 未提供 Content-Length（无进度条、且可能残缺）→ 换下一个`，hk 测速不达标 → 兜底直链 ✓；Python 侧判据 `_mirror_probe_head`：yylx `ok=True cl=None`（跳过）/ hk `cl=636608236`（通过）/ 不存在域名 `ok=False`（跳过）✓。**判据速记：无 Content-Length = 无进度条 + 可能残缺**。
     **下载前提示所用镜像（2026-10-18）**：`Get-GitHubMirrorUrl` 选定后打印 `[镜像] 使用 hk.gh-proxy.org 加速下载（测速 5.87 MB/s）` —— 该输出发生在 `Start-Download`/aria2 调用之前，正好显示在**进度条上方**，用户一眼知道本次走哪个镜像；无可用镜像时打印 `[镜像] 无可用镜像，改用直链下载`；跳过提示统一为域名格式（实测：`invalid-mirror.example.com 未提供 Content-Length…` → `使用 hk.gh-proxy.org 加速下载（测速 37.06 MB/s）` ✓）。**两侧文案对齐（同日）**：`myscoop-update.py` 的 `download_to` 也改为同款四句 —— 使用提示 `[镜像] 使用 <域名> 加速下载（测速 N MB/s）`（原为 "测速 … → 使用 <完整URL>"）、新增"全部失败 → `[镜像] 无可用镜像，改用直链下载`"；未配镜像时不出任何 `[镜像]` 行。实测三场景：① 坏+好镜像 → 跳过坏 + 使用好 ✓ ② 只有坏镜像 → 跳过 + 改用直链 ✓ ③ 无镜像配置 → 无 `[镜像]` 行 ✓（小文件 63KB 在窗口内下完即视为达标）。
+- **收录 egolite（ego lite AI Agent 浏览器，2026-10-20）**：Chromium 内核，可导入 Chrome 数据，让 Agent 在隔离 Space 做网页自动化。**官方无完整安装包**——官网只提供 13MB **Web 安装器**（运行后在线下载，且文件名带随机串），GitHub release 资产 `ego-browser-v2.1.0.zip` 仅 **226KB**（更新包，不是浏览器本体）。做法：把已安装目录 `C:\Program Files\Citro Labs\ego lite\Application` 打包（610MB → 7z **191MB**）→ 上传自托管 release **`vEgoLite`**（固定 tag、资产名含版本，遵循「一个 release 多版本资产」策略）→ 清单为 7z 便携：顶层 = `ego.exe`（4.3MB 启动器）+ `chrome_proxy.exe` + `chrome.VisualElementsManifest.xml` + `<Chromium 版本>\`（内含 chrome.dll 323MB 等），`bin=[[ego.exe, egolite]]`。**便携性验证**：复制到临时目录后 `ego.exe` 可独立启动（Chromium 日志正常）。**无 checkver**（没有固定下载源），升级需重新安装 → 重新打包 → 上传同一 release 并更新 version/url/hash。用户数据在 `%LOCALAPPDATA%\ego lite`（与官方安装版一致）。
 - **`checkver.tag_regex`（GitHub 分支可选 tag 过滤，首选）**：`{"github": …}` 再加 `tag_regex` → 在 releases 列表里按 tag 形态选 release（可含 prerelease），**捕获组即版本**（`^aivault-v([\d.]+)$` → `0.3.0`，自动去产品前缀）。覆盖三场景：多产品共仓 / tag 命名特殊或方案变更（`windows-v*`→`v*`）/ 跟 beta·rc（`^v([\d.]+(?:-(?:beta|rc)\.\d+)?)$`）。**仍走 GitHub 分支 → API digest 免下载**（实测 qingjian `0.1.4→0.1.5-beta.1`、updist `0.3.0→0.3.1` 均无 `[下载]` 行、hash 与上游 digest 一致）。已迁移 `updist`/`qingjian`；文本正则分支只在"包不在 GitHub Release"（如 dsh）时用
 - **`find_duplicate_source` 增强**：也扫描 `checkver.url` 的 API 形式（归一 `/repos/` 段）——修"改用文本正则后重复来源检测失效"的副作用；`updist` 迁回 `checkver.github` 后该项也恢复
 - **前缀重选 + tag_regex 资产守卫**（2026-10-12，修 CI 两个"无法匹配"）：① `tag_regex` 分支补齐**资产守卫**（最新匹配 tag 空资产 → 回退下一个匹配且有资产的 tag，与常规分支对称）；② 新增 `repick_by_prefix` **第三重匹配**——资产名含每版变化的非数字标记（构建 sha：`ui-938c2f1`→`ui-ae48ec0`）时数字归一化失效，按**公共前缀最长**重选并 `refresh_filename_in_template` 刷新模板文件名（护栏：同扩展名家族 + 前缀≥12 且止于 `-_./` + 唯一最优 + 架构一致）。实测：`kvninfer` sha 漂移自动重选 rtx40 资产 + 模板刷新 ✓；`anclicker` 改名（多候选平手/平台过滤）被安全拒绝 ✓
@@ -230,9 +231,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* d9b86da (HEAD -> main) 同步 README 第三方版本与日期列
+* ead2ff4 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* d9b86da 同步 README 第三方版本与日期列
 * 5b5c3ba 自动更新第三方软件
-* cdc373d (origin/main) progress.md 更新提交历史
+* cdc373d progress.md 更新提交历史
 * d1907e7 同步 README 第三方版本与日期列
 * 03e4540 自动更新第三方软件
 * b3f0a77 progress.md 更新提交历史
