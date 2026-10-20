@@ -1,10 +1,10 @@
 {
-    "version": "4.43.1",
+    "version": "4.43.0",
     "description": "网易UU远程（GameViewer）：超低延迟的远程控制工具，支持 Windows / macOS / iOS / Android / TV",
     "homepage": "https://uuyc.163.com/",
     "license": "Freeware",
-    "url": "https://a56.gdl.netease.com/UURemote_Setup_4.43.1.3614_1016022822_gwqd.exe",
-    "hash": "sha256:9a69473798ad4861b966607859adbba9c8d1b2a2a0ea9e22bba7f14969656263",
+    "url": "https://api.nrd.nie.163.com/api/v1/release/dl/1?channel=gwqd#/uuyc-setup.exe",
+    "hash": "sha256:f26f84f01551538b9f6996d5cf0ccbf884fb12731903a4f3efa73be712c44da4",
     "pre_install": [
         "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
         "$sub = Get-ChildItem \"$dir\\_extract\" -Directory | Where-Object { $_.Name -like '*37*' } | Select-Object -First 1",
@@ -18,8 +18,17 @@
             "网易UU远程"
         ]
     ],
+    "checkver": {
+        "script": [
+            "$h = (& curl.exe -sI --max-time 20 -H 'Referer: https://uuyc.163.com/download/' 'https://api.nrd.nie.163.com/api/v1/release/dl/1?channel=gwqd') -join \"`n\"",
+            "if ($h -match 'location:.*UURemote_Setup_([\\d.]+)\\.') { Write-Output $Matches[1] }"
+        ]
+    },
+    "autoupdate": {
+        "url": "https://api.nrd.nie.163.com/api/v1/release/dl/1?channel=gwqd#/uuyc-setup.exe"
+    },
     "notes": [
         "免安装便携版：NSIS 安装包用 7z 解包后拍平载荷目录（$dir 根为程序本体，主程序 GameViewer.exe）。",
-        "官方下载地址包含每版变化的构建号与签名参数，暂无可靠的自动更新源；升级请重新运行收录流程。"
+        "自动更新：url 指向官方下载 API（302 到最新稳定版安装包），checkver 从 302 的 Location 中解析版本号；页面显示的灰度版本可能领先于 API。"
     ]
 }
