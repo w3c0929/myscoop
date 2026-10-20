@@ -1499,6 +1499,84 @@ def _update_by_regex(manifest, cv, manifest_path, dry_run):
     return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
 
 
+def _update_by_script(manifest, cv, manifest_path, dry_run):
+    """"脚本" checkver（Scoop 原生 `checkver.script` 语义）：运行脚本，stdout 即版本
+    （提供 `regex` 时从输出中提取捕获组）。版本变化 → 用 autoupdate 模板下载重算 hash。
+
+    典型用途：上游只给下载 API（302 到最新安装包），版本号需从 302 的 `Location` 解析
+    （如 uuyc：`curl -sI <api>` 取 location 里的 `UURemote_Setup_<ver>....exe`）。"""
+    import subprocess
+    script = cv["script"]
+    if isinstance(script, list):
+        script = "\n".join(script)
+    current_version = manifest["version"]
+    try:
+        r = subprocess.run(
+            ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", script],
+            capture_output=True, text=True, timeout=120)
+    except Exception as e:
+        print(f"  [跳过] {manifest_path.name}: checkver.script 执行失败: {e}")
+        return None
+    out = (r.stdout or "").strip()
+    if not out:
+        err = (r.stderr or "").strip()
+        print(f"  [跳过] {manifest_path.name}: checkver.script 无输出" + (f"（stderr: {err[:120]}）" if err else ""))
+        return None
+    rx = cv.get("regex")
+    if rx:
+        m = re.search(rx, out, re.M)
+        if not m:
+            print(f"  [跳过] {manifest_path.name}: checkver 正则 {rx} 未匹配脚本输出")
+            return None
+        latest_version = m.group(1) if m.groups() else m.group(0)
+    else:
+        latest_version = out.splitlines()[-1].strip()
+    if latest_version == current_version:
+        return None
+    print(f"  {manifest_path.name}: {current_version} → {latest_version}")
+    if dry_run:
+        return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
+    au = manifest.get("autoupdate", {})
+    tpl = au.get("url", manifest.get("url", ""))
+    if not isinstance(tpl, str) or not tpl:
+        print(f"  [警告] {manifest_path.name}: autoupdate 模板缺失/异常，跳过")
+        return None
+    static = "$version" not in tpl
+    new_url = tpl if static else tpl.replace("$version", latest_version)
+    tmp = manifest_path.parent / f".{manifest_path.stem}_dl.tmp"
+    try:
+        print(f"  [下载] {new_url.split('#')[0]}" + ("（静态直链）" if static else ""))
+        download_to(new_url, tmp)
+        size = tmp.stat().st_size
+        digest = sha256_hex(tmp)
+        tmp.unlink(missing_ok=True)
+        print(f"  [下载完成] {size / 1048576:.1f}MB  sha256:{digest[:16]}...")
+    except Exception as e:
+        tmp.unlink(missing_ok=True)
+        print(f"  [错误] {manifest_path.name}: 下载失败 {e}")
+        return None
+    if static:
+        old = str(manifest.get("hash", "")).lower()
+        if old.startswith("sha256:"):
+            old = old[7:]
+        if digest.lower() == old:
+            print(f"  [跳过] 内容未变（sha256 相同），版本不提升：{latest_version}")
+            return None
+    manifest["url"] = new_url
+    manifest["hash"] = "sha256:" + digest
+    chg = sync_autoupdate_fields(au, manifest, latest_version)
+    if chg:
+        print(f"    同步字段: {', '.join(chg)}")
+    chg2 = sync_bin_version(manifest, current_version, latest_version)
+    if chg2:
+        print(f"    版本化字段更正: {', '.join(chg2)} ({current_version} → {latest_version})")
+    manifest["version"] = latest_version
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=4, ensure_ascii=False)
+        f.write("\n")
+    return {"manifest": manifest_path.name, "old": current_version, "new": latest_version}
+
+
 def update_manifest(manifest_path, dry_run=False):
     """更新单个 manifest"""
     with open(manifest_path, "r", encoding="utf-8-sig") as f:
@@ -1511,6 +1589,10 @@ def update_manifest(manifest_path, dry_run=False):
     github_url = cv.get("github")
     custom_url = cv.get("url", "")
     platform = "github"
+
+    # checkver.script（Scoop 原生语义）：运行脚本取版本，例如从下载 API 的 302 Location 解析
+    if cv.get("script"):
+        return _update_by_script(manifest, cv, manifest_path, dry_run)
 
     # 显式 url+regex 的"文本正则 checkver"优先（含指向 GitHub API 的端点）：上游安装包常不在
     # GitHub Release（无资产/全 prerelease），只能用接口/页面取版本（如 dsh：包在
