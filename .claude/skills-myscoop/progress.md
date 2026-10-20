@@ -236,7 +236,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 292a34b (HEAD -> main, origin/main, origin/HEAD) 实测：Chrome 扩展不能靠复制迁移 —— 复制 Extensions + 替换 Secure Preferences 后 ego 启动即把扩展 31→3 重置（HMAC 完整性校验不认跨浏览器配置，密钥绑定浏览器/机器）；已从 User Data.bak-ext-* 镜像回滚；结论记录：只能商店重装（附 22 个扩展链接）或开发者模式加载；可迁移的仅数据文件
+* 9a3a87a (HEAD -> main, origin/main, origin/HEAD) 实测打通 Chrome 扩展迁移到 ego：复制配置被 HMAC 丢弃；--load-extension 长路径批量只成 1 个；改用持久目录 + junction 纯 ASCII 短路径（ext01..22）+ 分批 --disable-extensions-except/--load-extension → 22 个扩展以 location=8 持久化，正常启动全部保留；IDM 外部扩展自动恢复；progress 记录完整方法
+* 292a34b 实测：Chrome 扩展不能靠复制迁移 —— 复制 Extensions + 替换 Secure Preferences 后 ego 启动即把扩展 31→3 重置（HMAC 完整性校验不认跨浏览器配置，密钥绑定浏览器/机器）；已从 User Data.bak-ext-* 镜像回滚；结论记录：只能商店重装（附 22 个扩展链接）或开发者模式加载；可迁移的仅数据文件
 * 43b0122 sync 脚本加书签护栏：Chrome 本地书签数为 0 时跳过 Bookmarks 并提示（账号书签场景下不再用空文件覆盖 ego 已导入的书签）；事故回放：用户导入 1054 个书签后被空文件覆盖 → 已从自动备份 User Data.bak-20261020144733 恢复；实测空/有书签两场景行为正确；README/progress 记录
 * 0afc778 补充说明：Chrome 账号书签（登录同步）只存在 Sync Data、不写入本地 Bookmarks 文件 → sync 脚本复制不到，需在 Chrome 导出 HTML 再于 ego 导入；实测本机 Bookmarks 18 天未更新、Sync Data 仍活跃 + gaia_id 存在，确认是账号书签；README/progress 记录
 * 057f19b 新增 sync-chrome-to-ego（Chrome → ego lite 单向数据同步）：便携版 Chrome 无安装注册 → ego 自带导入识别不到；symlink/硬链接不可行（Chromium 临时文件+rename 会断链、SQLite 运行时加锁）；脚本含进程检测（-Force 可跳过）/自动备份（保留最近 N 个）/逐项复制/多 profile；实测本机 Cookie 951 条、历史 12161 条迁移成功（integrity=ok）；README 与 progress 记录
