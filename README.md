@@ -292,6 +292,15 @@ git config --global --add safe.directory D:/scoop/buckets/*
 >   - **只放"release 资产代理"型镜像**：拼接方式只有一种——**镜像前缀 + 完整原始 URL**（如 `https://hk.gh-proxy.org/https://github.com/…`）。git 克隆加速器（如 `gitclone.com`，写法为 `gitclone.com/github.com/owner/repo`）不代理 release 下载路径，放进列表只会 404/500，勿加。
 >   - 对 aria2（`aria2-enabled: true`）与默认下载器（未启用 aria2 或 aria2 失败回退）两条路径均生效；**Scoop 自更新后补丁会丢失**（链接也会失效），**重新覆盖或重新运行 `symlink.bat`** 即可（原版备份在仓库 `staging/scoop-backup/`）。
 
+### sync-chrome-to-ego.bat（Chrome → ego lite 数据同步）
+
+双击运行，把 Chrome 的书签 / Cookie / 历史 / 密码 / 表单**单向**同步到 ego lite（`%LOCALAPPDATA%\Citro Labs\ego\User Data`）。
+
+- **运行前必须完全退出 Chrome 与 ego**（脚本会检测并拒绝继续；Chrome 关窗口后可能仍在后台，需在「设置 → 系统」关闭"关闭 Chrome 后继续运行后台应用"）
+- 自动备份 ego 数据到 `User Data.bak-<时间戳>`（默认保留最近 3 个），出问题可回滚
+- **只做单向（Chrome → ego）**：ego 运行后会升级数据库 schema，反向同步可能让 Chrome 打不开；**也不能用 symlink/硬链接**——Chromium 保存文件是"写临时文件 + rename"，会替换掉链接本身，且 SQLite（Cookies/History/Login Data）运行时会加锁，两进程共用会损坏数据库
+- 参数：`-ChromeProfile` / `-EgoProfile`（多配置）、`-KeepBackups N`、`-NoBackup`、`-Force`（跳过进程检测，仅自动化/测试用）
+
 ### symlink.bat 一键链接部署（用法）
 
 `symlink.bat` 位于仓库根目录，一键完成两个部署文件的软链接 + `config.json` 镜像拷贝 + 仓库 `*.bat` 全局链接。
