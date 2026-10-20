@@ -236,7 +236,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* d8d3ad3 (HEAD -> main, origin/main, origin/HEAD) 新增 sync-chrome-extensions（Chrome 扩展 → ego 一键同步）：解析 Secure Preferences 取用户扩展 → 复制到持久目录（先清空防残留）→ mklink /J 建 ASCII 短路径 → 分批 --load-extension 加载（location=8 持久化）→ 校验并启动；实测 22 个扩展全部加载成功（3 批）；README 增章节、编码按约定（ps1 BOM+CRLF / bat 无 BOM+CRLF）
+* d5cfc45 (HEAD -> main, origin/main, origin/HEAD) 扩展加载改为 bat 一键启动（修正先前误判）：sync-chrome-extensions.bat = 关闭旧 ego + 拼接全部扩展路径 --load-extension 启动（location=8 每次启动都加载）；ps1 只负责同步文件（复制/junction）并在完成后调用 bat；修正 README/progress 中「location=8 持久化」的错误结论（实际正常启动不加载）；开始菜单快捷方式也已写入参数
+* d8d3ad3 新增 sync-chrome-extensions（Chrome 扩展 → ego 一键同步）：解析 Secure Preferences 取用户扩展 → 复制到持久目录（先清空防残留）→ mklink /J 建 ASCII 短路径 → 分批 --load-extension 加载（location=8 持久化）→ 校验并启动；实测 22 个扩展全部加载成功（3 批）；README 增章节、编码按约定（ps1 BOM+CRLF / bat 无 BOM+CRLF）
 * 9a3a87a 实测打通 Chrome 扩展迁移到 ego：复制配置被 HMAC 丢弃；--load-extension 长路径批量只成 1 个；改用持久目录 + junction 纯 ASCII 短路径（ext01..22）+ 分批 --disable-extensions-except/--load-extension → 22 个扩展以 location=8 持久化，正常启动全部保留；IDM 外部扩展自动恢复；progress 记录完整方法
 * 292a34b 实测：Chrome 扩展不能靠复制迁移 —— 复制 Extensions + 替换 Secure Preferences 后 ego 启动即把扩展 31→3 重置（HMAC 完整性校验不认跨浏览器配置，密钥绑定浏览器/机器）；已从 User Data.bak-ext-* 镜像回滚；结论记录：只能商店重装（附 22 个扩展链接）或开发者模式加载；可迁移的仅数据文件
 * 43b0122 sync 脚本加书签护栏：Chrome 本地书签数为 0 时跳过 Bookmarks 并提示（账号书签场景下不再用空文件覆盖 ego 已导入的书签）；事故回放：用户导入 1054 个书签后被空文件覆盖 → 已从自动备份 User Data.bak-20261020144733 恢复；实测空/有书签两场景行为正确；README/progress 记录

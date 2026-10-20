@@ -305,11 +305,12 @@ git config --global --add safe.directory D:/scoop/buckets/*
 
 ### sync-chrome-extensions.bat / .ps1（Chrome 扩展 → ego lite）
 
-**日常启动请用 `sync-chrome-extensions.bat`**：双击 = 关闭旧 ego → 启动 ego 并自动加载
-`D:\scoop\persist\egolite-ext` 下的**全部扩展**（脚本拼接 `--load-extension` 参数，一次启动完成）。
+**双击 `sync-chrome-extensions.bat` 即可**：
+- 扩展目录存在 → 关闭旧 ego → 启动并加载 `D:\scoop\persist\egolite-ext` 下**全部扩展**
+- 扩展目录**缺失或为空**（如卸载重装后）→ **自动从 Chrome 同步**（复制扩展 + 建链接）再启动，无需手动跑其他脚本
 
-**Chrome 更新扩展后**运行 `sync-chrome-extensions.ps1`：重新解析/复制扩展、重建链接
-（完成后自动调用上面的 bat 启动）。
+**Chrome 更新扩展后**：运行 `sync-chrome-extensions.ps1` 重新同步，或在 bat 前删掉扩展目录让它自动重建。
+（bat 注释与输出全部使用英文，避免 cmd 在 UTF-8 文件里解析中文注释出错。）
 
 原理与限制：
 - Chromium 的 `--load-extension` 是**临时加载**（写入 `location=8`），**必须每次启动带参数**才生效 —— 所以用 bat / 已写入参数的快捷方式启动，而不是期待"一次加载永久生效"
