@@ -1,12 +1,25 @@
 {
-    "version": "4.30.1",
-    "description": "UU Remote - NetEase remote desktop control tool (v4.30.1)",
+    "version": "4.43.1",
+    "description": "网易UU远程（GameViewer）：超低延迟的远程控制工具，支持 Windows / macOS / iOS / Android / TV",
     "homepage": "https://uuyc.163.com/",
-    "license": {
-        "identifier": "Freeware",
-        "url": "https://uuyc.163.com/agreement.html"
-    },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v4.30.1/uuyc-4.30.1.exe",
-    "hash": "sha256:eb610cb461cc14f89c636fa8b01d2c3e5cc11461dc0202abb25f9b0d51453053",
-    "post_install": "Start-Process \"$dir\\uuyc-4.30.1.exe\""
+    "license": "Freeware",
+    "url": "https://a56.gdl.netease.com/UURemote_Setup_4.43.1.3614_1016022822_gwqd.exe",
+    "hash": "sha256:9a69473798ad4861b966607859adbba9c8d1b2a2a0ea9e22bba7f14969656263",
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$sub = Get-ChildItem \"$dir\\_extract\" -Directory | Where-Object { $_.Name -like '*37*' } | Select-Object -First 1",
+        "if ($sub) { Move-Item \"$($sub.FullName)\\*\" \"$dir\" -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force }",
+        "Remove-Item \"$dir\\_extract\" -Recurse -Force"
+    ],
+    "bin": "GameViewer.exe",
+    "shortcuts": [
+        [
+            "GameViewer.exe",
+            "网易UU远程"
+        ]
+    ],
+    "notes": [
+        "免安装便携版：NSIS 安装包用 7z 解包后拍平载荷目录（$dir 根为程序本体，主程序 GameViewer.exe）。",
+        "官方下载地址包含每版变化的构建号与签名参数，暂无可靠的自动更新源；升级请重新运行收录流程。"
+    ]
 }

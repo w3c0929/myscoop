@@ -13,8 +13,8 @@ GitHub: https://github.com/w3c0929/myscoop
 ## 当前状态（截至 2026-10-16）
 
 - **收录软件总数**: 149 款
-- **本地维护（自托管 Release）**: 87 款
-- **第三方官方（引用原项目 Release）**: 62 款
+- **本地维护（自托管 Release）**: 86 款
+- **第三方官方（引用原项目 Release）**: 63 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -54,6 +54,7 @@ GitHub: https://github.com/w3c0929/myscoop
     **扩展不可迁移（2026-10-20 实测）**：Chrome 有 22 个用户扩展。尝试复制 `Default\Extensions\*` + 替换 `Default\Secure Preferences`（扩展注册与 HMAC 都在此）→ **启动 ego 后扩展记录 31→3 条**（只剩 ego 自带 + Chromium PDF Viewer + IDM），即 **Chromium 的 HMAC 完整性校验不认跨浏览器配置**（密钥绑定浏览器/机器），无效条目被直接丢弃 → 已从 `User Data.bak-ext-20261020150540` **镜像回滚**。**结论：扩展配置不可移植（安全设计），只能重装** —— 在 ego 的扩展页逐个从 Chrome 网上应用店安装（已生成 22 个扩展的商店链接）；备选是开发者模式"加载已解压的扩展程序"（手动、无商店更新、ID 可能变）。可迁移的只有数据文件（书签/Cookie/历史/密码/表单）。
     **扩展迁移的可行路径（2026-10-20 实测成功）**：① 复制配置 ✗（HMAC 启用，`Secure Preferences` 被丢弃且扩展文件被删）；② `--load-extension=<22 个原始长路径>` ✗ **只成功 1 个**（路径含中文/空格/过长）；③ **成功方法**：把 22 个扩展复制到持久目录 `D:\scoop\persist\egolite-exts\<NN-名称>`（Scoop 卸载不删）→ 用 **junction** 建纯 ASCII 短路径 `D:\scoop\persist\egolite-ext\ext01..22`（`mklink /J`）→ **分批**（5 个 + 17 个）用 `ego.exe --disable-extensions-except=<批>,... --load-extension=<批>,...` 启动 → 扩展以 **location=8（COMMAND_LINE）** 写入 `Secure Preferences`。**⚠️ 这里曾误判**：只看配置文件就断言"持久化"，实际 **UI/正常启动（无参数）时并不加载**（用户反馈"重启就消失"才发现）。**最终方案（2026-10-20）**：由 **`sync-chrome-extensions.bat` 每次启动时拼接全部扩展路径并带 `--load-extension`**（开始菜单快捷方式也已写入参数）→ 点一次 bat 即完成全部 22 个加载 ✓；实测 `location=8: 22`、扩展页正常显示。另一条路是扩展页「加载未打包」（`location=4` 才真正持久），但文件对话框**一次只能选一个目录**、无法批量（已手动加载 6 个验证 `location=4` 有效）。IDM（loc=3）会自动恢复，UI 弹"已添加 IDM… 启用扩展程序"属正常。注意：扩展 ID 保留商店 ID；Chrome 更新扩展版本后跑一次 ps1 重新同步；`ego://extensions` 常驻"开发者模式扩展"提示条。
 - **脚本合并为一键 + 安装自动启动（2026-10-20，用户实测通过）**：`sync-chrome-to-ego.bat` 整合原两个脚本，顺序执行 —— ①**数据同步**（书签/Cookie/历史/密码/表单，含自动备份 + 书签护栏）②**扩展同步**（复制到 `egolite-exts` + 重建 ASCII junction `egolite-ext\ext01..`）③**启动 ego 并加载全部扩展**（`--load-extension`）。**Chrome 运行中自动跳过数据同步**（文件锁）只做扩展 + 启动。旧 `sync-chrome-extensions.bat/.ps1` 已删除。`egolite.json` 新增 **`post_install: Start-Process "$dir\ego.exe"` → 安装后自动启动**（实测 scoop 卸载重装后 ego 进程自动拉起 ✓）。**bat 注释/输出全部英文** —— cmd 按 ANSI 解析 UTF-8 文件里的中文注释会导致 `'n' is not recognized`、乱码行被当命令（已修复）。
+- **收录 uuyc（网易UU远程 4.43.1，2026-10-20）**：官方直链（网易 CDN）NSIS 安装包 → 7z 解包 + **拍平 `$_37_` 载荷** → `bin=GameViewer.exe`（29MB 主程序；`aria2c.exe` 等组件自动排除）；替换原「本地维护」表里的 4.30.1 旧条目（第三方表置顶）。**自动更新待定**：下载 URL 含每版变化的构建号/签名（`UURemote_Setup_<ver>.<build>_<hash>_<token>.exe`），页面由 JS 生成，需找到官方下载 API 才能模板化。
 - **`checkver.tag_regex`（GitHub 分支可选 tag 过滤，首选）**：`{"github": …}` 再加 `tag_regex` → 在 releases 列表里按 tag 形态选 release（可含 prerelease），**捕获组即版本**（`^aivault-v([\d.]+)$` → `0.3.0`，自动去产品前缀）。覆盖三场景：多产品共仓 / tag 命名特殊或方案变更（`windows-v*`→`v*`）/ 跟 beta·rc（`^v([\d.]+(?:-(?:beta|rc)\.\d+)?)$`）。**仍走 GitHub 分支 → API digest 免下载**（实测 qingjian `0.1.4→0.1.5-beta.1`、updist `0.3.0→0.3.1` 均无 `[下载]` 行、hash 与上游 digest 一致）。已迁移 `updist`/`qingjian`；文本正则分支只在"包不在 GitHub Release"（如 dsh）时用
 - **`find_duplicate_source` 增强**：也扫描 `checkver.url` 的 API 形式（归一 `/repos/` 段）——修"改用文本正则后重复来源检测失效"的副作用；`updist` 迁回 `checkver.github` 后该项也恢复
 - **前缀重选 + tag_regex 资产守卫**（2026-10-12，修 CI 两个"无法匹配"）：① `tag_regex` 分支补齐**资产守卫**（最新匹配 tag 空资产 → 回退下一个匹配且有资产的 tag，与常规分支对称）；② 新增 `repick_by_prefix` **第三重匹配**——资产名含每版变化的非数字标记（构建 sha：`ui-938c2f1`→`ui-ae48ec0`）时数字归一化失效，按**公共前缀最长**重选并 `refresh_filename_in_template` 刷新模板文件名（护栏：同扩展名家族 + 前缀≥12 且止于 `-_./` + 唯一最优 + 架构一致）。实测：`kvninfer` sha 漂移自动重选 rtx40 资产 + 模板刷新 ✓；`anclicker` 改名（多候选平手/平台过滤）被安全拒绝 ✓
@@ -237,9 +238,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 8e60fa0 (HEAD -> main) 同步 README 第三方版本与日期列
+* bc9bccf (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 8e60fa0 同步 README 第三方版本与日期列
 * 93c533a 自动更新第三方软件
-* 95301ce (origin/main) 合并同步脚本为一键流程 + egolite 安装自动启动：sync-chrome-to-ego.bat 顺序执行 ①数据同步（备份+书签护栏）②扩展同步（复制+junction）③启动并加载全部扩展（Chrome 运行中自动跳过数据同步只做扩展）；删除旧 sync-chrome-extensions.*；egolite.json 增加 post_install 自动启动（实测重装后自动拉起）；bat 注释/输出改纯英文（修复 cmd 解析 UTF-8 中文注释报错）；README/progress 同步
+* 95301ce 合并同步脚本为一键流程 + egolite 安装自动启动：sync-chrome-to-ego.bat 顺序执行 ①数据同步（备份+书签护栏）②扩展同步（复制+junction）③启动并加载全部扩展（Chrome 运行中自动跳过数据同步只做扩展）；删除旧 sync-chrome-extensions.*；egolite.json 增加 post_install 自动启动（实测重装后自动拉起）；bat 注释/输出改纯英文（修复 cmd 解析 UTF-8 中文注释报错）；README/progress 同步
 * a461c73 bat 完全自动化并修复 cmd 解析报错：注释/输出改为纯英文（中文注释在 UTF-8 bat 中被 cmd 按 ANSI 解析，导致 'n' is not recognized / 乱码行被当命令）；扩展目录缺失或为空时自动调用 ps1 同步（复制+junction）后再启动；实测删除扩展目录后双击 bat → 自动重建 22 个并启动（location=8: 22）
 * d5cfc45 扩展加载改为 bat 一键启动（修正先前误判）：sync-chrome-extensions.bat = 关闭旧 ego + 拼接全部扩展路径 --load-extension 启动（location=8 每次启动都加载）；ps1 只负责同步文件（复制/junction）并在完成后调用 bat；修正 README/progress 中「location=8 持久化」的错误结论（实际正常启动不加载）；开始菜单快捷方式也已写入参数
 * d8d3ad3 新增 sync-chrome-extensions（Chrome 扩展 → ego 一键同步）：解析 Secure Preferences 取用户扩展 → 复制到持久目录（先清空防残留）→ mklink /J 建 ASCII 短路径 → 分批 --load-extension 加载（location=8 持久化）→ 校验并启动；实测 22 个扩展全部加载成功（3 批）；README 增章节、编码按约定（ps1 BOM+CRLF / bat 无 BOM+CRLF）
