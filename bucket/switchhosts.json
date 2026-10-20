@@ -1,13 +1,13 @@
 {
-    "version": "5.1.0",
+    "version": "5.1.1",
     "description": "Switch hosts quickly!",
     "homepage": "https://switchhosts.app",
     "license": "Apache-2.0",
     "checkver": {
         "github": "https://github.com/w3c0929/SwitchHosts"
     },
-    "url": "https://github.com/w3c0929/SwitchHosts/releases/download/v5.1.0/SwitchHosts-5.1.0-win-x64-portable.zip",
-    "hash": "sha256:471372675a61f239c15e0655eb0846bfaa1fefbc97800928752685bf05b79c50",
+    "url": "https://github.com/w3c0929/SwitchHosts/releases/download/v5.1.1/SwitchHosts-5.1.1-win-x64-portable.zip",
+    "hash": "sha256:203d6ac4ac771e579f6dc42b6a7f6c988f9e01078b6734128aac2df3f582b1a1",
     "autoupdate": {
         "url": "https://github.com/w3c0929/SwitchHosts/releases/download/v$version/SwitchHosts-$version-win-x64-portable.zip"
     },
