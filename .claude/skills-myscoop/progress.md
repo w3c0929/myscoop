@@ -241,7 +241,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* b0c0f45 (HEAD -> main, origin/main, origin/HEAD) 修正文档（上次脚本转义失败未写入）：README uuyc 类型列改为「NSIS 安装器安装（服务/驱动注册）」；progress 补充 portable 不可行的完整诊断与 installer 模式，并记录卸载实测结果（服务/程序目录/驱动设备/用户数据均无残留）
+* 8de32d2 (HEAD -> main) 同步 README 第三方版本与日期列
+* f86bf2b 自动更新第三方软件
+* e7dde3e (origin/main) 记录 SwitchHosts 无法检测更新的根因与修复：本地 JSON 文件安装（无 bucket 关联、auto-generated）→ scoop update 只对比安装时清单、不回退 bucket；已卸载并从 myscoop bucket 重装 5.1.1（bucket: myscoop）
+* b0c0f45 修正文档（上次脚本转义失败未写入）：README uuyc 类型列改为「NSIS 安装器安装（服务/驱动注册）」；progress 补充 portable 不可行的完整诊断与 installer 模式，并记录卸载实测结果（服务/程序目录/驱动设备/用户数据均无残留）
 * 6d3f590 uuyc 改 installer 模式（便携版不可行）：7z 解包版缺 GameViewerService 服务、config/bin/plugins 与虚拟驱动 → 主程序 exit -1；改为 installer /S 真安装（服务/驱动/配置齐全，安装器固定装到 Program Files）+ post_uninstall 停服务并调官方 Uninstall.exe；实测 scoop 安装后服务 Running、程序窗口正常；README 类型列与 progress 同步
 * f1562be 清理：删除 uuyc 旧自托管 release v4.30.1（远程桌面 UU远程 4.30.1，资产 uuyc-4.30.1.exe）及标签（本地+远端）；uuyc 已改走第三方官方源，不再需要该发布
 * bf114ae 支持 checkver.script（工具新增 _update_by_script）+ uuyc 改用稳定源：工具可运行 PowerShell 取版本（stdout 即版本，可配 regex），版本变化按 autoupdate 下载重算 hash；uuyc 清单改为 checkver 读 dl-infos 的 Windows(key=1) 稳定版号 + 固定 CDN 直链 + autoupdate 走下载接口（规避灰度分流：302 曾随机返回 4.43.0/4.43.1）；dry-run 实测正确
