@@ -292,30 +292,22 @@ git config --global --add safe.directory D:/scoop/buckets/*
 >   - **只放"release 资产代理"型镜像**：拼接方式只有一种——**镜像前缀 + 完整原始 URL**（如 `https://hk.gh-proxy.org/https://github.com/…`）。git 克隆加速器（如 `gitclone.com`，写法为 `gitclone.com/github.com/owner/repo`）不代理 release 下载路径，放进列表只会 404/500，勿加。
 >   - 对 aria2（`aria2-enabled: true`）与默认下载器（未启用 aria2 或 aria2 失败回退）两条路径均生效；**Scoop 自更新后补丁会丢失**（链接也会失效），**重新覆盖或重新运行 `symlink.bat`** 即可（原版备份在仓库 `staging/scoop-backup/`）。
 
-### sync-chrome-to-ego.bat（Chrome → ego lite 数据同步）
+### sync-chrome-to-ego.bat（Chrome → ego lite 一键同步）
 
-双击运行，把 Chrome 的书签 / Cookie / 历史 / 密码 / 表单**单向**同步到 ego lite（`%LOCALAPPDATA%\Citro Labs\ego\User Data`）。
+双击运行，按顺序完成：**① 数据同步**（书签 / Cookie / 历史 / 密码 / 表单）→ **② 扩展同步**（复制 + 重建链接）→ **③ 启动 ego 并加载全部扩展**。
 
-- **运行前必须完全退出 Chrome 与 ego**（脚本会检测并拒绝继续；Chrome 关窗口后可能仍在后台，需在「设置 → 系统」关闭"关闭 Chrome 后继续运行后台应用"）
+- **数据同步需要 Chrome 已关闭**；Chrome 正在运行时会自动跳过数据、只做扩展 + 启动（并提示）
 - 自动备份 ego 数据到 `User Data.bak-<时间戳>`（默认保留最近 3 个），出问题可回滚
-- **只做单向（Chrome → ego）**：ego 运行后会升级数据库 schema，反向同步可能让 Chrome 打不开；**也不能用 symlink/硬链接**——Chromium 保存文件是"写临时文件 + rename"，会替换掉链接本身，且 SQLite（Cookies/History/Login Data）运行时会加锁，两进程共用会损坏数据库
-- 参数：`-ChromeProfile` / `-EgoProfile`（多配置）、`-KeepBackups N`、`-NoBackup`、`-Force`（跳过进程检测，仅自动化/测试用）
-- ⚠️ **账号书签不适用本脚本**：Chrome 登录账号后，书签可能只存在于同步数据库（`Sync Data`），**不写入本地 `Bookmarks` 文件**（表现为 `chrome://bookmarks` 有书签、但 `Default\Bookmarks` 长期为空/未更新）。此类书签请用 Chrome `chrome://bookmarks` → ⋮ → **导出书签**（HTML），再在 ego 的 `ego://bookmarks` → **导入书签** 选择该文件
-- 🛡️ **书签护栏**：若 Chrome 本地 `Bookmarks` 里的书签数为 **0**（典型：账号书签场景），脚本会**跳过书签项并提示**，不会再用空文件覆盖 ego 已有的书签（此前曾因此覆盖丢失过一次，已从自动备份恢复）。只有 Chrome 本地**确实有书签**时才会覆盖 ego 的书签栏
-
-### sync-chrome-extensions.bat / .ps1（Chrome 扩展 → ego lite）
-
-**双击 `sync-chrome-extensions.bat` 即可**：
-- 扩展目录存在 → 关闭旧 ego → 启动并加载 `D:\scoop\persist\egolite-ext` 下**全部扩展**
-- 扩展目录**缺失或为空**（如卸载重装后）→ **自动从 Chrome 同步**（复制扩展 + 建链接）再启动，无需手动跑其他脚本
-
-**Chrome 更新扩展后**：运行 `sync-chrome-extensions.ps1` 重新同步，或在 bat 前删掉扩展目录让它自动重建。
-（bat 注释与输出全部使用英文，避免 cmd 在 UTF-8 文件里解析中文注释出错。）
+- 扩展：复制到 `D:\scoop\persist\egolite-exts\` + 纯 ASCII junction `egolite-ext\ext01…`（长中文路径会导致加载失败）；启动时用 `--load-extension` 加载全部
+- **egolite 安装后会自动启动一次**（清单 `post_install`）
+- 参数：`-ChromeProfile` / `-EgoProfile`、`-KeepBackups N`、`-NoData`（只做扩展）、`-NoExt`、`-NoLaunch`
 
 原理与限制：
-- Chromium 的 `--load-extension` 是**临时加载**（写入 `location=8`），**必须每次启动带参数**才生效 —— 所以用 bat / 已写入参数的快捷方式启动，而不是期待"一次加载永久生效"
-- 扩展页的「加载未打包的扩展程序」写 `location=4` 才真正持久，但对话框**一次只能选一个目录**、无法批量
-- **不能靠复制 `Secure Preferences` 迁移扩展**：HMAC 完整性校验会丢弃跨浏览器配置（实测 31→3 且扩展文件被删）
+- **只做单向（Chrome → ego）**：ego 运行后会升级数据库 schema，反向同步可能让 Chrome 打不开；**也不能用 symlink/硬链接**——Chromium 保存文件是"写临时文件 + rename"，会替换掉链接本身，且 SQLite 运行时加锁，双进程共用会损坏
+- ⚠️ **账号书签不在本地文件里**：Chrome 登录账号后书签可能只存在 `Sync Data`（`Default\Bookmarks` 长期为空）。请用 Chrome `chrome://bookmarks` → ⋮ → **导出书签**（HTML），再在 ego 的 `ego://bookmarks` → **导入书签**
+- 🛡️ **书签护栏**：Chrome 本地书签数为 **0** 时跳过 Bookmarks，避免用空文件覆盖 ego 已导入的书签（曾因此丢失过一次，已从备份恢复）
+- Chromium 的 `--load-extension` 是**会话级**（`location=8`），必须每次启动带参数才生效 → 所以日常请用本 bat 启动（开始菜单/桌面快捷方式也已写入参数）
+- **不能靠复制 `Secure Preferences` 迁移扩展**（HMAC 完整性校验会丢弃，实测 31→3 且扩展文件被删）；扩展页「加载未打包」写 `location=4` 才真正持久，但对话框一次只能选一个目录、无法批量
 - 扩展 ID 保留商店 ID；`ego://extensions` 会常驻"开发者模式扩展"提示
 
 ### symlink.bat 一键链接部署（用法）

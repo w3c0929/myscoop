@@ -17,6 +17,9 @@
             "ego lite"
         ]
     ],
+    "post_install": [
+        "Start-Process \"$dir\\ego.exe\""
+    ],
     "notes": [
         "自托管便携版：由官方 Web 安装器安装后的程序目录打包（上游只提供在线安装器，GitHub release 仅有 226KB 更新包，无完整安装包）。",
         "用户数据默认保存在 %LOCALAPPDATA%\\ego lite（与官方安装版一致；卸载 Scoop 不会删除）。",

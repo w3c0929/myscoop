@@ -1,159 +1,195 @@
 ﻿<#
 .SYNOPSIS
-    单向同步 Chrome 用户数据 → ego lite（书签 / Cookie / 历史 / 密码 / 表单等）。
+    Chrome → ego lite 一键同步：数据（书签/Cookie/历史/密码/表单）+ 扩展，然后启动 ego。
 
 .DESCRIPTION
-    为什么是单向：ego 运行后会把数据库升级到自己的 schema，反向同步可能让 Chrome 打不开。
-    为什么不能 symlink：Chromium 保存文件是"写临时文件 + rename"，会替换掉链接本身；
-    且 SQLite（Cookies/History/Login Data）运行时会加锁，两进程共用会损坏数据库。
-    所以采用「关闭浏览器时一次性复制」的方式。
+    顺序执行：
+      1) 关闭 ego（数据同步与扩展加载都需要）
+      2) 数据同步（需 Chrome 已关闭；自动备份 ego 数据；书签为空时跳过保护 ego）
+      3) 扩展同步（复制扩展 + 重建纯 ASCII 短路径链接；Chrome 可以开着）
+      4) 启动 ego 并加载全部扩展（--load-extension，每次启动有效）
 
-    复制内容：Local State（Cookie/密码解密密钥，关键）、Bookmarks、Network\Cookies、
-    Login Data、History、Favicons、Top Sites、Web Data。
-    不复制 Preferences（避免覆盖 ego 自己的界面/设置）。
-
-.PARAMETER ChromeRoot    Chrome 用户数据根目录（默认 %LOCALAPPDATA%\Google\Chrome\User Data）
-.PARAMETER EgoRoot       ego 用户数据根目录（默认 %LOCALAPPDATA%\Citro Labs\ego\User Data）
-.PARAMETER ChromeProfile Chrome 的 profile 目录名（默认 Default）
-.PARAMETER EgoProfile    ego 的 profile 目录名（默认 Default）
-.PARAMETER KeepBackups   保留最近几个 ego 备份（默认 3）
-.PARAMETER NoBackup      跳过备份（不建议）
+    注意：
+    - Chrome 运行中会自动跳过数据同步（文件被锁），仅做扩展同步 + 启动
+    - 不能靠复制 Secure Preferences 迁移扩展（HMAC 完整性校验会丢弃）
+    - 扩展必须通过 --load-extension 每次启动加载（Chromium 的 location=8 特性）
 
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\sync-chrome-to-ego.ps1
+    powershell -ExecutionPolicy Bypass -File .\sync-chrome-to-ego.ps1 -NoData   # 只同步扩展并启动
+    powershell -ExecutionPolicy Bypass -File .\sync-chrome-to-ego.ps1 -NoLaunch # 只同步不启动
 #>
 param(
     [string]$ChromeRoot = (Join-Path $env:LOCALAPPDATA 'Google\Chrome\User Data'),
-    [string]$EgoRoot    = (Join-Path $env:LOCALAPPDATA 'Citro Labs\ego\User Data'),
     [string]$ChromeProfile = 'Default',
+    [string]$EgoRoot = (Join-Path $env:LOCALAPPDATA 'Citro Labs\ego\User Data'),
     [string]$EgoProfile = 'Default',
+    [string]$EgoExe = 'D:\scoop\apps\egolite\current\ego.exe',
+    [string]$StoreDir = 'D:\scoop\persist\egolite-exts',
+    [string]$LinkDir = 'D:\scoop\persist\egolite-ext',
     [int]$KeepBackups = 3,
-    [switch]$NoBackup,
-    [switch]$Force
+    [switch]$NoData,
+    [switch]$NoExt,
+    [switch]$NoLaunch
 )
 
 $ErrorActionPreference = 'Stop'
+function W($m, $c = 'Cyan') { Write-Host $m -ForegroundColor $c }
 
-function Write-Step($msg) { Write-Host $msg -ForegroundColor Cyan }
-function Write-Ok($msg)   { Write-Host $msg -ForegroundColor Green }
-function Write-Skip($msg) { Write-Host $msg -ForegroundColor DarkGray }
-function Write-Warn($msg) { Write-Host $msg -ForegroundColor Yellow }
-function Write-Err($msg)  { Write-Host $msg -ForegroundColor Red }
-
-function Get-BmNode($node) {
-    if (-not $node) { return 0 }
-    if ($node.type -eq 'url') { return 1 }
-    $n = 0
-    foreach ($ch in @($node.children)) { if ($ch) { $n += (Get-BmNode $ch) } }
-    return $n
-}
-
-function Get-BookmarkCount([string]$path) {
-    # 统计 Chromium Bookmarks 文件里的 URL 书签数；解析失败返回 -1
-    try {
-        $j = Get-Content $path -Raw -Encoding UTF8 | ConvertFrom-Json
-        $sum = 0
-        foreach ($k in 'bookmark_bar', 'other', 'synced') {
-            $root = $j.roots.$k
-            if ($root) { $sum += (Get-BmNode $root) }
-        }
-        return $sum
-    } catch { return -1 }
-}
-
-Write-Step "=== Chrome → ego lite 单向同步 ==="
-Write-Host "  Chrome: $ChromeRoot"
-Write-Host "  ego   : $EgoRoot"
+W "=== Chrome → ego lite 一键同步 ==="
+Write-Host "  Chrome: $ChromeRoot\$ChromeProfile"
+Write-Host "  ego   : $EgoRoot\$EgoProfile"
 Write-Host ""
 
-# 1) 源/目标目录检查
-if (-not (Test-Path $ChromeRoot)) {
-    Write-Err "[错误] 未找到 Chrome 用户数据目录：$ChromeRoot"
-    exit 1
-}
+# ---------- 0) 路径校验 ----------
+$chromeProf = Join-Path $ChromeRoot $ChromeProfile
+if (-not (Test-Path $chromeProf)) { W "[错误] 未找到 Chrome 配置：$chromeProf" Red; exit 1 }
 if (-not (Test-Path $EgoRoot)) {
-    Write-Err "[错误] 未找到 ego 用户数据目录：$EgoRoot"
-    Write-Warn "        请先启动一次 ego lite（生成 %LOCALAPPDATA%\Citro Labs\ego\User Data）后重试。"
+    W "[错误] 未找到 ego 数据目录：$EgoRoot" Red
+    W "        请先启动一次 ego lite 生成数据目录" Yellow
     exit 1
 }
+if (-not (Test-Path $EgoExe)) { W "[错误] 未找到 ego.exe：$EgoExe" Red; exit 1 }
 
-# 2) 浏览器必须完全退出（否则文件锁 + 数据不一致）
-$running = @(Get-Process chrome, ego -ErrorAction SilentlyContinue)
-if ($running.Count -gt 0 -and -not $Force) {
-    Write-Err "[错误] 浏览器仍在运行，请先完全退出："
-    $running | Group-Object ProcessName | ForEach-Object {
-        Write-Host ("        {0}（{1} 个进程）" -f $_.Name, $_.Count) -ForegroundColor Red
-    }
-    Write-Warn "        Chrome 关窗口后可能仍在后台停留：设置 → 系统 → 关闭「关闭 Google Chrome 后继续运行后台应用」，"
-    Write-Warn "        或从任务管理器结束所有 chrome.exe。"
-    exit 1
+# ---------- 1) 关闭 ego ----------
+if (Get-Process ego -ErrorAction SilentlyContinue) {
+    W "[1/3] 关闭 ego …" Yellow
+    Get-Process ego -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 3
+} else {
+    W "[1/3] ego 未运行（OK）" DarkGray
 }
 
-# 3) 备份 ego 数据（可回滚）
-if (-not $NoBackup) {
-    $bak = "$EgoRoot.bak-$(Get-Date -Format yyyyMMddHHmmss)"
-    Copy-Item $EgoRoot $bak -Recurse -Force
-    Write-Skip "[备份] $bak"
-    $parent = Split-Path $EgoRoot -Parent
-    $old = @(Get-ChildItem $parent -Directory -Filter 'User Data.bak-*' -ErrorAction SilentlyContinue |
-             Sort-Object Name -Descending | Select-Object -Skip $KeepBackups)
-    if ($old.Count -gt 0) {
-        $old | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-        Write-Skip "[清理] 删除旧备份 $($old.Count) 个（保留最近 $KeepBackups 个）"
-    }
-}
+# ---------- 2) 数据同步 ----------
+if (-not $NoData) {
+    if (Get-Process chrome -ErrorAction SilentlyContinue) {
+        W "[2/3] 数据同步：Chrome 正在运行 → 跳过（关闭 Chrome 后重跑可同步书签/Cookie/历史/密码）" Yellow
+    } else {
+        W "[2/3] 数据同步 …"
+        $egoProf = Join-Path $EgoRoot $EgoProfile
 
-# 4) 逐项复制（只复制源存在的；缺目录自动创建）
-$fileMap = @(
-    @{ Src = 'Local State';                         Dst = 'Local State';                         Note = 'Cookie/密码解密密钥' },
-    @{ Src = "$ChromeProfile\Bookmarks";            Dst = "$EgoProfile\Bookmarks";               Note = '书签' },
-    @{ Src = "$ChromeProfile\Bookmarks.bak";        Dst = "$EgoProfile\Bookmarks.bak";           Note = '' },
-    @{ Src = "$ChromeProfile\Network\Cookies";      Dst = "$EgoProfile\Network\Cookies";         Note = 'Cookie' },
-    @{ Src = "$ChromeProfile\Login Data";           Dst = "$EgoProfile\Login Data";              Note = '密码' },
-    @{ Src = "$ChromeProfile\History";              Dst = "$EgoProfile\History";                 Note = '历史' },
-    @{ Src = "$ChromeProfile\Favicons";             Dst = "$EgoProfile\Favicons";                Note = '网站图标' },
-    @{ Src = "$ChromeProfile\Top Sites";            Dst = "$EgoProfile\Top Sites";               Note = '常用站点' },
-    @{ Src = "$ChromeProfile\Web Data";             Dst = "$EgoProfile\Web Data";                Note = '表单/自动填充' }
-)
+        # 备份 ego 数据（保留最近 N 个）
+        $bak = "$EgoRoot.bak-$(Get-Date -Format yyyyMMddHHmmss)"
+        Copy-Item $EgoRoot $bak -Recurse -Force
+        W "  备份: $bak" DarkGray
+        $old = @(Get-ChildItem (Split-Path $EgoRoot -Parent) -Directory -Filter 'User Data.bak-*' -ErrorAction SilentlyContinue |
+                 Sort-Object Name -Descending | Select-Object -Skip $KeepBackups)
+        if ($old.Count -gt 0) { $old | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue }
 
-$copied = 0
-$skipped = 0
-foreach ($m in $fileMap) {
-    $s = Join-Path $ChromeRoot $m.Src
-    $d = Join-Path $EgoRoot $m.Dst
-    if (-not (Test-Path $s)) {
-        Write-Skip ("  [跳过] {0}（源不存在）" -f $m.Src)
-        $skipped++
-        continue
-    }
-    # 书签护栏：Chrome 本地 Bookmarks 为空时跳过 —— Chrome 登录账号后书签可能只存在同步库
-    # （Sync Data），本地文件长期为空。直接复制会用空书签覆盖 ego 里已有的书签（曾发生）。
-    if ($m.Src -eq "$ChromeProfile\Bookmarks") {
-        $bmCount = Get-BookmarkCount $s
-        if ($bmCount -le 0) {
-            Write-Warn ("  [跳过] {0}（Chrome 本地书签 {1} 个 → 很可能在账号里；跳过以免覆盖 ego 已有书签）" -f $m.Src, $bmCount)
-            Write-Warn "         账号书签：Chrome 打开 chrome://bookmarks → ⋮ → 导出书签；再到 ego 的 ego://bookmarks → 导入书签"
-            $skipped++
-            continue
+        # 文件映射（相对路径）
+        $fileMap = @(
+            @{ Src = 'Local State'; Dst = 'Local State'; Note = 'Cookie/密码解密密钥' },
+            @{ Src = "$ChromeProfile\Bookmarks"; Dst = "$EgoProfile\Bookmarks"; Note = '书签' },
+            @{ Src = "$ChromeProfile\Bookmarks.bak"; Dst = "$EgoProfile\Bookmarks.bak"; Note = '' },
+            @{ Src = "$ChromeProfile\Network\Cookies"; Dst = "$EgoProfile\Network\Cookies"; Note = 'Cookie' },
+            @{ Src = "$ChromeProfile\Login Data"; Dst = "$EgoProfile\Login Data"; Note = '密码' },
+            @{ Src = "$ChromeProfile\History"; Dst = "$EgoProfile\History"; Note = '历史' },
+            @{ Src = "$ChromeProfile\Favicons"; Dst = "$EgoProfile\Favicons"; Note = '网站图标' },
+            @{ Src = "$ChromeProfile\Top Sites"; Dst = "$EgoProfile\Top Sites"; Note = '常用站点' },
+            @{ Src = "$ChromeProfile\Web Data"; Dst = "$EgoProfile\Web Data"; Note = '表单/自动填充' }
+        )
+        $copied = 0
+        foreach ($m in $fileMap) {
+            $s = Join-Path $ChromeRoot $m.Src
+            $d = Join-Path $EgoRoot $m.Dst
+            if (-not (Test-Path $s)) { continue }
+            # 书签护栏：Chrome 本地书签为 0 时跳过（账号书签不在文件里，避免覆盖 ego 已导入的书签）
+            if ($m.Src -eq "$ChromeProfile\Bookmarks") {
+                $cnt = 0
+                try {
+                    $j = Get-Content $s -Raw -Encoding UTF8 | ConvertFrom-Json
+                    foreach ($k in 'bookmark_bar', 'other', 'synced') {
+                        $root = $j.roots.$k
+                        if ($root) { $cnt += (Get-BmNode $root) }
+                    }
+                } catch { $cnt = 0 }
+                if ($cnt -le 0) {
+                    W "  [跳过] Bookmarks（Chrome 本地 0 个 → 可能是账号书签；如需要请导出 HTML 到 ego 导入）" Yellow
+                    continue
+                }
+            }
+            $dd = Split-Path $d -Parent
+            if (-not (Test-Path $dd)) { New-Item -ItemType Directory -Force $dd | Out-Null }
+            Copy-Item $s $d -Force
+            W ("  [复制] {0,-28} {1,8:N1} KB" -f $m.Src, ((Get-Item $s).Length / 1KB)) Green
+            $copied++
         }
-        Write-Host ("  [书签] Chrome 本地共 {0} 个书签，将覆盖 ego 的书签栏" -f $bmCount) -ForegroundColor DarkCyan
+        W "  数据同步完成：$copied 项" Green
     }
-    $dDir = Split-Path $d -Parent
-    if (-not (Test-Path $dDir)) { New-Item -ItemType Directory -Force $dDir | Out-Null }
-    Copy-Item $s $d -Force
-    $size = (Get-Item $s).Length
-    $label = if ($m.Note) { "$($m.Src)（$($m.Note)）" } else { $m.Src }
-    Write-Ok ("  [复制] {0,-42} {1,9:N1} KB" -f $label, ($size / 1KB))
-    $copied++
+} else {
+    W "[2/3] 数据同步：已跳过（-NoData）" DarkGray
 }
 
-Write-Host ""
-if ($copied -eq 0) {
-    Write-Warn "[完成] 没有可复制的项（请确认 Chrome 用的是 $ChromeProfile 配置）。"
-    exit 1
+# ---------- 3) 扩展同步 ----------
+$links = @()
+if (-not $NoExt) {
+    W "[3/3] 扩展同步 …"
+    $securePref = Join-Path $chromeProf 'Secure Preferences'
+    $extRoot = Join-Path $chromeProf 'Extensions'
+    if (-not (Test-Path $securePref)) {
+        W "  [跳过] 找不到 Chrome 的 Secure Preferences" Yellow
+    } else {
+        $d = Get-Content $securePref -Raw -Encoding UTF8 | ConvertFrom-Json
+        $settings = $d.extensions.settings
+        $list = @()
+        foreach ($prop in $settings.PSObject.Properties) {
+            $v = $prop.Value
+            if (-not $v -or $v.location -ne 1) { continue }
+            $rel = $v.path
+            if (-not $rel) { continue }
+            $src = Join-Path $extRoot $rel
+            if (-not (Test-Path $src)) { continue }
+            $name = [string]$v.manifest.name
+            if (-not $name) { $name = $prop.Name }
+            $safe = ($name -replace '[\\/:*?"<>|]', '_')
+            if ($safe.Length -gt 40) { $safe = $safe.Substring(0, 40) }
+            $safe = ($safe -replace '\s+', ' ').Trim()
+            if (-not $safe) { $safe = $prop.Name }
+            $list += [pscustomobject]@{ Name = $safe; Src = $src }
+        }
+        if ($list.Count -eq 0) {
+            W "  [跳过] 没有找到用户扩展" Yellow
+        } else {
+            New-Item -ItemType Directory -Force $StoreDir | Out-Null
+            Get-ChildItem $StoreDir -Directory -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+            $i = 0
+            foreach ($e in ($list | Sort-Object Name)) {
+                $i++
+                $target = Join-Path $StoreDir ('{0:D2}-{1}' -f $i, $e.Name)
+                robocopy $e.Src $target /E /NFL /NDL /NJH /NJS /NP | Out-Null
+            }
+            if (Test-Path $LinkDir) { Remove-Item $LinkDir -Recurse -Force -ErrorAction SilentlyContinue }
+            New-Item -ItemType Directory -Force $LinkDir | Out-Null
+            $i = 0
+            foreach ($dir in (Get-ChildItem $StoreDir -Directory | Sort-Object Name)) {
+                $i++
+                $link = Join-Path $LinkDir ('ext{0:D2}' -f $i)
+                cmd /c mklink /J "$link" "$($dir.FullName)" | Out-Null
+                $links += $link
+            }
+            W "  扩展同步完成：$($links.Count) 个 → $LinkDir" Green
+        }
+    }
+} else {
+    W "[3/3] 扩展同步：已跳过（-NoExt）" DarkGray
 }
-Write-Step "[完成] 共复制 $copied 项，跳过 $skipped 项。"
-Write-Host "       现在启动 ego lite 即可看到书签 / Cookie / 历史。"
-Write-Host "       提示：ego 首次启动会升级数据库 schema，之后不要把 ego 的数据反向往 Chrome 同步。"
 
+# 没同步扩展时，也读取现有链接用于启动
+if ($links.Count -eq 0 -and (Test-Path $LinkDir)) {
+    $links = @(Get-ChildItem $LinkDir -Directory -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { $_.FullName })
+}
+
+# ---------- 4) 启动 ----------
+if (-not $NoLaunch) {
+    if ($links.Count -eq 0) {
+        W "[警告] 没有可加载的扩展，直接启动 ego" Yellow
+        Start-Process $EgoExe -ErrorAction SilentlyContinue
+    } else {
+        W "启动 ego（加载 $($links.Count) 个扩展）…"
+        $joined = $links -join ','
+        Start-Process $EgoExe -ArgumentList "--load-extension=$joined" -ErrorAction SilentlyContinue
+    }
+}
+W ""
+W "[完成] 数据与扩展已处理。ego 启动后可在 ego://extensions 确认扩展。" Green
 exit 0
