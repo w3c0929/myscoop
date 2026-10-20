@@ -10,7 +10,7 @@
 
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
-| 1 | [网易UU远程](https://uuyc.163.com/) — 超低延迟的远程控制工具（Windows / macOS / iOS / Android / TV） | `scoop install uuyc` | NSIS 安装器安装（服务/驱动注册） | 4.43.0 | 2026-10-20 | 2026-10-20 |
+| 1 | [网易UU远程](https://uuyc.163.com/) — 超低延迟的远程控制工具（Windows / macOS / iOS / Android / TV） | `scoop install uuyc` | NSIS 安装器安装（服务/驱动注册） | 4.43.0 | 2026-10-10 | 2026-10-21 |
 | 2 | [evanOCR](https://github.com/duyuanfu/evan-ocr) — C++ 写了一款比 Snipaste/PixPin 更爽的免费截贴图 OCR 神器 | `scoop install evanocr` | portable zip 官方 release | 1.2.0 | 2026-10-18 | 2026-10-18 |
 | 3 | [Sunpack](https://github.com/Qinjingxue/Sunpack) — Windows 全自动压缩包处理工具：后台监控文件夹、自动识别并解压、递归处理与崩溃恢复 | `scoop install sunpack` | 多架构 exe 官方 release（Inno Setup 解包） | 1.1.12 | 2026-10-15 | 2026-10-19 |
 | 4 | [SVCode](https://github.com/mnigc/SVCode) — 轻量的「编辑优先」文本与代码编辑器（内置预览，Windows 优先） | `scoop install svcode` | 单 exe 官方 release（Tauri 解包） | 0.3.2 | 2026-10-14 | 2026-10-14 |
@@ -20,9 +20,9 @@
 | 8 | [Filee](https://github.com/KnifeLemon/Filee) — 免费开源文件转换器：拖拽即转 180+ 格式（图片 / PDF / Word / Excel / PPT / HWP / 视频 / 音频 / 电子书 / 压缩包），全程离线、无需上传 | `scoop install filee` | portable zip 官方 release | 1.12.0 | 2026-10-12 | 2026-10-19 |
 | 9 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.5.12 | 2026-10-12 | 2026-10-20 |
 | 10 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.1 | 2026-10-10 | 2026-10-20 |
-| 11 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.1.3 | 2026-10-12 | 2026-10-17 |
-| 12 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.5 | 2026-10-11 | 2026-10-19 |
-| 13 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.16 | 2026-10-10 | 2026-10-19 |
+| 11 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.1.4 | 2026-10-12 | 2026-10-21 |
+| 12 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.6 | 2026-10-11 | 2026-10-21 |
+| 13 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.17 | 2026-10-10 | 2026-10-21 |
 | 14 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.9.1 | 2026-10-10 | 2026-10-19 |
 | 15 | [KeyCrash](https://github.com/Yuelioi/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.2.4 | 2026-10-10 | 2026-10-14 |
 | 16 | [SuMail](https://github.com/w3c0929/sumail-releases) — SuMail 桌面版（Windows 桌面版安装包与发布资产；源码仓库为私有） | `scoop install sumail` | zip 官方 release | 0.0.1 | 2026-10-10 | 2026-10-10 |
@@ -39,7 +39,7 @@
 | 27 | [BongoCat](https://github.com/ayangweb/BongoCat) — 跨平台桌面宠物互动小工具（开源） | `scoop install bongocat` | 单 exe 官方 release（NSIS 解包） | 2.3.1 | 2026-10-10 | 2026-10-14 |
 | 28 | [DeepSeek Harness](https://www.deepseek.com/en/harness/) — DeepSeek 桌面客户端（官方直链，NSIS 安装器 7z 解包便携） | `scoop install dsh` | 单 exe 官方直链（NSIS 解包） | 0.2.1-rc.2 | 2026-10-10 | 2026-10-18 |
 | 29 | [kvmem-llama.cpp](https://github.com/kvmem/kvmem-llama.cpp) — NInfer：三元 .ninfer 模型推理服务端 + KVMem 缓存压缩（上游 NInfer 线；RTX 30/40/50 预编译，内嵌 Web UI） | `scoop install kvninfer` | zip 官方 release | 0.18.0-ninfer-rc3 | 2026-10-12 | 2026-10-12 |
-| 30 | [Rayburst](https://github.com/AnInsomniacy/rayburst) — 开源下载管理器（基于 Aria2 Next 引擎，NSIS 安装器解包便携） | `scoop install rayburst` | 多架构 exe 官方 release（NSIS 解包） | 4.0.1 | 2026-10-10 | 2026-10-10 |
+| 30 | [Rayburst](https://github.com/AnInsomniacy/rayburst) — 开源下载管理器（基于 Aria2 Next 引擎，NSIS 安装器解包便携） | `scoop install rayburst` | 多架构 exe 官方 release（NSIS 解包） | 4.1.0 | 2026-10-10 | 2026-10-21 |
 | 31 | [ZTools](https://github.com/ZToolsCenter/ZTools) — uTools 的开源实现，高性能可扩展的应用启动器与插件平台 | `scoop install ztools` | zip 官方 release | 3.2.0 | 2026-10-10 | 2026-10-10 |
 | 32 | [AI-Vault (updist)](https://github.com/ErgeAIA/updates-dist) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | 0.4.0 | 2026-10-10 | 2026-10-16 |
 | 33 | [llama.cpp Prism](https://github.com/PrismML-Eng/llama.cpp) — llama.cpp 分支（CUDA 主程序 + cudart 运行库配对合并，--more 收录） | `scoop install prllama` | 多架构 zip 官方 release | prism-b10787-73bfe6c | 2026-10-10 | 2026-10-20 |
