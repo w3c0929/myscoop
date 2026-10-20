@@ -301,6 +301,7 @@ git config --global --add safe.directory D:/scoop/buckets/*
 - **只做单向（Chrome → ego）**：ego 运行后会升级数据库 schema，反向同步可能让 Chrome 打不开；**也不能用 symlink/硬链接**——Chromium 保存文件是"写临时文件 + rename"，会替换掉链接本身，且 SQLite（Cookies/History/Login Data）运行时会加锁，两进程共用会损坏数据库
 - 参数：`-ChromeProfile` / `-EgoProfile`（多配置）、`-KeepBackups N`、`-NoBackup`、`-Force`（跳过进程检测，仅自动化/测试用）
 - ⚠️ **账号书签不适用本脚本**：Chrome 登录账号后，书签可能只存在于同步数据库（`Sync Data`），**不写入本地 `Bookmarks` 文件**（表现为 `chrome://bookmarks` 有书签、但 `Default\Bookmarks` 长期为空/未更新）。此类书签请用 Chrome `chrome://bookmarks` → ⋮ → **导出书签**（HTML），再在 ego 的 `ego://bookmarks` → **导入书签** 选择该文件
+- 🛡️ **书签护栏**：若 Chrome 本地 `Bookmarks` 里的书签数为 **0**（典型：账号书签场景），脚本会**跳过书签项并提示**，不会再用空文件覆盖 ego 已有的书签（此前曾因此覆盖丢失过一次，已从自动备份恢复）。只有 Chrome 本地**确实有书签**时才会覆盖 ego 的书签栏
 
 ### symlink.bat 一键链接部署（用法）
 

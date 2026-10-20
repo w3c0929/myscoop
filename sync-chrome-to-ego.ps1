@@ -40,6 +40,27 @@ function Write-Skip($msg) { Write-Host $msg -ForegroundColor DarkGray }
 function Write-Warn($msg) { Write-Host $msg -ForegroundColor Yellow }
 function Write-Err($msg)  { Write-Host $msg -ForegroundColor Red }
 
+function Get-BmNode($node) {
+    if (-not $node) { return 0 }
+    if ($node.type -eq 'url') { return 1 }
+    $n = 0
+    foreach ($ch in @($node.children)) { if ($ch) { $n += (Get-BmNode $ch) } }
+    return $n
+}
+
+function Get-BookmarkCount([string]$path) {
+    # 统计 Chromium Bookmarks 文件里的 URL 书签数；解析失败返回 -1
+    try {
+        $j = Get-Content $path -Raw -Encoding UTF8 | ConvertFrom-Json
+        $sum = 0
+        foreach ($k in 'bookmark_bar', 'other', 'synced') {
+            $root = $j.roots.$k
+            if ($root) { $sum += (Get-BmNode $root) }
+        }
+        return $sum
+    } catch { return -1 }
+}
+
 Write-Step "=== Chrome → ego lite 单向同步 ==="
 Write-Host "  Chrome: $ChromeRoot"
 Write-Host "  ego   : $EgoRoot"
@@ -104,6 +125,18 @@ foreach ($m in $fileMap) {
         Write-Skip ("  [跳过] {0}（源不存在）" -f $m.Src)
         $skipped++
         continue
+    }
+    # 书签护栏：Chrome 本地 Bookmarks 为空时跳过 —— Chrome 登录账号后书签可能只存在同步库
+    # （Sync Data），本地文件长期为空。直接复制会用空书签覆盖 ego 里已有的书签（曾发生）。
+    if ($m.Src -eq "$ChromeProfile\Bookmarks") {
+        $bmCount = Get-BookmarkCount $s
+        if ($bmCount -le 0) {
+            Write-Warn ("  [跳过] {0}（Chrome 本地书签 {1} 个 → 很可能在账号里；跳过以免覆盖 ego 已有书签）" -f $m.Src, $bmCount)
+            Write-Warn "         账号书签：Chrome 打开 chrome://bookmarks → ⋮ → 导出书签；再到 ego 的 ego://bookmarks → 导入书签"
+            $skipped++
+            continue
+        }
+        Write-Host ("  [书签] Chrome 本地共 {0} 个书签，将覆盖 ego 的书签栏" -f $bmCount) -ForegroundColor DarkCyan
     }
     $dDir = Split-Path $d -Parent
     if (-not (Test-Path $dDir)) { New-Item -ItemType Directory -Force $dDir | Out-Null }
