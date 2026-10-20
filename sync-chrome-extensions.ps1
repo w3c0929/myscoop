@@ -94,41 +94,19 @@ foreach ($dir in (Get-ChildItem $StoreDir -Directory | Sort-Object Name)) {
 }
 W "已创建链接: $($links.Count) 个 → $LinkDir"
 
-# 6) 分批加载（每批启动一次 ego，加载完关闭）
-$total = $links.Count
-$batches = @()
-for ($s = 0; $s -lt $total; $s += $BatchSize) {
-    $batches += , @($links[$s..([Math]::Min($s + $BatchSize - 1, $total - 1))])
-}
-W "分批加载（每批最多 $BatchSize 个，共 $($batches.Count) 批）"
-$n = 0
-foreach ($b in $batches) {
-    $n++
-    $joined = $b -join ','
-    W ("  批次 {0}/{1}（{2} 个）…" -f $n, $batches.Count, $b.Count)
-    Start-Process $EgoExe -ArgumentList "--disable-extensions-except=$joined", "--load-extension=$joined" -ErrorAction SilentlyContinue
-    Start-Sleep -Seconds 25
-    Get-Process ego -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-    Start-Sleep -Seconds 3
-}
-
-# 7) 校验 ego 配置中的 location=8（命令行加载）数量
-$egoPref = Join-Path (Join-Path (Join-Path $env:LOCALAPPDATA 'Citro Labs\ego\User Data') 'Default') 'Secure Preferences'
-if (Test-Path $egoPref) {
-    try {
-        $ed = Get-Content $egoPref -Raw -Encoding UTF8 | ConvertFrom-Json
-        $cnt = 0
-        foreach ($prop in $ed.extensions.settings.PSObject.Properties) {
-            if ($prop.Value.location -eq 8) { $cnt++ }
-        }
-        W "ego 中已加载（location=8）: $cnt 个" Green
-    } catch { W "  （配置校验跳过：$($_.Exception.Message)）" Yellow }
-}
-
-# 8) 正常启动
+# 6) 完成：加载交给 sync-chrome-extensions.bat
+#    注意：不能用 `--load-extension` 持久化——它写入 location=8（COMMAND_LINE），
+#    只在启动时带该参数才加载；正常启动不加载（曾误判为"持久化"）。
+#    Chromium 的"加载未打包的扩展程序"（UI）写 location=4 才真正持久，但对话框一次只能选一个目录、无法批量。
+#    因此本项目改用「每次启动带 --load-extension」：由 sync-chrome-extensions.bat 拼接全部扩展路径启动。
+W ""
+W "[完成] 扩展文件已同步：$($links.Count) 个 → $LinkDir" Green
+W "       接下来双击 sync-chrome-extensions.bat 启动 ego（会自动加载全部扩展）。" Green
 if (-not $NoLaunch) {
-    W "正常启动 ego …"
-    Start-Process $EgoExe -ErrorAction SilentlyContinue
+    $bat = Join-Path (Split-Path -Parent $PSCommandPath) 'sync-chrome-extensions.bat'
+    if (Test-Path $bat) {
+        W "       正在调用启动脚本 …"
+        & cmd.exe /c "`"$bat`""
+    }
 }
-W "完成。到 ego://extensions 确认扩展列表。" Green
 exit 0

@@ -303,18 +303,19 @@ git config --global --add safe.directory D:/scoop/buckets/*
 - ⚠️ **账号书签不适用本脚本**：Chrome 登录账号后，书签可能只存在于同步数据库（`Sync Data`），**不写入本地 `Bookmarks` 文件**（表现为 `chrome://bookmarks` 有书签、但 `Default\Bookmarks` 长期为空/未更新）。此类书签请用 Chrome `chrome://bookmarks` → ⋮ → **导出书签**（HTML），再在 ego 的 `ego://bookmarks` → **导入书签** 选择该文件
 - 🛡️ **书签护栏**：若 Chrome 本地 `Bookmarks` 里的书签数为 **0**（典型：账号书签场景），脚本会**跳过书签项并提示**，不会再用空文件覆盖 ego 已有的书签（此前曾因此覆盖丢失过一次，已从自动备份恢复）。只有 Chrome 本地**确实有书签**时才会覆盖 ego 的书签栏
 
-### sync-chrome-extensions.bat（Chrome 扩展 → ego lite）
+### sync-chrome-extensions.bat / .ps1（Chrome 扩展 → ego lite）
 
-Chrome 更新扩展版本后运行（双击），自动重新同步扩展并让 ego 加载：
-1. 解析 Chrome 的 `Secure Preferences`，取出用户扩展（`location=1`）
-2. 复制到持久目录 `D:\scoop\persist\egolite-exts\`（Scoop 卸载不删）
-3. 用 `mklink /J` 建立**纯 ASCII 短路径** `D:\scoop\persist\egolite-ext\ext01…`（长中文路径会导致加载失败）
-4. 分批 `ego.exe --disable-extensions-except=<批> --load-extension=<批>` 启动加载，扩展以 `location=8` 写入配置后**持久生效**，之后正常启动即可
-5. 校验并启动 ego
+**日常启动请用 `sync-chrome-extensions.bat`**：双击 = 关闭旧 ego → 启动 ego 并自动加载
+`D:\scoop\persist\egolite-ext` 下的**全部扩展**（脚本拼接 `--load-extension` 参数，一次启动完成）。
 
-- 运行前会自动关闭 ego（加载需要重启）；Chrome 可以开着
-- **不能靠复制 `Secure Preferences` 迁移扩展**：其中有 HMAC 完整性校验，跨浏览器会丢弃配置（实测 31→3 并被清文件）
-- 参数：`-ChromeProfile`、`-EgoExe`、`-BatchSize N`（默认 11）、`-NoLaunch`
+**Chrome 更新扩展后**运行 `sync-chrome-extensions.ps1`：重新解析/复制扩展、重建链接
+（完成后自动调用上面的 bat 启动）。
+
+原理与限制：
+- Chromium 的 `--load-extension` 是**临时加载**（写入 `location=8`），**必须每次启动带参数**才生效 —— 所以用 bat / 已写入参数的快捷方式启动，而不是期待"一次加载永久生效"
+- 扩展页的「加载未打包的扩展程序」写 `location=4` 才真正持久，但对话框**一次只能选一个目录**、无法批量
+- **不能靠复制 `Secure Preferences` 迁移扩展**：HMAC 完整性校验会丢弃跨浏览器配置（实测 31→3 且扩展文件被删）
+- 扩展 ID 保留商店 ID；`ego://extensions` 会常驻"开发者模式扩展"提示
 
 ### symlink.bat 一键链接部署（用法）
 
