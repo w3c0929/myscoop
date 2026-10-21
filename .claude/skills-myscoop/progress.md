@@ -243,7 +243,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 0897bb9 (HEAD -> main, origin/main, origin/HEAD) 镜像测速窗口 3 秒 → 6 秒：myscoop-update.py 的 MIRROR_PROBE_WINDOW 与 download.ps1 的 $window 默认值改为 6；PS 侧测速范围 -r 由 4MB 提到 8MB（≥1MB/s×6s，防高速镜像提前下完测速块）；阈值 1MB/s 不变；SKILL/progress 同步
+* 317ef86 (HEAD -> main) 同步 README 第三方版本与日期列
+* 2616c10 自动更新第三方软件
+* 3d66306 (origin/main) mypsh推送
+* 126c7c0 progress 补充：镜像测速窗口 3 秒 → 6 秒（代码已在 0897bb9 提交，此处补文档记录）
+* 0897bb9 镜像测速窗口 3 秒 → 6 秒：myscoop-update.py 的 MIRROR_PROBE_WINDOW 与 download.ps1 的 $window 默认值改为 6；PS 侧测速范围 -r 由 4MB 提到 8MB（≥1MB/s×6s，防高速镜像提前下完测速块）；阈值 1MB/s 不变；SKILL/progress 同步
 * 9fae61a progress.md 更新提交历史
 * 2a89682 同步 README 第三方版本与日期列
 * d5e8120 自动更新第三方软件
