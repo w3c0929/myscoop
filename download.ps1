@@ -4,16 +4,16 @@
 # ========== GitHub 镜像加速补丁开始 ==========
 # GitHub Release 下载优先走镜像（aria2 与默认下载器共用），**按速度选源**：
 # 依次对 config.json "aria2-mirrors" 列表（可写完整 URL 或裸域名，自动补 https://）逐个**测速**——
-# 在 WINDOW 秒（默认 3，`MYSCOOP_MIRROR_WINDOW`）内实测平均速度 ≥ MIN（默认 1MB/s，
+# 在 WINDOW 秒（默认 6，`MYSCOOP_MIRROR_WINDOW`）内实测平均速度 ≥ MIN（默认 1MB/s，
 # `MYSCOOP_MIRROR_MIN_SPEED_MB`）才采用；不达标/不可达 → 立即换下一个；
-# **全部不达标兜底直链**（原 URL）。测速用系统自带 curl.exe：`-r 0-4194303`（最多 4MB，
+# **全部不达标兜底直链**（原 URL）。测速用系统自带 curl.exe：`-r 0-8388607`（最多 8MB，
 # ≥ 阈值×窗口，防高速镜像下满整个文件）+ `--max-time WINDOW`，`%{speed_download}` 读实测速率。
 function Get-GitHubMirrorUrl([string]$url) {
     if ($url -notmatch '^https://github\.com/') { return $url }
     $mirrors = get_config 'aria2-mirrors'
     if (-not $mirrors) { return $url }
     if ($mirrors -is [string]) { $mirrors = $mirrors.Split(' ') }  # 兼容 scoop config 命令写入的字符串
-    $window = if ($env:MYSCOOP_MIRROR_WINDOW) { [int]$env:MYSCOOP_MIRROR_WINDOW } else { 3 }
+    $window = if ($env:MYSCOOP_MIRROR_WINDOW) { [int]$env:MYSCOOP_MIRROR_WINDOW } else { 6 }
     $minSpeed = if ($env:MYSCOOP_MIRROR_MIN_SPEED_MB) { [double]$env:MYSCOOP_MIRROR_MIN_SPEED_MB * 1048576 } else { 1048576 }
     foreach ($m in $mirrors) {
         $base = "$m".TrimEnd('/')
@@ -33,7 +33,7 @@ function Get-GitHubMirrorUrl([string]$url) {
                 Write-Host ("  [镜像] {0} 未提供 Content-Length（无进度条、且可能残缺）→ 换下一个" -f ($base -replace '^https?://', ''))
                 continue
             }
-            $out = & curl.exe -sL -r 0-4194303 --connect-timeout 4 --max-time $window -o NUL `
+            $out = & curl.exe -sL -r 0-8388607 --connect-timeout 4 --max-time $window -o NUL `
                 -w "%{http_code} %{speed_download}" $mirror_url 2>$null
             $parts = "$out".Trim() -split '\s+'
             if ($parts.Count -ge 2 -and $parts[0] -match '^[23]\d\d$') {

@@ -2012,7 +2012,7 @@ def fetch_text(url, timeout=60, headers=None):
 
 # 镜像测速参数（可用环境变量覆盖）：probe_window 秒内实测速度 < min_speed 就换下一个镜像；
 # 全部镜像都不达标（或不可达）→ **兜底直链**（原 URL，不测速）。
-MIRROR_PROBE_WINDOW = float(os.environ.get("MYSCOOP_MIRROR_WINDOW", "3"))
+MIRROR_PROBE_WINDOW = float(os.environ.get("MYSCOOP_MIRROR_WINDOW", "6"))
 MIRROR_MIN_SPEED = float(os.environ.get("MYSCOOP_MIRROR_MIN_SPEED_MB", "1")) * 1048576
 
 
