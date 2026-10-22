@@ -242,12 +242,15 @@ scoop cat myscoop/appname
 
 - **`scoop update` 自更新失败（2026-10-23）**：报 `D:\scooppps\scoop\current: Is a directory` ×9 + `Invoke-GitLog ... CommitHash 空` + `Update failed`。根因：**`symlink.bat` 把 `lib/download.ps1`/`lib/manifest.ps1` 换成软链接** → `git status` 显示**类型变更 `T`**（file → symlink）→ Scoop 自更新流程被卡（`git diff HEAD` 有改动、`$previousCommit` 取到空）。**修复**：`rm` 两个链接 + `git checkout -- lib/download.ps1 lib/manifest.ps1` 恢复原版 → `scoop update` 成功 → 重新挂链接。**`symlink.bat` 改进**：挂完链接后执行 `git update-index --skip-worktree lib/manifest.ps1 lib/download.ps1`，让 git 忽略这两个文件的类型变更 → 以后 `scoop update` 不再被卡（实测 `scoop update` 成功、`git status` 空、`git ls-files -v` 显示 `S`）。**注意**：Scoop 大版本更新时 `git pull` 仍会覆盖链接（skip-worktree 不阻止 checkout）→ 更新后需重跑 `symlink.bat`。
 
+- **`scoop update` 报 `Is a directory` 的真根因（2026-10-23）**：PowerShell 历史（`ConsoleHost_history.txt` 第 934 行）显示 **10-20 17:53 执行过 `scoop shim add git bash`**。`scoop shim add` 语法为 `add <shim名> <目标>` → 该命令**把名为 `git` 的 shim 指向了 bash**，**覆盖了原 `git.shim`**（原本 → `cmd\git.exe`）。结果所有 `git` 调用实际执行 bash → `git -C <目录> ...` 被 bash 当作"执行命令" → `<目录>: <目录>: Is a directory` ×9 → `git rev-parse HEAD` 返回空 → `$previousCommit` 空 → `Invoke-GitLog` 绑定失败 → `Update failed`。**修复**：`git.shim` 改回 `path = "D:\scooppps\git\current\cmd\git.exe"`（错误版备份 `git.shim.bak`）→ `git --version`=2.56.0、`git -C ... rev-parse/log/status` 正常、`scoop update` 成功。**教训：不要用 `scoop shim add git <x>`（会覆盖 git 自身 shim）；给 bash 加 shim 的正确写法是 `scoop shim add bash "<...>inash.exe"`。**`bash.shim`（多余，manifest 无 bash）保留无害。
+
 ## 提交历史
 
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* b915885 (HEAD -> main, origin/main, origin/HEAD) 修 scoop update 自更新失败 + symlink.bat 改进：软链接补丁使 git 记录类型变更（T）→ 自更新报 Is a directory / CommitHash 空；已撤链接恢复原版更新成功并重挂；symlink.bat 挂完链接后执行 git update-index --skip-worktree，忽略两个补丁文件的类型变更，scoop update 不再被卡（实测成功、git status 空、标记 S）；progress 记录根因与注意点
+* f198a90 (HEAD -> main, origin/main, origin/HEAD) symlink.bat：补充 skip-worktree 注释说明（忽略补丁软链接的类型变更，避免 scoop update 报 Is a directory / CommitHash 空）
+* b915885 修 scoop update 自更新失败 + symlink.bat 改进：软链接补丁使 git 记录类型变更（T）→ 自更新报 Is a directory / CommitHash 空；已撤链接恢复原版更新成功并重挂；symlink.bat 挂完链接后执行 git update-index --skip-worktree，忽略两个补丁文件的类型变更，scoop update 不再被卡（实测成功、git status 空、标记 S）；progress 记录根因与注意点
 * be14254 progress.md 更新提交历史
 * ee4e62f 同步 README 第三方版本与日期列
 * 3122e2b 自动更新第三方软件
