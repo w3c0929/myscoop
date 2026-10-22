@@ -245,7 +245,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* d671ecc (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* ee4e62f (HEAD -> main) 同步 README 第三方版本与日期列
+* 3122e2b 自动更新第三方软件
+* 91a5fd5 (origin/main) 镜像缓存 + 环形遍历：记录上次达标镜像到 %LOCALAPPDATA%\myscoop\mirror-cache.json（自动生成、TTL 1h 可配、Python/PS 共用），下次优先测它；不达标则从它的下一个绕到末尾再回到它的前一个（每项只测一次），全部不达标才直链；避免每个应用从头遍历；实测缓存生成/沿用/环形顺序均正确
+* d671ecc progress.md 更新提交历史
 * 317ef86 同步 README 第三方版本与日期列
 * 2616c10 自动更新第三方软件
 * 3d66306 mypsh推送
