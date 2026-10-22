@@ -247,7 +247,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* be14254 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* b915885 (HEAD -> main, origin/main, origin/HEAD) 修 scoop update 自更新失败 + symlink.bat 改进：软链接补丁使 git 记录类型变更（T）→ 自更新报 Is a directory / CommitHash 空；已撤链接恢复原版更新成功并重挂；symlink.bat 挂完链接后执行 git update-index --skip-worktree，忽略两个补丁文件的类型变更，scoop update 不再被卡（实测成功、git status 空、标记 S）；progress 记录根因与注意点
+* be14254 progress.md 更新提交历史
 * ee4e62f 同步 README 第三方版本与日期列
 * 3122e2b 自动更新第三方软件
 * 91a5fd5 镜像缓存 + 环形遍历：记录上次达标镜像到 %LOCALAPPDATA%\myscoop\mirror-cache.json（自动生成、TTL 1h 可配、Python/PS 共用），下次优先测它；不达标则从它的下一个绕到末尾再回到它的前一个（每项只测一次），全部不达标才直链；避免每个应用从头遍历；实测缓存生成/沿用/环形顺序均正确

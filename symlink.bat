@@ -65,7 +65,7 @@ for %%i in (
     )
 )
 
-:: 让 git 忽略这两个文件的「类型变更（file -^> symlink）」
+:: 让 git 忽略这两个文件的 类型变更file symlink
 :: 否则 scoop update 自更新时 git diff 会检测到改动，可能中止或报 CommitHash 为空而失败
 git -C "D:\scoop\apps\scoop\current" update-index --skip-worktree lib\manifest.ps1 lib\download.ps1 >nul 2>&1
 if errorlevel 1 (
