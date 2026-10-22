@@ -15,10 +15,38 @@ function Get-GitHubMirrorUrl([string]$url) {
     if ($mirrors -is [string]) { $mirrors = $mirrors.Split(' ') }  # 兼容 scoop config 命令写入的字符串
     $window = if ($env:MYSCOOP_MIRROR_WINDOW) { [int]$env:MYSCOOP_MIRROR_WINDOW } else { 6 }
     $minSpeed = if ($env:MYSCOOP_MIRROR_MIN_SPEED_MB) { [double]$env:MYSCOOP_MIRROR_MIN_SPEED_MB * 1048576 } else { 1048576 }
+    # 镜像缓存（自动生成）：记录上次达标镜像基址，下次优先尝试（MYSCOOP_MIRROR_CACHE_TTL 控制有效期）
+    $cacheFile = Join-Path $env:LOCALAPPDATA 'myscoop\mirror-cache.json'
+    $ttl = if ($env:MYSCOOP_MIRROR_CACHE_TTL) { [int]$env:MYSCOOP_MIRROR_CACHE_TTL } else { 3600 }
+    $cachedBase = $null
+    try {
+        if (Test-Path $cacheFile) {
+            $c = Get-Content $cacheFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if (([DateTimeOffset]::Now.ToUnixTimeSeconds() - [double]$c.ts) -le $ttl) { $cachedBase = [string]$c.mirror }
+        }
+    } catch { }
+
+    # 候选列表（完整 URL + 基址），按环形顺序：缓存优先，其后从它的下一个绕到末尾，再回到它的前一个
+    $cands = @()
     foreach ($m in $mirrors) {
-        $base = "$m".TrimEnd('/')
-        if ($base -notmatch '^https?://') { $base = "https://$base" }
-        $mirror_url = "$base/$url"
+        $b = "$m".TrimEnd('/')
+        if ($b -notmatch '^https?://') { $b = "https://$b" }
+        $cands += [pscustomobject]@{ Url = "$b/$url"; Base = $b }
+    }
+    $ordered = @()
+    if ($cachedBase -and $cands.Count -gt 0) {
+        $idx = -1
+        for ($i = 0; $i -lt $cands.Count; $i++) { if ($cands[$i].Base -ieq $cachedBase) { $idx = $i; break } }
+        if ($idx -ge 0) {
+            $ordered += $cands[$idx]
+            for ($k = 1; $k -lt $cands.Count; $k++) { $ordered += $cands[($idx + $k) % $cands.Count] }
+            Write-Host ("  [镜像] 沿用上次达标镜像 " + ($cachedBase -replace '^https?://', ''))
+        } else { $ordered = $cands }
+    } else { $ordered = $cands }
+
+    foreach ($cand in $ordered) {
+        $base = $cand.Base
+        $mirror_url = $cand.Url
         try {
             # 护栏（只提示+跳过，不删镜像——镜像可能自己修好）：HEAD 检查不通过就换下一个。
             # ① 不可达/非 2xx ② 无 Content-Length —— 后者 scoop 拿不到总大小 → 下载界面只显示
@@ -43,6 +71,12 @@ function Get-GitHubMirrorUrl([string]$url) {
                 if ($speed -ge $minSpeed) {
                     # 下载（进度条）开始前提示：本次用哪个镜像
                     Write-Host ("  [镜像] 使用 {0} 加速下载（测速 {1:N2} MB/s）" -f $host_, ($speed / 1048576)) -ForegroundColor DarkCyan
+                    # 记录本次达标镜像（缓存文件自动生成）
+                    try {
+                        New-Item -ItemType Directory -Force (Split-Path $cacheFile) | Out-Null
+                        [pscustomobject]@{ mirror = $base; speed = [math]::Round($speed / 1048576, 2); ts = [DateTimeOffset]::Now.ToUnixTimeSeconds() } |
+                            ConvertTo-Json | Set-Content $cacheFile -Encoding UTF8
+                    } catch { }
                     return $mirror_url
                 }
                 Write-Host ("  [镜像] {0} 测速 {1:N2} MB/s < {2:N0} MB/s → 换下一个" -f $host_, ($speed / 1048576), ($minSpeed / 1048576))

@@ -238,14 +238,17 @@ scoop cat myscoop/appname
 
 - **镜像测速窗口 3 秒 → 6 秒（2026-10-21）**：`myscoop-update.py` 的 `MIRROR_PROBE_WINDOW` 与 `download.ps1` 的 `$window` **默认值均改为 6**（仍可用 `MYSCOOP_MIRROR_WINDOW` 覆盖）；PS 侧测速范围 `-r` 由 4MB 提到 **8MB**（≥ 1MB/s × 6s，防止高速镜像把测速块提前下完导致速度判定失真）；阈值 **1MB/s 不变**。SKILL 与代码同步。
 
+- **镜像缓存 + 环形遍历（2026-10-21）**：新增 `%LOCALAPPDATA%\myscoop\mirror-cache.json`（**自动生成**、TTL 1h 可配、Python/PS 共用）记录上次达标镜像；下次**先测缓存**，达标即用；不达标则**从缓存的下一个绕到末尾，再回到开头到缓存的前一个**（环形一圈、每项只测一次），全不达标才直链。实测：Python 两轮（首轮遍历并写缓存、次轮打印"沿用上次达标镜像"）；PS 读同一缓存并正确跳过/回退；环形顺序单测（缓存=第3个 → b3,b4,b5,b1,b2 ✓）。
+
 ## 提交历史
 
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 317ef86 (HEAD -> main) 同步 README 第三方版本与日期列
+* d671ecc (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 317ef86 同步 README 第三方版本与日期列
 * 2616c10 自动更新第三方软件
-* 3d66306 (origin/main) mypsh推送
+* 3d66306 mypsh推送
 * 126c7c0 progress 补充：镜像测速窗口 3 秒 → 6 秒（代码已在 0897bb9 提交，此处补文档记录）
 * 0897bb9 镜像测速窗口 3 秒 → 6 秒：myscoop-update.py 的 MIRROR_PROBE_WINDOW 与 download.ps1 的 $window 默认值改为 6；PS 侧测速范围 -r 由 4MB 提到 8MB（≥1MB/s×6s，防高速镜像提前下完测速块）；阈值 1MB/s 不变；SKILL/progress 同步
 * 9fae61a progress.md 更新提交历史

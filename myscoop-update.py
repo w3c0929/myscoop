@@ -2015,6 +2015,36 @@ def fetch_text(url, timeout=60, headers=None):
 MIRROR_PROBE_WINDOW = float(os.environ.get("MYSCOOP_MIRROR_WINDOW", "6"))
 MIRROR_MIN_SPEED = float(os.environ.get("MYSCOOP_MIRROR_MIN_SPEED_MB", "1")) * 1048576
 
+# 镜像缓存：记录上次达标的镜像基址，下次优先尝试（文件自动生成；`MYSCOOP_MIRROR_CACHE_TTL` 控制有效期）
+MIRROR_CACHE_PATH = Path(os.environ.get("LOCALAPPDATA") or Path.home()) / "myscoop" / "mirror-cache.json"
+MIRROR_CACHE_TTL = float(os.environ.get("MYSCOOP_MIRROR_CACHE_TTL", "3600"))
+
+
+def _load_mirror_cache():
+    """返回上次达标镜像的基址（含协议）；过期/缺失/异常返回 None。"""
+    import time
+    try:
+        d = json.loads(MIRROR_CACHE_PATH.read_text(encoding="utf-8"))
+        if time.time() - float(d.get("ts") or 0) > MIRROR_CACHE_TTL:
+            return None
+        m = str(d.get("mirror") or "").strip().rstrip("/")
+        return m or None
+    except Exception:
+        return None
+
+
+def _save_mirror_cache(base, speed_mbps):
+    """写入上次达标镜像（自动创建目录/文件）。"""
+    import time
+    try:
+        MIRROR_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        MIRROR_CACHE_PATH.write_text(
+            json.dumps({"mirror": str(base).rstrip("/"), "speed": round(speed_mbps, 2), "ts": time.time()},
+                       ensure_ascii=False),
+            encoding="utf-8")
+    except Exception:
+        pass
+
 
 def _mirror_probe_head(url, timeout=8):
     """HEAD 探测候选镜像：返回 (是否 2xx, Content-Length 或 None)。
@@ -2047,11 +2077,31 @@ def download_to(url, dest, timeout=180, probe_window=None, min_speed=None):
     clean = url.split("#", 1)[0]
     window = MIRROR_PROBE_WINDOW if probe_window is None else probe_window
     floor = MIRROR_MIN_SPEED if min_speed is None else min_speed
-    # (目标 URL, 是否测速)：镜像要测速；直链兜底不测速
+    # (目标 URL, 镜像基址, 是否测速)：镜像要测速；直链兜底不测速
     mirrors = mirror_candidates(clean, gh_mirror_list())
-    plan = [(m, True) for m in mirrors] + [(clean, False)]
+    mirror_bases = [m[: -len(clean) - 1] if m.endswith("/" + clean) else m for m in mirrors]
+
+    # 环形顺序：上次达标镜像优先；它测速不达标时，从**它的下一个**开始绕到列表末尾，
+    # 再回到开头直到**它的前一个**（每个镜像恰好测一次），全部不达标才兜底直链。
+    pairs = list(zip(mirrors, mirror_bases))
+    cached = _load_mirror_cache()
+    if cached and pairs:
+        idx = next((i for i, (_, b) in enumerate(pairs) if b.lower() == cached.lower()), None)
+        if idx is not None:
+            ordered = [pairs[idx]] + [pairs[(idx + k) % len(pairs)] for k in range(1, len(pairs))]
+            try:
+                cs = json.loads(MIRROR_CACHE_PATH.read_text(encoding="utf-8")).get("speed")
+            except Exception:
+                cs = None
+            print(f"[镜像] 沿用上次达标镜像 {cached}" + (f"（缓存 {cs} MB/s）" if cs else ""))
+        else:
+            ordered = pairs
+    else:
+        ordered = pairs
+
+    plan = [(t, b, True) for t, b in ordered] + [(clean, None, False)]
     last_err = None
-    for target, need_probe in plan:
+    for target, base, need_probe in plan:
         label = "直链" if target == clean else target.split("/")[2]
         if mirrors and not need_probe:
             print("[镜像] 无可用镜像，改用直链下载")
@@ -2093,6 +2143,8 @@ def download_to(url, dest, timeout=180, probe_window=None, min_speed=None):
                               f"{floor / 1048576:.0f}MB/s → 换下一个")
                         continue
                     print(f"[镜像] 使用 {label} 加速下载（测速 {speed / 1048576:.2f} MB/s）")
+                    if base:
+                        _save_mirror_cache(base, speed / 1048576)
                 while True:
                     chunk = resp.read(65536)
                     if not chunk:
