@@ -65,14 +65,6 @@ for %%i in (
     )
 )
 
-:: 让 git 忽略这两个文件的 类型变更file symlink
-:: 否则 scoop update 自更新时 git diff 会检测到改动，可能中止或报 CommitHash 为空而失败
-git -C "D:\scoop\apps\scoop\current" update-index --skip-worktree lib\manifest.ps1 lib\download.ps1 >nul 2>&1
-if errorlevel 1 (
-    echo  [提示] git skip-worktree 设置失败（补丁仍生效，但 scoop update 可能报错）
-) else (
-    echo  [成功] 已设置 git skip-worktree（scoop update 不再受补丁链接影响）
-)
 
 :: ==============================================
 :: 第二部分：config.json 镜像拷贝 真实文件，避免软链接崩溃
