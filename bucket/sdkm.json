@@ -1,0 +1,31 @@
+{
+    "version": "0.5.2",
+    "description": "🚀An SDK version manager for full-stack engineers",
+    "homepage": "https://github.com/borenchan/sdkmate",
+    "license": "Apache-2.0",
+    "checkver": {
+        "github": "https://github.com/borenchan/sdkmate"
+    },
+    "url": "https://github.com/borenchan/sdkmate/releases/download/v0.5.2/sdkm-windows-x86_64.zip",
+    "hash": "sha256:88cfd133f87b411165e6a7e89ba6e393c448fb66f86b913d981d01c2ef5a69e3",
+    "autoupdate": {
+        "url": "https://github.com/borenchan/sdkmate/releases/download/v$version/sdkm-windows-x86_64.zip"
+    },
+    "extract_dir": ".sdkm",
+    "persist": "store",
+    "post_install": [
+        "try { Start-Process -FilePath \"$dir\\sdkm.exe\" -ArgumentList 'init','--force' -Verb RunAs -Wait -ErrorAction Stop } catch { Write-Host 'sdkm init 未执行（需要管理员权限）。请以管理员身份运行：sdkm init --force' -ForegroundColor Yellow }"
+    ],
+    "bin": "sdkm.exe",
+    "shortcuts": [
+        [
+            "sdkm.exe",
+            "sdkm"
+        ]
+    ],
+    "notes": [
+        "安装时以管理员权限自动执行 sdkm init --force（写入系统 PATH、创建符号链接），会弹出 UAC 确认；未授权则安装继续，需手动以管理员身份运行 sdkm init --force。",
+        "store 目录已持久化到 persist，升级不丢失已安装的 SDK；config.toml 随版本重建。",
+        "scoop 的 shim 已提供 sdkm 命令，init 额外写入的系统 PATH 会指向当前版本目录，升级后可能残留旧路径，可按需清理。"
+    ]
+}

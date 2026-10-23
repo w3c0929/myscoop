@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **149** 款 Windows 软件，其中 **63** 款引用第三方官方 Release，**86** 款为本地维护（自托管 Release）。
+> 共收录 **150** 款 Windows 软件，其中 **64** 款引用第三方官方 Release，**86** 款为本地维护（自托管 Release）。
 
 ### 第三方官方（引用原项目 Release）
 
@@ -73,6 +73,7 @@
 | 61 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 | 2026-10-10 | 2026-10-10 |
 | 62 | [PixPin](https://pixpin.cn/) — 截图标注工具（官方直链，Inno Setup） | `scoop install pixpin` | Inno Setup 官方直链 | 3.5.5.1 | 2026-10-10 | 2026-10-10 |
 | 63 | [WindowsClear](https://github.com/tanaer/WindowsClear) — C 盘清理工具 | `scoop install windowsclear` | 单 exe 直链 | 0.1.3 | 2026-10-10 | 2026-10-10 |
+| 64 | [sdkm](https://github.com/borenchan/sdkmate) — 全栈开发者的跨平台 SDK 版本管理器：Java / Node.js / Python / Maven / Go 等 40+ 工具一键安装与切换（Rust 编写，约 4MB 单文件） | `scoop install sdkm` | zip 官方 release（安装时自动 init） | 0.5.2 | 2026-10-24 | 2026-10-24 |
 
 ### 本地维护（自托管 Release）
 
@@ -91,7 +92,7 @@
 | 11 | Athena-A 汉化版 — 软件本地化翻译工具 | `scoop install athena-loc` | 7z 便携解压即用 | 4.13 | 2026-10-10 | 2026-10-10 |
 | 12 | 软媒PCMaster — 系统工具合集 | `scoop install pcmaster` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
 | 13 | MusicTag — 音乐标签编辑工具 | `scoop install musictag` | 7z 便携解压即用 | 1.0.9.0 | 2026-10-10 | 2026-10-10 |
-| 14 | miaomi — 喵咪客户端 | `scoop install miaomi` | 单 exe 手动安装 | 2.4.5 | 2026-10-10 | 2026-10-10 |
+| 14 | miaomi — 喵咪客户端 | `scoop install miaomi` | NSIS 解包便携（主程序 clash-verge.exe） | 2.4.5 | 2026-10-10 | 2026-10-23 |
 | 15 | Bandicam — 班班录屏，高性能屏幕录制 | `scoop install bandicam` | 7z 便携解压即用 | 8.2.2.2531 | 2026-10-10 | 2026-10-10 |
 | 16 | VP9 视频解码器 — Windows VP9 视频编解码扩展 | `scoop install vp9-video-extensions` | Appx 手动安装 | 1.0.50481.0 | 2026-10-10 | 2026-10-10 |
 | 17 | Edge WebView2 运行时 — 现代 Windows 应用必备组件 | `scoop install webview2-runtime` | 单 exe 手动安装 | 1.3.213.7 | 2026-10-10 | 2026-10-10 |
@@ -460,7 +461,7 @@ myscoop/
 │   ├── cherry.json                       (模式1：多架构 portable exe)
 │   ├── cc-haha.json                    (模式1：多架构 portable exe)
 │   ├── musictag.json                   (模式2：7z 便携解压即用)
-│   ├── miaomi.json                     (模式6：单 exe 手动安装)
+│   ├── miaomi.json                     (模式5：NSIS 解包便携)
 │   ├── cinetry.json                    (模式1：zip 官方 release)
 │   ├── etlp.json                       (模式1：多架构 zip 官方 release)
 │   ├── eserver.json                    (模式1：多架构 zip 官方 release)
@@ -499,6 +500,7 @@ myscoop/
 │   ├── easytshark.json                    (模式2：zip 便携解压即用)
 │   ├── windowsappruntime.json             (模式6：单 exe 手动安装)
 │   ├── switchhosts.json                   (模式1：zip 官方 release，自建构建仓库)
+│   ├── sdkm.json                          (模式1：zip 官方 release，安装时自动 init)
 │   ├── baulk.json                         (模式1：多架构 zip 官方 release)
 ├── .claude/
 │   └── skills-myscoop/
