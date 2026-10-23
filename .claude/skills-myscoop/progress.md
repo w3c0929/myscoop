@@ -249,7 +249,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 3a985d8 (HEAD -> main, origin/main, origin/HEAD) 记录 scoop update 报 Is a directory 的真根因：10-20 执行过 scoop shim add git bash（语法 add <shim名> <目标>）→ 覆盖 git.shim 指向 bash → git -C 被 bash 当命令执行 → rev-parse 空 → Update failed；已改回 cmd\git.exe；教训与正确写法记入 progress
+* c235677 (HEAD -> main, origin/main, origin/HEAD) 撤掉 symlink.bat 的 skip-worktree 段：实测真根因是 git shim 被指向 bash（已修）；撤掉后 scoop update 不再报 Is a directory，仅 Scoop 自更新被跳过（WARN Uncommitted changes detected），buckets 正常、整体成功
+* 3a985d8 记录 scoop update 报 Is a directory 的真根因：10-20 执行过 scoop shim add git bash（语法 add <shim名> <目标>）→ 覆盖 git.shim 指向 bash → git -C 被 bash 当命令执行 → rev-parse 空 → Update failed；已改回 cmd\git.exe；教训与正确写法记入 progress
 * f198a90 symlink.bat：补充 skip-worktree 注释说明（忽略补丁软链接的类型变更，避免 scoop update 报 Is a directory / CommitHash 空）
 * b915885 修 scoop update 自更新失败 + symlink.bat 改进：软链接补丁使 git 记录类型变更（T）→ 自更新报 Is a directory / CommitHash 空；已撤链接恢复原版更新成功并重挂；symlink.bat 挂完链接后执行 git update-index --skip-worktree，忽略两个补丁文件的类型变更，scoop update 不再被卡（实测成功、git status 空、标记 S）；progress 记录根因与注意点
 * be14254 progress.md 更新提交历史
