@@ -1,13 +1,13 @@
 {
-    "version": "0.6.10-experimental",
+    "version": "0.6.11-experimental",
     "description": "Unofficial experimental Magpie fork with colour-only DLSS, FSR2 and NVIDIA RTX Video integrations",
     "homepage": "https://github.com/SAOG0721/Magpie",
     "license": "GPL-3.0",
-    "url": "https://github.com/SAOG0721/Magpie/releases/download/v0.6.10-experimental/Magpie-Experimental-x64.zip",
+    "url": "https://github.com/SAOG0721/Magpie/releases/download/v0.6.11-experimental/Magpie-Experimental-x64.zip",
     "checkver": {
         "github": "https://github.com/SAOG0721/Magpie"
     },
-    "hash": "sha256:487b2f612de34c774c8f2a8a9c60acb2596377e0c552b2c4045005e9a723ddae",
+    "hash": "sha256:f24333239bb6f4f1b09eac996c71d2ada74f34e950547a18fae80633a440bc84",
     "autoupdate": {
         "url": "https://github.com/SAOG0721/Magpie/releases/download/v$version-experimental.1/Magpie-Experimental-x64.zip"
     },
