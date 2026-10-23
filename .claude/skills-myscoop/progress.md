@@ -272,7 +272,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 0c89af9 (HEAD -> main, origin/main, origin/HEAD) miaomi 改为自动安装（NSIS 解包便携）：原清单仅下载 exe + 启动安装器需手动；实测为 NSIS 打包的 Clash Verge 套壳（clash-verge.exe + verge-mihomo.exe + resources），改用 pre_install 7z 解包拍平 + bin=clash-verge.exe + shortcuts，移除 post_install；scoop install 实测成功（shim clash-verge、bucket myscoop）；README 类型列与 progress 同步（附参考清单 cc-haha/sunpack/uuyc/zhiyuime）
+* 55cd949 (HEAD -> main, origin/main, origin/HEAD) 收录 sdkm 0.5.2：SDK 版本管理器，安装后自动执行 sdkm init - 官方 zip 内 .sdkm\sdkm.exe，extract_dir 拍平 + bin/shortcuts - post_install 以管理员权限（Start-Process -Verb RunAs）自动运行 sdkm init --force（跳过非专用目录交互确认）；失败仅告警不阻断安装 - persist store 持久化已装 SDK，升级不丢 - 删除残缺草稿 sdkmate.json；README 第三方表 63→64、总数 149→150，progress 同步 - 顺带补齐 miaomi 的 README 类型行与 progress 记录（模式 5a），修复 progress 中两处反斜杠转义损坏
+* 0c89af9 miaomi 改为自动安装（NSIS 解包便携）：原清单仅下载 exe + 启动安装器需手动；实测为 NSIS 打包的 Clash Verge 套壳（clash-verge.exe + verge-mihomo.exe + resources），改用 pre_install 7z 解包拍平 + bin=clash-verge.exe + shortcuts，移除 post_install；scoop install 实测成功（shim clash-verge、bucket myscoop）；README 类型列与 progress 同步（附参考清单 cc-haha/sunpack/uuyc/zhiyuime）
 * c235677 撤掉 symlink.bat 的 skip-worktree 段：实测真根因是 git shim 被指向 bash（已修）；撤掉后 scoop update 不再报 Is a directory，仅 Scoop 自更新被跳过（WARN Uncommitted changes detected），buckets 正常、整体成功
 * 3a985d8 记录 scoop update 报 Is a directory 的真根因：10-20 执行过 scoop shim add git bash（语法 add <shim名> <目标>）→ 覆盖 git.shim 指向 bash → git -C 被 bash 当命令执行 → rev-parse 空 → Update failed；已改回 cmd\git.exe；教训与正确写法记入 progress
 * f198a90 symlink.bat：补充 skip-worktree 注释说明（忽略补丁软链接的类型变更，避免 scoop update 报 Is a directory / CommitHash 空）
