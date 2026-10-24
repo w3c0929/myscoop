@@ -273,7 +273,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 2679732 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 64c24ad (HEAD -> main) 同步 README 第三方版本与日期列
+* 3b8f0b7 自动更新第三方软件
+* 3d10386 (origin/main) mypsh推送
+* de79653 修正 netcatty 处理方式：解包 electron-builder 内层 app-64.7z，配置持久化到 persist - 原清单直接运行 133MB 的 NSIS 便携包装 exe：每次启动向 temp 解压，且 bin 含版本号导致升级后 shim 失效 - pre_install 双层解包（NSIS -> app-64.7z）拍平，删除包装 exe，bin/快捷方式统一为 Netcatty.exe - 上游 portableData.cjs 检测 exe 同目录 data 即重定向 userData/sessionData：创建 data + persist 到 D:\scoop\persist\netcatty\data - 沙箱实测解包产物与便携数据重定向；README/progress 同步
+* 2679732 progress.md 更新提交历史
 * da36072 同步 README 第三方版本与日期列
 * 7192f37 自动更新第三方软件
 * 6204fc1 progress.md 更新提交历史
