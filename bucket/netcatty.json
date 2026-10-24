@@ -11,11 +11,26 @@
     "autoupdate": {
         "url": "https://github.com/binaricat/Netcatty/releases/download/v$version/Netcatty-$version-portable-win-x64.exe"
     },
-    "bin": "Netcatty-1.1.86-portable-win-x64.exe",
+    "pre_install": [
+        "$__wrapper = Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1",
+        "Expand-7zipArchive $__wrapper.FullName \"$dir\\_nsis\"",
+        "$__app7z = Get-ChildItem \"$dir\\_nsis\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "Expand-7zipArchive $__app7z.FullName \"$dir\"",
+        "Remove-Item \"$dir\\_nsis\" -Recurse -Force",
+        "Remove-Item $__wrapper.FullName -Force",
+        "New-Item -ItemType Directory \"$dir\\data\" -Force | Out-Null"
+    ],
+    "persist": "data",
+    "bin": "Netcatty.exe",
     "shortcuts": [
         [
-            "Netcatty-1.1.86-portable-win-x64.exe",
+            "Netcatty.exe",
             "Netcatty"
         ]
+    ],
+    "notes": [
+        "NSIS 便携包装 exe 实际是 electron-builder 自解压包；安装时已解出内层 app-64.7z，主程序为 Netcatty.exe（避免每次启动向 temp 解压 127MB，也避免版本号文件名导致升级后 shim 失效）。",
+        "程序检测到 exe 同目录存在 data 目录时，会把 userData/sessionData 指向该目录；data 已持久化到 D:\\scoop\\persist\\netcatty\\data，升级不丢配置。",
+        "旧版数据在 %APPDATA%\\netcatty；如需迁移：完全退出 Netcatty 后，把该目录内容复制到 D:\\scoop\\persist\\netcatty\\data。"
     ]
 }
