@@ -272,9 +272,12 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 4079fcd (HEAD -> main) 同步 README 第三方版本与日期列
+* da36072 (HEAD -> main) 同步 README 第三方版本与日期列
+* 7192f37 自动更新第三方软件
+* 6204fc1 (origin/main) progress.md 更新提交历史
+* 4079fcd 同步 README 第三方版本与日期列
 * b6287b3 自动更新第三方软件
-* d0fa139 (origin/main) 修正 README 第三方官方表：sdkm 按规则置顶并全表重新编号（1..64）
+* d0fa139 修正 README 第三方官方表：sdkm 按规则置顶并全表重新编号（1..64）
 * 77d0e66 progress.md 更新提交历史（含 sdkm 收录 55cd949）
 * 55cd949 收录 sdkm 0.5.2：SDK 版本管理器，安装后自动执行 sdkm init - 官方 zip 内 .sdkm\sdkm.exe，extract_dir 拍平 + bin/shortcuts - post_install 以管理员权限（Start-Process -Verb RunAs）自动运行 sdkm init --force（跳过非专用目录交互确认）；失败仅告警不阻断安装 - persist store 持久化已装 SDK，升级不丢 - 删除残缺草稿 sdkmate.json；README 第三方表 63→64、总数 149→150，progress 同步 - 顺带补齐 miaomi 的 README 类型行与 progress 记录（模式 5a），修复 progress 中两处反斜杠转义损坏
 * 0c89af9 miaomi 改为自动安装（NSIS 解包便携）：原清单仅下载 exe + 启动安装器需手动；实测为 NSIS 打包的 Clash Verge 套壳（clash-verge.exe + verge-mihomo.exe + resources），改用 pre_install 7z 解包拍平 + bin=clash-verge.exe + shortcuts，移除 post_install；scoop install 实测成功（shim clash-verge、bucket myscoop）；README 类型列与 progress 同步（附参考清单 cc-haha/sunpack/uuyc/zhiyuime）
