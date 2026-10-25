@@ -274,7 +274,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 60a139e (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 998328b (HEAD -> main) 同步 README 第三方版本与日期列
+* 4c73808 自动更新第三方软件
+* 3f0e824 (origin/main) 修复 amcfy-music 无法匹配：上游 1.2.15 起同时改资产前缀与后缀 - 旧模板 Amcfy.Music_$version-windows.zip 对 Amcfy.Music-Windows-amd64_$version+$build.zip 失效（前缀/后缀护栏均不达标） - url 更新到 1.2.15，autoupdate 改为新命名并保留 +build；数字归一化命中后续版本，构建号漂移由模板自动刷新（方案A） - 模拟 1.2.14+10038 验证可正确升到 1.2.15 并刷新模板为 +10044 - 顺带提交待更新的 filee 2.1.0、rayburst 4.1.1 与 README 同步
+* 60a139e progress.md 更新提交历史
 * 64c24ad 同步 README 第三方版本与日期列
 * 3b8f0b7 自动更新第三方软件
 * 3d10386 mypsh推送
