@@ -1,15 +1,15 @@
 {
-    "version": "1.2.11",
+    "version": "1.2.15",
     "description": "Amcfy Music Player(箭头音乐) for 道理鱼音乐，Songloft，Subsonic，Navidrome，Emby，Jellyfin, Plex, webdav。",
     "homepage": "https://www.amcfy.com",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/amcfy-music/amcfy-music"
     },
-    "url": "https://github.com/amcfy-music/amcfy-music/releases/download/1.2.11/Amcfy.Music_1.2.11.10024-windows.zip",
-    "hash": "sha256:fdbf8da7b21cb322d6c19f5579e87b228a43e10d46ffcd1b4563f66d8c8409aa",
+    "url": "https://github.com/amcfy-music/amcfy-music/releases/download/1.2.15/Amcfy.Music-Windows-amd64_1.2.15%2B10044.zip",
+    "hash": "sha256:32862d6eb2e8f2dae456679386ae3f9c1e317494e76966016796e3a8c5a70ba5",
     "autoupdate": {
-        "url": "https://github.com/amcfy-music/amcfy-music/releases/download/$version/Amcfy.Music_$version-windows.zip"
+        "url": "https://github.com/amcfy-music/amcfy-music/releases/download/$version/Amcfy.Music-Windows-amd64_$version+10044.zip"
     },
     "pre_install": "Get-ChildItem \"$dir\" -Filter 'Amcfy Music*.exe' | Move-Item -Destination \"$dir\\Amcfy Music.exe\" -Force",
     "bin": "Amcfy Music.exe",
