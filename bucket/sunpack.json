@@ -1,5 +1,5 @@
 {
-    "version": "1.2.7",
+    "version": "1.2.8",
     "description": "Windows 全自动压缩包处理工具：后台监控、识别、解压、递归处理与崩溃恢复。 Automated archive processing for Windows — watch folders, detect, extract, verify and recursively process archives in the background.",
     "homepage": "https://github.com/Qinjingxue/Sunpack",
     "license": "MIT",
@@ -8,12 +8,12 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/Qinjingxue/Sunpack/releases/download/v1.2.7/sunpack-windows-x64-v1.2.7-setup.exe",
-            "hash": "sha256:b9b188a167f1c3abab04fd2cce667c73e7dd1fb82dd97a06e4ba5e95b759dbb6"
+            "url": "https://github.com/Qinjingxue/Sunpack/releases/download/v1.2.8/sunpack-windows-x64-v1.2.8-setup.exe",
+            "hash": "sha256:554745526d4558560a4c9b8181a6bfee617439fb61bda3648309c451c46271e4"
         },
         "arm64": {
-            "url": "https://github.com/Qinjingxue/Sunpack/releases/download/v1.2.7/sunpack-windows-arm64-v1.2.7-setup.exe",
-            "hash": "sha256:2e69968276aeabd94a0e5eaee56eaed1392a5aece72e183fc8fa56bfd5a44153"
+            "url": "https://github.com/Qinjingxue/Sunpack/releases/download/v1.2.8/sunpack-windows-arm64-v1.2.8-setup.exe",
+            "hash": "sha256:76cc38d04d802437658bd55288ed358fde50d1a1c0ee2076a30a5485c780f4ab"
         }
     },
     "autoupdate": {
