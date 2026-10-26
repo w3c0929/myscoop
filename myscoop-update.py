@@ -1482,8 +1482,11 @@ def _update_by_regex(manifest, cv, manifest_path, dry_run):
         if old.startswith("sha256:"):
             old = old[7:]
         if digest.lower() == old:
-            print(f"  [跳过] 内容未变（sha256 相同），版本不提升：{latest_version}")
-            return None
+            if (manifest.get("checkver") or {}).get("hash_unchanged_bump"):
+                print(f"  [提示] 内容未变（sha256 相同），但按 hash_unchanged_bump 提升版本：{current_version} → {latest_version}")
+            else:
+                print(f"  [跳过] 内容未变（sha256 相同），版本不提升：{latest_version}")
+                return None
     manifest["url"] = new_url
     manifest["hash"] = "sha256:" + digest
     chg = sync_autoupdate_fields(au, manifest, latest_version)
@@ -1560,8 +1563,11 @@ def _update_by_script(manifest, cv, manifest_path, dry_run):
         if old.startswith("sha256:"):
             old = old[7:]
         if digest.lower() == old:
-            print(f"  [跳过] 内容未变（sha256 相同），版本不提升：{latest_version}")
-            return None
+            if (manifest.get("checkver") or {}).get("hash_unchanged_bump"):
+                print(f"  [提示] 内容未变（sha256 相同），但按 hash_unchanged_bump 提升版本：{current_version} → {latest_version}")
+            else:
+                print(f"  [跳过] 内容未变（sha256 相同），版本不提升：{latest_version}")
+                return None
     manifest["url"] = new_url
     manifest["hash"] = "sha256:" + digest
     chg = sync_autoupdate_fields(au, manifest, latest_version)

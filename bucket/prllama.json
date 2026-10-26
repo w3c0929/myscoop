@@ -1,5 +1,5 @@
 {
-    "version": "prism-b10822-bf8c069",
+    "version": "prism-b10826-c9c34bc",
     "description": "LLM inference in C/C++",
     "homepage": "https://github.com/PrismML-Eng/llama.cpp",
     "license": "MIT",
@@ -8,26 +8,26 @@
     },
     "architecture": {
         "32bit": {
-            "url": "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10822-bf8c069/llama-prism-b10822-bf8c069-xcframework.zip",
-            "hash": "sha256:a20c0edcfa18c8d7933e9a23b0ec7d70da81a136db77e40a447ad8fd61bd52e9"
+            "url": "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10826-c9c34bc/llama-prism-b10826-c9c34bc-xcframework.zip",
+            "hash": "sha256:793158adf1e210268ae028bcf8b8a262d24d4bdf9f499e7e7e7dd9b213a03155"
         },
         "64bit": {
             "url": [
-                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10822-bf8c069/llama-prism-b10822-bf8c069-bin-win-cuda-13.3-x64.zip",
-                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10822-bf8c069/cudart-llama-bin-win-cuda-13.3-x64.zip"
+                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10826-c9c34bc/llama-prism-b10826-c9c34bc-bin-win-cuda-13.3-x64.zip",
+                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10826-c9c34bc/cudart-llama-bin-win-cuda-13.3-x64.zip"
             ],
             "hash": [
-                "sha256:dccaf3b3579e5db790e1b6b128613b70a785de90e9ebaf71535f7d9d9bf1f9ad",
+                "sha256:f9518d0af89394a918e84f797baa9a69855fef9505c80af3761ca6c4d381c549",
                 "sha256:1462a050eb4c684921ba51dcc4cc488a036674c3e73e9945ee705b854808d03e"
             ]
         },
         "arm64": {
             "url": [
-                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10822-bf8c069/llama-prism-b10822-bf8c069-bin-win-cuda-13.4-arm64.zip",
-                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10822-bf8c069/cudart-llama-bin-win-cuda-13.4-arm64.zip"
+                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10826-c9c34bc/llama-prism-b10826-c9c34bc-bin-win-cuda-13.4-arm64.zip",
+                "https://github.com/PrismML-Eng/llama.cpp/releases/download/prism-b10826-c9c34bc/cudart-llama-bin-win-cuda-13.4-arm64.zip"
             ],
             "hash": [
-                "sha256:a79116fa3a97f509ed9e49099b3edebf9ec6319e715fa7faaa2586d148d5e8f1",
+                "sha256:00c3be01518de5e79aad0f2ba96cf7df9471390704e90f56e3a1e2c0326091db",
                 "sha256:5a40dc7c5fa3d0a80ceeba4f16f9e8d25d87bcf1399c9233588953c43436c33c"
             ]
         }
