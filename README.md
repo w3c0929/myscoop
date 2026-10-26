@@ -288,10 +288,10 @@ git config --global --add safe.directory D:/scoop/buckets/*
 > - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
 > - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
 > - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
->   - 下载 `https://github.com/*/releases/download/` 资产时，依次探测 `aria2-mirrors` 镜像列表（**数组形式，须直接编辑 config.json 设置**——`scoop config` 命令不支持数组参数），取第一个可达镜像作为下载源；**全部不可达时自动回退官方原始 URL**。
->   - 镜像地址可写完整 URL 或裸域名（自动补 `https://`），数组顺序即优先级（快的放前面）。当前为 2026-10-10 实测去重排序的 24 个，前 3 名：`hk.gh-proxy.org` > `cdn.gh-proxy.com` > `git.yylx.win`（实测稳定 3.7–5.3 MB/s），慢尾留作兜底。
+>   - 下载 `https://github.com/*/releases/download/` 资产时，用 Scoop 自己的 .NET 下载栈做 3 次短测速（**同协议/同代理**，避免“测 h2、下 h1.1”），按 EWMA 排名选最优镜像并缓存到 `%LOCALAPPDATA%\myscoop\mirror-rank.json`；10 分钟内有新鲜冠军走**热路径（0 探测）**，全部不可达/不达标时回退官方原始 URL。（`aria2-mirrors` **数组形式，须直接编辑 config.json 设置**——`scoop config` 命令不支持数组参数。）
+>   - 镜像地址可写完整 URL 或裸域名（自动补 `https://`），数组顺序作为**冷启动种子**（不再是“第一个可达就用”）。当前为 2026-10-10 实测去重排序的 24 个，前 3 名：`hk.gh-proxy.org` > `cdn.gh-proxy.com` > `git.yylx.win`。
 >   - **只放"release 资产代理"型镜像**：拼接方式只有一种——**镜像前缀 + 完整原始 URL**（如 `https://hk.gh-proxy.org/https://github.com/…`）。git 克隆加速器（如 `gitclone.com`，写法为 `gitclone.com/github.com/owner/repo`）不代理 release 下载路径，放进列表只会 404/500，勿加。
->   - 对 aria2（`aria2-enabled: true`）与默认下载器（未启用 aria2 或 aria2 失败回退）两条路径均生效；**Scoop 自更新后补丁会丢失**（链接也会失效），**重新覆盖或重新运行 `symlink.bat`** 即可（原版备份在仓库 `staging/scoop-backup/`）。
+>   - 对 aria2（`aria2-enabled: true`）与默认下载器两条路径均生效（**共用排名**）；但**下载期自动换源目前只对默认下载器生效**，aria2 仅使用排名结果。**Scoop 自更新后补丁会丢失**（链接也会失效），**重新覆盖或重新运行 `symlink.bat`** 即可（原版备份在仓库 `staging/scoop-backup/`）。
 
 ### sync-chrome-to-ego.bat（Chrome → ego lite 一键同步）
 
@@ -1000,13 +1000,15 @@ python3 myscoop-update.py bucket/amcfy-music.json
 
 ### 非 GitHub 软件的新增（直链 / 下载页 / 模板）
 
-> **GitHub 下载镜像加速（脚本）**：`myscoop-update.py` 的实际下载路径（直链/下载页/补全/hash 实测）对 GitHub release 文件**优先走加速镜像**——依次探测列表取第一个可达镜像，全部不可达自动回退原始 URL（与 Scoop `download.ps1` 补丁同一套机制，拼接方式也只有一种：镜像前缀 + 完整 URL）。镜像列表来源：
+> **GitHub 下载镜像加速（脚本）**：`myscoop-update.py` 的实际下载路径（直链/下载页/补全/hash 实测）对 GitHub release 文件**优先走加速镜像**——按环形顺序逐个候选测速，取第一个达到 1MB/s 的镜像；全部不达标/不可达回退原始 URL（与 Scoop `download.ps1` **共用镜像列表**；两侧测速实现已分叉，Scoop 侧见上文）。镜像列表来源：
 > - 环境变量 `MYSCOOP_GH_MIRRORS`（逗号分隔，可写完整 URL 或裸域名，跨机/CI 可用）：
 >   ```powershell
 >   $env:MYSCOOP_GH_MIRRORS = "https://hk.gh-proxy.org,https://gh-proxy.com"
 >   ```
 > - 未设置时自动读 Scoop config.json 的 `aria2-mirrors` 数组（本机零配置复用）。
 > - 均不设置时行为与原来完全一致（不走镜像）。
+>
+> **注意**：Scoop 端 `download.ps1` 已于 2026-10-27 改为同栈 WebRequest + EWMA 排名（缓存 `mirror-rank.json`），与本脚本的 `mirror-cache.json` **暂不共享**；两侧只在镜像列表上保持一致。
 
 没有 GitHub/Gitee 仓库的软件（官网直链）用以下方式新增，脚本自动下载计算 SHA256、
 检测 Inno Setup、生成 checkver/autoupdate：

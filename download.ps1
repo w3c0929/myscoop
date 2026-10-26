@@ -8,84 +8,243 @@
 # `MYSCOOP_MIRROR_MIN_SPEED_MB`）才采用；不达标/不可达 → 立即换下一个；
 # **全部不达标兜底直链**（原 URL）。测速用系统自带 curl.exe：`-r 0-8388607`（最多 8MB，
 # ≥ 阈值×窗口，防高速镜像下满整个文件）+ `--max-time WINDOW`，`%{speed_download}` 读实测速率。
-function Get-GitHubMirrorUrl([string]$url) {
-    if ($url -notmatch '^https://github\.com/') { return $url }
-    $mirrors = get_config 'aria2-mirrors'
-    if (-not $mirrors) { return $url }
-    if ($mirrors -is [string]) { $mirrors = $mirrors.Split(' ') }  # 兼容 scoop config 命令写入的字符串
-    $window = if ($env:MYSCOOP_MIRROR_WINDOW) { [int]$env:MYSCOOP_MIRROR_WINDOW } else { 6 }
-    $minSpeed = if ($env:MYSCOOP_MIRROR_MIN_SPEED_MB) { [double]$env:MYSCOOP_MIRROR_MIN_SPEED_MB * 1048576 } else { 1048576 }
-    # 镜像缓存（自动生成）：记录上次达标镜像基址，下次优先尝试（MYSCOOP_MIRROR_CACHE_TTL 控制有效期）
-    $cacheFile = Join-Path $env:LOCALAPPDATA 'myscoop\mirror-cache.json'
-    $ttl = if ($env:MYSCOOP_MIRROR_CACHE_TTL) { [int]$env:MYSCOOP_MIRROR_CACHE_TTL } else { 3600 }
-    $cachedBase = $null
-    try {
-        if (Test-Path $cacheFile) {
-            $c = Get-Content $cacheFile -Raw -Encoding UTF8 | ConvertFrom-Json
-            if (([DateTimeOffset]::Now.ToUnixTimeSeconds() - [double]$c.ts) -le $ttl) { $cachedBase = [string]$c.mirror }
-        }
-    } catch { }
+function Measure-UrlSample {
+    param(
+        [string]$Url,
+        [int]$Ms = 1200,
+        [int]$MaxBytes = 8388608,
+        [int]$TimeoutMs = 4000
+    )
+    $req = [Net.WebRequest]::Create($Url)
+    $req.Method = 'GET'
+    $req.Timeout = $TimeoutMs
+    if ($PSVersionTable.PSVersion.Major -le 5) {
+        try { $req.ReadWriteTimeout = $Ms } catch {}
+    } else {
+        try { $req.ReadWriteTimeout = $TimeoutMs } catch {}
+    }
+    $req.UserAgent = Get-UserAgent
+    try { $req.AddRange(0, $MaxBytes - 1) } catch {}
 
-    # 候选列表（完整 URL + 基址），按环形顺序：缓存优先，其后从它的下一个绕到末尾，再回到它的前一个
-    $cands = @()
+    $sw = [Diagnostics.Stopwatch]::StartNew()
+    try {
+        $resp = $req.GetResponse()
+        $ttfb = $sw.Elapsed.TotalMilliseconds
+        $proto = $resp.ProtocolVersion.ToString()
+        $status = [int]$resp.StatusCode
+        $stream = $resp.GetResponseStream()
+        $buf = New-Object byte[] 65536
+        $total = 0
+        $timedOut = $false
+        $sw2 = [Diagnostics.Stopwatch]::StartNew()
+        if ($PSVersionTable.PSVersion.Major -le 5) {
+            try {
+                while ($sw2.Elapsed.TotalMilliseconds -lt $Ms -and $total -lt $MaxBytes) {
+                    $n = $stream.Read($buf, 0, $buf.Length)
+                    if ($n -le 0) { break }
+                    $total += $n
+                }
+            } catch { $timedOut = $true }
+        } else {
+            $cts = New-Object System.Threading.CancellationTokenSource($Ms)
+            try {
+                while ($total -lt $MaxBytes) {
+                    $task = $stream.ReadAsync($buf, 0, $buf.Length, $cts.Token)
+                    try { $n = $task.GetAwaiter().GetResult() } catch { $timedOut = $true; break }
+                    if ($n -le 0) { break }
+                    $total += $n
+                }
+            } finally { if ($cts) { $cts.Dispose() } }
+        }
+        $sw2.Stop()
+        try { $resp.Close() } catch {}
+        $secs = [Math]::Max($sw2.Elapsed.TotalSeconds, 0.001)
+        return [pscustomobject]@{
+            Ok = ($status -in 200, 206 -and $total -gt 0)
+            Status = $status; Proto = $proto
+            TtfbMs = [math]::Round($ttfb, 0); Bytes = $total
+            Seconds = [math]::Round($secs, 2)
+            MBps = [math]::Round(($total / 1MB) / $secs, 2)
+            TimedOut = $timedOut; Error = ''
+        }
+    } catch {
+        $sw.Stop()
+        return [pscustomobject]@{
+            Ok = $false; Status = 0; Proto = '-'
+            TtfbMs = [math]::Round($sw.Elapsed.TotalMilliseconds, 0)
+            Bytes = 0; Seconds = 0; MBps = 0; TimedOut = $false
+            Error = $_.Exception.Message
+        }
+    }
+}
+
+function Measure-MirrorMedian {
+    param([string]$Url, [int]$Samples = 3, [int]$Ms = 1200, [int]$MaxBytes = 8388608)
+    $vals = @()
+    $last = $null
+    for ($i = 0; $i -lt $Samples; $i++) {
+        $s = Measure-UrlSample -Url $Url -Ms $Ms -MaxBytes $MaxBytes
+        $last = $s
+        if ($i -eq 0 -and -not $s.Ok) {
+            return [pscustomobject]@{ Ok = $false; MBps = 0; Good = 0; Status = $s.Status; Proto = $s.Proto; Error = $s.Error; Detail = @() }
+        }
+        if ($s.Ok) { $vals += [double]$s.MBps }
+    }
+    if ($vals.Count -eq 0) {
+        return [pscustomobject]@{ Ok = $false; MBps = 0; Good = 0; Status = $last.Status; Proto = $last.Proto; Error = $last.Error; Detail = @() }
+    }
+    $sorted = @($vals | Sort-Object)
+    if ($sorted.Count % 2 -eq 1) {
+        $median = $sorted[[int]($sorted.Count / 2)]
+    } else {
+        $median = ($sorted[[int]($sorted.Count / 2 - 1)] + $sorted[[int]($sorted.Count / 2)]) / 2
+    }
+    return [pscustomobject]@{ Ok = $true; MBps = [math]::Round($median, 2); Good = $sorted.Count; Status = $last.Status; Proto = $last.Proto; Error = ''; Detail = $sorted }
+}
+
+function Read-MirrorRank {
+    param([string]$Path)
+    $h = @{}
+    if (Test-Path $Path) {
+        try {
+            $o = Get-Content $Path -Raw | ConvertFrom-Json
+            if ($o.mirrors) {
+                foreach ($p in $o.mirrors.PSObject.Properties) {
+                    $h[$p.Name] = @{ ewma = [double]$p.Value.ewma; fails = [int]$p.Value.fails; cooldown_until = [long]$p.Value.cooldown_until; last = [long]$p.Value.last }
+                }
+            }
+        } catch {}
+    }
+    return $h
+}
+
+function Write-MirrorRank {
+    param([string]$Path, [hashtable]$Rank)
+    $mirrors = @{}
+    foreach ($k in $Rank.Keys) { $mirrors[$k] = $Rank[$k] }
+    $obj = [ordered]@{ version = 2; mirrors = $mirrors }
+    $dir = Split-Path -Parent $Path
+    if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Force $dir | Out-Null }
+    ($obj | ConvertTo-Json -Depth 6) | Set-Content -Path $Path -Encoding UTF8
+}
+
+if (-not $script:MirrorPlanMemo) { $script:MirrorPlanMemo = @{} }
+
+function Get-GitHubMirrorPlan([string]$url) {
+    if ($url -notmatch '^https://github\.com/') {
+        return [pscustomobject]@{ Urls = @($url); MinMBps = 0.0; BestMBps = 0.0 }
+    }
+    $mirrors = get_config 'aria2-mirrors'
+    if (-not $mirrors) {
+        return [pscustomobject]@{ Urls = @($url); MinMBps = 0.0; BestMBps = 0.0 }
+    }
+    if ($mirrors -is [string]) { $mirrors = $mirrors.Split(' ') }
+
+    $bases = @()
     foreach ($m in $mirrors) {
         $b = "$m".TrimEnd('/')
         if ($b -notmatch '^https?://') { $b = "https://$b" }
-        $cands += [pscustomobject]@{ Url = "$b/$url"; Base = $b }
+        if ($bases -notcontains $b) { $bases += $b }
     }
-    $ordered = @()
-    if ($cachedBase -and $cands.Count -gt 0) {
-        $idx = -1
-        for ($i = 0; $i -lt $cands.Count; $i++) { if ($cands[$i].Base -ieq $cachedBase) { $idx = $i; break } }
-        if ($idx -ge 0) {
-            $ordered += $cands[$idx]
-            for ($k = 1; $k -lt $cands.Count; $k++) { $ordered += $cands[($idx + $k) % $cands.Count] }
-            Write-Host ("  [镜像] 沿用上次达标镜像 " + ($cachedBase -replace '^https?://', ''))
-        } else { $ordered = $cands }
-    } else { $ordered = $cands }
+    if ($bases.Count -eq 0) {
+        return [pscustomobject]@{ Urls = @($url); MinMBps = 0.0; BestMBps = 0.0 }
+    }
 
-    foreach ($cand in $ordered) {
-        $base = $cand.Base
-        $mirror_url = $cand.Url
-        try {
-            # 护栏（只提示+跳过，不删镜像——镜像可能自己修好）：HEAD 检查不通过就换下一个。
-            # ① 不可达/非 2xx ② 无 Content-Length —— 后者 scoop 拿不到总大小 → 下载界面只显示
-            #   (-1 B) 而**没有进度条**；还可能是"残缺文件"（实测 git.yylx.win 缓存的 anclicker
-            #   1.6.7 只有 537MB/正确 636MB → hash 校验必然失败）。
-            $head = & curl.exe -sIL --connect-timeout 4 --max-time 8 $mirror_url 2>$null | Out-String
-            if ($head -notmatch '(?im)^HTTP/\S+\s+2\d\d') {
-                Write-Host ("  [镜像] {0} 不可达 → 换下一个" -f ($base -replace '^https?://', ''))
-                continue
-            }
-            if ($head -notmatch '(?im)^content-length:\s*\d+') {
-                Write-Host ("  [镜像] {0} 未提供 Content-Length（无进度条、且可能残缺）→ 换下一个" -f ($base -replace '^https?://', ''))
-                continue
-            }
-            $out = & curl.exe -sL -r 0-8388607 --connect-timeout 4 --max-time $window -o NUL `
-                -w "%{http_code} %{speed_download}" $mirror_url 2>$null
-            $parts = "$out".Trim() -split '\s+'
-            if ($parts.Count -ge 2 -and $parts[0] -match '^[23]\d\d$') {
-                $speed = 0.0
-                if (-not [double]::TryParse($parts[1], [ref]$speed)) { $speed = 0.0 }
-                $host_ = $base -replace '^https?://', ''
-                if ($speed -ge $minSpeed) {
-                    # 下载（进度条）开始前提示：本次用哪个镜像
-                    Write-Host ("  [镜像] 使用 {0} 加速下载（测速 {1:N2} MB/s）" -f $host_, ($speed / 1048576)) -ForegroundColor DarkCyan
-                    # 记录本次达标镜像（缓存文件自动生成）
-                    try {
-                        New-Item -ItemType Directory -Force (Split-Path $cacheFile) | Out-Null
-                        [pscustomobject]@{ mirror = $base; speed = [math]::Round($speed / 1048576, 2); ts = [DateTimeOffset]::Now.ToUnixTimeSeconds() } |
-                            ConvertTo-Json | Set-Content $cacheFile -Encoding UTF8
-                    } catch { }
-                    return $mirror_url
-                }
-                Write-Host ("  [镜像] {0} 测速 {1:N2} MB/s < {2:N0} MB/s → 换下一个" -f $host_, ($speed / 1048576), ($minSpeed / 1048576))
-            }
-        } catch { }
+    $cacheFile = if ($env:MYSCOOP_RANK_FILE) { $env:MYSCOOP_RANK_FILE } else { Join-Path $env:LOCALAPPDATA 'myscoop\mirror-rank.json' }
+    $now = [DateTimeOffset]::Now.ToUnixTimeSeconds()
+    $memoKey = ($bases -join '|')
+    if ($script:MirrorPlanMemo.ContainsKey($memoKey)) {
+        $mm = $script:MirrorPlanMemo[$memoKey]
+        if (($now - [long]$mm.ts) -lt 300) {
+            $urls = @(); foreach ($b in $mm.order) { $urls += "$b/$url" }
+            return [pscustomobject]@{ Urls = $urls; MinMBps = [double]$mm.min; BestMBps = [double]$mm.best }
+        }
     }
-    Write-Host "  [镜像] 无可用镜像，改用直链下载"
-    return $url
+
+    $rank = Read-MirrorRank -Path $cacheFile
+    if ($rank.Count -eq 0) {
+        $old = Join-Path $env:LOCALAPPDATA 'myscoop\mirror-cache.json'
+        if (Test-Path $old) {
+            try {
+                $oc = Get-Content $old -Raw | ConvertFrom-Json
+                if ($oc.mirror -and $oc.speed) {
+                    $rank[("$($oc.mirror)".TrimEnd('/'))] = @{ ewma = [double]$oc.speed; fails = 0; cooldown_until = 0; last = [long]$oc.ts }
+                }
+            } catch {}
+        }
+    }
+
+    $fresh = @($rank.Keys | Where-Object {
+        $rank[$_].cooldown_until -le $now -and $rank[$_].ewma -gt 0 -and
+        ($now - [long]$rank[$_].last) -le 600 -and ($bases -contains $_)
+    } | Sort-Object { $rank[$_].ewma } -Descending)
+    if ($fresh.Count -gt 0) {
+        $bestBase = $fresh[0]
+        $bestSpeed = [double]$rank[$bestBase].ewma
+        $min = [math]::Round([Math]::Max(1.0, [Math]::Min(4.0, 0.2 * $bestSpeed)), 2)
+        $orderBases = @($bestBase)
+        foreach ($b in $bases) { if ($orderBases -notcontains $b) { $orderBases += $b } }
+        $urls = @(); foreach ($b in $orderBases) { $urls += "$b/$url" }
+        Write-Host ("  [mirror] fast path {0} (ewma {1:N2} MB/s, threshold {2:N2})" -f ($bestBase -replace '^https?://', ''), $bestSpeed, $min) -ForegroundColor DarkCyan
+        $script:MirrorPlanMemo[$memoKey] = [pscustomobject]@{ order = $orderBases; best = $bestSpeed; min = $min; ts = $now }
+        return [pscustomobject]@{ Urls = $urls; MinMBps = $min; BestMBps = $bestSpeed }
+    }
+
+    $ordered = @()
+    $cached = @($rank.Keys | Where-Object { $rank[$_].cooldown_until -le $now -and $rank[$_].ewma -gt 0 -and ($bases -contains $_) } | Sort-Object { $rank[$_].ewma } -Descending)
+    foreach ($b in $cached) {
+        if ($ordered.Count -ge 2) { break }
+        $ordered += $b
+    }
+    foreach ($b in $bases) {
+        if ($ordered.Count -ge 3) { break }
+        if ($ordered -notcontains $b) { $ordered += $b }
+    }
+
+    $res = @()
+    foreach ($b in $ordered) {
+        $u = "$b/$url"
+        $m = Measure-MirrorMedian -Url $u -Samples 3 -Ms 1200 -MaxBytes 8388608
+        Write-Host ("  [mirror] {0,-32} {1,7:N2} MB/s  {2}" -f ($b -replace '^https?://', ''), $m.MBps, $m.Proto) -ForegroundColor DarkCyan
+        $res += [pscustomobject]@{ Base = $b; Url = $u; Ok = $m.Ok; MBps = $m.MBps; Status = $m.Status; Proto = $m.Proto }
+    }
+
+    $good = @($res | Where-Object { $_.Ok } | Sort-Object MBps -Descending)
+    $best = if ($good.Count -gt 0) { $good[0] } else { $null }
+
+    foreach ($r in $res) {
+        $e = if ($rank.ContainsKey($r.Base)) { $rank[$r.Base] } else { @{ ewma = 0.0; fails = 0; cooldown_until = 0; last = 0 } }
+        if ($r.Ok) {
+            if ($e.ewma -gt 0) { $e.ewma = [math]::Round(0.6 * $e.ewma + 0.4 * $r.MBps, 2) } else { $e.ewma = [double]$r.MBps }
+            $e.fails = 0
+        } else {
+            $e.fails = [int]$e.fails + 1
+            if ($e.fails -ge 3) { $e.cooldown_until = $now + 1800 }
+        }
+        $e.last = $now
+        $rank[$r.Base] = $e
+    }
+    Write-MirrorRank -Path $cacheFile -Rank $rank
+
+    $orderBases = @()
+    foreach ($r in $good) { if ($orderBases -notcontains $r.Base) { $orderBases += $r.Base } }
+    foreach ($r in ($res | Sort-Object { if ($_.Ok) { -$_.MBps } else { 9999 } })) { if ($orderBases -notcontains $r.Base) { $orderBases += $r.Base } }
+    foreach ($b in $bases) { if ($orderBases -notcontains $b) { $orderBases += $b } }
+
+    $urls = @(); foreach ($b in $orderBases) { $urls += "$b/$url" }
+    $bestSpeed = if ($best) { [double]$best.MBps } else { 0.0 }
+    $min = if ($bestSpeed -gt 0) { [math]::Round([Math]::Max(1.0, [Math]::Min(4.0, 0.2 * $bestSpeed)), 2) } else { 0.0 }
+    if ($best) { Write-Host ("  [mirror] using {0} ({1:N2} MB/s, switch threshold {2:N2} MB/s)" -f ($best.Base -replace '^https?://', ''), $bestSpeed, $min) -ForegroundColor DarkCyan }
+    else { Write-Host "  [mirror] no usable mirror, falling back to direct URL" }
+
+    $script:MirrorPlanMemo[$memoKey] = [pscustomobject]@{ order = $orderBases; best = $bestSpeed; min = $min; ts = $now }
+    return [pscustomobject]@{ Urls = $urls; MinMBps = $min; BestMBps = $bestSpeed }
 }
+
+function Get-GitHubMirrorUrl([string]$url) {
+    return (Get-GitHubMirrorPlan $url).Urls[0]
+}
+
 # ========== GitHub 镜像加速补丁结束 ==========
 
 ## Meta downloader
@@ -139,12 +298,26 @@ function Invoke-ScoopDownload ($app, $version, $manifest, $bucket, $architecture
 
 ## [System.Net] downloader
 
-function Invoke-CachedDownload ($app, $version, $url, $to, $cookies = $null, $use_cache = $true) {
+function Invoke-CachedDownload ($app, $version, $url, $to, $cookies = $null, $use_cache = $true, $plan = $null) {
     $cached = cache_path $app $version $url
 
     if (!(Test-Path $cached) -or !$use_cache) {
         ensure $cachedir | Out-Null
-        Start-Download (Get-GitHubMirrorUrl $url) "$cached.download" $cookies
+        if ($null -eq $plan) { $plan = Get-GitHubMirrorPlan $url }
+        $downloaded = $false
+        $lastErr = $null
+        foreach ($alt in $plan.Urls) {
+            try {
+                Start-Download $alt "$cached.download" $cookies
+                $downloaded = $true
+                break
+            } catch {
+                $lastErr = $_
+                Remove-Item "$cached.download" -Force -ErrorAction SilentlyContinue
+                Write-Host ("  [mirror] failed {0}: {1}" -f (($alt -split '/')[2]), $_.Exception.Message)
+            }
+        }
+        if (-not $downloaded) { throw "All mirror downloads failed: $lastErr" }
         Move-Item "$cached.download" $cached -Force
     } else { Write-Host "Loading $(url_remote_filename $url) from cache" }
 
@@ -198,6 +371,9 @@ function Invoke-Download ($url, $to, $cookies, $progress) {
             }
         }
     }
+
+    $stallMs = if ($env:MYSCOOP_STALL_TIMEOUT_MS) { [int]$env:MYSCOOP_STALL_TIMEOUT_MS } else { 10000 }
+    if ($PSVersionTable.PSVersion.Major -le 5) { try { $wreq.ReadWriteTimeout = $stallMs } catch {} }
 
     try {
         $wres = $wreq.GetResponse()
@@ -257,9 +433,19 @@ function Invoke-Download ($url, $to, $cookies, $progress) {
         $buffer = New-Object byte[] 2048
         $totalRead = 0
         $sw = [diagnostics.stopwatch]::StartNew()
+        $readCts = $null
+        if ($PSVersionTable.PSVersion.Major -gt 5) { $readCts = New-Object System.Threading.CancellationTokenSource($stallMs) }
 
         Trace-DownloadProgress $totalRead
-        while (($read = $s.read($buffer, 0, $buffer.length)) -gt 0) {
+        while ($true) {
+            if ($readCts) {
+                $rt = $s.ReadAsync($buffer, 0, $buffer.length, $readCts.Token)
+                try { $read = $rt.GetAwaiter().GetResult() } catch { throw "Download stalled (no data for $($stallMs)ms)" }
+                $readCts.CancelAfter($stallMs)
+            } else {
+                $read = $s.read($buffer, 0, $buffer.length)
+            }
+            if ($read -le 0) { break }
             $fs.write($buffer, 0, $read)
             $totalRead += $read
             if ($sw.elapsedmilliseconds -gt 100) {
@@ -270,6 +456,7 @@ function Invoke-Download ($url, $to, $cookies, $progress) {
         $sw.stop()
         Trace-DownloadProgress $totalRead
     } finally {
+        if ($readCts) { $readCts.Dispose() }
         if ($progress) {
             [console]::CursorVisible = $true
             Write-Host
