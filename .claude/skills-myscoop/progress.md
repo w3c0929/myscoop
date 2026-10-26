@@ -277,7 +277,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 4cb6d86 (HEAD -> main, origin/main, origin/HEAD) 静态直链 hash 相同但版本已变时提升版本：新增 checkver.hash_unchanged_bump（uuyc 4.44.0） - uuyc 的 dl/1 是静态 latest 直链，上游版本 4.43.1→4.44.0 但安装包字节未变（sha256 4f1b86d7…） - 原「幽灵更新」护栏在 hash 相同时不提升版本 → 每次检查重复下载 88MB 且永不收敛 - 新增清单级开关 hash_unchanged_bump：开启后 hash 相同也提升版本（url/hash 不变）；未开启清单（dsh）保持原护栏 - uuyc 已升至 4.44.0，复跑确认为 0 更新、无下载；顺带提交本轮自动更新（anclicker/bongocat/cherry/netcatty/prllama/rustmusic）与 README 同步
+* 148faa7 (HEAD -> main) 同步 README 第三方版本与日期列
+* 3a78ee5 自动更新第三方软件
+* 6109fcb (origin/main) download.ps1 镜像测速重构：同栈 WebRequest + 3 次中位数 + EWMA 排名 - 原实现用 curl 测速：PowerShell 下是 WinGet 的 h2 构建、Git Bash 下是 Git 的无 h2 构建，导致“测 h2、下 h1.1”；且 curl 与 .NET 下载栈速度可差数倍（实测 SUSTech 31 vs 2 MB/s） - 改用下载器同栈 [Net.WebRequest]：Range GET 8MB、3 次采样取中位数；PS5.1 同步 Read+ReadWriteTimeout，pwsh7 ReadAsync+CancellationTokenSource - 排名缓存升级 mirror-rank.json v2（EWMA/fails/cooldown，键=镜像基址，自动迁移 mirror-cache.json）；10 分钟热路径 0 探测，冷启动 3 候选 - 下载按排名尝试、报错才换源；新增 10s 无数据停顿保护（MYSCOOP_STALL_TIMEOUT_MS 可覆盖） - aria2 共用排名但不做下载期换源；myscoop-update.py 暂不统一（urllib 自洽，可选后续只读共享） - 实测：真实 scoop download（aria2 关/开）、非 GitHub 直链、PS5.1/pwsh7、OpenClash 开/关均通过；同步 README/SKILL/progress
+* 4cb6d86 静态直链 hash 相同但版本已变时提升版本：新增 checkver.hash_unchanged_bump（uuyc 4.44.0） - uuyc 的 dl/1 是静态 latest 直链，上游版本 4.43.1→4.44.0 但安装包字节未变（sha256 4f1b86d7…） - 原「幽灵更新」护栏在 hash 相同时不提升版本 → 每次检查重复下载 88MB 且永不收敛 - 新增清单级开关 hash_unchanged_bump：开启后 hash 相同也提升版本（url/hash 不变）；未开启清单（dsh）保持原护栏 - uuyc 已升至 4.44.0，复跑确认为 0 更新、无下载；顺带提交本轮自动更新（anclicker/bongocat/cherry/netcatty/prllama/rustmusic）与 README 同步
 * e8afad3 progress.md 更新提交历史
 * 998328b 同步 README 第三方版本与日期列
 * 4c73808 自动更新第三方软件
