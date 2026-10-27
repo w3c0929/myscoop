@@ -1,5 +1,5 @@
 {
-    "version": "1.7.4",
+    "version": "1.7.5",
     "description": "Finch community hub",
     "homepage": "https://www.finchwork.app",
     "license": "unknown",
@@ -8,12 +8,12 @@
     },
     "architecture": {
         "32bit": {
-            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.7.4/Finch-1.7.4-setup-ia32.exe",
-            "hash": "sha256:aac4cacb62d2f853fdae514931b25c484f54a007009dd5fcb09d5b657a7678c9"
+            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.7.5/Finch-1.7.5-setup-ia32.exe",
+            "hash": "sha256:931a2ee21fb2b6b98288a5a4dbe0632c0b6280dd243f1714fa051ae9354deeaf"
         },
         "64bit": {
-            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.7.4/Finch-1.7.4-setup-x64.exe",
-            "hash": "sha256:b586cf5bf1710f7160930d394f77987c628d858cee32c30f2afd998c29f8de5a"
+            "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.7.5/Finch-1.7.5-setup-x64.exe",
+            "hash": "sha256:0a01dafa57194b3dacdc301d0cbf8b2c4c728ab330e00d80a4a2fde1de11622d"
         }
     },
     "autoupdate": {

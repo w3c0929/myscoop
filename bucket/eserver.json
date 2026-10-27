@@ -1,5 +1,5 @@
 {
-    "version": "5.5.0",
+    "version": "6.1.2",
     "description": "Windows Mac平台下的一款集成Nginx、PHP、MySQL、Redis等服务的GUI集成环境",
     "homepage": "https://github.com/xianyunleo/EServer",
     "license": "NOASSERTION",
@@ -8,16 +8,16 @@
     },
     "architecture": {
         "32bit": {
-            "url": "https://github.com/xianyunleo/EServer/releases/download/v5.5.0/EServer-5.5.0-win.zip",
-            "hash": "sha256:50db69d5786ee868abadc1a6c53e3d6751a3e583b706ad4aaa055b27287db7d5"
+            "url": "https://github.com/xianyunleo/EServer/releases/download/v6.1.2/EServer-6.1.2-win.zip",
+            "hash": "sha256:cb0a74a3bf06cd53bc214d48a5f70b025ef4f04f5c7e17a12bed1736fdebca96"
         },
         "64bit": {
-            "url": "https://github.com/xianyunleo/EServer/releases/download/v5.5.0/EServer-5.5.0-win.zip",
-            "hash": "sha256:50db69d5786ee868abadc1a6c53e3d6751a3e583b706ad4aaa055b27287db7d5"
+            "url": "https://github.com/xianyunleo/EServer/releases/download/v6.1.2/EServer-6.1.2-win.zip",
+            "hash": "sha256:cb0a74a3bf06cd53bc214d48a5f70b025ef4f04f5c7e17a12bed1736fdebca96"
         },
         "arm64": {
-            "url": "https://github.com/xianyunleo/EServer/releases/download/v5.5.0/EServer-5.5.0-arm64-win.zip",
-            "hash": "sha256:82c060e09fcebabf3b91fbae481fc6d6a1d89b7636cafd415a49e98c3cae7892"
+            "url": "https://github.com/xianyunleo/EServer/releases/download/v6.1.2/EServer-6.1.2-arm64-win.zip",
+            "hash": "sha256:c846532893622c7797f8e5c237690b8c38646a29cbdc70605cb2422f1ee4a7cc"
         }
     },
     "autoupdate": {
