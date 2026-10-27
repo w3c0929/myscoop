@@ -279,7 +279,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 662a5ab (HEAD -> main, origin/main, origin/HEAD) progress.md 措辞调整：代理环境泛化
+* aebb242 (HEAD -> main) 同步 README 第三方版本与日期列
+* f1ed48b 自动更新第三方软件
+* 43f3f2f (origin/main) 镜像选择修正：逐资产验证 + 缓存全量 EWMA 排序 + 直链兜底 - 热路径盲信旧 EWMA（cdn 58 MB/s 来自别的资产）→ cloudflared 在该镜像 0 MB/s 却直接选中；冷路径三候选全 <1MB/s 仍选最不差的 hk（SSL 失败），且候选未包含真正快的 acmsz - 所有存活缓存镜像按 EWMA 降序，其后为其余镜像；原始直链始终作为最后一个兜底 - 下载前对实际资产做 1.2s/4MB 同栈验证（固定 1MB/s 底线）；失败立即降权（EWMA→≤2、fails+1，3 次冷却 30 分钟），成功则 fails 清零 - 实测 cloudflared：第 1 次 10.6s（cdn 验证失败→acmsz），第 2 次 6.5s（直接 acmsz），hash 均正确 - 同步 README/SKILL/progress
+* 662a5ab progress.md 措辞调整：代理环境泛化
 * 9bf975d progress.md 更新提交历史
 * 148faa7 同步 README 第三方版本与日期列
 * 3a78ee5 自动更新第三方软件
