@@ -288,7 +288,7 @@ git config --global --add safe.directory D:/scoop/buckets/*
 > - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
 > - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
 > - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
->   - 下载 `https://github.com/*/releases/download/` 资产时，用 Scoop 自己的 .NET 下载栈做 3 次短测速（**同协议/同代理**，避免“测 h2、下 h1.1”），按 EWMA 排名选最优镜像并缓存到 `%LOCALAPPDATA%\myscoop\mirror-rank.json`；10 分钟内有新鲜冠军走**热路径（0 探测）**，全部不可达/不达标时回退官方原始 URL。（`aria2-mirrors` **数组形式，须直接编辑 config.json 设置**——`scoop config` 命令不支持数组参数。）
+>   - 下载 `https://github.com/*/releases/download/` 资产时，用 Scoop 自己的 .NET 下载栈做 3 次短测速（**同协议/同代理**，避免“测 h2、下 h1.1”），按 EWMA 排名选最优镜像并缓存到 `%LOCALAPPDATA%\myscoop\mirror-rank.json`；10 分钟内有新鲜冠军走**热路径（0 探测）**；下载前对实际资产做 1.2s/4MB 同栈验证（固定 1MB/s 底线），失败立即降权并换下一个，**原始直链始终作为最后兜底**。（`aria2-mirrors` **数组形式，须直接编辑 config.json 设置**——`scoop config` 命令不支持数组参数。）
 >   - 镜像地址可写完整 URL 或裸域名（自动补 `https://`），数组顺序作为**冷启动种子**（不再是“第一个可达就用”）。当前为 2026-10-10 实测去重排序的 24 个，前 3 名：`hk.gh-proxy.org` > `cdn.gh-proxy.com` > `git.yylx.win`。
 >   - **只放"release 资产代理"型镜像**：拼接方式只有一种——**镜像前缀 + 完整原始 URL**（如 `https://hk.gh-proxy.org/https://github.com/…`）。git 克隆加速器（如 `gitclone.com`，写法为 `gitclone.com/github.com/owner/repo`）不代理 release 下载路径，放进列表只会 404/500，勿加。
 >   - 对 aria2（`aria2-enabled: true`）与默认下载器两条路径均生效（**共用排名**）；但**下载期自动换源目前只对默认下载器生效**，aria2 仅使用排名结果。**Scoop 自更新后补丁会丢失**（链接也会失效），**重新覆盖或重新运行 `symlink.bat`** 即可（原版备份在仓库 `staging/scoop-backup/`）。

@@ -128,6 +128,37 @@ function Write-MirrorRank {
     ($obj | ConvertTo-Json -Depth 6) | Set-Content -Path $Path -Encoding UTF8
 }
 
+function Get-MirrorRankPath {
+    if ($env:MYSCOOP_RANK_FILE) { return $env:MYSCOOP_RANK_FILE }
+    return Join-Path $env:LOCALAPPDATA 'myscoop\mirror-rank.json'
+}
+
+function Get-MirrorBase([string]$url) {
+    $i = $url.IndexOf('https://github.com/')
+    if ($i -gt 0) { return $url.Substring(0, $i).TrimEnd('/') }
+    return $url.TrimEnd('/')
+}
+
+function Register-MirrorResult([string]$url, [bool]$ok) {
+    try {
+        $path = Get-MirrorRankPath
+        $rank = Read-MirrorRank -Path $path
+        $key = Get-MirrorBase $url
+        $now = [DateTimeOffset]::Now.ToUnixTimeSeconds()
+        $e = if ($rank.ContainsKey($key)) { $rank[$key] } else { @{ ewma = 0.0; fails = 0; cooldown_until = 0; last = 0 } }
+        if ($ok) {
+            $e.fails = 0
+        } else {
+            $e.fails = [int]$e.fails + 1
+            if ([double]$e.ewma -gt 2.0) { $e.ewma = 2.0 }
+            if ([int]$e.fails -ge 3) { $e.cooldown_until = $now + 1800 }
+        }
+        $e.last = $now
+        $rank[$key] = $e
+        Write-MirrorRank -Path $path -Rank $rank
+    } catch {}
+}
+
 if (-not $script:MirrorPlanMemo) { $script:MirrorPlanMemo = @{} }
 
 function Get-GitHubMirrorPlan([string]$url) {
@@ -150,13 +181,14 @@ function Get-GitHubMirrorPlan([string]$url) {
         return [pscustomobject]@{ Urls = @($url); MinMBps = 0.0; BestMBps = 0.0 }
     }
 
-    $cacheFile = if ($env:MYSCOOP_RANK_FILE) { $env:MYSCOOP_RANK_FILE } else { Join-Path $env:LOCALAPPDATA 'myscoop\mirror-rank.json' }
+    $cacheFile = Get-MirrorRankPath
     $now = [DateTimeOffset]::Now.ToUnixTimeSeconds()
     $memoKey = ($bases -join '|')
     if ($script:MirrorPlanMemo.ContainsKey($memoKey)) {
         $mm = $script:MirrorPlanMemo[$memoKey]
         if (($now - [long]$mm.ts) -lt 300) {
             $urls = @(); foreach ($b in $mm.order) { $urls += "$b/$url" }
+            $urls += $url
             return [pscustomobject]@{ Urls = $urls; MinMBps = [double]$mm.min; BestMBps = [double]$mm.best }
         }
     }
@@ -182,9 +214,12 @@ function Get-GitHubMirrorPlan([string]$url) {
         $bestBase = $fresh[0]
         $bestSpeed = [double]$rank[$bestBase].ewma
         $min = [math]::Round([Math]::Max(1.0, [Math]::Min(4.0, 0.2 * $bestSpeed)), 2)
-        $orderBases = @($bestBase)
+        $cachedAll = @($rank.Keys | Where-Object { $rank[$_].cooldown_until -le $now -and $rank[$_].ewma -gt 0 -and ($bases -contains $_) } | Sort-Object { $rank[$_].ewma } -Descending)
+        $orderBases = @()
+        foreach ($b in $cachedAll) { if ($orderBases -notcontains $b) { $orderBases += $b } }
         foreach ($b in $bases) { if ($orderBases -notcontains $b) { $orderBases += $b } }
         $urls = @(); foreach ($b in $orderBases) { $urls += "$b/$url" }
+        $urls += $url
         Write-Host ("  [mirror] fast path {0} (ewma {1:N2} MB/s, threshold {2:N2})" -f ($bestBase -replace '^https?://', ''), $bestSpeed, $min) -ForegroundColor DarkCyan
         $script:MirrorPlanMemo[$memoKey] = [pscustomobject]@{ order = $orderBases; best = $bestSpeed; min = $min; ts = $now }
         return [pscustomobject]@{ Urls = $urls; MinMBps = $min; BestMBps = $bestSpeed }
@@ -228,10 +263,13 @@ function Get-GitHubMirrorPlan([string]$url) {
 
     $orderBases = @()
     foreach ($r in $good) { if ($orderBases -notcontains $r.Base) { $orderBases += $r.Base } }
+    $cachedAll = @($rank.Keys | Where-Object { $rank[$_].cooldown_until -le $now -and $rank[$_].ewma -gt 0 -and ($bases -contains $_) } | Sort-Object { $rank[$_].ewma } -Descending)
+    foreach ($b in $cachedAll) { if ($orderBases -notcontains $b) { $orderBases += $b } }
     foreach ($r in ($res | Sort-Object { if ($_.Ok) { -$_.MBps } else { 9999 } })) { if ($orderBases -notcontains $r.Base) { $orderBases += $r.Base } }
     foreach ($b in $bases) { if ($orderBases -notcontains $b) { $orderBases += $b } }
 
     $urls = @(); foreach ($b in $orderBases) { $urls += "$b/$url" }
+    $urls += $url
     $bestSpeed = if ($best) { [double]$best.MBps } else { 0.0 }
     $min = if ($bestSpeed -gt 0) { [math]::Round([Math]::Max(1.0, [Math]::Min(4.0, 0.2 * $bestSpeed)), 2) } else { 0.0 }
     if ($best) { Write-Host ("  [mirror] using {0} ({1:N2} MB/s, switch threshold {2:N2} MB/s)" -f ($best.Base -replace '^https?://', ''), $bestSpeed, $min) -ForegroundColor DarkCyan }
@@ -308,7 +346,16 @@ function Invoke-CachedDownload ($app, $version, $url, $to, $cookies = $null, $us
         $lastErr = $null
         foreach ($alt in $plan.Urls) {
             try {
+                if ($alt -ne $url) {
+                    $probe = Measure-UrlSample -Url $alt -Ms 1200 -MaxBytes 4194304 -TimeoutMs 3000
+                    if (-not $probe.Ok -or $probe.MBps -lt 1.0) {
+                        Write-Host ("  [mirror] verify skip {0} ({1:N2} MB/s)" -f (($alt -split '/')[2]), $probe.MBps)
+                        Register-MirrorResult $alt $false
+                        continue
+                    }
+                }
                 Start-Download $alt "$cached.download" $cookies
+                Register-MirrorResult $alt $true
                 $downloaded = $true
                 break
             } catch {
