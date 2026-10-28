@@ -7,6 +7,7 @@
     },
     "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.1.24-inphic/inphic-1.0.1.24-portable.7z",
     "hash": "sha256:afce9f34692c635da700f63302fa3efcf553e93ac44c5c065bef54cb36b7d56a",
+    "persist": "Data",
     "bin": "INPHIC.exe",
     "shortcuts": [
         [
@@ -15,6 +16,7 @@
         ]
     ],
     "notes": [
-        "Inno Setup 解包组装的便携版（安装器仅复制文件/创建快捷方式，无服务或驱动安装）。"
+        "Inno Setup 解包组装的便携版（安装器仅复制文件/创建快捷方式，无服务或驱动安装）。",
+        "配置在程序的 Data 目录（CONFIG.ini + ms_1..10\\pro.data），已 persist 到 D:\\scoop\\persist\\inphic\\Data，升级不丢。"
     ]
 }
