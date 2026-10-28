@@ -287,7 +287,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 03d1586 (HEAD -> main, origin/main, origin/HEAD) inphic 增加 persist: Data（配置持久化）
+* 5337412 (HEAD -> main) 同步 README 第三方版本与日期列
+* b137f48 自动更新第三方软件
+* a38d2de (origin/main) 收录 MiHome-Windows 0.4.0（米家设备 Windows 桌面控制端） - 官方 portable zip release：extract_dir=MiHome-Windows，bin=MiHome-Windows.exe + 快捷方式 - README 第三方表置顶并全表重编号（1..66），计数 152→153/65→66；progress 同步 - hash 与上游 digest 一致（7c2c38…）
+* 03d1586 inphic 增加 persist: Data（配置持久化）
 * 00175e9 收录 INPHIC HUB 1.0.1.24（英菲克外设设置工具） - Inno Setup 安装器解包组装便携 7z：INPHIC.exe + DLL + Data + pic，安装器仅复制文件/建快捷方式，无服务或驱动安装 - 自托管 release v1.0.1.24-inphic，资产 inphic-1.0.1.24-portable.7z（sha256 afce9f34…） - bucket/inphic.json：bin=INPHIC.exe + 快捷方式；README 本地表置顶重编号（1..87），计数 151→152/86→87；progress 同步 - 实测：便携启动正常；scoop download inphic hash 校验通过
 * 32b9ff1 MiniDock 更新至 1.4.0：作者撤下 v2.0.0 prerelease - 上游新发布稳定版 v1.4.0（tag v1.4.0），v2.0.0 prerelease 已删除 - 清单同步 version/url/hash（9971db46…），checkver 的 releases regex 自然取 1.4.0 - README 版本列、progress 同步；实测 scoop download minidock hash 通过
 * 07c21bc 收录 MiniDock 2.0.0（极简 Windows dock 栏） - 官方单 exe release：MiniDock.exe，bin + 快捷方式，checkver/autoupdate - v2.0.0 为 prerelease：checkver.github 会落到稳定 tag MiniDock（release 名 v1.3.0），dry-run 实测会把 version 改成 "MiniDock"；改为 checkver.url 指向 releases 列表 + regex 取最新 vX.Y.Z（含 prerelease），autoupdate 仍用 v$version - README 第三方表置顶并全表重编号（1..65），计数 150→151/64→65；progress 同步 - 实测 scoop download minidock：hash 校验通过
