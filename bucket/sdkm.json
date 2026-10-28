@@ -1,13 +1,13 @@
 {
-    "version": "0.5.2",
+    "version": "0.5.3",
     "description": "🚀An SDK version manager for full-stack engineers",
     "homepage": "https://github.com/borenchan/sdkmate",
     "license": "Apache-2.0",
     "checkver": {
         "github": "https://github.com/borenchan/sdkmate"
     },
-    "url": "https://github.com/borenchan/sdkmate/releases/download/v0.5.2/sdkm-windows-x86_64.zip",
-    "hash": "sha256:88cfd133f87b411165e6a7e89ba6e393c448fb66f86b913d981d01c2ef5a69e3",
+    "url": "https://github.com/borenchan/sdkmate/releases/download/v0.5.3/sdkm-windows-x86_64.zip",
+    "hash": "sha256:737b443044fb4520a89f692439de0aa415694e7a6fb271d966815f3ccd14a605",
     "autoupdate": {
         "url": "https://github.com/borenchan/sdkmate/releases/download/v$version/sdkm-windows-x86_64.zip"
     },
