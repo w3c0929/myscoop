@@ -1,5 +1,5 @@
 {
-    "version": "2.0.0",
+    "version": "1.4.0",
     "description": "极简dock栏，专注于Windows端dock的软件",
     "homepage": "https://github.com/wang01116/MiniDock",
     "license": "unknown",
@@ -7,11 +7,11 @@
         "url": "https://api.github.com/repos/wang01116/MiniDock/releases",
         "regex": "\"tag_name\":\\s*\"v([\\d.]+)\""
     },
-    "url": "https://github.com/wang01116/MiniDock/releases/download/v2.0.0/MiniDock.exe",
+    "url": "https://github.com/wang01116/MiniDock/releases/download/v1.4.0/MiniDock.exe",
     "autoupdate": {
         "url": "https://github.com/wang01116/MiniDock/releases/download/v$version/MiniDock.exe"
     },
-    "hash": "sha256:c4f175c30eb0c530724daf096d74e337fbaf15b5646ca07949dbaf0485a098fd",
+    "hash": "sha256:9971db46046ef11fefff2b71a695a0d9f0be016189734b79cf28db5fb2446b68",
     "bin": "MiniDock.exe",
     "shortcuts": [
         [

@@ -88,7 +88,9 @@ GitHub: https://github.com/w3c0929/myscoop
 - **编码**：补丁 ps1 = UTF-8 **带 BOM** + CRLF（PS 5.1 无 BOM 按 GBK 读，中文注释乱码）；`symlink.bat` = UTF-8 **无 BOM** + CRLF + 开头 `chcp 65001`（bat 加 BOM 会使首行 `@echo off` 失效）。
 - **验证方法**：功能复验 `Find-AppBucket cc-switch` → 选中 myscoop/4.0.8（bucketlist 生效，无补丁时首个是 extras）、`Get-GitHubMirrorUrl` → 返回镜像 URL；分发分支用沙盒脚本（git 路径指向假 tag 仓库、目标路径替换为临时目录，不触碰真实 Scoop）。
 
-- **收录 MiniDock 2.0.0（2026-10-28）**：极简 Windows dock 栏，官方单 exe release（`MiniDock.exe`，bin + 快捷方式，checkver/autoupdate）。**注意 v2.0.0 是 prerelease**：`checkver.github` 取最新稳定版会落到 tag `MiniDock`（release 名 v1.3.0），实测 dry-run 会把 version 改成 `MiniDock`；已改为 `checkver.url` 指向 `releases` 列表 + regex `"tag_name":\s*"v([\d.]+)"`（取最新 vX.Y.Z，含 prerelease），`autoupdate` 仍用 `v$version`。dry-run 确认 0 更新；hash 与上游 digest 一致（c4f175…）。
+- **收录 MiniDock 2.0.0（2026-10-28）**：极简 Windows dock 栏，官方单 exe release（`MiniDock.exe`，bin + 快捷方式，checkver/autoupdate）。**注意 v2.0.0 是 prerelease**：`checkver.github` 取最新稳定版会落到 tag `MiniDock`（release 名 v1.3.0），实测 dry-run 会把 version 改成 `MiniDock`；已改为 `checkver.url` 指向 `releases` 列表 + regex `"tag_name":\s*"v([\d.]+)"`（取最新 vX.Y.Z，含 prerelease），`autoupdate` 仍用 `v$version`。dry-run 确认 0 更新；hash 与上游 digest 一致（c4f175…）。**（2026-10-28 晚：该 v2.0.0 prerelease 已被作者撤下，清单已更新至稳定版 1.4.0，见下）**
+
+- **MiniDock 更新至 1.4.0（2026-10-28）**：作者发布稳定版 v1.4.0（tag `v1.4.0`），并撤下先前的 v2.0.0 prerelease；清单同步 version/url/hash（`9971db46…`），checkver 的 `releases` 列表 regex 现在自然取 1.4.0。实测 `scoop download minidock` hash 通过。
 
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
@@ -281,7 +283,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* c058395 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 07c21bc (HEAD -> main, origin/main, origin/HEAD) 收录 MiniDock 2.0.0（极简 Windows dock 栏） - 官方单 exe release：MiniDock.exe，bin + 快捷方式，checkver/autoupdate - v2.0.0 为 prerelease：checkver.github 会落到稳定 tag MiniDock（release 名 v1.3.0），dry-run 实测会把 version 改成 "MiniDock"；改为 checkver.url 指向 releases 列表 + regex 取最新 vX.Y.Z（含 prerelease），autoupdate 仍用 v$version - README 第三方表置顶并全表重编号（1..65），计数 150→151/64→65；progress 同步 - 实测 scoop download minidock：hash 校验通过
+* c058395 progress.md 更新提交历史
 * aebb242 同步 README 第三方版本与日期列
 * f1ed48b 自动更新第三方软件
 * 43f3f2f 镜像选择修正：逐资产验证 + 缓存全量 EWMA 排序 + 直链兜底 - 热路径盲信旧 EWMA（cdn 58 MB/s 来自别的资产）→ cloudflared 在该镜像 0 MB/s 却直接选中；冷路径三候选全 <1MB/s 仍选最不差的 hk（SSL 失败），且候选未包含真正快的 acmsz - 所有存活缓存镜像按 EWMA 降序，其后为其余镜像；原始直链始终作为最后一个兜底 - 下载前对实际资产做 1.2s/4MB 同栈验证（固定 1MB/s 底线）；失败立即降权（EWMA→≤2、fails+1，3 次冷却 30 分钟），成功则 fails 清零 - 实测 cloudflared：第 1 次 10.6s（cdn 验证失败→acmsz），第 2 次 6.5s（直接 acmsz），hash 均正确 - 同步 README/SKILL/progress
