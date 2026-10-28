@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 152 款
+- **收录软件总数**: 153 款
 - **本地维护（自托管 Release）**: 87 款
-- **第三方官方（引用原项目 Release）**: 65 款
+- **第三方官方（引用原项目 Release）**: 66 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -93,6 +93,8 @@ GitHub: https://github.com/w3c0929/myscoop
 - **MiniDock 更新至 1.4.0（2026-10-28）**：作者发布稳定版 v1.4.0（tag `v1.4.0`），并撤下先前的 v2.0.0 prerelease；清单同步 version/url/hash（`9971db46…`），checkver 的 `releases` 列表 regex 现在自然取 1.4.0。实测 `scoop download minidock` hash 通过。
 
 - **收录 INPHIC HUB 1.0.1.24（2026-10-28）**：Inno Setup 安装器（安装器仅复制文件/建快捷方式，无服务或驱动安装）解包组装便携 7z（`INPHIC.exe` + DLL + Data + pic）；自托管 release `v1.0.1.24-inphic`，资产 `inphic-1.0.1.24-portable.7z`；实测解包后直接启动正常。配置位于程序 `Data` 目录（`CONFIG.ini` + `ms_1..10\pro.data`），已加 `persist: "Data"`（落到 `D:\scoop\persist\inphic\Data`，升级不丢）。
+
+- **收录 MiHome-Windows 0.4.0（2026-10-28）**：米家设备 Windows 桌面控制端（基于 mijiaAPI 的图形界面，扫码登录后本地查看/控制设备）；官方 portable zip release，`extract_dir=MiHome-Windows`，`bin=MiHome-Windows.exe` + 快捷方式；hash 与上游 digest 一致（7c2c38…）。
 
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
@@ -285,7 +287,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 00175e9 (HEAD -> main, origin/main, origin/HEAD) 收录 INPHIC HUB 1.0.1.24（英菲克外设设置工具） - Inno Setup 安装器解包组装便携 7z：INPHIC.exe + DLL + Data + pic，安装器仅复制文件/建快捷方式，无服务或驱动安装 - 自托管 release v1.0.1.24-inphic，资产 inphic-1.0.1.24-portable.7z（sha256 afce9f34…） - bucket/inphic.json：bin=INPHIC.exe + 快捷方式；README 本地表置顶重编号（1..87），计数 151→152/86→87；progress 同步 - 实测：便携启动正常；scoop download inphic hash 校验通过
+* 03d1586 (HEAD -> main, origin/main, origin/HEAD) inphic 增加 persist: Data（配置持久化）
+* 00175e9 收录 INPHIC HUB 1.0.1.24（英菲克外设设置工具） - Inno Setup 安装器解包组装便携 7z：INPHIC.exe + DLL + Data + pic，安装器仅复制文件/建快捷方式，无服务或驱动安装 - 自托管 release v1.0.1.24-inphic，资产 inphic-1.0.1.24-portable.7z（sha256 afce9f34…） - bucket/inphic.json：bin=INPHIC.exe + 快捷方式；README 本地表置顶重编号（1..87），计数 151→152/86→87；progress 同步 - 实测：便携启动正常；scoop download inphic hash 校验通过
 * 32b9ff1 MiniDock 更新至 1.4.0：作者撤下 v2.0.0 prerelease - 上游新发布稳定版 v1.4.0（tag v1.4.0），v2.0.0 prerelease 已删除 - 清单同步 version/url/hash（9971db46…），checkver 的 releases regex 自然取 1.4.0 - README 版本列、progress 同步；实测 scoop download minidock hash 通过
 * 07c21bc 收录 MiniDock 2.0.0（极简 Windows dock 栏） - 官方单 exe release：MiniDock.exe，bin + 快捷方式，checkver/autoupdate - v2.0.0 为 prerelease：checkver.github 会落到稳定 tag MiniDock（release 名 v1.3.0），dry-run 实测会把 version 改成 "MiniDock"；改为 checkver.url 指向 releases 列表 + regex 取最新 vX.Y.Z（含 prerelease），autoupdate 仍用 v$version - README 第三方表置顶并全表重编号（1..65），计数 150→151/64→65；progress 同步 - 实测 scoop download minidock：hash 校验通过
 * c058395 progress.md 更新提交历史

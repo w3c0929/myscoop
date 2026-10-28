@@ -1,0 +1,22 @@
+{
+    "version": "0.4.0",
+    "description": "米家设备的 Windows 桌面控制端。基于 mijiaAPI (Do1e/mijia-api) 构建图形界面，扫码登录后即可在本地窗口中查看和控制家里的全部米家设备。",
+    "homepage": "https://github.com/huanyuejue/MiHome-Windows",
+    "license": "GPL-3.0",
+    "checkver": {
+        "github": "https://github.com/huanyuejue/MiHome-Windows"
+    },
+    "url": "https://github.com/huanyuejue/MiHome-Windows/releases/download/0.4.0/MiHome-Windows-0.4.0-x64-portable.zip",
+    "hash": "sha256:7c2c38220c0889c9e69a6e65668a491c42e25d95b9386dac407547cc39b20301",
+    "autoupdate": {
+        "url": "https://github.com/huanyuejue/MiHome-Windows/releases/download/$version/MiHome-Windows-$version-x64-portable.zip"
+    },
+    "extract_dir": "MiHome-Windows",
+    "bin": "MiHome-Windows.exe",
+    "shortcuts": [
+        [
+            "MiHome-Windows.exe",
+            "mihome"
+        ]
+    ]
+}
