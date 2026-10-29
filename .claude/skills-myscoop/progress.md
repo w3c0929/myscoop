@@ -295,7 +295,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 83c46ac (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* ea03b18 (HEAD -> main, origin/main, origin/HEAD) wechat 改为第三方官方：复制 extras 4.2.0.9 清单并修复脚本 - 删除旧自托管 release v4.1.11-wechat（含资产与标签） - 修复 installer 的 InstallPath 写法（New-Item→New-ItemProperty）与 uninstaller 缺少 -ErrorAction SilentlyContinue - README 从本地表迁移到第三方表（本地 87→86，第三方 68→69，总数 155 不变）；progress 同步
+* 83c46ac progress.md 更新提交历史
 * 6e0269f 同步 README 第三方版本与日期列
 * f013274 自动更新第三方软件
 * 58ce6b1 progress.md 更新提交历史
