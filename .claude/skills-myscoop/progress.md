@@ -293,7 +293,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* d82ca44 (HEAD -> main, origin/main, origin/HEAD) 收录 BrimDeck 1.2.2（Windows 11 灵动岛） - 官方多架构 release：x64 便携 zip（extract_dir=BrimDeck），32bit/arm64 为 Setup.exe；bin=BrimDeck.exe + 快捷方式 - README 第三方表置顶并全表重编号（1..68），计数 154→155/67→68；progress 同步
+* 6e0269f (HEAD -> main) 同步 README 第三方版本与日期列
+* f013274 自动更新第三方软件
+* 58ce6b1 (origin/main) progress.md 更新提交历史
+* d82ca44 收录 BrimDeck 1.2.2（Windows 11 灵动岛） - 官方多架构 release：x64 便携 zip（extract_dir=BrimDeck），32bit/arm64 为 Setup.exe；bin=BrimDeck.exe + 快捷方式 - README 第三方表置顶并全表重编号（1..68），计数 154→155/67→68；progress 同步
 * 7d2b0dc progress.md 更新提交历史
 * 0828bd2 覆盖 extras 的 inno-setup 7.1.1：改 installer 静默安装 - innounp 2.71.2 / innoextract 1.9 均不支持 Inno Setup 7.x 解包（报 setup files corrupted） - myscoop 新增同名清单覆盖 extras：installer.args /VERYSILENT ... /DIR=$dir；post_uninstall 调 unins000.exe - README 第三方表置顶重编号（1..67），计数 153→154/66→67；progress 同步 - 实测安装成功：ISCC/ISSigTool shim + ISIDE 快捷方式正常
 * 2cb7ad3 progress.md 更新提交历史
