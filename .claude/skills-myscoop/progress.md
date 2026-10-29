@@ -289,9 +289,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 5337412 (HEAD -> main) 同步 README 第三方版本与日期列
+* ed00af2 (HEAD -> main, origin/main, origin/HEAD) 2345pic 增加 post_install：安装时注册图片格式关联 - 自动执行 2345PicLoader.exe -installReg（仅 HKCU，无需管理员；实测退出 0、无推广子进程） - 注册 95 种图片格式 ProgID，并把 .jpg 默认关联到 2345PicViewer.exe - 其它格式受 Windows 10/11 限制需手动在“默认应用 → 按文件类型”选择；notes 说明配置在 %APPDATA%\2345Pic - README 类型/更新列、progress 同步
+* c8f59fa progress.md 更新提交历史
+* 5337412 同步 README 第三方版本与日期列
 * b137f48 自动更新第三方软件
-* a38d2de (origin/main) 收录 MiHome-Windows 0.4.0（米家设备 Windows 桌面控制端） - 官方 portable zip release：extract_dir=MiHome-Windows，bin=MiHome-Windows.exe + 快捷方式 - README 第三方表置顶并全表重编号（1..66），计数 152→153/65→66；progress 同步 - hash 与上游 digest 一致（7c2c38…）
+* a38d2de 收录 MiHome-Windows 0.4.0（米家设备 Windows 桌面控制端） - 官方 portable zip release：extract_dir=MiHome-Windows，bin=MiHome-Windows.exe + 快捷方式 - README 第三方表置顶并全表重编号（1..66），计数 152→153/65→66；progress 同步 - hash 与上游 digest 一致（7c2c38…）
 * 03d1586 inphic 增加 persist: Data（配置持久化）
 * 00175e9 收录 INPHIC HUB 1.0.1.24（英菲克外设设置工具） - Inno Setup 安装器解包组装便携 7z：INPHIC.exe + DLL + Data + pic，安装器仅复制文件/建快捷方式，无服务或驱动安装 - 自托管 release v1.0.1.24-inphic，资产 inphic-1.0.1.24-portable.7z（sha256 afce9f34…） - bucket/inphic.json：bin=INPHIC.exe + 快捷方式；README 本地表置顶重编号（1..87），计数 151→152/86→87；progress 同步 - 实测：便携启动正常；scoop download inphic hash 校验通过
 * 32b9ff1 MiniDock 更新至 1.4.0：作者撤下 v2.0.0 prerelease - 上游新发布稳定版 v1.4.0（tag v1.4.0），v2.0.0 prerelease 已删除 - 清单同步 version/url/hash（9971db46…），checkver 的 releases regex 自然取 1.4.0 - README 版本列、progress 同步；实测 scoop download minidock hash 通过
