@@ -8,11 +8,19 @@
     },
     "url": "https://github.com/w3c0929/myscoop/releases/download/v10.8.0.9683/2345pic-10.8.0.9683-portable.zip",
     "hash": "sha256:90b7784be9306b7fc15f7d483c47c756e286c0602935ffca31fd95a50657dbcf",
+    "post_install": [
+        "if (Test-Path \"$dir\\Bin\\2345PicLoader.exe\") { Start-Process -FilePath \"$dir\\Bin\\2345PicLoader.exe\" -ArgumentList '-installReg' -Wait -WindowStyle Hidden }"
+    ],
     "bin": "Bin\\2345Pic.exe",
     "shortcuts": [
         [
             "Bin\\2345Pic.exe",
             "2345看图王"
         ]
+    ],
+    "notes": [
+        "安装时自动执行 2345PicLoader.exe -installReg：注册 95 种图片格式的 ProgID，并把 .jpg 关联到 2345看图王。",
+        "Windows 10/11 不允许安装程序静默设置全部默认应用；其它格式请在“设置 → 应用 → 默认应用 → 按文件类型”中选择 2345看图王，或右键图片 →“打开方式 → 选择其他应用 → 始终使用”。",
+        "用户配置位于 %APPDATA%\\2345Pic，Scoop 升级/重装不会丢失。"
     ]
 }
