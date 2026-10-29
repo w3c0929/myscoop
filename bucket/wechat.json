@@ -1,10 +1,57 @@
 {
-    "version": "4.1.11",
-    "description": "WeChat - Tencent social messaging app",
+    "version": "4.2.0.9",
+    "description": "微信 WeChat - 腾讯社交聊天应用（版本镜像：cscnk52/wechat-windows-versions）",
+    "homepage": "https://www.wechat.com/",
     "license": {
-        "identifier": "Freeware"
+        "identifier": "Proprietary",
+        "url": "https://www.wechat.com/en/service_terms.html"
     },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v4.1.11-wechat/wechat-4.1.11.exe",
-    "hash": "sha256:c5fb3c5481a5df5cfbbc53c3ba83c6caa61dfcf72934e6b44e4f40b9a989760d",
-    "post_install": "Start-Process \"$dir\\wechat-4.1.11.exe\""
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/cscnk52/wechat-windows-versions/releases/download/v4.2.0.9/weixin_4.2.0.9.exe#/dl.7z",
+            "hash": "fc948730e854ae0e03e64ac57ffde0f61b530d7a571d16df411914bad30a1526"
+        }
+    },
+    "installer": {
+        "script": [
+            "Expand-7zipArchive \"$dir\\install.7z\" \"$dir\" -Removal",
+            "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse",
+            "$config_path = \"$env:APPDATA\\Tencent\\xwechat\\config\"",
+            "ensure \"$config_path\" | Out-Null",
+            "Set-Content -NoNewline -Path \"$config_path\\51a1fffea11325a1e4104c6b3de47af7.ini\" -Value \"$persist_dir\"",
+            "$reg_path = \"HKCU:Software\\Tencent\\Wexin\"",
+            "if (!(Test-Path \"$reg_path\")) {",
+            "    New-Item -Path \"$reg_path\" -Type Directory -Force | Out-Null",
+            "}",
+            "New-ItemProperty -Path $reg_path -Name \"FileSavePath\" -Value \"$persist_dir\" -Force | Out-Null",
+            "New-ItemProperty -Path $reg_path -Name \"InstallPath\" -Value \"$dir\" -PropertyType String -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Remove-Item -Path \"$env:APPDATA\\Tencent\\xwechat\\config\\51a1fffea11325a1e4104c6b3de47af7.ini\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Remove-ItemProperty -Path \"HKCU:Software\\Tencent\\Wexin\" -Name \"FileSavePath\" -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Weixin.exe",
+            "WeChat"
+        ]
+    ],
+    "persist": "xwechat_files",
+    "checkver": {
+        "github": "https://github.com/cscnk52/wechat-windows-versions"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/cscnk52/wechat-windows-versions/releases/download/v$version/weixin_$version.exe#/dl.7z"
+            }
+        }
+    },
+    "notes": [
+        "清单来自官方 extras，已修正 installer 的 InstallPath 写法（New-ItemProperty）与 uninstaller 的 SilentlyContinue。",
+        "数据目录 xwechat_files 已 persist；微信配置通过 %APPDATA%\\Tencent\\xwechat\\config 指向 persist 目录。"
+    ]
 }
