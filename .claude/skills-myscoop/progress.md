@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 154 款
+- **收录软件总数**: 155 款
 - **本地维护（自托管 Release）**: 87 款
-- **第三方官方（引用原项目 Release）**: 67 款
+- **第三方官方（引用原项目 Release）**: 68 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -99,6 +99,8 @@ GitHub: https://github.com/w3c0929/myscoop
 - **2345pic 增加 post_install 关联注册（2026-10-29）**：安装后自动执行 `2345PicLoader.exe -installReg`（仅 HKCU，无需管理员；实测退出 0、无推广子进程），注册 95 种图片格式 ProgID，并把 .jpg 默认关联到 `2345PicViewer.exe`；其它格式受 Windows 10/11 限制需手动在“默认应用 → 按文件类型”选择（notes 已说明）。用户配置在 `%APPDATA%\2345Pic`，Scoop 升级/重装不丢，无需 persist。
 
 - **覆盖 extras 的 inno-setup 7.1.1（2026-10-29）**：innounp 2.71.2 / innoextract 1.9 均不支持 Inno Setup 7.x 解包（innounp 报 "setup files corrupted"）；myscoop 新增同名清单覆盖 extras，改用 installer 静默安装（`/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- /NOICONS /DIR=$dir`），`post_uninstall` 调用 unins000.exe 清理。实测安装成功：ISCC/ISSigTool shim + ISIDE 快捷方式正常，`scoop list` 来源为 myscoop。
+
+- **收录 BrimDeck 1.2.2（2026-10-29）**：Windows 11 灵动岛（AI 编程工具额度/用量、音乐控制等）；官方多架构 release，x64 用 portable zip（extract_dir=BrimDeck），32bit/arm64 用 Setup.exe；bin=BrimDeck.exe + 快捷方式；用户已实测。
 
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
@@ -291,7 +293,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 0828bd2 (HEAD -> main, origin/main, origin/HEAD) 覆盖 extras 的 inno-setup 7.1.1：改 installer 静默安装 - innounp 2.71.2 / innoextract 1.9 均不支持 Inno Setup 7.x 解包（报 setup files corrupted） - myscoop 新增同名清单覆盖 extras：installer.args /VERYSILENT ... /DIR=$dir；post_uninstall 调 unins000.exe - README 第三方表置顶重编号（1..67），计数 153→154/66→67；progress 同步 - 实测安装成功：ISCC/ISSigTool shim + ISIDE 快捷方式正常
+* 7d2b0dc (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 0828bd2 覆盖 extras 的 inno-setup 7.1.1：改 installer 静默安装 - innounp 2.71.2 / innoextract 1.9 均不支持 Inno Setup 7.x 解包（报 setup files corrupted） - myscoop 新增同名清单覆盖 extras：installer.args /VERYSILENT ... /DIR=$dir；post_uninstall 调 unins000.exe - README 第三方表置顶重编号（1..67），计数 153→154/66→67；progress 同步 - 实测安装成功：ISCC/ISSigTool shim + ISIDE 快捷方式正常
 * 2cb7ad3 progress.md 更新提交历史
 * ed00af2 2345pic 增加 post_install：安装时注册图片格式关联 - 自动执行 2345PicLoader.exe -installReg（仅 HKCU，无需管理员；实测退出 0、无推广子进程） - 注册 95 种图片格式 ProgID，并把 .jpg 默认关联到 2345PicViewer.exe - 其它格式受 Windows 10/11 限制需手动在“默认应用 → 按文件类型”选择；notes 说明配置在 %APPDATA%\2345Pic - README 类型/更新列、progress 同步
 * c8f59fa progress.md 更新提交历史

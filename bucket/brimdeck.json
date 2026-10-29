@@ -1,0 +1,47 @@
+{
+    "version": "1.2.2",
+    "description": "A Dynamic Island for Windows 11 with AI coding tool quotas, usage tracking, music controls, and more.",
+    "homepage": "https://github.com/MoFeng2223/BrimDeck",
+    "license": "Apache-2.0",
+    "checkver": {
+        "github": "https://github.com/MoFeng2223/BrimDeck"
+    },
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v1.2.2/BrimDeck-1.2.2-Setup.exe",
+            "hash": "sha256:4f212cc2daa174d3c6a1862ccc1a8970c2645998c28c30321c15c2380ccb7110"
+        },
+        "64bit": {
+            "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v1.2.2/BrimDeck-1.2.2-Portable-x64.zip",
+            "hash": "sha256:2e76e881b2d79650d9a24e8fa9529cccbb4e55a8f5d9d83f897ba0f6ab415144",
+            "extract_dir": "BrimDeck"
+        },
+        "arm64": {
+            "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v1.2.2/BrimDeck-1.2.2-Setup.exe",
+            "hash": "sha256:4f212cc2daa174d3c6a1862ccc1a8970c2645998c28c30321c15c2380ccb7110"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v$version/BrimDeck-$version-Setup.exe"
+            },
+            "64bit": {
+                "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v$version/BrimDeck-$version-Portable-x64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v$version/BrimDeck-$version-Setup.exe"
+            }
+        }
+    },
+    "bin": "BrimDeck.exe",
+    "shortcuts": [
+        [
+            "BrimDeck.exe",
+            "brimdeck"
+        ]
+    ],
+    "pre_install": [
+        "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; if ($d -and (Get-ChildItem \"$d\\*\" -Filter *.exe | Select-Object -First 1)) { Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; Remove-Item $d.FullName -Recurse -Force }"
+    ]
+}
