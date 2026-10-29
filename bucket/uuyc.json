@@ -1,10 +1,10 @@
 {
-    "version": "4.44.0",
+    "version": "4.45.0",
     "description": "网易UU远程（GameViewer）：超低延迟的远程控制工具，支持 Windows / macOS / iOS / Android / TV",
     "homepage": "https://uuyc.163.com/",
     "license": "Freeware",
     "url": "https://api.nrd.nie.163.com/api/v1/release/dl/1?channel=gwqd#/uuyc-setup.exe",
-    "hash": "sha256:4f1b86d768478ddb923ca13c19c9880976549edc0d26b3c8067c87f7fb4c5379",
+    "hash": "sha256:49c9eac9566c528fa46c736e705eda5f7d9ea760cb6349bf9db81baab7b939aa",
     "installer": {
         "args": [
             "/S"
