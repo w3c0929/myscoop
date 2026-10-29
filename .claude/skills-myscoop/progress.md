@@ -291,7 +291,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 2cb7ad3 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 0828bd2 (HEAD -> main, origin/main, origin/HEAD) 覆盖 extras 的 inno-setup 7.1.1：改 installer 静默安装 - innounp 2.71.2 / innoextract 1.9 均不支持 Inno Setup 7.x 解包（报 setup files corrupted） - myscoop 新增同名清单覆盖 extras：installer.args /VERYSILENT ... /DIR=$dir；post_uninstall 调 unins000.exe - README 第三方表置顶重编号（1..67），计数 153→154/66→67；progress 同步 - 实测安装成功：ISCC/ISSigTool shim + ISIDE 快捷方式正常
+* 2cb7ad3 progress.md 更新提交历史
 * ed00af2 2345pic 增加 post_install：安装时注册图片格式关联 - 自动执行 2345PicLoader.exe -installReg（仅 HKCU，无需管理员；实测退出 0、无推广子进程） - 注册 95 种图片格式 ProgID，并把 .jpg 默认关联到 2345PicViewer.exe - 其它格式受 Windows 10/11 限制需手动在“默认应用 → 按文件类型”选择；notes 说明配置在 %APPDATA%\2345Pic - README 类型/更新列、progress 同步
 * c8f59fa progress.md 更新提交历史
 * 5337412 同步 README 第三方版本与日期列
