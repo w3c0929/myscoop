@@ -1,10 +1,10 @@
 {
-    "version": "0.2.1-rc.3",
+    "version": "0.2.1-rc.5",
     "description": "DeepSeek Harness desktop client (official direct download, NSIS installer 7z-unpack portable)",
     "homepage": "https://www.deepseek.com/en/harness/",
     "license": "MIT",
     "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe",
-    "hash": "sha256:1e3876baaa20c3f26371dba7b6873bb70c3ef9b91403f6d3f87d2b27d4fd1e3a",
+    "hash": "sha256:50a2fedf234199e3319cdd6b89c4f0aea601a19fe48259c6e3000883f0d2c6f0",
     "bin": "DeepSeek Harness.exe",
     "shortcuts": [
         [
