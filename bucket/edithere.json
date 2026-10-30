@@ -1,0 +1,32 @@
+{
+    "version": "0.12.3",
+    "description": "EditHere — 截图、写下意见、直接调整布局，把修改意图一次交给 AI。",
+    "homepage": "https://github.com/Inginnng/EditHere",
+    "license": "NOASSERTION",
+    "checkver": {
+        "github": "https://github.com/Inginnng/EditHere"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Inginnng/EditHere/releases/download/v0.12.3/EditHere-win-x64.zip",
+            "hash": "sha256:d15e4b0ca0a4db39940520fd584dc8065088fe441812f0ca0c77538932d53cc2"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Inginnng/EditHere/releases/download/v$version/EditHere-win-x64.zip"
+            }
+        }
+    },
+    "bin": "EditHere.exe",
+    "shortcuts": [
+        [
+            "EditHere.exe",
+            "edithere"
+        ]
+    ],
+    "notes": [
+        "官方仅提供 Windows x64 版本；原清单把 32bit/arm64 映射到 EditHere-web-agent.zip（纯文档包，无 exe），已改为仅 64bit。"
+    ]
+}
