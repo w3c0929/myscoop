@@ -297,7 +297,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 9392063 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 9f4d60a (HEAD -> main, origin/main, origin/HEAD) 收录 EditHere 0.12.3（仅 x64）并修正多架构映射 - 官方仅提供 Windows x64 zip；原清单把 32bit/arm64 映射到 EditHere-web-agent.zip（纯文档包，无 exe），已改为仅 64bit - bin=EditHere.exe + 快捷方式；hash d15e4b0c… 实测通过 - README 第三方表置顶重编号（1..70），计数 155→156/69→70；progress 同步
+* 9392063 progress.md 更新提交历史
 * ea03b18 wechat 改为第三方官方：复制 extras 4.2.0.9 清单并修复脚本 - 删除旧自托管 release v4.1.11-wechat（含资产与标签） - 修复 installer 的 InstallPath 写法（New-Item→New-ItemProperty）与 uninstaller 缺少 -ErrorAction SilentlyContinue - README 从本地表迁移到第三方表（本地 87→86，第三方 68→69，总数 155 不变）；progress 同步
 * 83c46ac progress.md 更新提交历史
 * 6e0269f 同步 README 第三方版本与日期列
