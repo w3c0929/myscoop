@@ -1,0 +1,26 @@
+{
+    "version": "10.4.0",
+    "description": "大模型文档翻译工具，支持 Excel 翻译、Word 翻译、PDF 翻译和 CAD 图纸翻译（DWG/DXF），双语对照输出，带翻译记忆库，适用于 macOS 和 Windows。AI document translator for Excel, Word, PDF and CAD drawings (DWG/DXF): translate files with any LLM (OpenAI, Claude, DeepSeek, Qwen, Ollama), with bilingual output and translation memory. Desktop app for macOS and Windows.",
+    "homepage": "https://github.com/KlaraGraff/XL_Translator/releases/latest",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/KlaraGraff/XL_Translator"
+    },
+    "url": "https://github.com/KlaraGraff/XL_Translator/releases/download/v10.4.0/Translator_Windows_x64_10.4.0_Setup.exe",
+    "autoupdate": {
+        "url": "https://github.com/KlaraGraff/XL_Translator/releases/download/v$version/Translator_Windows_x64_$version_Setup.exe"
+    },
+    "hash": "sha256:39a2b5894de274a8443a69540a69fab3f2bc2b318691927d2bc8b6562f5398f3",
+    "bin": "translator.exe",
+    "shortcuts": [
+        [
+            "translator.exe",
+            "xltranslator"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ]
+}
