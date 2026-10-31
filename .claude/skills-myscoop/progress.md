@@ -303,7 +303,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 561a582 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 43479d6 (HEAD -> main, origin/main, origin/HEAD) 修复更新脚本资产匹配/片段保留 + 三个清单更新 - 新增 url_filename_clean/_with_fragment：剥离 #/rename 片段再匹配，回写真实 URL 时保留 #/dl.7z 等片段（修 wechat 被误判无资产、autoupdate 丢失） - inno-setup checkver 改为 url+regex（原 API 全 URL+jsonpath 被脚本报“无法解析 repo 地址”） - minidock 1.6.0：资产改名 MiniDock_v1.6.0.exe，新增 pre_install 改名稳定 MiniDock.exe - kvninfer 0.19.1：切换到 KVMem/NInfer 统一包 nvidia-40-unified，bin 仍 workers/ninfer/ninfer-kvmem-server.exe - wechat 4.2.0.12：保留 #/dl.7z 与 autoupdate；README/progress 同步
+* 561a582 progress.md 更新提交历史
 * 2f5eee9 同步 README 第三方版本与日期列
 * 6819031 自动更新第三方软件
 * 642fa72 progress.md 更新提交历史
