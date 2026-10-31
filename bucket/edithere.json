@@ -1,5 +1,5 @@
 {
-    "version": "0.12.3",
+    "version": "0.12.4",
     "description": "EditHere — 截图、写下意见、直接调整布局，把修改意图一次交给 AI。",
     "homepage": "https://github.com/Inginnng/EditHere",
     "license": "NOASSERTION",
@@ -8,8 +8,8 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/Inginnng/EditHere/releases/download/v0.12.3/EditHere-win-x64.zip",
-            "hash": "sha256:d15e4b0ca0a4db39940520fd584dc8065088fe441812f0ca0c77538932d53cc2"
+            "url": "https://github.com/Inginnng/EditHere/releases/download/v0.12.4/EditHere-win-x64.zip",
+            "hash": "sha256:bc5653fe760243c1dda37cac603b73f772158334c499264113580e3035baf34b"
         }
     },
     "autoupdate": {
