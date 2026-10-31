@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 156 款
+- **收录软件总数**: 157 款
 - **本地维护（自托管 Release）**: 86 款
-- **第三方官方（引用原项目 Release）**: 70 款
+- **第三方官方（引用原项目 Release）**: 71 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -105,6 +105,8 @@ GitHub: https://github.com/w3c0929/myscoop
 - **wechat 改为第三方官方（2026-10-30）**：复制 extras 的 4.2.0.9 清单到 myscoop（checkver 指向 cscnk52/wechat-windows-versions）；删除旧自托管 release `v4.1.11-wechat`（含资产与标签）；修复 installer 的 `InstallPath` 写法（`New-Item`→`New-ItemProperty`）与 uninstaller 缺少 `-ErrorAction SilentlyContinue`（旧版卸载时微信自己的卸载器已删 Wexin 键，Scoop 再删属性报路径不存在）；README 从本地表迁移到第三方表（本地 87→86，第三方 68→69，总数 155 不变）。
 
 - **收录 EditHere 0.12.3（2026-10-30）**：截图/标注并直接让 AI 调整布局；官方仅提供 Windows x64 zip，原清单把 32bit/arm64 映射到 `EditHere-web-agent.zip`（纯文档包，无 exe），已改为仅 64bit；`bin=EditHere.exe`，hash `d15e4b0c…`；实测 `scoop download edithere` hash 通过。
+
+- **收录 DashBeam 0.7.2（2026-10-31）**：近距离/跨网络文件分享工具；官方多架构 portable zip（x64 用 `extract_dir=DashBeam`，arm64 由 `pre_install` 拍平），`bin=DashBeam.exe` + 快捷方式；用户已实测。
 
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
@@ -297,9 +299,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* eb9b9de (HEAD -> main) 同步 README 第三方版本与日期列
+* 367b44a (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* eb9b9de 同步 README 第三方版本与日期列
 * 6356892 自动更新第三方软件
-* 8cf2839 (origin/main) progress.md 更新提交历史
+* 8cf2839 progress.md 更新提交历史
 * 9f4d60a 收录 EditHere 0.12.3（仅 x64）并修正多架构映射 - 官方仅提供 Windows x64 zip；原清单把 32bit/arm64 映射到 EditHere-web-agent.zip（纯文档包，无 exe），已改为仅 64bit - bin=EditHere.exe + 快捷方式；hash d15e4b0c… 实测通过 - README 第三方表置顶重编号（1..70），计数 155→156/69→70；progress 同步
 * 9392063 progress.md 更新提交历史
 * ea03b18 wechat 改为第三方官方：复制 extras 4.2.0.9 清单并修复脚本 - 删除旧自托管 release v4.1.11-wechat（含资产与标签） - 修复 installer 的 InstallPath 写法（New-Item→New-ItemProperty）与 uninstaller 缺少 -ErrorAction SilentlyContinue - README 从本地表迁移到第三方表（本地 87→86，第三方 68→69，总数 155 不变）；progress 同步
