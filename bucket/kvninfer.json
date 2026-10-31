@@ -1,16 +1,15 @@
 {
-    "version": "0.18.0-ninfer-rc3",
-    "description": "NInfer（kvmem 上游 NInfer 线）：三元 .ninfer 模型推理服务端 + KVMem 缓存压缩（RTX 30/40/50 预编译，内嵌 Web UI）",
+    "version": "0.19.1",
+    "description": "KVMem / NInfer 统一版：NInfer + PolyStrata 双后端（.ninfer 三元模型 + GGUF），RTX 40 预编译包，内嵌控制台/聊天",
     "homepage": "https://github.com/kvmem/kvmem-llama.cpp",
     "license": "unknown",
     "checkver": {
-        "github": "https://github.com/kvmem/kvmem-llama.cpp",
-        "tag_regex": "^v([\\d.]+-ninfer-rc\\d+)$"
+        "github": "https://github.com/kvmem/kvmem-llama.cpp"
     },
-    "url": "https://github.com/kvmem/kvmem-llama.cpp/releases/download/v0.18.0-ninfer-rc3/ninfer-server-rtx40-sm89-ui-938c2f1.zip",
-    "hash": "sha256:e35570b2e68982f143e2a97649c9e0ecf1eba6efd3f7acadb06f29ac21291713",
+    "url": "https://github.com/kvmem/kvmem/releases/download/v0.19.1/kvmem-v0.19.1-windows-x64-nvidia-40-unified.zip",
+    "hash": "sha256:9af7f0e7c51a77c452b66e176d9ae50a7a5c13f1bafc3dd242fb86395a796ecd",
     "autoupdate": {
-        "url": "https://github.com/kvmem/kvmem-llama.cpp/releases/download/v$version/ninfer-server-rtx40-sm89-ui-938c2f1.zip"
+        "url": "https://github.com/kvmem/kvmem/releases/download/v$version/kvmem-v$version-windows-x64-nvidia-40-unified.zip"
     },
     "pre_install": [
         "$d = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1; if ($d) { Get-ChildItem $d.FullName | Move-Item -Destination \"$dir\" -Force; Remove-Item $d.FullName -Recurse -Force }"
@@ -23,6 +22,8 @@
         ]
     ],
     "notes": [
-        "模型（.ninfer 三元格式）需另行准备；运行包与模型必须使用纯英文路径（不能含中文——含用户名、上级目录与文件名）。包内 scripts/windows/start-ninfer.ps1 为含推荐默认参数的启动脚本。"
+        "统一版包含 NInfer 与 PolyStrata 两个后端；解压后双击 START-HERE-CN.bat 打开控制台（确认 IP/端口后启动服务）。",
+        "包含 Python 与 CUDA 运行库；模型（.ninfer / GGUF）需另行准备。运行包与模型必须使用纯英文路径。",
+        "bin/shortcut 指向 workers/ninfer/ninfer-kvmem-server.exe（服务端）；控制台入口为 START-HERE-CN.bat。"
     ]
 }

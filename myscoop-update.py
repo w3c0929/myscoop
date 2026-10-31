@@ -298,10 +298,22 @@ def _norm_base(name):
     return re.sub(r"[\d.]+", "VER", base)
 
 
+def _with_fragment(real, source):
+    """回写真实下载 URL 时保留清单模板里的 #/rename 片段（如 #/dl.7z）。"""
+    if isinstance(real, str) and isinstance(source, str) and "#" in source and "#" not in real:
+        return real + "#" + source.split("#", 1)[1]
+    return real
+
+
+def url_filename_clean(url):
+    """URL 文件名：去掉 #fragment / ?query，再做 %2B 等解码（与 release asset 名可比）。"""
+    return unquote(url.split("#", 1)[0].split("?", 1)[0].split("/")[-1])
+
+
 def match_asset(resolved_url, assets):
     """根据解析后的 URL 匹配对应的 release asset。优先级：
     精确同名 → 忽略大小写 → 基础名数字归一化相等（同扩展名优先，其次同家族互通）。"""
-    filename = unquote(resolved_url.split("/")[-1])  # %2B 之类编码还原后再匹配（+ 与 %2B 等价）
+    filename = url_filename_clean(resolved_url)  # 去掉 #/rename 片段；%2B 等编码还原后再匹配
     for a in assets:
         if a["name"] == filename:
             return a
@@ -440,7 +452,7 @@ def refresh_build_in_template(manifest, asset, current_url):
     """方案A：模板构建号随资产刷新。资产名含 {版本}+{build} 段且清单有 autoupdate 模板时，
     把模板（url/extract_dir，含架构）与精确 extract_dir 中的旧 build 替换为新 build——
     模板保活，scoop 客户端自更新不再 404。构建号无法反推时返回 False（调用方回退去模板）。"""
-    cur = unquote((current_url or "").split("/")[-1])
+    cur = url_filename_clean(current_url or "")
     om = re.search(r"\+(\d+)[^+]*$", cur)
     new_m = re.search(r"\+(\d+)[^+]*$", asset.get("name", ""))
     if not om or not new_m:
@@ -502,7 +514,7 @@ def merge_existing_manifest(out_path, template, drop=()):
 def handle_build_drift(manifest, asset, resolved_url, arch=None):
     """构建号漂移处理（C 组合策略）：优先刷新模板构建号（方案A，保留模板）；
     模板无法反推时去模板化+精确回写（方案B）。返回 'none' | 'refresh' | 'removed'。"""
-    if asset["name"] == resolved_url.split("/")[-1]:
+    if asset["name"] == url_filename_clean(resolved_url):
         return "none"
     if refresh_build_in_template(manifest, asset, resolved_url):
         return "refresh"
@@ -516,7 +528,7 @@ def sync_build_asset(manifest, asset, resolved_url, arch=None):
     url 已由调用方回写真实资产；此函数移除 autoupdate 模板（防 scoop 客户端按旧模板 404），
     extract_dir 同步为资产 stem。返回 True 表示有漂移处理。"""
     fn = asset.get("name", "")
-    if fn == resolved_url.split("/")[-1]:
+    if fn == url_filename_clean(resolved_url):
         return False
     au = manifest.get("autoupdate")
     if au is None:
@@ -556,8 +568,8 @@ def heal_url_drift(manifest, assets):
                 changed = False
                 for i, u in enumerate(cur):
                     a = match_asset(u, assets)
-                    if a and a["name"] != unquote(u.split("/")[-1]):
-                        cur[i] = a.get("browser_download_url") or u
+                    if a and a["name"] != url_filename_clean(u):
+                        cur[i] = _with_fragment(a.get("browser_download_url") or u, u)
                         if a.get("digest") and i < len(hs):
                             hs[i] = a["digest"]
                         changed = True
@@ -566,8 +578,8 @@ def heal_url_drift(manifest, assets):
                     fixed = True
                 continue
             a = match_asset(cur, assets)
-            if a and a["name"] != unquote(cur.split("/")[-1]):
-                blk["url"] = a.get("browser_download_url") or cur
+            if a and a["name"] != url_filename_clean(cur):
+                blk["url"] = _with_fragment(a.get("browser_download_url") or cur, cur)
                 if a.get("digest"):
                     blk["hash"] = a["digest"]
                 fixed |= handle_build_drift(manifest, a, cur, arch=arch) in ("refresh", "removed")
@@ -579,8 +591,8 @@ def heal_url_drift(manifest, assets):
         changed = False
         for i, u in enumerate(cur):
             a = match_asset(u, assets)
-            if a and a["name"] != unquote(u.split("/")[-1]):
-                cur[i] = a.get("browser_download_url") or u
+            if a and a["name"] != url_filename_clean(u):
+                cur[i] = _with_fragment(a.get("browser_download_url") or u, u)
                 if a.get("digest") and i < len(hs):
                     hs[i] = a["digest"]
                 changed = True
@@ -589,10 +601,10 @@ def heal_url_drift(manifest, assets):
         return changed
     a = match_asset(cur, assets)
     # URL 中 %2B 等编码与资产名原字符（+）等价：解码后再比，避免误判漂移
-    cur_name = unquote(cur.split("/")[-1])
+    cur_name = url_filename_clean(cur)
     if not a or a["name"] == cur_name:
         return False
-    manifest["url"] = a.get("browser_download_url") or cur
+    manifest["url"] = _with_fragment(a.get("browser_download_url") or cur, cur)
     if a.get("digest"):
         manifest["hash"] = a["digest"]
     return handle_build_drift(manifest, a, cur) in ("refresh", "removed")
@@ -1349,10 +1361,10 @@ def _update_pair_block(blk, tmpl, old_url, version, assets):
             break
         a = match_asset(t, assets)
         tmpl_i = tmpl[i] if isinstance(tmpl, list) and i < len(tmpl) else ""
-        if a and "$version" not in (tmpl_i or "") and a["name"] != unquote(t.split("/")[-1]):
+        if a and "$version" not in (tmpl_i or "") and a["name"] != url_filename_clean(t):
             a = None  # cudart 项：只认精确同名
         if a:
-            urls[i] = a.get("browser_download_url") or t
+            urls[i] = _with_fragment(a.get("browser_download_url") or t, t)
             hashes[i] = a.get("digest", "")
             n += 1
         else:
@@ -1746,7 +1758,7 @@ def update_manifest(manifest_path, dry_run=False):
             if asset:
                 matched_any = True
                 digest = asset.get("digest", "")
-                real = asset.get("browser_download_url") or new_url
+                real = _with_fragment(asset.get("browser_download_url") or new_url, old_url)
                 manifest["architecture"][arch]["url"] = real
                 manifest["architecture"][arch]["hash"] = digest
                 drift = handle_build_drift(manifest, asset, new_url, arch=arch)
@@ -1762,7 +1774,7 @@ def update_manifest(manifest_path, dry_run=False):
                 if asset2:
                     matched_any = True
                     digest2 = asset2.get("digest", "")
-                    real2 = asset2.get("browser_download_url") or new_url2
+                    real2 = _with_fragment(asset2.get("browser_download_url") or new_url2, old_url)
                     manifest["architecture"][arch]["url"] = real2
                     manifest["architecture"][arch]["hash"] = digest2
                     drift2 = handle_build_drift(manifest, asset2, new_url2, arch=arch)
@@ -1774,12 +1786,12 @@ def update_manifest(manifest_path, dry_run=False):
                         print(f"    {arch}: {digest2[:16]}... (fallback)")
                 else:
                     # 第三重：前缀重选（该架构，同单资产路径——资产名含每版变化的非数字标记）
-                    cur_name = unquote(old_url.split("/")[-1])
+                    cur_name = url_filename_clean(old_url)
                     asset3 = repick_by_prefix(cur_name, assets)
                     if asset3:
                         matched_any = True
                         digest3 = asset3.get("digest", "")
-                        real3 = asset3.get("browser_download_url") or new_url
+                        real3 = _with_fragment(asset3.get("browser_download_url") or new_url, old_url)
                         manifest["architecture"][arch]["url"] = real3
                         manifest["architecture"][arch]["hash"] = digest3
                         rf = refresh_filename_in_template(manifest, cur_name, asset3["name"])
@@ -1791,7 +1803,7 @@ def update_manifest(manifest_path, dry_run=False):
                         if asset4:
                             matched_any = True
                             digest4 = asset4.get("digest", "")
-                            real4 = asset4.get("browser_download_url") or new_url
+                            real4 = _with_fragment(asset4.get("browser_download_url") or new_url, old_url)
                             manifest["architecture"][arch]["url"] = real4
                             manifest["architecture"][arch]["hash"] = digest4
                             rf4 = refresh_filename_in_template(manifest, cur_name, asset4["name"])
@@ -1841,7 +1853,7 @@ def update_manifest(manifest_path, dry_run=False):
             asset = match_asset(new_url, assets)
             if asset:
                 digest = asset.get("digest", "")
-                real = asset.get("browser_download_url") or new_url
+                real = _with_fragment(asset.get("browser_download_url") or new_url, old_url)
                 manifest["url"] = real
                 manifest["hash"] = digest
                 drift = handle_build_drift(manifest, asset, new_url)
@@ -1856,7 +1868,7 @@ def update_manifest(manifest_path, dry_run=False):
                 asset2 = match_asset(new_url2, assets)
                 if asset2:
                     digest2 = asset2.get("digest", "")
-                    real2 = asset2.get("browser_download_url") or new_url2
+                    real2 = _with_fragment(asset2.get("browser_download_url") or new_url2, old_url)
                     manifest["url"] = real2
                     manifest["hash"] = digest2
                     drift2 = handle_build_drift(manifest, asset2, new_url2)
@@ -1868,11 +1880,11 @@ def update_manifest(manifest_path, dry_run=False):
                         print(f"    hash: {digest2[:16]}... (fallback)")
                 else:
                     # 第三重：前缀重选（资产名含每版变化的非数字标记，如构建 sha：ui-938c2f1→ui-ae48ec0）
-                    cur_name = unquote(old_url.split("/")[-1])
+                    cur_name = url_filename_clean(old_url)
                     asset3 = repick_by_prefix(cur_name, assets)
                     if asset3:
                         digest3 = asset3.get("digest", "")
-                        real3 = asset3.get("browser_download_url") or new_url
+                        real3 = _with_fragment(asset3.get("browser_download_url") or new_url, old_url)
                         manifest["url"] = real3
                         manifest["hash"] = digest3
                         rf = refresh_filename_in_template(manifest, cur_name, asset3["name"])
@@ -1883,7 +1895,7 @@ def update_manifest(manifest_path, dry_run=False):
                         asset4 = repick_by_suffix(cur_name, assets)
                         if asset4:
                             digest4 = asset4.get("digest", "")
-                            real4 = asset4.get("browser_download_url") or new_url
+                            real4 = _with_fragment(asset4.get("browser_download_url") or new_url, old_url)
                             manifest["url"] = real4
                             manifest["hash"] = digest4
                             rf4 = refresh_filename_in_template(manifest, cur_name, asset4["name"])

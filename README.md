@@ -13,11 +13,11 @@
 | 1 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.4.0 | 2026-10-31 | 2026-10-31 |
 | 2 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 3 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.12.3 | 2026-10-30 | 2026-10-30 |
-| 4 | [微信 WeChat](https://github.com/cscnk52/wechat-windows-versions) — 腾讯社交聊天应用（版本镜像：cscnk52/wechat-windows-versions） | `scoop install wechat` | 单 exe 官方 release（7z 解包） | 4.2.0.9 | 2026-10-10 | 2026-10-30 |
+| 4 | [微信 WeChat](https://github.com/cscnk52/wechat-windows-versions) — 腾讯社交聊天应用（版本镜像：cscnk52/wechat-windows-versions） | `scoop install wechat` | 单 exe 官方 release（7z 解包） | 4.2.0.12 | 2026-10-10 | 2026-10-31 |
 | 5 | [BrimDeck](https://github.com/MoFeng2223/BrimDeck) — Windows 11 灵动岛（AI 编程额度/用量、音乐控制等） | `scoop install brimdeck` | 多架构官方 release（x64 便携 zip / Setup） | 1.2.3 | 2026-10-29 | 2026-10-30 |
 | 6 | [Inno Setup](https://www.jrsoftware.org/isinfo.php) — Windows 安装程序制作工具（installer 静默安装，覆盖 extras 解包） | `scoop install inno-setup` | 单 exe 官方 release（installer 静默安装） | 7.1.1 | 2026-10-29 | 2026-10-29 |
 | 7 | [MiHome-Windows](https://github.com/huanyuejue/MiHome-Windows) — 米家设备 Windows 桌面控制端（扫码登录，本地查看/控制设备） | `scoop install mihome` | portable zip 官方 release | 0.4.0 | 2026-10-28 | 2026-10-28 |
-| 8 | [MiniDock](https://github.com/wang01116/MiniDock) — 极简 Windows dock 栏工具 | `scoop install minidock` | 单 exe 官方 release | 1.4.0 | 2026-10-28 | 2026-10-28 |
+| 8 | [MiniDock](https://github.com/wang01116/MiniDock) — 极简 Windows dock 栏工具 | `scoop install minidock` | 单 exe 官方 release | 1.6.0 | 2026-10-28 | 2026-10-31 |
 | 9 | [sdkm](https://github.com/borenchan/sdkmate) — 全栈开发者的跨平台 SDK 版本管理器：Java / Node.js / Python / Maven / Go 等 40+ 工具一键安装与切换（Rust 编写，约 4MB 单文件） | `scoop install sdkm` | zip 官方 release（安装时自动 init） | 0.5.3 | 2026-10-24 | 2026-10-29 |
 | 10 | [网易UU远程](https://uuyc.163.com/) — 超低延迟的远程控制工具（Windows / macOS / iOS / Android / TV） | `scoop install uuyc` | NSIS 安装器安装（服务/驱动注册） | 4.45.0 | 2026-10-10 | 2026-10-30 |
 | 11 | [evanOCR](https://github.com/duyuanfu/evan-ocr) — C++ 写了一款比 Snipaste/PixPin 更爽的免费截贴图 OCR 神器 | `scoop install evanocr` | portable zip 官方 release | 1.2.1 | 2026-10-18 | 2026-10-21 |
@@ -47,7 +47,7 @@
 | 35 | [EcoPaste](https://github.com/EcoPasteHub/EcoPaste) — 跨平台剪贴板管理工具 | `scoop install ecopaste` | 多架构 exe 官方 release（NSIS 解包） | 1.1.0 | 2026-10-10 | 2026-10-10 |
 | 36 | [BongoCat](https://github.com/ayangweb/BongoCat) — 跨平台桌面宠物互动小工具（开源） | `scoop install bongocat` | 单 exe 官方 release（NSIS 解包） | 2.4.1 | 2026-10-10 | 2026-10-29 |
 | 37 | [DeepSeek Harness](https://www.deepseek.com/en/harness/) — DeepSeek 桌面客户端（官方直链，NSIS 安装器 7z 解包便携） | `scoop install dsh` | 单 exe 官方直链（NSIS 解包） | 0.2.1-rc.5 | 2026-10-10 | 2026-10-31 |
-| 38 | [kvmem-llama.cpp](https://github.com/kvmem/kvmem-llama.cpp) — NInfer：三元 .ninfer 模型推理服务端 + KVMem 缓存压缩（上游 NInfer 线；RTX 30/40/50 预编译，内嵌 Web UI） | `scoop install kvninfer` | zip 官方 release | 0.18.0-ninfer-rc3 | 2026-10-12 | 2026-10-12 |
+| 38 | [KVMem / NInfer](https://github.com/kvmem/kvmem-llama.cpp) — 统一版：NInfer + PolyStrata 双后端（.ninfer 三元模型 / GGUF），RTX 40 预编译包，内嵌控制台/聊天 | `scoop install kvninfer` | zip 官方 release | 0.19.1 | 2026-10-12 | 2026-10-31 |
 | 39 | [Rayburst](https://github.com/AnInsomniacy/rayburst) — 开源下载管理器（基于 Aria2 Next 引擎，NSIS 安装器解包便携） | `scoop install rayburst` | 多架构 exe 官方 release（NSIS 解包） | 4.1.1 | 2026-10-10 | 2026-10-25 |
 | 40 | [ZTools](https://github.com/ZToolsCenter/ZTools) — uTools 的开源实现，高性能可扩展的应用启动器与插件平台 | `scoop install ztools` | zip 官方 release | 3.2.0 | 2026-10-10 | 2026-10-10 |
 | 41 | [AI-Vault (updist)](https://github.com/ErgeAIA/updates-dist) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | 0.6.0 | 2026-10-10 | 2026-10-31 |

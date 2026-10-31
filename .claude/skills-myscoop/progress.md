@@ -110,6 +110,8 @@ GitHub: https://github.com/w3c0929/myscoop
 
 - **收录 XL Translator 10.4.0（2026-10-31）**：大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库）；官方 Windows x64 NSIS 安装器，`pre_install` 7z 解包拍平，`bin=translator.exe` + 快捷方式；hash `39a2b5…` 与上游 digest 一致。
 
+- **更新脚本资产匹配修复（2026-10-31）**：① `match_asset`/`handle_build_drift` 等未剥离 `#/rename` 片段，导致 wechat 4.2.0.12 被判“无匹配资产”、更新后又丢失 `#/dl.7z` 与 autoupdate；新增 `url_filename_clean`（去 #/? 再解码）与 `_with_fragment`（回写真实 URL 时保留片段）。② inno-setup 的 checkver 原为 GitHub API 全 URL + jsonpath，脚本报“无法解析 repo 地址”，改为 `checkver.url` + regex。③ minidock 上游资产改名 `MiniDock_v1.6.0.exe`，清单更新并加 pre_install 改名为稳定 `MiniDock.exe`（hash/改名实测通过）。④ kvninfer 上游改为 KVMem/NInfer 统一包（v0.19.1，`kvmem-v0.19.1-windows-x64-nvidia-40-unified.zip`），清单切到稳定版，bin 仍为 `workers/ninfer/ninfer-kvmem-server.exe`。⑤ wechat 更新至 4.2.0.12（保留 #/dl.7z 与 autoupdate）。
+
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
 - **镜像选择修正（2026-10-27，cloudflared 实测）**：热路径盲信旧 EWMA（cdn 58 MB/s 来自别的资产）→ 直接选 cdn，但 cloudflared 在该镜像 0 MB/s；冷路径三候选全 <1MB/s 仍选最不差的 hk（SSL 失败），且候选没包含真正快的 acmsz。修复：① 所有存活缓存镜像按 EWMA 排序（不再只放冠军+config 顺序）；② 下载前对实际资产做 1.2s/4MB 同栈验证（固定 1MB/s 底线），失败即跳过并降权（EWMA→≤2、fails+1，3 次冷却 30 分钟）；③ 原始直链始终作为最后兜底；④ 成功下载后 fails 清零。实测：cloudflared 第 1 次 10.6s（cdn 验证失败→acmsz），第 2 次 6.5s（直接 acmsz），hash 均正确。
@@ -301,9 +303,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 2f5eee9 (HEAD -> main) 同步 README 第三方版本与日期列
+* 561a582 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 2f5eee9 同步 README 第三方版本与日期列
 * 6819031 自动更新第三方软件
-* 642fa72 (origin/main) progress.md 更新提交历史
+* 642fa72 progress.md 更新提交历史
 * 8e36672 收录 XL Translator 10.4.0（大模型文档翻译） - 官方 Windows x64 NSIS 安装器，pre_install 7z 解包拍平；bin=translator.exe + 快捷方式 - README 第三方表置顶并全表重编号（1..72），计数 157→158/71→72；progress 同步 - hash 39a2b5… 与上游 digest 一致；scoop download hash 校验通过
 * 67956b8 progress.md 更新提交历史
 * de5da80 收录 DashBeam 0.7.2（近距离与跨网络文件分享） - 官方多架构 portable zip：x64 用 extract_dir=DashBeam，arm64 由 pre_install 拍平；bin=DashBeam.exe + 快捷方式 - README 第三方表置顶并全表重编号（1..71），计数 156→157/70→71；progress 同步

@@ -40,9 +40,8 @@
         ]
     ],
     "checkver": {
-        "github": "https://api.github.com/repos/jrsoftware/issrc/releases/latest",
-        "jsonpath": "$.assets[?(@.name =~ /\\.exe/)].name",
-        "regex": "innosetup-(\\d+(?:\\.\\d+)+)-x64\\.exe"
+        "url": "https://api.github.com/repos/jrsoftware/issrc/releases/latest",
+        "regex": "innosetup-([\\d.]+)-x64\\.exe"
     },
     "autoupdate": {
         "architecture": {
