@@ -301,7 +301,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 67956b8 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 8e36672 (HEAD -> main, origin/main, origin/HEAD) 收录 XL Translator 10.4.0（大模型文档翻译） - 官方 Windows x64 NSIS 安装器，pre_install 7z 解包拍平；bin=translator.exe + 快捷方式 - README 第三方表置顶并全表重编号（1..72），计数 157→158/71→72；progress 同步 - hash 39a2b5… 与上游 digest 一致；scoop download hash 校验通过
+* 67956b8 progress.md 更新提交历史
 * de5da80 收录 DashBeam 0.7.2（近距离与跨网络文件分享） - 官方多架构 portable zip：x64 用 extract_dir=DashBeam，arm64 由 pre_install 拍平；bin=DashBeam.exe + 快捷方式 - README 第三方表置顶并全表重编号（1..71），计数 156→157/70→71；progress 同步
 * 367b44a progress.md 更新提交历史
 * eb9b9de 同步 README 第三方版本与日期列
