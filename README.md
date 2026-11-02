@@ -14,14 +14,14 @@
 | 2 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 3 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.12.4 | 2026-10-30 | 2026-11-01 |
 | 4 | [微信 WeChat](https://github.com/cscnk52/wechat-windows-versions) — 腾讯社交聊天应用（版本镜像：cscnk52/wechat-windows-versions） | `scoop install wechat` | 单 exe 官方 release（7z 解包） | 4.2.0.12 | 2026-10-10 | 2026-10-31 |
-| 5 | [BrimDeck](https://github.com/MoFeng2223/BrimDeck) — Windows 11 灵动岛（AI 编程额度/用量、音乐控制等） | `scoop install brimdeck` | 多架构官方 release（x64 便携 zip / Setup） | 1.2.3 | 2026-10-29 | 2026-10-30 |
+| 5 | [BrimDeck](https://github.com/MoFeng2223/BrimDeck) — Windows 11 灵动岛（AI 编程额度/用量、音乐控制等） | `scoop install brimdeck` | 多架构官方 release（x64 便携 zip / Setup） | 1.2.4 | 2026-10-29 | 2026-11-02 |
 | 6 | [Inno Setup](https://www.jrsoftware.org/isinfo.php) — Windows 安装程序制作工具（installer 静默安装，覆盖 extras 解包） | `scoop install inno-setup` | 单 exe 官方 release（installer 静默安装） | 7.1.1 | 2026-10-29 | 2026-10-31 |
 | 7 | [MiHome-Windows](https://github.com/huanyuejue/MiHome-Windows) — 米家设备 Windows 桌面控制端（扫码登录，本地查看/控制设备） | `scoop install mihome` | portable zip 官方 release | 0.5.0 | 2026-10-28 | 2026-11-02 |
 | 8 | [MiniDock](https://github.com/wang01116/MiniDock) — 极简 Windows dock 栏工具 | `scoop install minidock` | 单 exe 官方 release | 1.6.5 | 2026-10-28 | 2026-11-01 |
-| 9 | [sdkm](https://github.com/borenchan/sdkmate) — 全栈开发者的跨平台 SDK 版本管理器：Java / Node.js / Python / Maven / Go 等 40+ 工具一键安装与切换（Rust 编写，约 4MB 单文件） | `scoop install sdkm` | zip 官方 release（安装时自动 init） | 0.5.3 | 2026-10-24 | 2026-10-29 |
+| 9 | [sdkm](https://github.com/borenchan/sdkmate) — 全栈开发者的跨平台 SDK 版本管理器：Java / Node.js / Python / Maven / Go 等 40+ 工具一键安装与切换（Rust 编写，约 4MB 单文件） | `scoop install sdkm` | zip 官方 release（安装时自动 init） | 0.5.4 | 2026-10-24 | 2026-11-02 |
 | 10 | [网易UU远程](https://uuyc.163.com/) — 超低延迟的远程控制工具（Windows / macOS / iOS / Android / TV） | `scoop install uuyc` | NSIS 安装器安装（服务/驱动注册） | 4.45.0 | 2026-10-10 | 2026-10-30 |
 | 11 | [evanOCR](https://github.com/duyuanfu/evan-ocr) — C++ 写了一款比 Snipaste/PixPin 更爽的免费截贴图 OCR 神器 | `scoop install evanocr` | portable zip 官方 release | 1.2.1 | 2026-10-18 | 2026-10-21 |
-| 12 | [Sunpack](https://github.com/Qinjingxue/Sunpack) — Windows 全自动压缩包处理工具：后台监控文件夹、自动识别并解压、递归处理与崩溃恢复 | `scoop install sunpack` | 多架构 exe 官方 release（Inno Setup 解包） | 1.3.4 | 2026-10-15 | 2026-11-02 |
+| 12 | [Sunpack](https://github.com/Qinjingxue/Sunpack) — Windows 全自动压缩包处理工具：后台监控文件夹、自动识别并解压、递归处理与崩溃恢复 | `scoop install sunpack` | 多架构 exe 官方 release（Inno Setup 解包） | 1.3.5 | 2026-10-15 | 2026-11-02 |
 | 13 | [SVCode](https://github.com/mnigc/SVCode) — 轻量的「编辑优先」文本与代码编辑器（内置预览，Windows 优先） | `scoop install svcode` | 单 exe 官方 release（Tauri 解包） | 0.3.2 | 2026-10-14 | 2026-10-14 |
 | 14 | [知语输入法](https://github.com/w3c0929/zhiyi_ime) — 知意输入法的自研进阶版（语音输入 / 划词翻译等，与知意输入法可共存）：自管理式安装器 script 形态装到 persist + 注册 IME | `scoop install zhiyuime` | 单 exe 官方 release（installer 注册） | 1.7.71 | 2026-10-14 | 2026-10-21 |
 | 15 | [StarPie](https://github.com/Star-Pie/StarPie) — 现代化 Windows 鼠标轮盘手势系统：按住键呼出轮盘、自定义手势动作与快捷键（Lightweight 便携版 zip） | `scoop install starpie` | zip 官方 release | 2.0.0 | 2026-10-13 | 2026-10-18 |
@@ -30,7 +30,7 @@
 | 18 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.6.3 | 2026-10-12 | 2026-11-02 |
 | 19 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.2 | 2026-10-10 | 2026-10-23 |
 | 20 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.1.7 | 2026-10-12 | 2026-11-02 |
-| 21 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.15 | 2026-10-11 | 2026-11-02 |
+| 21 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.16 | 2026-10-11 | 2026-11-02 |
 | 22 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.24 | 2026-10-10 | 2026-11-02 |
 | 23 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.10.3 | 2026-10-10 | 2026-10-31 |
 | 24 | [KeyCrash](https://github.com/Yuelioi/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.3.1 | 2026-10-10 | 2026-11-01 |
@@ -52,7 +52,7 @@
 | 40 | [ZTools](https://github.com/ZToolsCenter/ZTools) — uTools 的开源实现，高性能可扩展的应用启动器与插件平台 | `scoop install ztools` | zip 官方 release | 3.2.0 | 2026-10-10 | 2026-10-10 |
 | 41 | [AI-Vault (updist)](https://github.com/ErgeAIA/updates-dist) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | 0.6.0 | 2026-10-10 | 2026-10-31 |
 | 42 | [llama.cpp Prism](https://github.com/PrismML-Eng/llama.cpp) — llama.cpp 分支（CUDA 主程序 + cudart 运行库配对合并，--more 收录） | `scoop install prllama` | 多架构 zip 官方 release | prism-b12128-d7b2896 | 2026-10-10 | 2026-10-31 |
-| 43 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.8.0 | 2026-10-10 | 2026-10-29 |
+| 43 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.8.1 | 2026-10-10 | 2026-11-02 |
 | 44 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.7.5 | 2026-10-10 | 2026-10-28 |
 | 45 | [Magpie (实验版)](https://github.com/SAOG0721/Magpie) — 游戏画面缩放/超分工具的非官方实验 fork | `scoop install magpie` | zip 官方直链 | 0.6.11-experimental | 2026-10-10 | 2026-10-24 |
 | 46 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.3.2 | 2026-10-10 | 2026-10-31 |

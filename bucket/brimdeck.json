@@ -1,5 +1,5 @@
 {
-    "version": "1.2.3",
+    "version": "1.2.4",
     "description": "A Dynamic Island for Windows 11 with AI coding tool quotas, usage tracking, music controls, and more.",
     "homepage": "https://github.com/MoFeng2223/BrimDeck",
     "license": "Apache-2.0",
@@ -8,17 +8,17 @@
     },
     "architecture": {
         "32bit": {
-            "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v1.2.3/BrimDeck-1.2.3-Setup.exe",
-            "hash": "sha256:da4976b852d61e8374ac8a06fe3bcedcb465b91e4e56ff9762fe7803616a3c18"
+            "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v1.2.4/BrimDeck-1.2.4-Setup.exe",
+            "hash": "sha256:e4917ef291617e50c66b9550e5aeb4bad1078c83922ed5d231878cda81964520"
         },
         "64bit": {
-            "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v1.2.3/BrimDeck-1.2.3-Portable-x64.zip",
-            "hash": "sha256:5912671976276ec6794730a3b910eb6ad78208b9314f8fd0ae259d307f49f9ac",
+            "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v1.2.4/BrimDeck-1.2.4-Portable-x64.zip",
+            "hash": "sha256:840765ae90fd80b6e1c063100654e7ef897bf5a8fd6b7869f4a8e043c812dc41",
             "extract_dir": "BrimDeck"
         },
         "arm64": {
-            "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v1.2.3/BrimDeck-1.2.3-Setup.exe",
-            "hash": "sha256:da4976b852d61e8374ac8a06fe3bcedcb465b91e4e56ff9762fe7803616a3c18"
+            "url": "https://github.com/MoFeng2223/BrimDeck/releases/download/v1.2.4/BrimDeck-1.2.4-Setup.exe",
+            "hash": "sha256:e4917ef291617e50c66b9550e5aeb4bad1078c83922ed5d231878cda81964520"
         }
     },
     "autoupdate": {
