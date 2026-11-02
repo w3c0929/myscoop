@@ -1,0 +1,43 @@
+{
+    "version": "0.1.2738",
+    "description": "Every agent's model. One place. Codex on DeepSeek, Claude Code on Kimi, from the menu bar.",
+    "homepage": "https://usemagpie.ai",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/yetone/magpie"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/yetone/magpie/releases/download/v0.1.2738/magpie-windows-amd64.exe",
+            "hash": "sha256:5754451516c4e0bdf1101f87b31d243771288535a9fbdc28f467b6adb563ac56"
+        },
+        "arm64": {
+            "url": "https://github.com/yetone/magpie/releases/download/v0.1.2738/magpie-windows-arm64.exe",
+            "hash": "sha256:c8b4e52c0abfbb719774c489def0c72f52d045af0d3c3a32892691b208739641"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/yetone/magpie/releases/download/v$version/magpie-windows-amd64.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/yetone/magpie/releases/download/v$version/magpie-windows-arm64.exe"
+            }
+        }
+    },
+    "pre_install": [
+        "$e=Get-ChildItem \"$dir\\magpie-windows-*.exe\" | Select-Object -First 1; if ($e) { Rename-Item -Path $e.FullName -NewName 'magpie.exe' -Force }"
+    ],
+    "bin": "magpie.exe",
+    "shortcuts": [
+        [
+            "magpie.exe",
+            "magpie"
+        ]
+    ],
+    "notes": [
+        "多架构官方 release（amd64/arm64）；安装时统一改名为 magpie.exe，bin/快捷方式均指向它。",
+        "这是 yetone/magpie 的 AI 模型路由工具，与另一份 magpiee（游戏缩放实验 fork）不是同一个项目。"
+    ]
+}
