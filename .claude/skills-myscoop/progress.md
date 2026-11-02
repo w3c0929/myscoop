@@ -116,6 +116,8 @@ GitHub: https://github.com/w3c0929/myscoop
 
 - **winsdk 升至 2.6.4 + 移除重复 windowsappruntime（2026-11-02）**：winsdk 更新到 2.6.4（hash `9bf9c28b…`），checkver 改为 GitHub API tag + regex，autoupdate 用 `$majorVersion.$minorVersion/$version` 生成 aka.ms 路径，支持 `scoop install winsdk@2.4.0 / @2.6.4` 指定版本；删除本地 `windowsappruntime.json` 与自托管 release `v2.4.0`（同一运行时重复收录）。`myscoop-update.py` 新增 `$majorVersion/$minorVersion/$patchVersion/$underscoreVersion/$cleanVersion` 替换。
 
+- **magpie 改名 magpiee（2026-11-03）**：原实验 fork 清单 `magpie.json` → `magpiee.json`，避免与后续要加入的另一个 Magpie 项目同名冲突；description/快捷键改为 Magpiee（主程序仍为 `Magpie.exe`），README 安装命令 `scoop install magpiee` 同步。计数不变（157/72/85）。
+
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
 - **镜像选择修正（2026-10-27，cloudflared 实测）**：热路径盲信旧 EWMA（cdn 58 MB/s 来自别的资产）→ 直接选 cdn，但 cloudflared 在该镜像 0 MB/s；冷路径三候选全 <1MB/s 仍选最不差的 hk（SSL 失败），且候选没包含真正快的 acmsz。修复：① 所有存活缓存镜像按 EWMA 排序（不再只放冠军+config 顺序）；② 下载前对实际资产做 1.2s/4MB 同栈验证（固定 1MB/s 底线），失败即跳过并降权（EWMA→≤2、fails+1，3 次冷却 30 分钟）；③ 原始直链始终作为最后兜底；④ 成功下载后 fails 清零。实测：cloudflared 第 1 次 10.6s（cdn 验证失败→acmsz），第 2 次 6.5s（直接 acmsz），hash 均正确。
@@ -307,7 +309,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 51c6eef (HEAD -> main, origin/main, origin/HEAD) winsdk 升至 2.6.4，支持 @version 切换；移除重复 windowsappruntime - winsdk 2.6.4（hash 9bf9c28b…），checkver 改为 GitHub API tag + regex - autoupdate 使用 $majorVersion.$minorVersion/$version 生成 aka.ms 路径，支持 scoop install winsdk@2.4.0 / @2.6.4 - myscoop-update.py 新增 $majorVersion/$minorVersion/$patchVersion/$underscoreVersion/$cleanVersion 替换 - 删除重复的 windowsappruntime.json 与自托管 release v2.4.0；README 计数 157/72/85 - 实测 winsdk 更新到 2.6.4，post_install 静默安装正常；reset 可切换版本
+* a18f5ab (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 51c6eef winsdk 升至 2.6.4，支持 @version 切换；移除重复 windowsappruntime - winsdk 2.6.4（hash 9bf9c28b…），checkver 改为 GitHub API tag + regex - autoupdate 使用 $majorVersion.$minorVersion/$version 生成 aka.ms 路径，支持 scoop install winsdk@2.4.0 / @2.6.4 - myscoop-update.py 新增 $majorVersion/$minorVersion/$patchVersion/$underscoreVersion/$cleanVersion 替换 - 删除重复的 windowsappruntime.json 与自托管 release v2.4.0；README 计数 157/72/85 - 实测 winsdk 更新到 2.6.4，post_install 静默安装正常；reset 可切换版本
 * 226d4f9 progress.md 更新提交历史
 * de07ef2 同步 README 第三方版本与日期列
 * 57f008e 自动更新第三方软件

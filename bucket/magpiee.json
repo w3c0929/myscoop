@@ -1,6 +1,6 @@
 {
     "version": "0.6.11-experimental",
-    "description": "Unofficial experimental Magpie fork with colour-only DLSS, FSR2 and NVIDIA RTX Video integrations",
+    "description": "Magpiee — Unofficial experimental Magpie fork with colour-only DLSS, FSR2 and NVIDIA RTX Video integrations",
     "homepage": "https://github.com/SAOG0721/Magpie",
     "license": "GPL-3.0",
     "url": "https://github.com/SAOG0721/Magpie/releases/download/v0.6.11-experimental/Magpie-Experimental-x64.zip",
@@ -16,7 +16,10 @@
     "shortcuts": [
         [
             "Magpie.exe",
-            "magpie"
+            "Magpiee"
         ]
+    ],
+    "notes": [
+        "Magpiee 是 SAOG0721/Magpie 的实验 fork（原 magpie 清单改名），与官方 Magpie 项目区分；主程序仍为 Magpie.exe。"
     ]
 }
