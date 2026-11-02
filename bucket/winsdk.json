@@ -1,20 +1,25 @@
 {
-    "version": "2.4.0",
-    "description": "Microsoft Windows App Runtime (WindowsAppSDK) 2.4 - WinUI / WinAppSDK 应用依赖的运行时",
+    "version": "2.6.4",
+    "description": "Microsoft Windows App Runtime (WindowsAppSDK) 2.6 - WinUI / WinAppSDK 应用依赖的运行时",
     "homepage": "https://learn.microsoft.com/windows/apps/windows-app-sdk/",
     "license": {
         "identifier": "Proprietary"
     },
-    "url": "https://aka.ms/windowsappsdk/2.4/2.4.0/windowsappruntimeinstall-x64.exe",
-    "hash": "sha256:851c35b0b0a59ce4c55f9171f601193322fc3413143b0dc3390ea11e14cfa7fc",
+    "checkver": {
+        "url": "https://api.github.com/repos/microsoft/WindowsAppSDK/releases/latest",
+        "regex": "\"tag_name\":\\s*\"v?([\\d.]+)\""
+    },
+    "url": "https://aka.ms/windowsappsdk/2.6/2.6.4/windowsappruntimeinstall-x64.exe",
+    "hash": "sha256:9bf9c28bfa745a5d3c88b3da29b5c7bec0dc88b42fafa3f918ef0b85ea9bba33",
     "autoupdate": {
-        "url": "https://aka.ms/windowsappsdk/2.4/$version/windowsappruntimeinstall-x64.exe"
+        "url": "https://aka.ms/windowsappsdk/$majorVersion.$minorVersion/$version/windowsappruntimeinstall-x64.exe"
     },
     "post_install": [
         "Start-Process -FilePath \"$dir\\windowsappruntimeinstall-x64.exe\" -ArgumentList '--quiet' -Wait"
     ],
     "notes": [
         "安装时自动执行 windowsappruntimeinstall-x64.exe --quiet，静默安装 Windows App Runtime（实测非管理员 exit 0）。",
-        "该包只安装运行时，没有 bin/快捷方式；WinUI / WindowsAppSDK 应用依赖它运行。"
+        "该包只安装运行时，没有 bin/快捷方式；WinUI / WindowsAppSDK 应用依赖它运行。",
+        "支持指定版本：scoop install winsdk@2.6.4 / winsdk@2.4.0（autoupdate 用 $majorVersion.$minorVersion 生成 aka.ms 路径）。"
     ]
 }

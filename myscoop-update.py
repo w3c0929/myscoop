@@ -262,8 +262,21 @@ def get_repo_info(owner, repo, platform="github"):
 
 
 def resolve_autoupdate_url(autoupdate_url, version):
-    """将 autoupdate URL 模板中的 $version 替换为实际版本号"""
-    return autoupdate_url.replace("$version", version)
+    """替换 autoupdate URL 模板中的版本占位符（与 Scoop 一致）：
+    $version / $underscoreVersion / $cleanVersion / $majorVersion / $minorVersion / $patchVersion"""
+    first = version.split("-", 1)[0].split("+", 1)[0]
+    parts = first.split(".")
+    subs = {
+        "$version": version,
+        "$underscoreVersion": version.replace(".", "_").replace("-", "_"),
+        "$cleanVersion": version.replace(".", "").replace("-", ""),
+        "$majorVersion": parts[0] if len(parts) > 0 else "",
+        "$minorVersion": parts[1] if len(parts) > 1 else "",
+        "$patchVersion": parts[2] if len(parts) > 2 else "",
+    }
+    for k in ("$underscoreVersion", "$cleanVersion", "$majorVersion", "$minorVersion", "$patchVersion", "$version"):
+        autoupdate_url = autoupdate_url.replace(k, subs[k])
+    return autoupdate_url
 
 
 ARCHIVE_EXTS = {"zip", "7z", "rar", "gz", "xz", "bz2", "tgz", "txz"}

@@ -4,7 +4,7 @@
 
 ## 收录软件
 
-> 共收录 **158** 款 Windows 软件，其中 **72** 款引用第三方官方 Release，**86** 款为本地维护（自托管 Release）。
+> 共收录 **157** 款 Windows 软件，其中 **72** 款引用第三方官方 Release，**85** 款为本地维护（自托管 Release）。
 
 ### 第三方官方（引用原项目 Release）
 
@@ -56,7 +56,7 @@
 | 44 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.7.5 | 2026-10-10 | 2026-10-28 |
 | 45 | [Magpie (实验版)](https://github.com/SAOG0721/Magpie) — 游戏画面缩放/超分工具的非官方实验 fork | `scoop install magpie` | zip 官方直链 | 0.6.11-experimental | 2026-10-10 | 2026-10-24 |
 | 46 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.3.2 | 2026-10-10 | 2026-10-31 |
-| 47 | [Windows App SDK 运行时](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时官方直链（安装时自动静默安装） | `scoop install winsdk` | 单 exe 官方直链（post_install 静默安装） | 2.4.0 | 2026-10-10 | 2026-11-02 |
+| 47 | [Windows App SDK 运行时](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — Microsoft Windows App Runtime (WindowsAppSDK) 2.6 运行时官方直链（安装时自动静默安装） | `scoop install winsdk` | 单 exe 官方直链（post_install 静默安装） | 2.6.4 | 2026-10-10 | 2026-11-02 |
 | 48 | [Netcatty](https://github.com/binaricat/Netcatty) — SSH 工作区、SFTP 与终端一体的跨平台客户端 | `scoop install netcatty` | NSIS 解包便携（Netcatty.exe，data 持久化） | 1.1.90 | 2026-10-10 | 2026-10-26 |
 | 49 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install cmm-plus` | 多架构 portable zip | 1.7.10 | 2026-10-10 | 2026-10-25 |
 | 50 | [Floral Notepaper](https://github.com/Achilng/floral-notepaper) — 花笺 Markdown 桌面便签 | `scoop install floral` | 多架构 exe 官方 release | 1.2.0 | 2026-10-10 | 2026-10-10 |
@@ -90,89 +90,88 @@
 | 1 | [INPHIC HUB](https://www.inphic.com/) — 英菲克外设设置工具 | `scoop install inphic` | 7z 便携解压即用（Inno Setup 解包） | 1.0.1.24 | 2026-10-28 | 2026-10-28 |
 | 2 | ego lite — AI Agent 浏览器（Chromium 内核，可导入 Chrome 数据；让 Claude Code / Codex 等在隔离 Space 执行网页自动化） | `scoop install egolite` | 7z 便携（自托管：官方 Web 安装器目录打包） | 0.6.0.16 | 2026-10-20 | 2026-10-20 |
 | 3 | [NInfer](https://github.com/w3c0929/myscoop) — 三元推理引擎（Ternary-Bonsai 模型，CUDA 13.3 sm_89，自带运行库） | `scoop install ninfer` | zip 便携（单文件服务端 + 自带运行库） | 1.2.0 | 2026-10-10 | 2026-10-10 |
-| 4 | [Windows App Runtime](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — WindowsAppSDK 运行时（WinUI/WinAppSDK 应用依赖） | `scoop install windowsappruntime` | 单 exe 手动安装 | 2.4.0 | 2026-10-10 | 2026-10-10 |
-| 5 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 | 2026-10-10 | 2026-10-10 |
-| 6 | BT种子转磁力链工具 — BT种子转磁力链接 | `scoop install btseed` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 7 | WPS Office — 办公套件（文字/表格/演示） | `scoop install wps` | 单 exe 手动安装 | 26899 | 2026-10-10 | 2026-10-10 |
-| 8 | 公众号排版器 — 微信公众号文章排版工具 | `scoop install gzh-formatter` | 单 exe 便携 | 3.7.3 | 2026-10-10 | 2026-10-10 |
-| 9 | Cloudflare WARP — 网络加速与安全工具 | `scoop install cfwarp` | MSI 手动安装 | 2026.6.850.0 | 2026-10-10 | 2026-10-10 |
-| 10 | HCSStudio — 汉化工具 | `scoop install hcsstudio` | 单 exe 手动安装 | 1.0.260708 | 2026-10-10 | 2026-10-10 |
-| 11 | 卡卡字幕助手 VideoCaptioner — AI视频字幕生成工具 | `scoop install video-captioner` | 单 exe 手动安装 | 1.3.3 | 2026-10-10 | 2026-10-10 |
-| 12 | Athena-A 汉化版 — 软件本地化翻译工具 | `scoop install athena-loc` | 7z 便携解压即用 | 4.13 | 2026-10-10 | 2026-10-10 |
-| 13 | 软媒PCMaster — 系统工具合集 | `scoop install pcmaster` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 14 | MusicTag — 音乐标签编辑工具 | `scoop install musictag` | 7z 便携解压即用 | 1.0.9.0 | 2026-10-10 | 2026-10-10 |
-| 15 | miaomi — 喵咪客户端 | `scoop install miaomi` | NSIS 解包便携（主程序 clash-verge.exe） | 2.4.5 | 2026-10-10 | 2026-10-23 |
-| 16 | Bandicam — 班班录屏，高性能屏幕录制 | `scoop install bandicam` | 7z 便携解压即用 | 8.2.2.2531 | 2026-10-10 | 2026-10-10 |
-| 17 | VP9 视频解码器 — Windows VP9 视频编解码扩展 | `scoop install vp9-video-extensions` | Appx 手动安装 | 1.0.50481.0 | 2026-10-10 | 2026-10-10 |
-| 18 | Edge WebView2 运行时 — 现代 Windows 应用必备组件 | `scoop install webview2-runtime` | 单 exe 手动安装 | 1.3.213.7 | 2026-10-10 | 2026-10-10 |
-| 19 | HardLinkShellExt — Windows 软硬链接 Shell 扩展工具 | `scoop install hardlinkshellext` | 单 exe 手动安装 | 3.9.3.5 | 2026-10-10 | 2026-10-10 |
-| 20 | UltraISO Premium — 软碟通光盘映像制作编辑转换工具 | `scoop install ultraiso` | 单 exe 手动安装 | 9.7.0 | 2026-10-10 | 2026-10-10 |
-| 21 | [EdgeBlock](https://www.sordum.org/edge-blocker/) — Edge 浏览器禁用/启用工具 | `scoop install edgeblock` | zip 便携解压即用 | 2.0 | 2026-10-10 | 2026-10-10 |
-| 22 | DingTalk Downloader — 钉钉下载工具 | `scoop install dingtalk-downloader` | 单 exe 手动安装 | 1.0.0.10 | 2026-10-10 | 2026-10-10 |
-| 23 | HiPC — 电脑助手远程控制工具 | `scoop install hipc` | 单 exe 手动安装 | 5.6.6.174a | 2026-10-10 | 2026-10-10 |
-| 24 | QQ — 腾讯即时通讯客户端 | `scoop install qq` | 单 exe 手动安装 | 9.9.31 | 2026-10-10 | 2026-10-10 |
-| 25 | 企业微信 WeCom — 腾讯企业通讯平台 | `scoop install wecom` | 单 exe 手动安装 | 5.0.9.6029 | 2026-10-10 | 2026-10-10 |
-| 26 | waifu2x-caffe — 图片无损放大超分辨率工具 | `scoop install waifu2x-caffe` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 27 | Visual Studio BuildTools — VS 2026 生成工具安装器 | `scoop install vs-buildtools` | 单 exe 手动安装 | 18.7.11925.98 | 2026-10-10 | 2026-10-10 |
-| 28 | GetDict — 字典转化工具，字典格式编码转换 | `scoop install getdict` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 29 | ChromeSetup — Google Chrome 安装器 | `scoop install chromesetup` | 单 exe 手动安装 | 147.0.7703.0 | 2026-10-10 | 2026-10-10 |
-| 30 | WCAP — Windows 屏幕录制工具 | `scoop install wcap` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 31 | [DropIt](http://www.dropitproject.com/) — 文件自动分类处理 | `scoop install dropit` | portable zip | 8.5.2 | 2026-10-10 | 2026-10-10 |
-| 32 | [GstarCAD Pro 2022](https://www.gstarcad.net/) — DWG 兼容 CAD | `scoop install gstarcad` | portable zip | 2022 | 2026-10-10 | 2026-10-10 |
-| 33 | 静音移除工具 — 音视频静音段自动删除 | `scoop install cutsilence` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 34 | [录音精灵](https://www.apowersoft.cn/streaming-audio-recorder) — 声卡录音工具 | `scoop install audio-recorder` | portable zip | 4.2.3 | 2026-10-10 | 2026-10-10 |
-| 35 | HEU KMS Activator — Windows/Office 激活工具 | `scoop install heu-kms` | 单 exe 手动安装 | 42.3.0 | 2026-10-10 | 2026-10-10 |
-| 36 | VBA 运行库 — Visual Basic for Application 运行时 | `scoop install vba-runtime` | 单 exe 手动安装 | 7.0.1590 | 2026-10-10 | 2026-10-10 |
-| 37 | 驱动精灵 — 驱动管理更新工具绿色版 | `scoop install driver-genius` | 单 exe 手动安装 | 9.70 | 2026-10-10 | 2026-10-10 |
-| 38 | 360驱动大师 — 驱动管理工具绿色版 | `scoop install 360-driver-master` | 单 exe 手动安装 | 2.0 | 2026-10-10 | 2026-10-10 |
-| 39 | [BOOTICE](http://www.ipauly.com/) — 启动扇区管理/BCD 编辑工具 x64 | `scoop install bootice` | 单 exe 手动安装 | 1.3.4.0 | 2026-10-10 | 2026-10-10 |
-| 40 | DNS 工具 DnsTools — 网络 DNS 诊断工具 | `scoop install dnstools` | 单 exe 手动安装 | 1.2.3 | 2026-10-10 | 2026-10-10 |
-| 41 | FPS Keeper — 游戏帧率保持工具 | `scoop install fps-keeper` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 42 | PDF24 转换器 — 文档转换工具 | `scoop install pdf24-converter` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 43 | PDF 合并及分割 — PDF 合并分割工具 | `scoop install pdf-merge-split` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 44 | 系统垃圾清理 — 系统垃圾清理工具 | `scoop install system-cleaner` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 45 | Robocopy GUI — Windows 文件复制图形界面 | `scoop install robocopy-gui` | 单 exe 手动安装 | 1.3 | 2026-10-10 | 2026-10-10 |
-| 46 | WinHex 编译版 — 十六进制编辑器 | `scoop install winhex` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 47 | 搜狗五笔 — 中文五笔输入法 | `scoop install sogou-wubi` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 48 | 谷歌翻译检查器 — 翻译质量验证工具 | `scoop install google-translate-checker` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 49 | 数字键盘练习 — 数字键盘打字练习 | `scoop install numpad-practice` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 50 | 文件夹加密 — 文件夹/文件加密工具 | `scoop install folder-encrypt` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 51 | GIF 工具 — GIF 制作工具 | `scoop install gif-tool` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 52 | 五金工具 — 五金计算工具 | `scoop install wujin` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 53 | [GoldenDict](https://github.com/goldendict/goldendict) — 离线词典翻译工具 | `scoop install goldendict` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 54 | PointerStick — 屏幕教鞭教学工具 | `scoop install pointerstick` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 55 | [Sublime Text](https://www.sublimetext.com/) — 代码编辑器 x64 | `scoop install sublime-text@4200/@4207` | zip 便携解压即用 | 4200 / 4207 | 2026-10-10 | 2026-10-10 |
-| 56 | Epic Pen — 屏幕标注白板教学工具 | `scoop install epicpen` | portable zip | 3.7.31 | 2026-10-10 | 2026-10-10 |
-| 57 | Tickeys — 机械键盘打字音效 | `scoop install tickeys` | MSI 手动安装 | 1.2.0 | 2026-10-10 | 2026-10-10 |
-| 58 | [Anytxt](https://anytxt.net/) — 图片文字搜索 OCR 工具 | `scoop install anytxt` | 单 exe 手动安装 | 1.3.1952 | 2026-10-10 | 2026-10-10 |
-| 59 | Studio One Pro 7.1 — 音乐制作 DAW | `scoop install studio-one` | portable zip | 7.1 | 2026-10-10 | 2026-10-10 |
-| 60 | VAM 翻译密钥 — Virt-A-Mate 翻译资源包 | `scoop install vam-resource` | zip 资源包 | 1.22 | 2026-10-10 | 2026-10-10 |
-| 61 | BeatEdit Pr — Premiere 节拍编辑插件汉化版 | `scoop install beatedit` | zip 插件包 | 2.1.003 | 2026-10-10 | 2026-10-10 |
-| 62 | MdxBuilder — 字典制作转换工具 | `scoop install mdxbuilder` | zip 便携解压即用 | 3.0 | 2026-10-10 | 2026-10-10 |
-| 63 | 禁用 Xbox GameBar — 弹窗禁用脚本 | `scoop install disable-gamebar` | zip 脚本 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 64 | [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php) — 文件解锁删除 | `scoop install iobit` | 单 exe 手动安装 | 1.3.0.11 | 2026-10-10 | 2026-10-10 |
-| 65 | [HiBit Uninstaller](https://www.hibitsoft.ir/Uninstaller.html) — 强力卸载工具 | `scoop install hibituninstaller` | 单 exe 便携 | 4.0.10 | 2026-10-10 | 2026-10-10 |
-| 66 | [Beyond Compare 5](https://www.scootersoftware.com/) — 文件对比工具（汉化版） | `scoop install bcompare` | portable zip | 5.2.5.32528 | 2026-10-10 | 2026-10-10 |
-| 67 | [Termius](https://termius.com/) — SSH 客户端汉化版 | `scoop install termius` | portable zip | 9.40.1 | 2026-10-10 | 2026-10-10 |
-| 68 | [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器 | `scoop install idm` | 单 exe 手动安装 | 6.4.3 | 2026-10-10 | 2026-10-10 |
-| 69 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 压缩工具（最后无广告版） | `scoop install bandizip6` | 单 exe 手动安装 | 6.18 | 2026-10-10 | 2026-10-10 |
-| 70 | [2345看图王](https://pic.2345.cc/) — 图片查看编辑工具 | `scoop install 2345pic` | portable zip（安装时注册图片关联） | 10.8.0.9683 | 2026-10-10 | 2026-10-29 |
-| 71 | [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端 | `scoop install apollo` | 单 exe 手动安装 | 0.4.6 | 2026-10-10 | 2026-10-10 |
-| 72 | [KeyCastOW](https://github.com/brookhong/KeyCastOW) — 屏幕按键显示工具 | `scoop install keycastow` | zip 便携+自动启动 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 73 | [搜狗拼音](https://pinyin.sogou.com/) — 中文拼音输入法去广告精简优化版 | `scoop install sougoupy` | 单 exe 手动安装 | 16.6.0.4385 | 2026-10-10 | 2026-10-10 |
-| 74 | [TinyTask](https://www.tinytask.net/) — 极简宏录制自动化 | `scoop install tinytask` | 单 exe 便携 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 75 | [360宽带测速](https://www.360.cn/) — 网络测速工具 | `scoop install 360bwtest` | 单 exe 便携 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 76 | [BTSOU](https://www.btsou.io/) — BT 搜索下载工具 | `scoop install btsou` | zip 便携解压即用 | 26.08.26.01 | 2026-10-10 | 2026-10-10 |
-| 77 | [火绒系统诊断](https://www.huorong.cn/) — 安全分析与系统检查 | `scoop install sysdiag` | 单 exe 手动安装 | 6.0.11.0 | 2026-10-10 | 2026-10-10 |
-| 78 | [.NET Desktop Runtime 8.0](https://dotnet.microsoft.com/) — WPF/WinForms 运行时 | `scoop install dotnet-desktopruntime` | 单 exe 手动安装 | 8.0.28 | 2026-10-10 | 2026-10-10 |
-| 79 | [电视时光](https://www.dianshishiguang.com/) — 电视直播软件 | `scoop install dianshishiguang` | 单 exe 手动安装 | 2.1.2 | 2026-10-10 | 2026-10-10 |
-| 80 | [R-Drive Image](https://www.drive-image.com/) — 磁盘镜像备份工具 | `scoop install rdriveimage` | zip 便携解压即用 | 7.2 | 2026-10-10 | 2026-10-10 |
-| 81 | [WinMTR](https://github.com/White-Tiger/WinMTR) — 网络诊断 Ping+Traceroute | `scoop install winmtr` | zip 便携解压即用 | 0.9.2 | 2026-10-10 | 2026-10-10 |
-| 82 | NetworkFixTool — 网络修复工具 | `scoop install networkfixtool` | 单 exe 便携 | 1.0 | 2026-10-10 | 2026-10-10 |
-| 83 | 系统常用功能助手 — Windows 系统工具箱 | `scoop install syshelper` | 单 exe 便携 | 3.0 | 2026-10-10 | 2026-10-10 |
-| 84 | [WGestures](https://github.com/yingDev/WGestures) — 全局鼠标手势（上游已归档） | `scoop install wgestures` | portable zip | 1.8.5.0 | 2026-10-10 | 2026-10-10 |
-| 85 | [Uninstall Tool](https://www.crystalidea.com/uninstall-tool) — 强力卸载工具 | `scoop install uninstalltool` | portable zip | 3.4.3 | 2026-10-10 | 2026-10-10 |
-| 86 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具 | `scoop install mykeymap` | zip 便携解压即用 | 2.0-beta33 | 2026-10-10 | 2026-10-10 |
+| 4 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 | 2026-10-10 | 2026-10-10 |
+| 5 | BT种子转磁力链工具 — BT种子转磁力链接 | `scoop install btseed` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 6 | WPS Office — 办公套件（文字/表格/演示） | `scoop install wps` | 单 exe 手动安装 | 26899 | 2026-10-10 | 2026-10-10 |
+| 7 | 公众号排版器 — 微信公众号文章排版工具 | `scoop install gzh-formatter` | 单 exe 便携 | 3.7.3 | 2026-10-10 | 2026-10-10 |
+| 8 | Cloudflare WARP — 网络加速与安全工具 | `scoop install cfwarp` | MSI 手动安装 | 2026.6.850.0 | 2026-10-10 | 2026-10-10 |
+| 9 | HCSStudio — 汉化工具 | `scoop install hcsstudio` | 单 exe 手动安装 | 1.0.260708 | 2026-10-10 | 2026-10-10 |
+| 10 | 卡卡字幕助手 VideoCaptioner — AI视频字幕生成工具 | `scoop install video-captioner` | 单 exe 手动安装 | 1.3.3 | 2026-10-10 | 2026-10-10 |
+| 11 | Athena-A 汉化版 — 软件本地化翻译工具 | `scoop install athena-loc` | 7z 便携解压即用 | 4.13 | 2026-10-10 | 2026-10-10 |
+| 12 | 软媒PCMaster — 系统工具合集 | `scoop install pcmaster` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 13 | MusicTag — 音乐标签编辑工具 | `scoop install musictag` | 7z 便携解压即用 | 1.0.9.0 | 2026-10-10 | 2026-10-10 |
+| 14 | miaomi — 喵咪客户端 | `scoop install miaomi` | NSIS 解包便携（主程序 clash-verge.exe） | 2.4.5 | 2026-10-10 | 2026-10-23 |
+| 15 | Bandicam — 班班录屏，高性能屏幕录制 | `scoop install bandicam` | 7z 便携解压即用 | 8.2.2.2531 | 2026-10-10 | 2026-10-10 |
+| 16 | VP9 视频解码器 — Windows VP9 视频编解码扩展 | `scoop install vp9-video-extensions` | Appx 手动安装 | 1.0.50481.0 | 2026-10-10 | 2026-10-10 |
+| 17 | Edge WebView2 运行时 — 现代 Windows 应用必备组件 | `scoop install webview2-runtime` | 单 exe 手动安装 | 1.3.213.7 | 2026-10-10 | 2026-10-10 |
+| 18 | HardLinkShellExt — Windows 软硬链接 Shell 扩展工具 | `scoop install hardlinkshellext` | 单 exe 手动安装 | 3.9.3.5 | 2026-10-10 | 2026-10-10 |
+| 19 | UltraISO Premium — 软碟通光盘映像制作编辑转换工具 | `scoop install ultraiso` | 单 exe 手动安装 | 9.7.0 | 2026-10-10 | 2026-10-10 |
+| 20 | [EdgeBlock](https://www.sordum.org/edge-blocker/) — Edge 浏览器禁用/启用工具 | `scoop install edgeblock` | zip 便携解压即用 | 2.0 | 2026-10-10 | 2026-10-10 |
+| 21 | DingTalk Downloader — 钉钉下载工具 | `scoop install dingtalk-downloader` | 单 exe 手动安装 | 1.0.0.10 | 2026-10-10 | 2026-10-10 |
+| 22 | HiPC — 电脑助手远程控制工具 | `scoop install hipc` | 单 exe 手动安装 | 5.6.6.174a | 2026-10-10 | 2026-10-10 |
+| 23 | QQ — 腾讯即时通讯客户端 | `scoop install qq` | 单 exe 手动安装 | 9.9.31 | 2026-10-10 | 2026-10-10 |
+| 24 | 企业微信 WeCom — 腾讯企业通讯平台 | `scoop install wecom` | 单 exe 手动安装 | 5.0.9.6029 | 2026-10-10 | 2026-10-10 |
+| 25 | waifu2x-caffe — 图片无损放大超分辨率工具 | `scoop install waifu2x-caffe` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 26 | Visual Studio BuildTools — VS 2026 生成工具安装器 | `scoop install vs-buildtools` | 单 exe 手动安装 | 18.7.11925.98 | 2026-10-10 | 2026-10-10 |
+| 27 | GetDict — 字典转化工具，字典格式编码转换 | `scoop install getdict` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 28 | ChromeSetup — Google Chrome 安装器 | `scoop install chromesetup` | 单 exe 手动安装 | 147.0.7703.0 | 2026-10-10 | 2026-10-10 |
+| 29 | WCAP — Windows 屏幕录制工具 | `scoop install wcap` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 30 | [DropIt](http://www.dropitproject.com/) — 文件自动分类处理 | `scoop install dropit` | portable zip | 8.5.2 | 2026-10-10 | 2026-10-10 |
+| 31 | [GstarCAD Pro 2022](https://www.gstarcad.net/) — DWG 兼容 CAD | `scoop install gstarcad` | portable zip | 2022 | 2026-10-10 | 2026-10-10 |
+| 32 | 静音移除工具 — 音视频静音段自动删除 | `scoop install cutsilence` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 33 | [录音精灵](https://www.apowersoft.cn/streaming-audio-recorder) — 声卡录音工具 | `scoop install audio-recorder` | portable zip | 4.2.3 | 2026-10-10 | 2026-10-10 |
+| 34 | HEU KMS Activator — Windows/Office 激活工具 | `scoop install heu-kms` | 单 exe 手动安装 | 42.3.0 | 2026-10-10 | 2026-10-10 |
+| 35 | VBA 运行库 — Visual Basic for Application 运行时 | `scoop install vba-runtime` | 单 exe 手动安装 | 7.0.1590 | 2026-10-10 | 2026-10-10 |
+| 36 | 驱动精灵 — 驱动管理更新工具绿色版 | `scoop install driver-genius` | 单 exe 手动安装 | 9.70 | 2026-10-10 | 2026-10-10 |
+| 37 | 360驱动大师 — 驱动管理工具绿色版 | `scoop install 360-driver-master` | 单 exe 手动安装 | 2.0 | 2026-10-10 | 2026-10-10 |
+| 38 | [BOOTICE](http://www.ipauly.com/) — 启动扇区管理/BCD 编辑工具 x64 | `scoop install bootice` | 单 exe 手动安装 | 1.3.4.0 | 2026-10-10 | 2026-10-10 |
+| 39 | DNS 工具 DnsTools — 网络 DNS 诊断工具 | `scoop install dnstools` | 单 exe 手动安装 | 1.2.3 | 2026-10-10 | 2026-10-10 |
+| 40 | FPS Keeper — 游戏帧率保持工具 | `scoop install fps-keeper` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 41 | PDF24 转换器 — 文档转换工具 | `scoop install pdf24-converter` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 42 | PDF 合并及分割 — PDF 合并分割工具 | `scoop install pdf-merge-split` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 43 | 系统垃圾清理 — 系统垃圾清理工具 | `scoop install system-cleaner` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 44 | Robocopy GUI — Windows 文件复制图形界面 | `scoop install robocopy-gui` | 单 exe 手动安装 | 1.3 | 2026-10-10 | 2026-10-10 |
+| 45 | WinHex 编译版 — 十六进制编辑器 | `scoop install winhex` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 46 | 搜狗五笔 — 中文五笔输入法 | `scoop install sogou-wubi` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 47 | 谷歌翻译检查器 — 翻译质量验证工具 | `scoop install google-translate-checker` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 48 | 数字键盘练习 — 数字键盘打字练习 | `scoop install numpad-practice` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 49 | 文件夹加密 — 文件夹/文件加密工具 | `scoop install folder-encrypt` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 50 | GIF 工具 — GIF 制作工具 | `scoop install gif-tool` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 51 | 五金工具 — 五金计算工具 | `scoop install wujin` | 单 exe 手动安装 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 52 | [GoldenDict](https://github.com/goldendict/goldendict) — 离线词典翻译工具 | `scoop install goldendict` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 53 | PointerStick — 屏幕教鞭教学工具 | `scoop install pointerstick` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 54 | [Sublime Text](https://www.sublimetext.com/) — 代码编辑器 x64 | `scoop install sublime-text@4200/@4207` | zip 便携解压即用 | 4200 / 4207 | 2026-10-10 | 2026-10-10 |
+| 55 | Epic Pen — 屏幕标注白板教学工具 | `scoop install epicpen` | portable zip | 3.7.31 | 2026-10-10 | 2026-10-10 |
+| 56 | Tickeys — 机械键盘打字音效 | `scoop install tickeys` | MSI 手动安装 | 1.2.0 | 2026-10-10 | 2026-10-10 |
+| 57 | [Anytxt](https://anytxt.net/) — 图片文字搜索 OCR 工具 | `scoop install anytxt` | 单 exe 手动安装 | 1.3.1952 | 2026-10-10 | 2026-10-10 |
+| 58 | Studio One Pro 7.1 — 音乐制作 DAW | `scoop install studio-one` | portable zip | 7.1 | 2026-10-10 | 2026-10-10 |
+| 59 | VAM 翻译密钥 — Virt-A-Mate 翻译资源包 | `scoop install vam-resource` | zip 资源包 | 1.22 | 2026-10-10 | 2026-10-10 |
+| 60 | BeatEdit Pr — Premiere 节拍编辑插件汉化版 | `scoop install beatedit` | zip 插件包 | 2.1.003 | 2026-10-10 | 2026-10-10 |
+| 61 | MdxBuilder — 字典制作转换工具 | `scoop install mdxbuilder` | zip 便携解压即用 | 3.0 | 2026-10-10 | 2026-10-10 |
+| 62 | 禁用 Xbox GameBar — 弹窗禁用脚本 | `scoop install disable-gamebar` | zip 脚本 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 63 | [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php) — 文件解锁删除 | `scoop install iobit` | 单 exe 手动安装 | 1.3.0.11 | 2026-10-10 | 2026-10-10 |
+| 64 | [HiBit Uninstaller](https://www.hibitsoft.ir/Uninstaller.html) — 强力卸载工具 | `scoop install hibituninstaller` | 单 exe 便携 | 4.0.10 | 2026-10-10 | 2026-10-10 |
+| 65 | [Beyond Compare 5](https://www.scootersoftware.com/) — 文件对比工具（汉化版） | `scoop install bcompare` | portable zip | 5.2.5.32528 | 2026-10-10 | 2026-10-10 |
+| 66 | [Termius](https://termius.com/) — SSH 客户端汉化版 | `scoop install termius` | portable zip | 9.40.1 | 2026-10-10 | 2026-10-10 |
+| 67 | [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器 | `scoop install idm` | 单 exe 手动安装 | 6.4.3 | 2026-10-10 | 2026-10-10 |
+| 68 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 压缩工具（最后无广告版） | `scoop install bandizip6` | 单 exe 手动安装 | 6.18 | 2026-10-10 | 2026-10-10 |
+| 69 | [2345看图王](https://pic.2345.cc/) — 图片查看编辑工具 | `scoop install 2345pic` | portable zip（安装时注册图片关联） | 10.8.0.9683 | 2026-10-10 | 2026-10-29 |
+| 70 | [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端 | `scoop install apollo` | 单 exe 手动安装 | 0.4.6 | 2026-10-10 | 2026-10-10 |
+| 71 | [KeyCastOW](https://github.com/brookhong/KeyCastOW) — 屏幕按键显示工具 | `scoop install keycastow` | zip 便携+自动启动 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 72 | [搜狗拼音](https://pinyin.sogou.com/) — 中文拼音输入法去广告精简优化版 | `scoop install sougoupy` | 单 exe 手动安装 | 16.6.0.4385 | 2026-10-10 | 2026-10-10 |
+| 73 | [TinyTask](https://www.tinytask.net/) — 极简宏录制自动化 | `scoop install tinytask` | 单 exe 便携 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 74 | [360宽带测速](https://www.360.cn/) — 网络测速工具 | `scoop install 360bwtest` | 单 exe 便携 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 75 | [BTSOU](https://www.btsou.io/) — BT 搜索下载工具 | `scoop install btsou` | zip 便携解压即用 | 26.08.26.01 | 2026-10-10 | 2026-10-10 |
+| 76 | [火绒系统诊断](https://www.huorong.cn/) — 安全分析与系统检查 | `scoop install sysdiag` | 单 exe 手动安装 | 6.0.11.0 | 2026-10-10 | 2026-10-10 |
+| 77 | [.NET Desktop Runtime 8.0](https://dotnet.microsoft.com/) — WPF/WinForms 运行时 | `scoop install dotnet-desktopruntime` | 单 exe 手动安装 | 8.0.28 | 2026-10-10 | 2026-10-10 |
+| 78 | [电视时光](https://www.dianshishiguang.com/) — 电视直播软件 | `scoop install dianshishiguang` | 单 exe 手动安装 | 2.1.2 | 2026-10-10 | 2026-10-10 |
+| 79 | [R-Drive Image](https://www.drive-image.com/) — 磁盘镜像备份工具 | `scoop install rdriveimage` | zip 便携解压即用 | 7.2 | 2026-10-10 | 2026-10-10 |
+| 80 | [WinMTR](https://github.com/White-Tiger/WinMTR) — 网络诊断 Ping+Traceroute | `scoop install winmtr` | zip 便携解压即用 | 0.9.2 | 2026-10-10 | 2026-10-10 |
+| 81 | NetworkFixTool — 网络修复工具 | `scoop install networkfixtool` | 单 exe 便携 | 1.0 | 2026-10-10 | 2026-10-10 |
+| 82 | 系统常用功能助手 — Windows 系统工具箱 | `scoop install syshelper` | 单 exe 便携 | 3.0 | 2026-10-10 | 2026-10-10 |
+| 83 | [WGestures](https://github.com/yingDev/WGestures) — 全局鼠标手势（上游已归档） | `scoop install wgestures` | portable zip | 1.8.5.0 | 2026-10-10 | 2026-10-10 |
+| 84 | [Uninstall Tool](https://www.crystalidea.com/uninstall-tool) — 强力卸载工具 | `scoop install uninstalltool` | portable zip | 3.4.3 | 2026-10-10 | 2026-10-10 |
+| 85 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具 | `scoop install mykeymap` | zip 便携解压即用 | 2.0-beta33 | 2026-10-10 | 2026-10-10 |
 
 ### 1. 添加 Bucket
 
@@ -505,7 +504,6 @@ myscoop/
 │   ├── keyviz.json                      (模式7：MSI 手动安装)
 │   ├── getdict.json                       (模式6：单 exe 手动安装)
 │   ├── easytshark.json                    (模式2：zip 便携解压即用)
-│   ├── windowsappruntime.json             (模式6：单 exe 手动安装)
 │   ├── switchhosts.json                   (模式1：zip 官方 release，自建构建仓库)
 │   ├── sdkm.json                          (模式1：zip 官方 release，安装时自动 init)
 │   ├── baulk.json                         (模式1：多架构 zip 官方 release)
