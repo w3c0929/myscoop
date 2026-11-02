@@ -307,7 +307,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 226d4f9 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* 51c6eef (HEAD -> main, origin/main, origin/HEAD) winsdk 升至 2.6.4，支持 @version 切换；移除重复 windowsappruntime - winsdk 2.6.4（hash 9bf9c28b…），checkver 改为 GitHub API tag + regex - autoupdate 使用 $majorVersion.$minorVersion/$version 生成 aka.ms 路径，支持 scoop install winsdk@2.4.0 / @2.6.4 - myscoop-update.py 新增 $majorVersion/$minorVersion/$patchVersion/$underscoreVersion/$cleanVersion 替换 - 删除重复的 windowsappruntime.json 与自托管 release v2.4.0；README 计数 157/72/85 - 实测 winsdk 更新到 2.6.4，post_install 静默安装正常；reset 可切换版本
+* 226d4f9 progress.md 更新提交历史
 * de07ef2 同步 README 第三方版本与日期列
 * 57f008e 自动更新第三方软件
 * d78a4d3 zhiyuime 1.7.72
