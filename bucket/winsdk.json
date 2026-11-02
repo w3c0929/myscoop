@@ -1,11 +1,20 @@
 {
     "version": "2.4.0",
-    "description": "",
-    "homepage": "",
-    "license": "unknown",
+    "description": "Microsoft Windows App Runtime (WindowsAppSDK) 2.4 - WinUI / WinAppSDK 应用依赖的运行时",
+    "homepage": "https://learn.microsoft.com/windows/apps/windows-app-sdk/",
+    "license": {
+        "identifier": "Proprietary"
+    },
     "url": "https://aka.ms/windowsappsdk/2.4/2.4.0/windowsappruntimeinstall-x64.exe",
     "hash": "sha256:851c35b0b0a59ce4c55f9171f601193322fc3413143b0dc3390ea11e14cfa7fc",
     "autoupdate": {
         "url": "https://aka.ms/windowsappsdk/2.4/$version/windowsappruntimeinstall-x64.exe"
-    }
+    },
+    "post_install": [
+        "Start-Process -FilePath \"$dir\\windowsappruntimeinstall-x64.exe\" -ArgumentList '--quiet' -Wait"
+    ],
+    "notes": [
+        "安装时自动执行 windowsappruntimeinstall-x64.exe --quiet，静默安装 Windows App Runtime（实测非管理员 exit 0）。",
+        "该包只安装运行时，没有 bin/快捷方式；WinUI / WindowsAppSDK 应用依赖它运行。"
+    ]
 }
