@@ -313,7 +313,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 2eb20a6 (HEAD -> main, origin/main, origin/HEAD) magpiee shim 改名 magpiee.exe，避免与 magpie 冲突 - magpiee 的 bin 从 Magpie.exe 改为 [["Magpie.exe","magpiee"]]，Scoop 生成 magpiee.exe - 与 yetone/magpie 的 magpie.exe 分开；重装验证两个 shim 各自指向正确 - README/progress 同步
+* b188111 (HEAD -> main) 同步 README 第三方版本与日期列
+* 9f95e5a 自动更新第三方软件
+* 6f1efa2 (origin/main) progress.md 更新提交历史
+* 2eb20a6 magpiee shim 改名 magpiee.exe，避免与 magpie 冲突 - magpiee 的 bin 从 Magpie.exe 改为 [["Magpie.exe","magpiee"]]，Scoop 生成 magpiee.exe - 与 yetone/magpie 的 magpie.exe 分开；重装验证两个 shim 各自指向正确 - README/progress 同步
 * a97445a progress.md 更新提交历史
 * c832f09 Magpie 更新至 0.1.2766（rebase 修复后同步最新）
 * 3470929 Magpie 更新至 0.1.2765
