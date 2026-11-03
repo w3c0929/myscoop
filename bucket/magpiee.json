@@ -12,7 +12,12 @@
         "url": "https://github.com/SAOG0721/Magpie/releases/download/v$version-experimental.1/Magpie-Experimental-x64.zip"
     },
     "extract_dir": "Magpie-Experimental-x64",
-    "bin": "Magpie.exe",
+    "bin": [
+        [
+            "Magpie.exe",
+            "magpiee"
+        ]
+    ],
     "shortcuts": [
         [
             "Magpie.exe",
@@ -20,6 +25,7 @@
         ]
     ],
     "notes": [
-        "Magpiee 是 SAOG0721/Magpie 的实验 fork（原 magpie 清单改名），与官方 Magpie 项目区分；主程序仍为 Magpie.exe。"
+        "Magpiee 是 SAOG0721/Magpie 的实验 fork（原 magpie 清单改名），与官方 Magpie 项目区分；主程序仍为 Magpie.exe。",
+        "shim 名使用 magpiee.exe，避免与 yetone/magpie 的 magpie.exe 冲突（Windows 不区分大小写）。"
     ]
 }
