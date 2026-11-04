@@ -9,8 +9,8 @@
         "url": "https://api.github.com/repos/microsoft/WindowsAppSDK/releases/latest",
         "regex": "\"tag_name\":\\s*\"v?([\\d.]+)\""
     },
-    "url": "https://aka.ms/windowsappsdk/$majorVersion.$minorVersion/2.6.5/windowsappruntimeinstall-x64.exe",
-    "hash": "sha256:8f1c89b2760f3f6e5cc0e39848c04f26896b316bd7e42059e1f737f286ad38d4",
+    "url": "https://aka.ms/windowsappsdk/2.6/2.6.5/windowsappruntimeinstall-x64.exe",
+    "hash": "sha256:908e9a8ed8ad2ac765d6679543b0758812437e3ad6e3223f08d1730635cec8ec",
     "autoupdate": {
         "url": "https://aka.ms/windowsappsdk/$majorVersion.$minorVersion/$version/windowsappruntimeinstall-x64.exe"
     },
