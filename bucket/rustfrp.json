@@ -11,11 +11,21 @@
     "autoupdate": {
         "url": "https://github.com/Nu0vo1212/Rust-Frp/releases/download/v$version/nfrp-windows-amd64.zip"
     },
-    "bin": "frpc.exe",
+    "bin": [
+        [
+            "frpc.exe",
+            "rustfrpc"
+        ]
+    ],
     "shortcuts": [
         [
             "frpc.exe",
             "rustfrp"
         ]
+    ],
+    "notes": [
+        "shim 名使用 rustfrpc.exe，避免与 frp 包的 frpc 冲突。",
+        "配置文件已放到 D:\\scoop\\persist\rustfrp\\client.toml（由 frp 的 frpc.toml 复制，rustfrpc verify 通过）；运行：rustfrpc -c D:\\scoop\\persist\rustfrp\\client.toml。",
+        "frp 与 rustfrp 当前共用同一个 test-tcp 代理（本地 22 → 远端 6000），不要同时对同一个 frps 运行两个客户端，否则代理名冲突。"
     ]
 }
