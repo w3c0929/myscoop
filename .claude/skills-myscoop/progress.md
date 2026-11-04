@@ -319,7 +319,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 6e405d4 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* dd9b7ac (HEAD -> main, origin/main, origin/HEAD) rustfrpc 配置：复制 frp 配置到 persist 并校验 - 复制 D:\scoop\persist\frp\frpc.toml -> D:\scoop\persist\rustfrp\client.toml - rustfrpc verify 通过（127.0.0.1:7000，test-tcp 本地 22 -> 远端 6000） - 清单 notes 记录配置路径与 frp/rustfrp 勿同时连同一 frps 的提醒；README/progress 同步
+* 6e405d4 progress.md 更新提交历史
 * b77a7da 收录 Rust-Frp 0.7.4（Rust 版 FRP 客户端/服务端） - 官方 zip（frpc.exe / frps.exe + 示例 toml）；bin=frpc.exe + 快捷方式 - hash 与下载文件一致（1ee260…） - README 第三方表置顶并全表重编号（1..74），计数 158→159/73→74；progress 同步
 * 0f24818 progress.md 更新提交历史
 * b188111 同步 README 第三方版本与日期列
