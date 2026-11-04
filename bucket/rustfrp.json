@@ -11,25 +11,23 @@
     "autoupdate": {
         "url": "https://github.com/Nu0vo1212/Rust-Frp/releases/download/v$version/nfrp-windows-amd64.zip"
     },
-    "persist": "client.toml",
-    "pre_install": [
-        "if (!(Test-Path \"$persist_dir\\client.toml\")) { & \"$dir\\frpc.exe\" --gen-config \"$dir\\client.toml\" | Out-Null }"
+    "persist": [
+        "frpc.toml",
+        "frps.toml"
     ],
     "bin": [
         [
             "frpc.exe",
             "rustfrpc"
-        ]
-    ],
-    "shortcuts": [
+        ],
         [
-            "frpc.exe",
-            "rustfrp"
+            "frps.exe",
+            "rustfrps"
         ]
     ],
     "notes": [
-        "安装时自动执行 frpc --gen-config 生成独立的 client.toml，并 persist 到 D:\\scoop\\persist\\rustfrp\\client.toml；与 frp 的配置完全独立，不共用。",
-        "首次安装后请编辑 client.toml（serverAddr / serverPort / auth / proxies）；运行：rustfrpc -c D:\\scoop\\persist\\rustfrp\\client.toml。",
-        "shim 名使用 rustfrpc.exe，避免与 frp 包的 frpc 冲突。"
+        "安装时把包内示例配置 frpc.toml / frps.toml 持久化到 D:\\scoop\\persist\\rustfrp，与 frp 的配置完全独立、不共用。",
+        "客户端：编辑 persist\\rustfrp\\frpc.toml 后运行 rustfrpc -c D:\\scoop\\persist\\rustfrp\\frpc.toml；服务端：rustfrps -c D:\\scoop\\persist\\rustfrp\\frps.toml。",
+        "shim 使用 rustfrpc.exe / rustfrps.exe，避免与 frp 包的 frpc/frps 冲突。"
     ]
 }
