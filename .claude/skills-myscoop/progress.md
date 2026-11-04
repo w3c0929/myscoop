@@ -315,7 +315,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 0f24818 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* b77a7da (HEAD -> main, origin/main, origin/HEAD) 收录 Rust-Frp 0.7.4（Rust 版 FRP 客户端/服务端） - 官方 zip（frpc.exe / frps.exe + 示例 toml）；bin=frpc.exe + 快捷方式 - hash 与下载文件一致（1ee260…） - README 第三方表置顶并全表重编号（1..74），计数 158→159/73→74；progress 同步
+* 0f24818 progress.md 更新提交历史
 * b188111 同步 README 第三方版本与日期列
 * 9f95e5a 自动更新第三方软件
 * 6f1efa2 progress.md 更新提交历史
