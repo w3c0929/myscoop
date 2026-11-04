@@ -1,0 +1,19 @@
+{
+    "version": "0.3.2",
+    "description": "Your computers, working as one. Share keyboard, mouse, trackpad, clipboard, drag and drop and audio across Macs and PCs.",
+    "homepage": "https://github.com/oinkvm/oink",
+    "license": "GPL-3.0",
+    "url": "https://github.com/oinkvm/oink/releases/download/v0.3.2/Oink-0.3.2-93-windows-x64.msi",
+    "pre_install": [
+        "$appname = Split-Path (Split-Path $dir -Parent) -Leaf",
+        "$cachedir = $dir -replace '\\\\apps\\\\.*$', '\\cache'",
+        "$msi = Get-ChildItem $cachedir -Filter \"$appname#*.msi\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
+        "if ($msi) { Copy-Item $msi.FullName \"$dir\\setup.msi\" }"
+    ],
+    "post_install": "Start-Process \"$dir\\setup.msi\"",
+    "notes": "MSI 手动安装包，scoop install 下载后自动启动，用户手动选择安装目录。",
+    "hash": "sha256:c7d2402003642f577f10f5fb0e6fbb3dd4c91c5c45e1196c6a1a52008b3e2970",
+    "autoupdate": {
+        "url": "https://github.com/oinkvm/oink/releases/download/v$version/Oink-$version-93-windows-x64.msi"
+    }
+}
