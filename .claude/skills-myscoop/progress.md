@@ -319,7 +319,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* d16257d (HEAD -> main, origin/main, origin/HEAD) rustfrp 照搬 frp 的配置方式：persist frpc.toml/frps.toml - 包内示例配置直接持久化到 D:\scoop\persist\rustfrp，不再生成/共用 client.toml - bin 改为 rustfrpc/rustfrps，避免覆盖 frp 的 frpc/frps；移除无用快捷方式 - 实测重装 Persisting 两个配置，rustfrpc verify -c frpc.toml 通过
+* 90a7e23 (HEAD -> main) 同步 README 第三方版本与日期列
+* 823e489 自动更新第三方软件
+* c0016f6 (origin/main) progress.md 更新提交历史
+* d16257d rustfrp 照搬 frp 的配置方式：persist frpc.toml/frps.toml - 包内示例配置直接持久化到 D:\scoop\persist\rustfrp，不再生成/共用 client.toml - bin 改为 rustfrpc/rustfrps，避免覆盖 frp 的 frpc/frps；移除无用快捷方式 - 实测重装 Persisting 两个配置，rustfrpc verify -c frpc.toml 通过
 * 4957a3b progress.md 更新提交历史
 * da38ca9 rustfrp 改为安装时自动生成独立 client.toml 并 persist - 增加 persist: client.toml + pre_install 执行 frpc --gen-config - 首次安装生成独立模板到 D:\scoop\persist\rustfrp\client.toml，升级保留用户配置 - 不再复制/共用 frp 的配置；实测卸载重装生成成功，rustfrpc verify 通过
 * 8d37c07 progress.md 更新提交历史
