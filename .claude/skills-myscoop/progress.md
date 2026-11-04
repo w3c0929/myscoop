@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 158 款
+- **收录软件总数**: 159 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 73 款
+- **第三方官方（引用原项目 Release）**: 74 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -121,6 +121,8 @@ GitHub: https://github.com/w3c0929/myscoop
 - **收录 Magpie（yetone/magpie）0.1.2738（2026-11-03）**：AI 模型路由/切换工具（Codex 用 DeepSeek、Claude Code 用 Kimi 等）；多架构官方 release（amd64/arm64），补上 arm64 hash，`pre_install` 统一改名为 `magpie.exe`，bin/快捷方式指向它。与已有的 `magpiee`（SAOG0721/Magpie 游戏缩放实验 fork）是两个不同项目。
 
 - **magpiee shim 改名（2026-11-03）**：magpiee 与 yetone/magpie 的 bin 都是 `Magpie.exe`/`magpie.exe`，Windows 不区分大小写 → 同一个 `magpie.exe` shim 互相覆盖。magpiee 改为 `bin: [["Magpie.exe","magpiee"]]`（Scoop 自动补 .exe），重装后 shim `magpiee.exe` 指向 magpiee，`magpie.exe` 指向 yetone/magpie，互不冲突。
+
+- **收录 Rust-Frp 0.7.4（2026-11-04）**：Rust 版 FRP（兼容 Go 原版 frp），官方 zip 内含 `frpc.exe` / `frps.exe` / 示例 toml；清单 `bin=frpc.exe` + 快捷方式，hash 校验通过。
 
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
@@ -313,9 +315,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* b188111 (HEAD -> main) 同步 README 第三方版本与日期列
+* 0f24818 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* b188111 同步 README 第三方版本与日期列
 * 9f95e5a 自动更新第三方软件
-* 6f1efa2 (origin/main) progress.md 更新提交历史
+* 6f1efa2 progress.md 更新提交历史
 * 2eb20a6 magpiee shim 改名 magpiee.exe，避免与 magpie 冲突 - magpiee 的 bin 从 Magpie.exe 改为 [["Magpie.exe","magpiee"]]，Scoop 生成 magpiee.exe - 与 yetone/magpie 的 magpie.exe 分开；重装验证两个 shim 各自指向正确 - README/progress 同步
 * a97445a progress.md 更新提交历史
 * c832f09 Magpie 更新至 0.1.2766（rebase 修复后同步最新）
