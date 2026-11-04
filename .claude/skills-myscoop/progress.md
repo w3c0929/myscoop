@@ -126,7 +126,8 @@ GitHub: https://github.com/w3c0929/myscoop
 
 - **rustfrp shim 改名 rustfrpc.exe（2026-11-04）**：rustfrp 的 `frpc.exe` 与 frp 包的 `frpc` shim 同名（覆盖警告）；清单改为 `bin: [["frpc.exe","rustfrpc"]]`，重装后 `rustfrpc.exe → rustfrp`，并 `scoop reset frp` 恢复 `frpc.exe → frp`。README 同步。
 
-- **rustfrp 配置照搬 frp 方式（2026-11-04）**：`persist = ["frpc.toml","frps.toml"]`，安装时把包内示例配置直接持久化到 `D:\scoop\persistustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin` 为 `rustfrpc`/`rustfrps`（避免与 frp 的 `frpc`/`frps` shim 冲突）；实测重装后两个配置均 Persisting，`rustfrpc verify -c frpc.toml` 通过。
+- **rustfrp 配置照搬 frp 方式（2026-11-04）**：`persist = ["frpc.toml","frps.toml"]`，安装时把包内示例配置直接持久化到 `D:\scoop\persist
+ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin` 为 `rustfrpc`/`rustfrps`（避免与 frp 的 `frpc`/`frps` shim 冲突）；实测重装后两个配置均 Persisting，`rustfrpc verify -c frpc.toml` 通过。
 
 - **修 winsdk 2.6.5 hash 校验失败（2026-11-05）**：清单顶层 `url` 写成了字面量 `$majorVersion.$minorVersion` —— Scoop **下载阶段不替换这两个变量**（只有 autoupdate 重写清单时才替换），真正请求 aka.ms 得到的是 HTML 错误页（实测 14870 字节、首字节 `<!doctype`，sha256 `487ba831…` 与报错 Actual 一致）→ 必然 hash 失败。修复：顶层 `url` 改为具体地址 `https://aka.ms/windowsappsdk/2.6/2.6.5/windowsappruntimeinstall-x64.exe`，`hash` 改为实测 `908e9a8e…`（该地址下到 PE32+ 安装包约 125MB，两次下载哈希一致；上游 GitHub release v2.6.5 无资产，只能走 aka.ms）。`autoupdate` 保留 `$majorVersion.$minorVersion/$version` 模板，下次版本变化时由工具替换生成具体地址。
 
@@ -321,9 +322,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 90a7e23 (HEAD -> main) 同步 README 第三方版本与日期列
+* a4f3991 (HEAD -> main) 修 winsdk 2.6.5 hash 校验失败：顶层 url 改为具体地址
+* 001b2eb (origin/main, origin/HEAD) progress.md 更新提交历史
+* 90a7e23 同步 README 第三方版本与日期列
 * 823e489 自动更新第三方软件
-* c0016f6 (origin/main) progress.md 更新提交历史
+* c0016f6 progress.md 更新提交历史
 * d16257d rustfrp 照搬 frp 的配置方式：persist frpc.toml/frps.toml - 包内示例配置直接持久化到 D:\scoop\persist\rustfrp，不再生成/共用 client.toml - bin 改为 rustfrpc/rustfrps，避免覆盖 frp 的 frpc/frps；移除无用快捷方式 - 实测重装 Persisting 两个配置，rustfrpc verify -c frpc.toml 通过
 * 4957a3b progress.md 更新提交历史
 * da38ca9 rustfrp 改为安装时自动生成独立 client.toml 并 persist - 增加 persist: client.toml + pre_install 执行 frpc --gen-config - 首次安装生成独立模板到 D:\scoop\persist\rustfrp\client.toml，升级保留用户配置 - 不再复制/共用 frp 的配置；实测卸载重装生成成功，rustfrpc verify 通过
