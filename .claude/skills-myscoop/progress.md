@@ -324,8 +324,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* a4f3991 (HEAD -> main) 修 winsdk 2.6.5 hash 校验失败：顶层 url 改为具体地址
-* 001b2eb (origin/main, origin/HEAD) progress.md 更新提交历史
+* 8e28514 (HEAD -> main) 收录 Oink 0.3.2（跨 Mac/PC 共享键鼠、剪贴板、拖放、音频）
+* 0b017f1 (origin/main, origin/HEAD) progress.md 更新提交历史
+* a4f3991 修 winsdk 2.6.5 hash 校验失败：顶层 url 改为具体地址
+* 001b2eb progress.md 更新提交历史
 * 90a7e23 同步 README 第三方版本与日期列
 * 823e489 自动更新第三方软件
 * c0016f6 progress.md 更新提交历史
