@@ -126,7 +126,7 @@ GitHub: https://github.com/w3c0929/myscoop
 
 - **rustfrp shim 改名 rustfrpc.exe（2026-11-04）**：rustfrp 的 `frpc.exe` 与 frp 包的 `frpc` shim 同名（覆盖警告）；清单改为 `bin: [["frpc.exe","rustfrpc"]]`，重装后 `rustfrpc.exe → rustfrp`，并 `scoop reset frp` 恢复 `frpc.exe → frp`。README 同步。
 
-- **rustfrpc 配置（2026-11-04）**：复制 `D:\scoop\persistrprpc.toml` → `D:\scoop\persistustfrp\client.toml`（serverAddr 127.0.0.1:7000，test-tcp 本地 22 → 远端 6000）；`rustfrpc verify -c` 通过。清单 notes 已记录配置路径与“frp/rustfrp 勿同时连同一 frps”的提醒。
+- **rustfrpc 配置改为安装时自动生成（2026-11-04）**：不再复制/共用 frp 的配置；清单增加 `persist: "client.toml"` + `pre_install` 执行 `frpc --gen-config`，首次安装自动生成独立模板并持久化到 `D:\scoop\persistustfrp\client.toml`，升级时若已存在则保留用户配置。实测卸载后重装：pre_install 生成、Persisting client.toml、`rustfrpc verify` 通过（示例配置）。
 
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
@@ -319,7 +319,8 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* dd9b7ac (HEAD -> main, origin/main, origin/HEAD) rustfrpc 配置：复制 frp 配置到 persist 并校验 - 复制 D:\scoop\persist\frp\frpc.toml -> D:\scoop\persist\rustfrp\client.toml - rustfrpc verify 通过（127.0.0.1:7000，test-tcp 本地 22 -> 远端 6000） - 清单 notes 记录配置路径与 frp/rustfrp 勿同时连同一 frps 的提醒；README/progress 同步
+* 8d37c07 (HEAD -> main, origin/main, origin/HEAD) progress.md 更新提交历史
+* dd9b7ac rustfrpc 配置：复制 frp 配置到 persist 并校验 - 复制 D:\scoop\persist\frp\frpc.toml -> D:\scoop\persist\rustfrp\client.toml - rustfrpc verify 通过（127.0.0.1:7000，test-tcp 本地 22 -> 远端 6000） - 清单 notes 记录配置路径与 frp/rustfrp 勿同时连同一 frps 的提醒；README/progress 同步
 * 6e405d4 progress.md 更新提交历史
 * b77a7da 收录 Rust-Frp 0.7.4（Rust 版 FRP 客户端/服务端） - 官方 zip（frpc.exe / frps.exe + 示例 toml）；bin=frpc.exe + 快捷方式 - hash 与下载文件一致（1ee260…） - README 第三方表置顶并全表重编号（1..74），计数 158→159/73→74；progress 同步
 * 0f24818 progress.md 更新提交历史
