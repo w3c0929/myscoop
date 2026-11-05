@@ -342,8 +342,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 5546676 (HEAD -> main) bandizip6 锁文件自动清理：参考 zhiyuime 移到 persist + pre_install 清理
-* 2f09e19 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 186b457 (HEAD -> main) bandizip6 卸载时重启资源管理器，释放 DLL 锁并当场删除目录
+* 09e675a (origin/main, origin/HEAD) progress.md 更新提交历史
+* 5546676 bandizip6 锁文件自动清理：参考 zhiyuime 移到 persist + pre_install 清理
+* 2f09e19 progress.md 更新提交历史
 * b10efac 修 bandizip6 卸载卡死与 regsvr32 异步问题
 * e4574aa progress.md 更新提交历史
 * f1d45bf bandizip6 增加基础文件关联（ProgID + OpenWith + 默认应用）
