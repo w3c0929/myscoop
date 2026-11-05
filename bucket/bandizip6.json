@@ -47,7 +47,13 @@
         "$hk = \"HKLM:\\SOFTWARE\\Classes\\CLSID\\$id\\InprocServer32\"",
         "if ((Get-ItemProperty -Path $hk -ErrorAction SilentlyContinue).'(default)' -like \"$dir\\*\") { reg delete \"HKLM\\SOFTWARE\\Classes\\CLSID\\$id\" /f 2>$null | Out-Null; reg delete \"HKLM\\SOFTWARE\\Classes\\WOW6432Node\\CLSID\\$id\" /f 2>$null | Out-Null; reg delete \"HKLM\\SOFTWARE\\Classes\\*\\ShellEx\\ContextMenuHandlers\\AABdzCtx\" /f 2>$null | Out-Null; reg delete \"HKLM\\SOFTWARE\\Classes\\Directory\\ShellEx\\ContextMenuHandlers\\AABdzCtx\" /f 2>$null | Out-Null; reg delete \"HKLM\\SOFTWARE\\Classes\\Directory\\Background\\ShellEx\\ContextMenuHandlers\\AABdzCtx\" /f 2>$null | Out-Null; reg delete \"HKLM\\SOFTWARE\\Classes\\Drive\\ShellEx\\ContextMenuHandlers\\AABdzCtx\" /f 2>$null | Out-Null; reg delete \"HKLM\\SOFTWARE\\Classes\\Directory\\ShellEx\\DragDropHandlers\\AABdzCtx\" /f 2>$null | Out-Null; reg delete \"HKLM\\SOFTWARE\\Classes\\Drive\\ShellEx\\DragDropHandlers\\AABdzCtx\" /f 2>$null | Out-Null }",
         "$capicon = (Get-ItemProperty 'HKCU:\\Software\\Bandizip\\Capabilities' -Name ApplicationIcon -ErrorAction SilentlyContinue).ApplicationIcon; if ($capicon -like ('*' + $dir + '*')) { $exts = @('zip','zipx','7z','rar','tar','gz','tgz','bz2','tbz','tbz2','xz','txz','lzh','lha','alz','egg','cab'); foreach ($e in $exts) { $p = 'Bandizip.' + $e; Remove-Item -Path ('HKCU:\\Software\\Classes\\' + $p) -Recurse -Force -ErrorAction SilentlyContinue; $k = 'HKCU:\\Software\\Classes\\.' + $e; if ((Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).'(default)' -eq $p) { Remove-ItemProperty -Path $k -Name '(default)' -ErrorAction SilentlyContinue }; Remove-ItemProperty -Path ($k + '\\OpenWithProgids') -Name $p -ErrorAction SilentlyContinue }; Remove-Item -Path 'HKCU:\\Software\\Bandizip\\Capabilities' -Recurse -Force -ErrorAction SilentlyContinue; Remove-ItemProperty -Path 'HKCU:\\Software\\RegisteredApplications' -Name 'Bandizip' -ErrorAction SilentlyContinue }",
-        "if (Test-Path -LiteralPath $dir) { try { Remove-Item -LiteralPath $dir -Recurse -Force -ErrorAction Stop } catch { New-Item -ItemType Directory -Force $persist_dir | Out-Null; Move-Item -LiteralPath $dir -Destination ($persist_dir + '\\bandizip6.busy-' + (Get-Date -Format 'yyyyMMddHHmmss')) -Force -ErrorAction SilentlyContinue } }"
+        "Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue",
+        "Start-Sleep -Milliseconds 1000",
+        "if (-not (Get-Process explorer -ErrorAction SilentlyContinue)) { Start-Process \"$env:WINDIR\\explorer.exe\" -ErrorAction SilentlyContinue }",
+        "Start-Sleep -Milliseconds 1500",
+        "if (Test-Path -LiteralPath $dir) { try { Remove-Item -LiteralPath $dir -Recurse -Force -ErrorAction Stop } catch { New-Item -ItemType Directory -Force $persist_dir | Out-Null; Move-Item -LiteralPath $dir -Destination ($persist_dir + '\\bandizip6.busy-' + (Get-Date -Format 'yyyyMMddHHmmss')) -Force -ErrorAction SilentlyContinue } }",
+        "Get-ChildItem $persist_dir -Directory -Filter 'bandizip6.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue",
+        "$appsRoot = Split-Path (Split-Path $dir -Parent) -Parent; Get-ChildItem $appsRoot -Directory -Filter 'bandizip6.busy-*' -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
     ],
     "notes": [
         "自托管便携版：由已安装的 6.18 (Build 26084) 目录打包，config.ini 已设为 is_portable=1，无需手动安装。",
@@ -56,7 +62,8 @@
         "首次安装会把 config.ini 的空 default_language 设为 SimpChinese（若你已自行设置则不覆盖）。",
         "Windows 11 的旧式右键扩展折叠在右键 →“显示更多选项”（Shift+F10）中。",
         "文件关联：安装时把常用压缩格式（zip/zipx/7z/rar/tar/gz/tgz/bz2/tbz/tbz2/xz/txz/lzh/lha/alz/egg/cab）以 ProgID Bandizip.<ext> 关联到本程序，并注册到 HKCU Capabilities；卸载时清理。注意 Win10/11 对默认关联有保护，若某格式已有 UserChoice 可能仍沿用原程序，可在“打开方式”或默认应用里改选 Bandizip。",
-        "卸载时若目录被 Explorer 加载的 DLL 锁住无法删除，会移动到 persist\bandizip6.busy-<时间戳>；下次安装的 pre_install 会自动清理该目录（Explorer 重启/重启系统后锁已释放）。"
+        "卸载时若目录被 Explorer 加载的 DLL 锁住无法删除，会移动到 persist\bandizip6.busy-<时间戳>；下次安装的 pre_install 会自动清理该目录（Explorer 重启/重启系统后锁已释放）。",
+        "卸载时会重启资源管理器以释放被加载 DLL 的文件锁（已打开的文件夹窗口会关闭），随后直接删除安装目录，并清理遗留的 bandizip6.busy-*。"
     ],
     "pre_install": [
         "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
