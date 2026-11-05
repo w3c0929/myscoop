@@ -871,12 +871,12 @@ git push origin main
 ],
 "pre_uninstall": [
     "$id = '{5B69A6B4-393B-459C-8EBB-214237A9E7AC}'",
-    "$k = \"HKLM:\\SOFTWARE\\Classes\\CLSID\\$id\\InprocServer32\"",
+    "$k = \"HKCU:\\Software\\Classes\\CLSID\\$id\\InprocServer32\"",
     "if ((Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).'(default)' -like \"$dir\\*\") { regsvr32 /u /s \"$dir\\bdzshl64.dll\" }"
 ]
 ```
 
-要点：`regsvr32` 写 HKLM 需要管理员权限；`pre_uninstall` 先核对 `InprocServer32` 是否指向**本版本目录**再反注册——Scoop 升级顺序是「装新 → 卸旧」，无条件反注册会删掉新版本刚写入的项；便携配置用 `persist` 保存（如 Bandizip 的 `config.ini` 需 `is_portable=1`）。
+要点：实测 Bandizip 6.18 的 `regsvr32` 把扩展注册到 **HKCU（当前用户）**，不需要管理员权限，也不影响其他 Windows 用户（32 位 DLL 在 `HKCU\Software\Classes\WOW6432Node\CLSID`）；Win11 的旧式扩展要在右键 →“显示更多选项”里看。`pre_uninstall` 先核对 `InprocServer32` 是否指向**本版本目录**再反注册——Scoop 升级顺序是「装新 → 卸旧」，无条件反注册会删掉新版本刚写入的项。便携配置用 `persist` 保存（如 Bandizip 的 `config.ini` 需 `is_portable=1`）。
 
 **模式 6 — 单 exe 手动安装**
 

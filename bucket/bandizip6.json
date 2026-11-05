@@ -26,15 +26,15 @@
     ],
     "pre_uninstall": [
         "$id = '{5B69A6B4-393B-459C-8EBB-214237A9E7AC}'",
-        "$k64 = \"HKLM:\\SOFTWARE\\Classes\\CLSID\\$id\\InprocServer32\"",
+        "$k64 = \"HKCU:\\Software\\Classes\\CLSID\\$id\\InprocServer32\"",
         "if ((Get-ItemProperty -Path $k64 -ErrorAction SilentlyContinue).'(default)' -like \"$dir\\*\") { regsvr32 /u /s \"$dir\\bdzshl64.dll\" }",
-        "$k32 = \"HKLM:\\SOFTWARE\\Classes\\WOW6432Node\\CLSID\\$id\\InprocServer32\"",
+        "$k32 = \"HKCU:\\Software\\Classes\\WOW6432Node\\CLSID\\$id\\InprocServer32\"",
         "if ((Test-Path \"$env:WINDIR\\SysWOW64\\regsvr32.exe\") -and ((Get-ItemProperty -Path $k32 -ErrorAction SilentlyContinue).'(default)' -like \"$dir\\*\")) { & \"$env:WINDIR\\SysWOW64\\regsvr32.exe\" /u /s \"$dir\\bdzshl32.dll\" }"
     ],
     "notes": [
         "自托管便携版：由已安装的 6.18 (Build 26084) 目录打包，config.ini 已设为 is_portable=1，无需手动安装。",
-        "安装时自动注册资源管理器右键菜单：对 bdzshl64.dll / bdzshl32.dll 执行 regsvr32（写入 HKLM，需要管理员权限）；若 Scoop 以普通用户运行导致未注册，可手动以管理员执行 regsvr32 \"<安装目录>\\bdzshl64.dll\"。",
-        "卸载时 pre_uninstall 自动反注册（并检查注册路径，避免升级时误删新版本的注册项）。",
-        "配置持久化在 persist\\config.ini，升级不丢；右键菜单若未立即出现，重启资源管理器或注销后生效。"
+        "安装时对 bdzshl64.dll / bdzshl32.dll 执行 regsvr32，右键菜单注册在 HKCU（当前用户），不需要管理员权限；其他 Windows 用户不受影响。",
+        "Windows 11 会折叠旧式右键扩展：请在右键 →“显示更多选项”（或 Shift+F10）中查看 Bandizip 菜单。",
+        "卸载时 pre_uninstall 从 HKCU 反注册（先核对注册路径，避免升级时误删新版本）。配置持久化在 persist\\config.ini。"
     ]
 }
