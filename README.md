@@ -867,7 +867,9 @@ git push origin main
 "persist": "config.ini",
 "post_install": [
     "regsvr32 /s \"$dir\\bdzshl64.dll\"",
-    "if (Test-Path \"$env:WINDIR\\SysWOW64\\regsvr32.exe\") { & \"$env:WINDIR\\SysWOW64\\regsvr32.exe\" /s \"$dir\\bdzshl32.dll\" }"
+    "if (Test-Path \"$env:WINDIR\\SysWOW64\\regsvr32.exe\") { & \"$env:WINDIR\\SysWOW64\\regsvr32.exe\" /s \"$dir\\bdzshl32.dll\" }",
+    "reg copy \"HKCU\\Software\\Classes\\CLSID\\{GUID}\" \"HKLM\\SOFTWARE\\Classes\\CLSID\\{GUID}\" /s /f",
+    "……（* / Directory / Directory\\Background / Drive 的 ContextMenuHandlers + DragDropHandlers 同样复制到 HKLM）"
 ],
 "pre_uninstall": [
     "$id = '{5B69A6B4-393B-459C-8EBB-214237A9E7AC}'",
@@ -876,7 +878,7 @@ git push origin main
 ]
 ```
 
-要点：实测 Bandizip 6.18 的 `regsvr32` 把扩展注册到 **HKCU（当前用户）**，不需要管理员权限，也不影响其他 Windows 用户（32 位 DLL 在 `HKCU\Software\Classes\WOW6432Node\CLSID`）；Win11 的旧式扩展要在右键 →“显示更多选项”里看。`pre_uninstall` 先核对 `InprocServer32` 是否指向**本版本目录**再反注册——Scoop 升级顺序是「装新 → 卸旧」，无条件反注册会删掉新版本刚写入的项。便携配置用 `persist` 保存（如 Bandizip 的 `config.ini` 需 `is_portable=1`）。
+要点：实测 Bandizip 6.18 的 `regsvr32` **只写 HKCU**；而 **UAC 关闭时 Explorer 提权运行，只加载 HKLM 注册的 Shell 扩展**（本机症状：HKCU 注册项齐全、菜单却不出现）。所以 regsvr32 之后要再把 `CLSID\{GUID}` 与 6 个挂载点（`*` / `Directory` / `Directory\Background` / `Drive` 的 ContextMenuHandlers + Directory / Drive 的 DragDropHandlers）用 `reg copy HKCU\... HKLM\... /s /f` 同步到 HKLM（需管理员；失败不影响普通用户下的 HKCU 生效）。**HKLM 是全机器范围**：同一台电脑其他 Windows 用户也会看到菜单。`pre_uninstall` 先核对 HKCU/HKLM 的 `InprocServer32` 是否指向**本版本目录**，再反注册 / `reg delete`——Scoop 升级是「装新 → 卸旧」，无条件清理会删掉新版本刚写入的项。**语言**：Shell 扩展优先读 `config.ini` 的 `default_language`（为空会回退英文），简体中文设 `SimpChinese`。Win11 旧式扩展在右键 →“显示更多选项”里看。便携配置用 `persist` 保存（`is_portable=1`）。
 
 **模式 6 — 单 exe 手动安装**
 
