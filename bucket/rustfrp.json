@@ -1,13 +1,13 @@
 {
-    "version": "0.7.5",
+    "version": "0.7.6",
     "description": "Rust端的Frp客户端/服务端 兼容Go版本的原版Frp",
     "homepage": "https://github.com/Nu0vo1212/Rust-Frp",
     "license": "Apache-2.0",
     "checkver": {
         "github": "https://github.com/Nu0vo1212/Rust-Frp"
     },
-    "url": "https://github.com/Nu0vo1212/Rust-Frp/releases/download/v0.7.5/nfrp-windows-amd64.zip",
-    "hash": "sha256:948b59b167f134bfe73ad76165f418b0ab3cc345e6253cb1dffdd63ae0c48673",
+    "url": "https://github.com/Nu0vo1212/Rust-Frp/releases/download/v0.7.6/nfrp-windows-amd64.zip",
+    "hash": "sha256:2ba2f4f8a0ae7bd8f5b2d6d89b7389dd4cf71ab72b380669d3456d91f6a850de",
     "autoupdate": {
         "url": "https://github.com/Nu0vo1212/Rust-Frp/releases/download/v$version/nfrp-windows-amd64.zip"
     },
