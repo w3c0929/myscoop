@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 160 款
+- **收录软件总数**: 161 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 75 款
+- **第三方官方（引用原项目 Release）**: 76 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -132,6 +132,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **修 winsdk 2.6.5 hash 校验失败（2026-11-05）**：清单顶层 `url` 写成了字面量 `$majorVersion.$minorVersion` —— Scoop **下载阶段不替换这两个变量**（只有 autoupdate 重写清单时才替换），真正请求 aka.ms 得到的是 HTML 错误页（实测 14870 字节、首字节 `<!doctype`，sha256 `487ba831…` 与报错 Actual 一致）→ 必然 hash 失败。修复：顶层 `url` 改为具体地址 `https://aka.ms/windowsappsdk/2.6/2.6.5/windowsappruntimeinstall-x64.exe`，`hash` 改为实测 `908e9a8e…`（该地址下到 PE32+ 安装包约 125MB，两次下载哈希一致；上游 GitHub release v2.6.5 无资产，只能走 aka.ms）。`autoupdate` 保留 `$majorVersion.$minorVersion/$version` 模板，下次版本变化时由工具替换生成具体地址。
 
 - **收录 Oink 0.3.2（2026-11-05）**：跨 Mac/PC 的键鼠、触控板、剪贴板、拖放与音频共享工具；官方仅提供 Windows x64 MSI（`Oink-0.3.2-93-windows-x64.msi`），清单按 MSI 手动安装模式：`pre_install` 从 Scoop 缓存复制原始 MSI，`post_install` 启动安装向导、用户自选目录；hash 与上游 API digest 一致（`c7d240…`）。README 第三方表置顶并全表重编号（1..75），计数 159→160、第三方 74→75（本地 85 不变）。
+
+- **收录 LibreDWG 0.14.8829（2026-11-05）**：GNU LibreDWG —— 免费开源的 DWG 文件读写 C 库（GPL-3.0），附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具。上游同时发布稳定版 0.14 与 nightly（0.14.NNNN，prerelease），清单跟 nightly，多架构 zip（win32/win64，arm64 沿用 win32）。本次仅补充 `bin`（11 个根目录 CLI：dwg2dxf / dwg2SVG / dwgbmp / dwggrep / dwglayers / dwgread / dwgrewrite / dwgwrite / dxf2dwg / dxfread / dxfwrite），未改动 checkver/architecture/hash。README 第三方表置顶并全表重编号（1..76），计数 160→161、第三方 75→76（本地 85 不变）。**注意**：checkver 仍是 `github` latest（只返回稳定版 0.14），后续 `--all` 存在把 nightly 降级为 0.14 的风险，待确认是否改为 `tag_regex ^(\d+\.\d+\.\d+)$`。
 
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
