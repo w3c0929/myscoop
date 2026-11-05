@@ -1,12 +1,40 @@
 {
     "version": "6.18",
-    "description": "Bandizip - all-in-one compression tool (v6.18 - last ad-free version)",
+    "description": "Bandizip - all-in-one compression tool (v6.18 - last ad-free version, portable)",
     "homepage": "https://www.bandisoft.com/bandizip/old/6/",
     "license": {
         "identifier": "Freeware",
         "url": "https://www.bandisoft.com/bandizip/help/eula/"
     },
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18.exe",
-    "hash": "sha256:171dc8f923add71f1e7c850ad736075b2c2ab741e15915e741fd84967cde9ff4",
-    "post_install": "Start-Process \"$dir\\Bandizip-6.18.exe\""
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18-portable.7z",
+    "hash": "sha256:06dec976414bde077e86671324285b65a0e4582890183f4e1b52627ea60fd03f",
+    "bin": [
+        "Bandizip.exe",
+        "bc.exe"
+    ],
+    "shortcuts": [
+        [
+            "Bandizip.exe",
+            "Bandizip"
+        ]
+    ],
+    "persist": "config.ini",
+    "post_install": [
+        "regsvr32 /s \"$dir\\bdzshl64.dll\"",
+        "if (Test-Path \"$env:WINDIR\\SysWOW64\\regsvr32.exe\") { & \"$env:WINDIR\\SysWOW64\\regsvr32.exe\" /s \"$dir\\bdzshl32.dll\" }",
+        "try { Add-Type -Namespace Win -Name Shell -MemberDefinition '[DllImport(\"shell32.dll\")] public static extern void SHChangeNotify(int eventId, uint flags, System.IntPtr item1, System.IntPtr item2);' -ErrorAction Stop; [Win.Shell]::SHChangeNotify(0x08000000, 0, [System.IntPtr]::Zero, [System.IntPtr]::Zero) } catch {}"
+    ],
+    "pre_uninstall": [
+        "$id = '{5B69A6B4-393B-459C-8EBB-214237A9E7AC}'",
+        "$k64 = \"HKLM:\\SOFTWARE\\Classes\\CLSID\\$id\\InprocServer32\"",
+        "if ((Get-ItemProperty -Path $k64 -ErrorAction SilentlyContinue).'(default)' -like \"$dir\\*\") { regsvr32 /u /s \"$dir\\bdzshl64.dll\" }",
+        "$k32 = \"HKLM:\\SOFTWARE\\Classes\\WOW6432Node\\CLSID\\$id\\InprocServer32\"",
+        "if ((Test-Path \"$env:WINDIR\\SysWOW64\\regsvr32.exe\") -and ((Get-ItemProperty -Path $k32 -ErrorAction SilentlyContinue).'(default)' -like \"$dir\\*\")) { & \"$env:WINDIR\\SysWOW64\\regsvr32.exe\" /u /s \"$dir\\bdzshl32.dll\" }"
+    ],
+    "notes": [
+        "自托管便携版：由已安装的 6.18 (Build 26084) 目录打包，config.ini 已设为 is_portable=1，无需手动安装。",
+        "安装时自动注册资源管理器右键菜单：对 bdzshl64.dll / bdzshl32.dll 执行 regsvr32（写入 HKLM，需要管理员权限）；若 Scoop 以普通用户运行导致未注册，可手动以管理员执行 regsvr32 \"<安装目录>\\bdzshl64.dll\"。",
+        "卸载时 pre_uninstall 自动反注册（并检查注册路径，避免升级时误删新版本的注册项）。",
+        "配置持久化在 persist\\config.ini，升级不丢；右键菜单若未立即出现，重启资源管理器或注销后生效。"
+    ]
 }

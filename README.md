@@ -159,7 +159,7 @@
 | 65 | [Beyond Compare 5](https://www.scootersoftware.com/) — 文件对比工具（汉化版） | `scoop install bcompare` | portable zip | 5.2.5.32528 | 2026-10-10 | 2026-10-10 |
 | 66 | [Termius](https://termius.com/) — SSH 客户端汉化版 | `scoop install termius` | portable zip | 9.40.1 | 2026-10-10 | 2026-10-10 |
 | 67 | [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器 | `scoop install idm` | 单 exe 手动安装 | 6.4.3 | 2026-10-10 | 2026-10-10 |
-| 68 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 压缩工具（最后无广告版） | `scoop install bandizip6` | 单 exe 手动安装 | 6.18 | 2026-10-10 | 2026-10-10 |
+| 68 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 压缩工具（最后无广告版，便携版自动注册右键菜单） | `scoop install bandizip6` | 自托管便携 7z（自动注册右键菜单） | 6.18 | 2026-10-10 | 2026-11-05 |
 | 69 | [2345看图王](https://pic.2345.cc/) — 图片查看编辑工具 | `scoop install 2345pic` | portable zip（安装时注册图片关联） | 10.8.0.9683 | 2026-10-10 | 2026-10-29 |
 | 70 | [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端 | `scoop install apollo` | 单 exe 手动安装 | 0.4.6 | 2026-10-10 | 2026-10-10 |
 | 71 | [KeyCastOW](https://github.com/brookhong/KeyCastOW) — 屏幕按键显示工具 | `scoop install keycastow` | zip 便携+自动启动 | 1.0 | 2026-10-10 | 2026-10-10 |
@@ -450,7 +450,7 @@ myscoop/
 │   ├── apollo.json                  (模式6：单 exe 手动安装)
 │   ├── iobit.json                   (模式6：单 exe 手动安装)
 │   ├── idm.json                     (模式6：单 exe 手动安装)
-│   ├── bandizip6.json               (模式6：单 exe 手动安装)
+│   ├── bandizip6.json               (模式5c：自托管便携 + 右键菜单注册)
 │   ├── sougoupy.json                (模式6：单 exe 手动安装)
 │   ├── uuyc.json                    (模式6：单 exe 手动安装)
 │   ├── pixpin.json                  (模式1：官方直链 Inno Setup)
@@ -857,21 +857,42 @@ git push origin main
 | NSIS 解包+asar 替换 | `7z` + 文件替换 | `termius.json` |
 | 已绿化便携版 | 直接打包 | `2345pic.json` |
 
+**模式 5c — 自托管便携 + 注册资源管理器右键菜单**（`bandizip6.json`）
+
+适用于解包/复制后需要注册 Shell 扩展的便携软件（压缩工具、右键工具等）：把已安装目录打包成 7z（配置文件改为便携模式），安装时 `regsvr32` 注册 DLL，卸载时反注册。
+
+```json
+"bin": ["Bandizip.exe", "bc.exe"],
+"shortcuts": [["Bandizip.exe", "Bandizip"]],
+"persist": "config.ini",
+"post_install": [
+    "regsvr32 /s \"$dir\\bdzshl64.dll\"",
+    "if (Test-Path \"$env:WINDIR\\SysWOW64\\regsvr32.exe\") { & \"$env:WINDIR\\SysWOW64\\regsvr32.exe\" /s \"$dir\\bdzshl32.dll\" }"
+],
+"pre_uninstall": [
+    "$id = '{5B69A6B4-393B-459C-8EBB-214237A9E7AC}'",
+    "$k = \"HKLM:\\SOFTWARE\\Classes\\CLSID\\$id\\InprocServer32\"",
+    "if ((Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).'(default)' -like \"$dir\\*\") { regsvr32 /u /s \"$dir\\bdzshl64.dll\" }"
+]
+```
+
+要点：`regsvr32` 写 HKLM 需要管理员权限；`pre_uninstall` 先核对 `InprocServer32` 是否指向**本版本目录**再反注册——Scoop 升级顺序是「装新 → 卸旧」，无条件反注册会删掉新版本刚写入的项；便携配置用 `persist` 保存（如 Bandizip 的 `config.ini` 需 `is_portable=1`）。
+
 **模式 6 — 单 exe 手动安装**
 
 exe 直接上传 GitHub Release，不做解包。`post_install` 自动启动安装/启动器，用户手动操作：
 
 ```json
 {
-    "version": "6.18",
-    "license": {"identifier": "Freeware"},
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.18/Bandizip-6.18.exe",
+    "version": "6.4.3",
+    "license": {"identifier": "Proprietary"},
+    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.4.3/idm-6.4.3.exe",
     "hash": "sha256:xxxx",
-    "post_install": "Start-Process \"$dir\\Bandizip-6.18.exe\""
+    "post_install": "Start-Process \"$dir\\idm-6.4.3.exe\""
 }
 ```
 
-不设 `bin`/`shortcuts`/`checkver`/`autoupdate`。适用于：安装器类 exe（Bandizip/IDM/IObit）、zip 便携+自动启动（KeyCastOW）。
+不设 `bin`/`shortcuts`/`checkver`/`autoupdate`。适用于：安装器类 exe（IDM/IObit）、zip 便携+自动启动（KeyCastOW）。
 
 **模式 7 — MSI 手动安装**
 
