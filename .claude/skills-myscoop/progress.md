@@ -334,8 +334,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* fd27f19 (HEAD -> main) 修 bandizip6 右键菜单：确认注册在 HKCU 每用户，修正卸载反注册
-* 64644a4 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 29ddc8c (HEAD -> main) 修 bandizip6：提权 Explorer 只认 HKLM，补 HKLM 同步 + 中文语言
+* ffe7518 (origin/main, origin/HEAD) progress.md 更新提交历史
+* fd27f19 修 bandizip6 右键菜单：确认注册在 HKCU 每用户，修正卸载反注册
+* 64644a4 progress.md 更新提交历史
 * 4c790fd bandizip6 改为自托管便携 7z + 自动注册右键菜单
 * e113e87 progress.md 更新提交历史
 * f7babf2 收录 NOIR 0.2.6（Android 应用隐私审计，portable zip）
