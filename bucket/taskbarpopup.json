@@ -1,13 +1,13 @@
 {
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "TaskbarPopup - from github",
     "homepage": "https://github.com/DM74164/TaskbarPopup",
     "license": "AGPL-3.0",
     "checkver": {
         "github": "https://github.com/DM74164/TaskbarPopup"
     },
-    "url": "https://github.com/DM74164/TaskbarPopup/releases/download/v1.2.0/TaskbarPopup.zip",
-    "hash": "sha256:74def6d74dc58d669f28aaaabfad002fff0c6d663e0410aced3d8b39ab4abb8c",
+    "url": "https://github.com/DM74164/TaskbarPopup/releases/download/v1.2.1/TaskbarPopup.zip",
+    "hash": "sha256:4b26a7f43c752429d2df50da934f6b2e51d5ce417af6432e1f23ecf2947764b9",
     "autoupdate": {
         "url": "https://github.com/DM74164/TaskbarPopup/releases/download/v$version/TaskbarPopup.zip"
     },
