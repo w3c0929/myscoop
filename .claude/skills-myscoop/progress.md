@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 162 款
+- **收录软件总数**: 163 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 77 款
+- **第三方官方（引用原项目 Release）**: 78 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -152,6 +152,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **bandizip6 / zhiyuime 卸载改为“条件重启 Explorer”（2026-11-05）**：`pre_uninstall` 先直接 `Remove-Item $dir`；**只有删除失败（DLL / TSF 输入法 DLL 被进程加载锁住）才** `Stop-Process explorer` → 重新拉起 → 等待 → 重试删除；仍失败再 `Move-Item` 改名到 persist 的 `*.busy-<时间戳>`（bandizip6 还会在 `pre_install` 清理遗留 busy）。这样平时卸载不打扰，只有锁住时才重启资源管理器（会关闭已打开的文件夹窗口，系统自动重建）。两清单的 `pre_uninstall` 语法校验与 `--check` 均通过。
 
 - **修复 minidock / dsh 远端更新报错（2026-11-05）**：① **minidock 1.7.0**：上游把资产名从 `MiniDock_v1.7.0.exe` 改成 **`MiniDock.exe`**（去掉版本号），而清单 `autoupdate` 仍是 `MiniDock_v$version.exe`；且 `checkver` 用 `url+regex`（文本正则分支，**不做资产匹配**），于是把版本代进旧模板 → 404。修复：升到 1.7.0（url/hash 对应 `MiniDock.exe`，sha256 `6a1c53c6…`），`autoupdate` 改为 `.../v$version/MiniDock.exe`，`checkver` 改为 **`github` + `tag_regex ^v([\d.]+)$`**（走 GitHub 分支，带资产匹配与 API digest，未来再改名也不会 404；`pre_install` 仅在文件名不同时改名，避免同名 Rename 报错）。dry-run 确认 0 更新。② **dsh**：报 `Connection reset by peer` 是**瞬时网络错误**（静态 latest 直链本身 200 可用，约 293MB），并非版本替换错误——该清单 URL 是静态 latest、版本只来自 checkver。重跑更新成功：0.2.1-rc.5 → **0.2.2-rc.1**，新 hash `830947f8…`。README 版本列由脚本自动同步。
+
+- **myscoop 覆盖 foxmail（2026-11-07）**：用户 `scoop update foxmail` 报 hash 失败（Expected `2d407165…` / Actual `7f434402…`）。定位为 **nju 镜像滞后**：镜像 extras 仍是 `7.2.25.586`（hash `2d407165…`），而官网实际文件已是 587（实测 sha256 `7f434402…`，官方 extras 已同步为 `7.2.25.587`/`7f434402…`）。解决：在 myscoop 新增 `foxmail.json`（取自官方 587 清单，`url`/`hash`/`checkver.script`/`pre_install`/`persist` 原样），靠 bucket 优先级覆盖 extras。**注意**：`Get-Manifest` 对已安装应用优先使用安装时记录的桶（此例为 extras），所以现有安装需 `scoop uninstall foxmail` 后 `scoop install myscoop/foxmail` 重装一次才会切到 myscoop。README 第三方表置顶并全表重编号（1..78），计数 162→163、第三方 77→78（本地 85 不变）。
 
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
