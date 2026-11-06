@@ -9,6 +9,11 @@ on:
 permissions:
   contents: write
 
+# 串行化：避免定时运行与手动 dispatch 重叠，导致 progress.md 提交历史互相冲突
+concurrency:
+  group: auto-update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -143,6 +148,11 @@ jobs:
           git add README.md
           git commit -m "同步 README 第三方版本与日期列"
 
+      # 先拉取再生成提交历史：避免基于旧 git log 生成的“提交历史”块与远端冲突
+      - name: 拉取远端（rebase）
+        run: |
+          git pull --rebase origin main
+
       - name: 更新 progress.md 提交历史
         run: |
           python3 - <<'EOF'
@@ -168,10 +178,22 @@ jobs:
             git commit -m "progress.md 更新提交历史"
           fi
 
-      - name: 推送
+      - name: 推送（失败自动拉取重试）
         run: |
-          git pull --rebase origin main || true
-          git push origin main
+          for i in 1 2 3; do
+            if git push origin main; then
+              echo "推送成功"
+              exit 0
+            fi
+            echo "推送被拒，拉取后重试 ($i/3)"
+            if ! git pull --rebase origin main; then
+              git rebase --abort || true
+              echo "::error::rebase 冲突，停止重试"
+              exit 1
+            fi
+            sleep 5
+          done
+          exit 1
 
       # 更新/校验异常不阻断提交推送（上面已 continue-on-error），但让 job 在末尾变红以便发现
       - name: 异常汇总（有异常则让 job 失败）
