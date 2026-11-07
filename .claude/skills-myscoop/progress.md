@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 164 款
+- **收录软件总数**: 165 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 79 款
+- **第三方官方（引用原项目 Release）**: 80 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -158,6 +158,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **修 CI #88 推送冲突（2026-11-07）**：run 42103450561（定时 20:26:50）与同分钟的 workflow_dispatch（20:26:40）重叠；推送前 `git pull --rebase origin main || true` 在 progress.md「提交历史」块冲突，`|| true` 吞掉了 rebase 失败，仓库停在冲突态 → `git push` non-fast-forward 失败。修复：① 顶层增加 `concurrency: {group: auto-update, cancel-in-progress: false}` 串行化运行；② 把「更新 progress.md 提交历史」移到**拉取（rebase）之后**，基于最新 git log 生成；③ 推送改为失败自动 `pull --rebase` 重试 3 次，冲突则明确 `::error` 停止（不再用 `|| true` 掩盖）。
 
 - **收录 OmniGet 0.15.0（2026-11-07）**：开源下载管理器（课程 Udemy/Hotmart、YouTube、音乐及 1800+ 站点，Tauri 2 + Rust + Svelte）。上游 Windows 只有 `omniget_0.15.0_x64-portable.exe`（sha256 `a83655b4…`）；清单修正为**仅 64bit**——原 32bit/arm64 错指向 `omniget-chrome-extension-*.zip`（浏览器扩展，不是 Windows 程序）；并用 `pre_install` 把带版本号的 exe 改名为稳定的 `omniget.exe`（避免升级后 bin/shortcuts 失效）。README 第三方表置顶并全表重编号（1..79），计数 163→164、第三方 78→79（本地 85 不变）。
+
+- **收录 Win顺 (WinShun) 0.22.0（2026-11-07）**：文件、文件夹与内容即时搜索工具；官方 Windows x64 portable zip（sha256 `e09488a2…`，与上游 digest 一致），`extract_dir=WinShun`、`bin=bin\ws.exe`、`persist=data`。修正：`checkver` 从 Scoop 简写字符串 `"github"` 改为 `{"github": ...}`（本项目更新脚本对字符串会 `.get()` 报错，夜间更新会异常），`hash` 补 `sha256:` 前缀。`pre_uninstall` 用 `$cmd -eq 'uninstall'` 区分更新/卸载——实测 PowerShell 动态作用域下 Scoop 的 `$cmd` 可见，守卫有效。README 第三方表置顶并全表重编号（1..80），计数 164→165、第三方 79→80（本地 85 不变）。
 
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
