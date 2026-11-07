@@ -14,11 +14,11 @@
 | 2 | [Win顺 (WinShun)](https://github.com/LingCore/WinShun) — 文件、文件夹与内容即时搜索 | `scoop install winshun` | portable zip 官方 release（仅 x64） | 0.22.0 | 2026-11-07 | 2026-11-07 |
 | 3 | [OmniGet](https://github.com/OpenSelena/omniget) — 开源下载管理器：课程（Udemy/Hotmart）、YouTube、音乐及 1800+ 站点（Tauri 2 + Rust + Svelte） | `scoop install omniget` | 单 exe 官方 release（仅 x64） | 0.15.0 | 2026-11-07 | 2026-11-07 |
 | 4 | [Foxmail](https://www.foxmail.com/) — 邮件客户端（myscoop 覆盖 extras 滞后清单） | `scoop install foxmail` | 单 exe 官方直链（7z 解包） | 7.2.25.587 | 2026-11-07 | 2026-11-07 |
-| 5 | [NOIR](https://github.com/Verlintas/NOIR) — 手机隐私审计：用 adb 扫出 Android 应用的权限、上报端点与数据流向，并给出可回滚的处置 | `scoop install noir` | portable zip 官方 release | 0.4.1 | 2026-11-05 | 2026-11-07 |
+| 5 | [NOIR](https://github.com/Verlintas/NOIR) — 手机隐私审计：用 adb 扫出 Android 应用的权限、上报端点与数据流向，并给出可回滚的处置 | `scoop install noir` | portable zip 官方 release | 0.4.2 | 2026-11-05 | 2026-11-08 |
 | 6 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 7 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
 | 8 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.6 | 2026-11-04 | 2026-11-05 |
-| 9 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.3196 | 2026-11-03 | 2026-11-07 |
+| 9 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.3266 | 2026-11-03 | 2026-11-08 |
 | 10 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.1 | 2026-10-31 | 2026-11-03 |
 | 11 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 12 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.12.8 | 2026-10-30 | 2026-11-07 |
@@ -39,14 +39,14 @@
 | 27 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.6.4 | 2026-10-12 | 2026-11-05 |
 | 28 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.2 | 2026-10-10 | 2026-10-23 |
 | 29 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.2.1 | 2026-10-12 | 2026-11-07 |
-| 30 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.20 | 2026-10-11 | 2026-11-07 |
-| 31 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.26 | 2026-10-10 | 2026-11-06 |
+| 30 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.21 | 2026-10-11 | 2026-11-08 |
+| 31 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.27 | 2026-10-10 | 2026-11-08 |
 | 32 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.10.3 | 2026-10-10 | 2026-10-31 |
 | 33 | [KeyCrash](https://github.com/Yuelioi/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.3.1 | 2026-10-10 | 2026-11-01 |
 | 34 | [SuMail](https://github.com/w3c0929/sumail-releases) — SuMail 桌面版（Windows 桌面版安装包与发布资产；源码仓库为私有） | `scoop install sumail` | zip 官方 release | 0.0.1 | 2026-10-10 | 2026-10-10 |
 | 35 | [DiskButler](https://github.com/YGTQ3/disk-butler) — C 盘管家：给普通人的 Windows 磁盘与内存维护助手（Tauri 2 + React） | `scoop install diskbutler` | 多架构 exe 官方 release（Tauri 解包） | 0.8.0 | 2026-10-10 | 2026-10-10 |
 | 36 | [moonup](https://github.com/chawyehsu/moonup) — MoonBit 多版本管理器（Manage multiple MoonBit installations with ease） | `scoop install moonup` | zip 官方 release | 0.6.1 | 2026-10-10 | 2026-10-10 |
-| 37 | [RustMusic](https://github.com/LingyunStudio/RustMusic) — 精美的高性能桌面音乐播放器（Rust + Tauri 2 + React）：本地曲库 / 网易云 / QQ 音乐 / QRC 逐字歌词 / 桌面歌词 / 10 段均衡器 | `scoop install rustmusic` | Inno Setup 官方 release（解包） | 0.6.0 | 2026-10-10 | 2026-10-26 |
+| 37 | [RustMusic](https://github.com/LingyunStudio/RustMusic) — 精美的高性能桌面音乐播放器（Rust + Tauri 2 + React）：本地曲库 / 网易云 / QQ 音乐 / QRC 逐字歌词 / 桌面歌词 / 10 段均衡器 | `scoop install rustmusic` | Inno Setup 官方 release（解包） | 0.7.1 | 2026-10-10 | 2026-11-08 |
 | 38 | [Kazumi](https://github.com/Predidit/Kazumi) — 基于自定义规则的番剧采集 APP（流媒体在线观看、弹幕、实时超分辨率） | `scoop install kazumi` | zip 官方 release | 2.4.3 | 2026-10-10 | 2026-11-05 |
 | 39 | [VTracer](https://github.com/visioncortex/vtracer) — 位图转矢量图工具（Raster to Vector Graphics Converter） | `scoop install vtracer` | 单 exe 官方 release（NSIS 解包） | 1.0.0-alpha.4 | 2026-10-10 | 2026-10-10 |
 | 40 | [OilGit](https://github.com/oil-oil/oil-git) — 面向 AI 项目开发者的只读 Git 可视化桌面应用（Windows / macOS） | `scoop install oilgit` | 单 exe 官方 release（Tauri 解包） | 0.1.0-test.1 | 2026-10-10 | 2026-10-10 |
@@ -64,7 +64,7 @@
 | 52 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.8.1 | 2026-10-10 | 2026-11-02 |
 | 53 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.8.0 | 2026-10-10 | 2026-11-04 |
 | 54 | [Magpiee (实验版)](https://github.com/SAOG0721/Magpie) — 游戏画面缩放/超分工具的非官方实验 fork（原 magpie 清单改名，与官方 Magpie 区分；shim: magpiee.exe） | `scoop install magpiee` | zip 官方直链 | 0.6.12-experimental | 2026-11-03 | 2026-11-07 |
-| 55 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.3.2 | 2026-10-10 | 2026-10-31 |
+| 55 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.3.3 | 2026-10-10 | 2026-11-08 |
 | 56 | [Windows App SDK 运行时](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — Microsoft Windows App Runtime (WindowsAppSDK) 2.6 运行时官方直链（安装时自动静默安装） | `scoop install winsdk` | 单 exe 官方直链（post_install 静默安装） | 2.6.5 | 2026-10-10 | 2026-11-05 |
 | 57 | [Netcatty](https://github.com/binaricat/Netcatty) — SSH 工作区、SFTP 与终端一体的跨平台客户端 | `scoop install netcatty` | NSIS 解包便携（Netcatty.exe，data 持久化） | 1.1.90 | 2026-10-10 | 2026-10-26 |
 | 58 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install cmm-plus` | 多架构 portable zip | 1.7.12 | 2026-10-10 | 2026-11-05 |
