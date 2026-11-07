@@ -1,0 +1,41 @@
+{
+    "version": "0.10.0",
+    "description": "A local-first macOS task companion. Native Liquid Glass UI, CLI and MCP for your agents.",
+    "homepage": "https://github.com/NanmiCoder/TodoCue",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/NanmiCoder/TodoCue"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/NanmiCoder/TodoCue/releases/download/v0.10.0/TodoCue-0.10.0-Windows-x64-setup.exe",
+            "hash": "sha256:91a2ab231b521e4b9bd668078f42403ddbd722b507ec6138c64aa69e87046b62"
+        },
+        "arm64": {
+            "url": "https://github.com/NanmiCoder/TodoCue/releases/download/v0.10.0/TodoCue-0.10.0-Windows-arm64-setup.exe",
+            "hash": "sha256:3fa9eb1c3ed9ce0d00faaed488834be1d1ea7634be465c16cfacb0556e3ca0de"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/NanmiCoder/TodoCue/releases/download/v$version/TodoCue-$version-Windows-x64-setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/NanmiCoder/TodoCue/releases/download/v$version/TodoCue-$version-Windows-arm64-setup.exe"
+            }
+        }
+    },
+    "bin": "todocue-desktop.exe",
+    "shortcuts": [
+        [
+            "todocue-desktop.exe",
+            "todocue"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ]
+}
