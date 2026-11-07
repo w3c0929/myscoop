@@ -1,0 +1,22 @@
+{
+    "version": "0.2.1",
+    "description": "直播用的屏幕平滑放大工具（Windows 版）：中键放大、平滑跟随",
+    "homepage": "https://github.com/w3c0929/live-screen-studio",
+    "license": "unknown",
+    "checkver": {
+        "github": "https://github.com/w3c0929/live-screen-studio",
+        "tag_regex": "^windows-v([\\d.]+)$"
+    },
+    "url": "https://github.com/w3c0929/live-screen-studio/releases/download/windows-v0.2.1/LiveZoom-0.2.1-windows-x64-portable.zip",
+    "hash": "sha256:dbdc99c6ca36039d20b7a5ee5f6f1d250a54d37847d7cba6e5c400ed91e221c0",
+    "bin": "livezoom_win.exe",
+    "shortcuts": [
+        [
+            "livezoom_win.exe",
+            "livezoom"
+        ]
+    ],
+    "autoupdate": {
+        "url": "https://github.com/w3c0929/live-screen-studio/releases/download/windows-v$version/LiveZoom-$version-windows-x64-portable.zip"
+    }
+}

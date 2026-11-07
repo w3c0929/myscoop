@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 166 款
+- **收录软件总数**: 167 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 81 款
+- **第三方官方（引用原项目 Release）**: 82 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -162,6 +162,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **收录 Win顺 (WinShun) 0.22.0（2026-11-07）**：文件、文件夹与内容即时搜索工具；官方 Windows x64 portable zip（sha256 `e09488a2…`，与上游 digest 一致），`extract_dir=WinShun`、`bin=bin\ws.exe`、`persist=data`。修正：`checkver` 从 Scoop 简写字符串 `"github"` 改为 `{"github": ...}`（本项目更新脚本对字符串会 `.get()` 报错，夜间更新会异常），`hash` 补 `sha256:` 前缀。`pre_uninstall` 用 `$cmd -eq 'uninstall'` 区分更新/卸载——实测 PowerShell 动态作用域下 Scoop 的 `$cmd` 可见，守卫有效。README 第三方表置顶并全表重编号（1..80），计数 164→165、第三方 79→80（本地 85 不变）。
 
 - **收录 TodoCue 0.10.0（2026-11-07）**：本地优先的任务管理客户端（原生 UI + CLI + MCP，供 AI Agent 使用）；官方 Windows 多架构 NSIS setup（x64 `91a2ab23…` / arm64 `3fa9eb1c…`，均与上游 digest 一致），`pre_install` 7z 解包拍平，`bin`/快捷方式 `todocue-desktop.exe`。**修正**：原清单 arm64 缺 hash，已从上游 API digest 补上。README 第三方表置顶并全表重编号（1..81），计数 165→166、第三方 80→81（本地 85 不变）。
+
+- **收录 LiveZoom 0.2.1（2026-11-08）**：直播用的屏幕平滑放大工具（Windows 版，中键放大/平滑跟随）；官方 x64 portable zip（`livezoom_win.exe`，sha256 `dbdc99c6…`，与上游一致）。**修正**：原清单版本写成 `windows-v0.2.0` 且 `autoupdate` 直接用 `$version`，会把 `windows-v` 前缀带进资产名（`LiveZoom-windows-v0.2.1-...` → 404）；已改用 `tag_regex ^windows-v([\d.]+)$` 提取纯版本号，`autoupdate` 用 `windows-v$version`，并升到最新 0.2.1。README 第三方表置顶并全表重编号（1..82），计数 166→167、第三方 81→82（本地 85 不变）。
 
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
