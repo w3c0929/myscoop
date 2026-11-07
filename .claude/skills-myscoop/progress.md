@@ -352,8 +352,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 49fd1e4 (HEAD -> main) 收录 OmniGet 0.15.0（开源下载管理器，仅 x64）
-* 2447eb5 (origin/main, origin/HEAD) progress.md 更新提交历史
+* ae33053 (HEAD -> main) 收录 Win顺 (WinShun) 0.22.0（文件/文件夹/内容搜索，仅 x64）
+* 7d78d85 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 49fd1e4 收录 OmniGet 0.15.0（开源下载管理器，仅 x64）
+* 2447eb5 progress.md 更新提交历史
 * 8ff9801 同步 README 第三方版本与日期列
 * 643fbd9 自动更新第三方软件
 * d11e4ca progress.md 更新提交历史
