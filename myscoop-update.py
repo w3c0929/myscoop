@@ -628,7 +628,7 @@ def is_windows_asset(name):
     lower = name.lower()
     base = lower.rsplit("/", 1)[-1]
     # 明确排除非 Windows 格式
-    if any(m in lower for m in [".dmg", ".appimage", ".rpm", ".deb", ".apk"]):
+    if any(m in lower for m in [".dmg", ".appimage", ".rpm", ".deb", ".apk", ".bundle"]):
         return False
     # 排除源码包/校验与元数据文件
     if name.lower().endswith((".tar", ".tar.gz", ".tar.xz", ".txt", ".json",
@@ -1051,6 +1051,15 @@ def add_manifest(repo_url, app_name=None, more=False):
     # 获取 release（预检：跳过零资产/无 Windows 资产的 release，取最新带 Windows 资产的）
     try:
         rels = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases?per_page=30")
+        # GitHub 已知索引问题：REST releases 列表偶尔漏掉 latest（/releases/latest 与 GraphQL
+        # 都能看到，如 VMwareWorkstation 的 26H1）。合并 latest，避免 --add 选到旧版本。
+        try:
+            _latest = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases/latest")
+            if _latest and _latest.get("id") and all(r.get("id") != _latest.get("id") for r in rels):
+                rels = [_latest] + rels
+                print("[提示] releases 列表缺少 latest（GitHub 索引问题），已合并 /releases/latest")
+        except Exception:
+            pass
     except urllib.error.HTTPError as e:
         print(f"[错误] 获取 release 失败 (HTTP {e.code})，将创建无 checkver 的占位 manifest")
         print("  该项目可能没有 Release，需要手动处理。")

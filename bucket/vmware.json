@@ -1,0 +1,20 @@
+{
+    "version": "26H1",
+    "description": "手动上传官网的VMwareWorkstation安装包（Windows x64，手动安装）",
+    "homepage": "https://github.com/201853910/VMwareWorkstation",
+    "license": "unknown",
+    "checkver": {
+        "github": "https://github.com/201853910/VMwareWorkstation"
+    },
+    "url": "https://github.com/201853910/VMwareWorkstation/releases/download/26H1/VMware-Workstation-Full-26H1u1-25688693.exe",
+    "hash": "sha256:3d775c3c2153600eef4642f95d519a514ba7e861400bda2598352bff792db473",
+    "post_install": "Start-Process (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName",
+    "autoupdate": {
+        "url": "https://github.com/201853910/VMwareWorkstation/releases/download/$version/VMware-Workstation-Full-$versionu1-25688693.exe"
+    },
+    "notes": [
+        "官方只提供 Windows x64 安装器（VMware Workstation Windows 版没有 32 位/arm64 构建）；`.bundle` 是 Linux 安装包，已排除。",
+        "此包只下载安装器，post_install 会自动启动，由你手动完成安装（与 Bandizip/IDM 同模式）。",
+        "同一 tag 下可能同时有基础版与 u1 更新版资产，清单已选用最新的 u1。"
+    ]
+}

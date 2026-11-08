@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 167 款
+- **收录软件总数**: 168 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 82 款
+- **第三方官方（引用原项目 Release）**: 83 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -174,6 +174,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **镜像测速重构（2026-10-27，download.ps1）**：原实现用 `curl.exe` 测速，环境差异会导致“测 h2、下 h1.1”（本机 PowerShell 的 `curl.exe` 是 WinGet 的 h2 构建，Git Bash 下是 Git 的无 h2 构建），且 curl 与 .NET 下载栈速度差异可达数倍（实测 SUSTech 31 vs 2 MB/s）。改为**同栈 WebRequest 探测**：Range GET 8MB，3 次采样（1.2s/次）取中位数；PS 5.1 同步 `Read` + `ReadWriteTimeout`，pwsh 7 `ReadAsync` + `CancellationTokenSource`（避免 pending read / 流阻塞）。排名缓存升级为 `%LOCALAPPDATA%\myscoop\mirror-rank.json` v2（EWMA/fails/cooldown，键=镜像基址；自动迁移旧 `mirror-cache.json`）；10 分钟内有新鲜冠军走热路径（0 探测），否则冷启动 3 候选（缓存冠军+2 探索位）。下载阶段按排名尝试；**实际资产验证失败或报错才换源**，新增 10s 无数据停顿保护（`MYSCOOP_STALL_TIMEOUT_MS` 可覆盖，测试用 3s）。**实测**：真实 `scoop download amcfy-music`（aria2 关/开）均成功、hash 正确；停顿保护下 7.5s 完成切换；非 GitHub URL（uuyc）不探测直接下载、hash 正确；PS5.1/pwsh7 冷/热路径、代理环境开/关均通过。**aria2**：路径共用排名，但不做下载期换源（需改 input-file 多 URI 才能多源）。**Python 未统一**：`myscoop-update.py` 仍用 urllib + `mirror-cache.json`（自洽、HTTP/1.1），可选后续“只读共享”（方案 B）。`patches\v0.5.3\` 冻结旧补丁不动。
 
 - **镜像选择修正（2026-10-27，cloudflared 实测）**：热路径盲信旧 EWMA（cdn 58 MB/s 来自别的资产）→ 直接选 cdn，但 cloudflared 在该镜像 0 MB/s；冷路径三候选全 <1MB/s 仍选最不差的 hk（SSL 失败），且候选没包含真正快的 acmsz。修复：① 所有存活缓存镜像按 EWMA 排序（不再只放冠军+config 顺序）；② 下载前对实际资产做 1.2s/4MB 同栈验证（固定 1MB/s 底线），失败即跳过并降权（EWMA→≤2、fails+1，3 次冷却 30 分钟）；③ 原始直链始终作为最后兜底；④ 成功下载后 fails 清零。实测：cloudflared 第 1 次 10.6s（cdn 验证失败→acmsz），第 2 次 6.5s（直接 acmsz），hash 均正确。
+
+- **收录 VMware Workstation 26H1 + 修工具两处（2026-11-09）**：`--add` 发现拿到的不是最新（25H2 而非 26H1）。排查：GitHub REST `releases` 列表漏掉 latest `26H1`（已知索引问题；`/releases/latest` 与 GraphQL 均可见，唯 REST 列表缺；该 release 作者也非仓库 owner）。工具修复（低风险）：① `--add` 在 REST 列表之外合并 `/releases/latest`；② `is_windows_asset` 增加排除 `.bundle`（Linux 安装包）。扫描确认：现有 167 个清单中仅 vmware 用 `.bundle`，其余不受影响。清单修正：原生成结果是 64bit=Linux `.bundle`、32bit/arm64=Windows `.exe`（全错）；改为**仅 x64 单 exe**（26H1u1-25688693，hash `3d775c3c…`），去掉随版本失效的 versioned `bin`/快捷方式，改为 `post_install` 自动启动安装器、手动完成。README 第三方表置顶并全表重编号（1..83），计数 167→168、第三方 82→83（本地 85 不变）。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
