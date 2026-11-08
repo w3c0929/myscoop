@@ -164,7 +164,7 @@
 | 65 | [Beyond Compare 5](https://www.scootersoftware.com/) — 文件对比工具（汉化版） | `scoop install bcompare` | portable zip | 5.2.5.32528 | 2026-10-10 | 2026-10-10 |
 | 66 | [Termius](https://termius.com/) — SSH 客户端汉化版 | `scoop install termius` | portable zip | 9.40.1 | 2026-10-10 | 2026-10-10 |
 | 67 | [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器 | `scoop install idm` | 单 exe 手动安装 | 6.4.3 | 2026-10-10 | 2026-10-10 |
-| 68 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 压缩工具（最后无广告版，便携版自动注册右键菜单） | `scoop install bandizip6` | 自托管便携 7z（自动注册右键菜单） | 6.18 | 2026-10-10 | 2026-11-05 |
+| 68 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 压缩工具（最后无广告版） | `scoop install bandizip6` | 单 exe 手动安装 | 6.18 | 2026-10-10 | 2026-11-08 |
 | 69 | [2345看图王](https://pic.2345.cc/) — 图片查看编辑工具 | `scoop install 2345pic` | portable zip（安装时注册图片关联） | 10.8.0.9683 | 2026-10-10 | 2026-10-29 |
 | 70 | [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端 | `scoop install apollo` | 单 exe 手动安装 | 0.4.6 | 2026-10-10 | 2026-10-10 |
 | 71 | [KeyCastOW](https://github.com/brookhong/KeyCastOW) — 屏幕按键显示工具 | `scoop install keycastow` | zip 便携+自动启动 | 1.0 | 2026-10-10 | 2026-10-10 |
@@ -455,7 +455,7 @@ myscoop/
 │   ├── apollo.json                  (模式6：单 exe 手动安装)
 │   ├── iobit.json                   (模式6：单 exe 手动安装)
 │   ├── idm.json                     (模式6：单 exe 手动安装)
-│   ├── bandizip6.json               (模式5c：自托管便携 + 右键菜单注册)
+│   ├── bandizip6.json               (模式6：单 exe 手动安装)
 │   ├── sougoupy.json                (模式6：单 exe 手动安装)
 │   ├── uuyc.json                    (模式6：单 exe 手动安装)
 │   ├── pixpin.json                  (模式1：官方直链 Inno Setup)
@@ -862,7 +862,7 @@ git push origin main
 | NSIS 解包+asar 替换 | `7z` + 文件替换 | `termius.json` |
 | 已绿化便携版 | 直接打包 | `2345pic.json` |
 
-**模式 5c — 自托管便携 + 注册资源管理器右键菜单**（`bandizip6.json`）
+**模式 5c — 自托管便携 + 注册资源管理器右键菜单**（技术记录；`bandizip6` 现已改回模式 6，无当前示例）
 
 适用于解包/复制后需要注册 Shell 扩展的便携软件（压缩工具、右键工具等）：把已安装目录打包成 7z（配置文件改为便携模式），安装时 `regsvr32` 注册 DLL，卸载时反注册。
 
@@ -885,7 +885,7 @@ git push origin main
 
 要点：实测 Bandizip 6.18 的 `regsvr32` **只写 HKCU**；而 **UAC 关闭时 Explorer 提权运行，只加载 HKLM 注册的 Shell 扩展**（本机症状：HKCU 注册项齐全、菜单却不出现）。（注意 `regsvr32` 是 GUI 程序，PowerShell **不会等待**它，必须用 `Start-Process -Wait`，否则后面的 `reg copy` 会抢在 HKCU 写完之前执行，导致 HKLM 为空、提权 Explorer 下菜单不出现）所以 regsvr32 之后要再把 `CLSID\{GUID}` 与 6 个挂载点（`*` / `Directory` / `Directory\Background` / `Drive` 的 ContextMenuHandlers + Directory / Drive 的 DragDropHandlers）用 `reg copy HKCU\... HKLM\... /s /f` 同步到 HKLM（需管理员；失败不影响普通用户下的 HKCU 生效）。**HKLM 是全机器范围**：同一台电脑其他 Windows 用户也会看到菜单。`pre_uninstall` 先核对 HKCU/HKLM 的 `InprocServer32` 是否指向**本版本目录**，再反注册 / `reg delete`——Scoop 升级是「装新 → 卸旧」，无条件清理会删掉新版本刚写入的项；若 `Remove-Item $dir` 因 Explorer 已加载 DLL 而失败，则 `Move-Item` 移动到 `$persist_dir\bandizip6.busy-<时间戳>`（Windows 允许重命名被占用 DLL 所在目录），并在 `pre_install` 里自动清理遗留的 `*.busy-*`（参考 `zhiyuime`）；更稳的做法是**条件重启**：先删，删不掉才重启资源管理器释放 DLL 锁并重试，仍失败再改名兜底（`bandizip6` / `zhiyuime` 已启用；重启会关闭已打开的文件夹窗口）。以上用于避免 `scoop uninstall` 报 "Couldn't remove …may be in use"。**语言**：Shell 扩展优先读 `config.ini` 的 `default_language`（为空会回退英文），简体中文设 `SimpChinese`。Win11 旧式扩展在右键 →“显示更多选项”里看。便携配置用 `persist` 保存（`is_portable=1`）。
 
-**文件关联（可选，bandizip6 已启用）**：安装时为常用压缩格式建 ProgID `Bandizip.<ext>`（`shell\open\command` 指向 `"$dir\Bandizip.exe" "%1"`），把 `HKCU\Software\Classes\.<ext>` 默认值指向它、写入 `OpenWithProgids`，并在 `HKCU\Software\Bandizip\Capabilities\FileAssociations` + `RegisteredApplications` 注册，使 Bandizip 出现在“默认应用 / 打开方式”。**Win10/11 的 UserChoice 保护**：已有 UserChoice 的扩展名（如 .zip/.rar）直接生效；没有 UserChoice 的（如 .7z/.tar）首次打开仍会弹“选择打开方式”，选一次 Bandizip 后固定——无法在不绕过 UserChoice 的前提下静默改默认。卸载时 `pre_uninstall` 清理这些 ProgID/Capabilities（按 ApplicationIcon 路径守卫，避免升级误删）。
+**文件关联（可选，曾在 bandizip6 上启用）**：安装时为常用压缩格式建 ProgID `Bandizip.<ext>`（`shell\open\command` 指向 `"$dir\Bandizip.exe" "%1"`），把 `HKCU\Software\Classes\.<ext>` 默认值指向它、写入 `OpenWithProgids`，并在 `HKCU\Software\Bandizip\Capabilities\FileAssociations` + `RegisteredApplications` 注册，使 Bandizip 出现在“默认应用 / 打开方式”。**Win10/11 的 UserChoice 保护**：已有 UserChoice 的扩展名（如 .zip/.rar）直接生效；没有 UserChoice 的（如 .7z/.tar）首次打开仍会弹“选择打开方式”，选一次 Bandizip 后固定——无法在不绕过 UserChoice 的前提下静默改默认。卸载时 `pre_uninstall` 清理这些 ProgID/Capabilities（按 ApplicationIcon 路径守卫，避免升级误删）。
 
 **模式 6 — 单 exe 手动安装**
 
