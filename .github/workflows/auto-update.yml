@@ -35,6 +35,20 @@ jobs:
           git config user.name "myscoop-bot"
           git config user.email "actions@users.noreply.github.com"
 
+      # Ubuntu runner 只有 pwsh（PowerShell 7），而更新脚本的 checkver.script 调用的是 `powershell`。
+      # 建一个软链接，让 foxmail.json 等使用 checkver.script 的清单能正常检测版本。
+      - name: 准备 PowerShell（Ubuntu 上补 powershell 命令）
+        run: |
+          if ! command -v powershell >/dev/null 2>&1 && command -v pwsh >/dev/null 2>&1; then
+            sudo ln -sf "$(command -v pwsh)" /usr/local/bin/powershell
+            echo "已创建 powershell -> pwsh 软链接"
+          fi
+          if command -v powershell >/dev/null 2>&1; then
+            powershell -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
+          else
+            echo "powershell 不可用；使用 checkver.script 的清单将被跳过"
+          fi
+
       - name: 运行更新脚本（免下载，读取 GitHub API digest）
         id: upd
         continue-on-error: true
