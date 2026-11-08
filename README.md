@@ -31,7 +31,7 @@
 | 7 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 8 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
 | 9 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.6 | 2026-11-04 | 2026-11-05 |
-| 10 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.3337 | 2026-11-03 | 2026-11-09 |
+| 10 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.3340 | 2026-11-03 | 2026-11-09 |
 | 11 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.1 | 2026-10-31 | 2026-11-03 |
 | 12 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 13 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.12.8 | 2026-10-30 | 2026-11-07 |
@@ -50,7 +50,7 @@
 | 26 | [Ludusavi](https://github.com/mtkennerly/ludusavi) — PC 游戏存档备份与恢复工具：自动扫描识别游戏、批量备份/还原存档、支持 6000+ 游戏清单与多存档槽位 | `scoop install ludusavi` | 多架构 zip 官方 release | 0.31.0 | 2026-10-13 | 2026-10-13 |
 | 27 | [Filee](https://github.com/KnifeLemon/Filee) — 免费开源文件转换器：拖拽即转 180+ 格式（图片 / PDF / Word / Excel / PPT / HWP / 视频 / 音频 / 电子书 / 压缩包），全程离线、无需上传 | `scoop install filee` | portable zip 官方 release | 2.3.0 | 2026-10-12 | 2026-11-05 |
 | 28 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.6.4 | 2026-10-12 | 2026-11-05 |
-| 29 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.2 | 2026-10-10 | 2026-10-23 |
+| 29 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.3 | 2026-10-10 | 2026-11-09 |
 | 30 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.2.1 | 2026-10-12 | 2026-11-07 |
 | 31 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.22 | 2026-10-11 | 2026-11-09 |
 | 32 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.28 | 2026-10-10 | 2026-11-09 |
@@ -176,7 +176,7 @@
 | 65 | [Beyond Compare 5](https://www.scootersoftware.com/) — 文件对比工具（汉化版） | `scoop install bcompare` | portable zip | 5.2.5.32528 | 2026-10-10 | 2026-10-10 |
 | 66 | [Termius](https://termius.com/) — SSH 客户端汉化版 | `scoop install termius` | portable zip | 9.40.1 | 2026-10-10 | 2026-10-10 |
 | 67 | [Internet Download Manager](https://www.internetdownloadmanager.com/) — 下载加速器 | `scoop install idm` | 单 exe 手动安装 | 6.4.3 | 2026-10-10 | 2026-10-10 |
-| 68 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 压缩工具（最后无广告版） | `scoop install bandizip6` | 单 exe 手动安装 | 6.18 | 2026-10-10 | 2026-11-08 |
+| 68 | [Bandizip 6.18](https://www.bandisoft.com/bandizip/old/6/) — 压缩工具（最后无广告版） | `scoop install bandizip6` | 单 exe 手动安装 | 6.18 | 2026-10-10 | 2026-11-09 |
 | 69 | [2345看图王](https://pic.2345.cc/) — 图片查看编辑工具 | `scoop install 2345pic` | portable zip（安装时注册图片关联） | 10.8.0.9683 | 2026-10-10 | 2026-10-29 |
 | 70 | [Apollo](https://github.com/ClassicOldSong/Apollo) — Sunshine 游戏串流服务端 | `scoop install apollo` | 单 exe 手动安装 | 0.4.6 | 2026-10-10 | 2026-10-10 |
 | 71 | [KeyCastOW](https://github.com/brookhong/KeyCastOW) — 屏幕按键显示工具 | `scoop install keycastow` | zip 便携+自动启动 | 1.0 | 2026-10-10 | 2026-10-10 |
