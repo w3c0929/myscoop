@@ -10,7 +10,7 @@
 
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
-| 1 | [LiveZoom](https://github.com/w3c0929/live-screen-studio) — 直播用的屏幕平滑放大工具（Windows 版）：中键放大、平滑跟随 | `scoop install livezoom` | portable zip 官方 release（仅 x64） | 0.2.1 | 2026-11-08 | 2026-11-08 |
+| 1 | [LiveZoom](https://github.com/w3c0929/live-screen-studio) — 直播用的屏幕平滑放大工具（Windows 版）：中键放大、平滑跟随 | `scoop install livezoom` | portable zip 官方 release（仅 x64） | 0.8.2 | 2026-11-08 | 2026-11-08 |
 | 2 | [TodoCue](https://github.com/NanmiCoder/TodoCue) — 本地优先的任务管理客户端：原生 UI + CLI + MCP，供 AI Agent 使用 | `scoop install todocue` | 多架构 NSIS 解包（x64 / arm64） | 0.10.0 | 2026-11-07 | 2026-11-07 |
 | 3 | [Win顺 (WinShun)](https://github.com/LingCore/WinShun) — 文件、文件夹与内容即时搜索 | `scoop install winshun` | portable zip 官方 release（仅 x64） | 0.22.0 | 2026-11-07 | 2026-11-07 |
 | 4 | [OmniGet](https://github.com/OpenSelena/omniget) — 开源下载管理器：课程（Udemy/Hotmart）、YouTube、音乐及 1800+ 站点（Tauri 2 + Rust + Svelte） | `scoop install omniget` | 单 exe 官方 release（仅 x64） | 0.15.0 | 2026-11-07 | 2026-11-07 |
@@ -19,7 +19,7 @@
 | 7 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 8 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
 | 9 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.6 | 2026-11-04 | 2026-11-05 |
-| 10 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.3266 | 2026-11-03 | 2026-11-08 |
+| 10 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.3302 | 2026-11-03 | 2026-11-08 |
 | 11 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.1 | 2026-10-31 | 2026-11-03 |
 | 12 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 13 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.12.8 | 2026-10-30 | 2026-11-07 |
