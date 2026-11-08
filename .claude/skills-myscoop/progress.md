@@ -360,8 +360,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* f29fa4a (HEAD -> main) README 增加 Fork 后配置企业微信 Webhook 的说明
-* 5fb59f2 (origin/main, origin/HEAD) progress.md 更新提交历史
+* a166ddb (HEAD -> main) 同步 README 第三方版本与日期列
+* 588f988 自动更新第三方软件
+* 6b5f7b1 (origin/main) progress.md 更新提交历史
+* f29fa4a README 增加 Fork 后配置企业微信 Webhook 的说明
+* 5fb59f2 progress.md 更新提交历史
 * 2f17f56 CI 增加异常推送企业微信（参考 webhook-receiver）
 * 3242dda progress.md 更新提交历史
 * 34e3c33 bandizip6 改回“下载安装器 + 手动安装”模式（模式 6）
