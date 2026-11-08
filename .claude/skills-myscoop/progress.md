@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 168 款
+- **收录软件总数**: 169 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 83 款
+- **第三方官方（引用原项目 Release）**: 84 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -176,6 +176,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **镜像选择修正（2026-10-27，cloudflared 实测）**：热路径盲信旧 EWMA（cdn 58 MB/s 来自别的资产）→ 直接选 cdn，但 cloudflared 在该镜像 0 MB/s；冷路径三候选全 <1MB/s 仍选最不差的 hk（SSL 失败），且候选没包含真正快的 acmsz。修复：① 所有存活缓存镜像按 EWMA 排序（不再只放冠军+config 顺序）；② 下载前对实际资产做 1.2s/4MB 同栈验证（固定 1MB/s 底线），失败即跳过并降权（EWMA→≤2、fails+1，3 次冷却 30 分钟）；③ 原始直链始终作为最后兜底；④ 成功下载后 fails 清零。实测：cloudflared 第 1 次 10.6s（cdn 验证失败→acmsz），第 2 次 6.5s（直接 acmsz），hash 均正确。
 
 - **收录 VMware Workstation 26H1 + 修工具两处（2026-11-09）**：`--add` 发现拿到的不是最新（25H2 而非 26H1）。排查：GitHub REST `releases` 列表漏掉 latest `26H1`（已知索引问题；`/releases/latest` 与 GraphQL 均可见，唯 REST 列表缺；该 release 作者也非仓库 owner）。工具修复（低风险）：① `--add` 在 REST 列表之外合并 `/releases/latest`；② `is_windows_asset` 增加排除 `.bundle`（Linux 安装包）。扫描确认：现有 167 个清单中仅 vmware 用 `.bundle`，其余不受影响。清单修正：原生成结果是 64bit=Linux `.bundle`、32bit/arm64=Windows `.exe`（全错）；改为**仅 x64 单 exe**（26H1u1-25688693，hash `3d775c3c…`），去掉随版本失效的 versioned `bin`/快捷方式，改为 `post_install` 自动启动安装器、手动完成。README 第三方表置顶并全表重编号（1..83），计数 167→168、第三方 82→83（本地 85 不变）。
+
+- **收录 WhoShitsonMyC 1.1.8（2026-11-09）**：磁盘空间变化对比轻量小工具；官方单 exe（`wsmc-v1.1.8.exe`，sha256 `9f9e8988…`，与上游一致）。**修正**：原清单 `bin`/快捷方式用了带版本号的文件名（升级后失效），已加 `pre_install` 改名为稳定的 `wsmc.exe`，`bin`/`shortcuts` 指向它。README 第三方表置顶并全表重编号（1..84），计数 168→169、第三方 83→84（本地 85 不变）。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
