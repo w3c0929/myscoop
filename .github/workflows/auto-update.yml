@@ -42,12 +42,16 @@ jobs:
           # Actions 自动提供的临时令牌：仅本仓库、只在本次 job 运行期有效、无需手工配置 secret。
           # 把 GitHub API 配额从匿名 60 次/小时提到 5000 次/小时——否则 --all 查 140+ 清单必然 403 限流。
           GH_TOKEN: ${{ github.token }}
-        run: python3 myscoop-update.py --all
+        run: |
+          set -o pipefail
+          python3 myscoop-update.py --all 2>&1 | tee /tmp/update.log
 
       - name: 一致性校验（README ↔ bucket ↔ progress）
         id: chk
         continue-on-error: true
-        run: python3 myscoop-update.py --check
+        run: |
+          set -o pipefail
+          python3 myscoop-update.py --check 2>&1 | tee /tmp/check.log
 
       - name: 提交 manifest 变更（先提交，README 日期列才能取到当天提交）
         run: |
@@ -200,3 +204,103 @@ jobs:
         if: steps.upd.outcome == 'failure' || steps.chk.outcome == 'failure'
         run: |
           echo "::error::myscoop-update.py 更新或一致性校验存在异常，请查看上方日志"
+          exit 1
+
+      # 把更新过程中的 [警告]/[错误]/[跳过]（含对应 json）与异常汇总推送到企业微信。
+      # Webhook URL 只从 Secret 读取（Settings → Secrets and variables → Actions → WECHAT_WEBHOOK_URL），
+      # 绝不写入仓库或日志；未配置时自动跳过。
+      - name: 汇总异常并推送企业微信
+        if: always()
+        env:
+          WECHAT_WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
+          UPD_OUTCOME: ${{ steps.upd.outcome }}
+          CHK_OUTCOME: ${{ steps.chk.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TRIGGER: ${{ github.event_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          # -*- coding: utf-8 -*-
+          import os
+          import re
+          import json
+          import datetime
+          import urllib.request
+
+          def read(path):
+              try:
+                  return open(path, encoding='utf-8', errors='replace').read()
+              except FileNotFoundError:
+                  return ''
+
+          ansi = re.compile(r'\x1b\[[0-9;]*m')
+          upd = ansi.sub('', read('/tmp/update.log'))
+          chk = ansi.sub('', read('/tmp/check.log'))
+
+          imp_re = re.compile(r'\[(警告|错误|跳过|异常)\]|Traceback \(most recent call last\)|^\s*Error:|^\s*错误[:：]')
+          summaries, important = [], []
+          for label, text in (('更新', upd), ('校验', chk)):
+              for line in text.splitlines():
+                  s = line.strip()
+                  if not s:
+                      continue
+                  if re.match(r'^===.*(已更新|可更新|异常|一致|不一致).*===$', s):
+                      summaries.append(s)
+                  if imp_re.search(s):
+                      important.append(s if s.startswith('[') else f'[{label}] {s}')
+
+          if 'Traceback (most recent call last)' in upd:
+              tail = [l.strip() for l in upd.splitlines() if l.strip()][-8:]
+              important.extend('[更新异常] ' + t[:200] for t in tail)
+
+          def uniq(xs):
+              seen, out = set(), []
+              for x in xs:
+                  if x not in seen:
+                      seen.add(x)
+                      out.append(x)
+              return out
+
+          important, summaries = uniq(important), uniq(summaries)
+          failed = (os.environ.get('UPD_OUTCOME') == 'failure') or (os.environ.get('CHK_OUTCOME') == 'failure')
+
+          if not important and not failed:
+              print('无警告/错误，跳过企业微信推送')
+              raise SystemExit(0)
+
+          now = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+          head = '🚨' if failed else '⚠️'
+          lines = [
+              f"{head} myscoop 自动更新{'失败' if failed else '有告警'}",
+              f"仓库: {os.environ.get('REPO', '')}",
+              f"触发: {os.environ.get('TRIGGER', '')}  时间: {now}",
+              f"更新脚本: {os.environ.get('UPD_OUTCOME', '?')}  一致性校验: {os.environ.get('CHK_OUTCOME', '?')}",
+          ]
+          if summaries:
+              lines.append('汇总: ' + ' | '.join(summaries[:5]))
+          lines.append(f"运行: {os.environ.get('RUN_URL', '')}")
+          if important:
+              lines.append('—— 警告/错误/跳过 ——')
+              for s in important[:30]:
+                  lines.append(s[:200])
+              if len(important) > 30:
+                  lines.append(f'…（还有 {len(important) - 30} 条，详见 Actions 日志）')
+
+          content = '\n'.join(lines)
+          b = content.encode('utf-8')
+          if len(b) > 1800:  # 企业微信 text 上限 2048 字节，留余量
+              content = b[:1780].decode('utf-8', 'ignore') + '\n…（已截断，详见 Actions 日志）'
+
+          url = os.environ.get('WECHAT_WEBHOOK_URL', '').strip()
+          if not url:
+              print('未配置 secrets.WECHAT_WEBHOOK_URL，跳过推送')
+              raise SystemExit(0)
+
+          payload = json.dumps({'msgtype': 'text', 'text': {'content': content}}, ensure_ascii=False).encode('utf-8')
+          req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'})
+          try:
+              with urllib.request.urlopen(req, timeout=15) as resp:
+                  print('企业微信推送成功，HTTP', resp.status)
+          except Exception as e:
+              print('企业微信推送失败（不影响 job）:', type(e).__name__, str(e)[:200])
+          PY

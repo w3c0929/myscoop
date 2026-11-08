@@ -940,6 +940,14 @@ Skill 会自动执行：分析资产类型 → 选择对应模式 → 计算 has
 
 ## 自动更新机制详解
 
+### CI 异常推送（企业微信）
+
+`.github/workflows/auto-update.yml` 在更新/校验结束后（`if: always()`）会汇总本次输出中的 `[警告]` / `[错误]` / `[跳过]`（含对应 json）、`Traceback` 与汇总行，推送到企业微信机器人。
+
+- Webhook 地址只从仓库 Secret 读取：`Settings → Secrets and variables → Actions → WECHAT_WEBHOOK_URL`（值为完整的 `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=...`）
+- **不要把 key 写进仓库或 workflow**；GitHub 会自动在日志中脱敏 Secret，未配置时自动跳过
+- 推送失败不影响 job；内容超过企业微信 text 的 2048 字节上限会截断（保留前 30 条重要信息）
+
 ### checkver — 版本检测
 
 `checkver` 定义了如何获取最新版本号。最常用的是 GitHub 模式：
