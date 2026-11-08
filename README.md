@@ -2,6 +2,18 @@
 
 个人 Scoop Bucket 仓库，收集 GitHub 上的 Windows 软件，支持一键安装和自动更新。
 
+> **Fork 后如何配置企业微信通知**
+>
+> 自动更新工作流会把各清单的 `[警告]` / `[错误]` / `[跳过]` 等异常推送到企业微信机器人。通知地址通过仓库 Secret 读取，**不会写进仓库或日志**：
+>
+> 1. 在自己 fork 的仓库进入 **Settings → Secrets and variables → Actions → New repository secret**
+> 2. Name 填 `WECHAT_WEBHOOK_URL`
+> 3. Value 填你自己的企业微信群机器人地址（群设置 → 群机器人 → 添加 → 复制 Webhook）：
+>    `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=你的KEY`
+> 4. 未配置该 Secret 时，工作流会自动跳过推送，不影响更新与提交。
+>
+> ⚠️ 请勿把 Webhook key 写进任何文件或提交记录；GitHub 会自动在 Actions 日志中脱敏 Secret。
+
 ## 收录软件
 
 > 共收录 **167** 款 Windows 软件，其中 **82** 款引用第三方官方 Release，**85** 款为本地维护（自托管 Release）。
