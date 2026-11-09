@@ -372,8 +372,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* c83ce44 (HEAD -> main) 收录 AltSnap 1.68（按住 Alt 拖动窗口，仅 x64）
-* 4397ec0 (origin/main, origin/HEAD) progress.md 更新提交历史
+* d98114d (HEAD -> main) altsnap 1.68 更新 hash（上游重传同版本资产）
+* 40ec872 (origin/main, origin/HEAD) progress.md 更新提交历史
+* c83ce44 收录 AltSnap 1.68（按住 Alt 拖动窗口，仅 x64）
+* 4397ec0 progress.md 更新提交历史
 * 3fb1176 收录 ELYTerminal 0.2.3（GPUI 终端，多架构便携 zip）
 * af96dfc progress.md 更新提交历史
 * 6245f58 收录 WhoShitsonMyC 1.1.8（磁盘空间变化对比，单 exe）
