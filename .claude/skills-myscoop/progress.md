@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 170 款
+- **收录软件总数**: 171 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 85 款
+- **第三方官方（引用原项目 Release）**: 86 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -180,6 +180,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **收录 WhoShitsonMyC 1.1.8（2026-11-09）**：磁盘空间变化对比轻量小工具；官方单 exe（`wsmc-v1.1.8.exe`，sha256 `9f9e8988…`，与上游一致）。**修正**：原清单 `bin`/快捷方式用了带版本号的文件名（升级后失效），已加 `pre_install` 改名为稳定的 `wsmc.exe`，`bin`/`shortcuts` 指向它。README 第三方表置顶并全表重编号（1..84），计数 168→169、第三方 83→84（本地 85 不变）。
 
 - **收录 ELYTerminal 0.2.3（2026-11-09）**：基于 GPUI 与 Ely 组件的终端；官方多架构便携 zip（x64 / arm64），`bin`/快捷方式 `elyterminal.exe`（用户已实测）。README 第三方表置顶并全表重编号（1..85），计数 169→170、第三方 84→85（本地 85 不变）。
+
+- **收录 AltSnap 1.68（2026-11-10）**：按住 Alt 拖动窗口（AltDrag 的维护延续版）；自建/镜像仓库 release 的便携 zip（`AltSnap1.68bin_x64.zip`），`bin`/快捷方式 `AltSnap.exe`，`persist=AltSnap.ini`。`hash` 补成 `sha256:` 前缀（值不变；用户已实测）。README 第三方表置顶并全表重编号（1..86），计数 170→171、第三方 85→86（本地 85 不变）。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
