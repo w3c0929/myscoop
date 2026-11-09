@@ -1,5 +1,5 @@
 {
-    "version": "0.10.0",
+    "version": "0.10.2",
     "description": "A local-first macOS task companion. Native Liquid Glass UI, CLI and MCP for your agents.",
     "homepage": "https://github.com/NanmiCoder/TodoCue",
     "license": "MIT",
@@ -8,12 +8,12 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/NanmiCoder/TodoCue/releases/download/v0.10.0/TodoCue-0.10.0-Windows-x64-setup.exe",
-            "hash": "sha256:91a2ab231b521e4b9bd668078f42403ddbd722b507ec6138c64aa69e87046b62"
+            "url": "https://github.com/NanmiCoder/TodoCue/releases/download/v0.10.2/TodoCue-0.10.2-Windows-x64-setup.exe",
+            "hash": "sha256:c81afb14f77c3a786ad922ca479175643de83db767e612813aaf880ebcd34410"
         },
         "arm64": {
-            "url": "https://github.com/NanmiCoder/TodoCue/releases/download/v0.10.0/TodoCue-0.10.0-Windows-arm64-setup.exe",
-            "hash": "sha256:3fa9eb1c3ed9ce0d00faaed488834be1d1ea7634be465c16cfacb0556e3ca0de"
+            "url": "https://github.com/NanmiCoder/TodoCue/releases/download/v0.10.2/TodoCue-0.10.2-Windows-arm64-setup.exe",
+            "hash": "sha256:7af8ae6154694a27a7dfe3f7a37ea77cd55f795ac08089a441500d44668464eb"
         }
     },
     "autoupdate": {
