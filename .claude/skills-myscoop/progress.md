@@ -368,8 +368,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 6245f58 (HEAD -> main) 收录 WhoShitsonMyC 1.1.8（磁盘空间变化对比，单 exe）
-* ea4ff7a (origin/main, origin/HEAD) progress.md 更新提交历史
+* 3fb1176 (HEAD -> main) 收录 ELYTerminal 0.2.3（GPUI 终端，多架构便携 zip）
+* af96dfc (origin/main, origin/HEAD) progress.md 更新提交历史
+* 6245f58 收录 WhoShitsonMyC 1.1.8（磁盘空间变化对比，单 exe）
+* ea4ff7a progress.md 更新提交历史
 * 15935dc 收录 VMware Workstation 26H1；修工具两处（--add 合并 latest、排除 .bundle）
 * c4b5feb progress.md 更新提交历史
 * d15916c 修 CI 中 foxmail checkver.script 被跳过（Ubuntu 只有 pwsh）
