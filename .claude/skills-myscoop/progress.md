@@ -374,9 +374,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 34ca2ac (HEAD -> main) 同步 README 第三方版本与日期列
+* 652f1d5 (HEAD -> main) altsnap 1.68 再次更新 hash（上游重传）
+* 1d8c527 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 34ca2ac 同步 README 第三方版本与日期列
 * 2f2d53c 自动更新第三方软件
-* ef8ae52 (origin/main) progress.md 更新提交历史
+* ef8ae52 progress.md 更新提交历史
 * d98114d altsnap 1.68 更新 hash（上游重传同版本资产）
 * 40ec872 progress.md 更新提交历史
 * c83ce44 收录 AltSnap 1.68（按住 Alt 拖动窗口，仅 x64）
