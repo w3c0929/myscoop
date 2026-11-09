@@ -1,0 +1,36 @@
+{
+    "version": "0.2.3",
+    "description": "A terminal on GPUI and Ely components",
+    "homepage": "https://github.com/ELY-Open-Source/ELYTerminal",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/ELY-Open-Source/ELYTerminal"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ELY-Open-Source/ELYTerminal/releases/download/v0.2.3/ELYTerminal-windows-x86_64.zip",
+            "hash": "sha256:ad87763dce7ca8f32ee8f130d704800fbe2f1c5f3ebb81e3f078c9deb3af2f02"
+        },
+        "arm64": {
+            "url": "https://github.com/ELY-Open-Source/ELYTerminal/releases/download/v0.2.3/ELYTerminal-0.2.3-windows-aarch64.zip",
+            "hash": "sha256:c930d8611139798ce0ace4dc92b9ed172c9de48905670d6263cd90b02106528b"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ELY-Open-Source/ELYTerminal/releases/download/v$version/ELYTerminal-windows-x86_64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/ELY-Open-Source/ELYTerminal/releases/download/v$version/ELYTerminal-$version-windows-aarch64.zip"
+            }
+        }
+    },
+    "bin": "elyterminal.exe",
+    "shortcuts": [
+        [
+            "elyterminal.exe",
+            "elyterminal"
+        ]
+    ]
+}
