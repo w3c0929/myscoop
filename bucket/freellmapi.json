@@ -1,13 +1,13 @@
 {
-    "version": "0.16.23",
+    "version": "0.16.24",
     "description": "7.4 billion tokens per month. 34 free LLM providers. 635 free model endpoints. All behind one /v1 endpoint, plus any custom OpenAI-compatible endpoint. Smart routing, automatic failover, encrypted keys. Personal experimentation only.",
     "homepage": "https://freellmapi.co",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/tashfeenahmed/freellmapi"
     },
-    "url": "https://github.com/tashfeenahmed/freellmapi/releases/download/v0.16.23/FreeLLMAPI-0.16.23-win.zip",
-    "hash": "sha256:b58afec650fe09080bcfdba02d8ed4dc5a356d9916c71529d95787f1c72989c2",
+    "url": "https://github.com/tashfeenahmed/freellmapi/releases/download/v0.16.24/FreeLLMAPI-0.16.24-win.zip",
+    "hash": "sha256:8d1bd36278b5d2703f4e1868671e5e40cc101d66006e45d9c188970af1b49489",
     "autoupdate": {
         "url": "https://github.com/tashfeenahmed/freellmapi/releases/download/v$version/FreeLLMAPI-$version-win.zip"
     },
