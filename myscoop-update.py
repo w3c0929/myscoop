@@ -718,10 +718,10 @@ def _version_looks_prerelease(version):
     return bool(_PRERELEASE_TAG_RE.search(str(version or "")))
 
 
-def _warn_if_prerelease(version, where=""):
+def _warn_if_prerelease(version, where="", name=""):
     """直链/模板类入口（无 release 列表可选）的预发布提示——不阻断，用户已显式给出源。"""
     if _version_looks_prerelease(version):
-        print(f"[提示] 版本 {version} 像预发布版（rc/beta/…）{where}；如非本意请改用稳定版链接。")
+        print(f"[提示] {name + ': ' if name else ''}版本 {version} 像预发布版（rc/beta/…）{where}；如非本意请改用稳定版链接。")
 
 
 def _ver_of_tag(tag):
@@ -1057,7 +1057,7 @@ def add_manifest(repo_url, app_name=None, more=False):
             _latest = fetch_json(f"{api_base(platform)}/{owner}/{repo}/releases/latest")
             if _latest and _latest.get("id") and all(r.get("id") != _latest.get("id") for r in rels):
                 rels = [_latest] + rels
-                print("[提示] releases 列表缺少 latest（GitHub 索引问题），已合并 /releases/latest")
+                print(f"[提示] {manifest_path.name}: releases 列表缺少 latest（GitHub 索引问题），已合并 /releases/latest")
         except Exception:
             pass
     except urllib.error.HTTPError as e:
@@ -1067,7 +1067,7 @@ def add_manifest(repo_url, app_name=None, more=False):
                                            platform, owner, repo)
 
     if not rels:
-        print("[提示] 该项目没有任何 Release，将创建占位 manifest 供手动补充。")
+        print(f"[提示] {manifest_path.name}: 该项目没有任何 Release，将创建占位 manifest 供手动补充。")
         return _write_placeholder_manifest(manifest_path, description, homepage, license_val,
                                            platform, owner, repo)
 
@@ -1281,19 +1281,19 @@ def add_manifest(repo_url, app_name=None, more=False):
             # --unzip 优先：不检测 exe，内部层级保留（kvmem-*/bin/xxx.exe → $dir/bin/xxx.exe）
             if "--unzip" in sys.argv[1:] and "pre_install" not in manifest:
                 manifest["pre_install"] = [UNZIP_PRE_INSTALL]
-                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts，并（--unzip）附加无条件解压拍平 "
+                print(f"[提示] {manifest_path.name}: --exe-name {exe_name}：已写入 bin/shortcuts，并（--unzip）附加无条件解压拍平 "
                       f"pre_install（不检测 exe，内部层级保留；bin 需子路径时写 bin\\{exe_name}）")
             elif "--flatten" in sys.argv[1:] and "pre_install" not in manifest:
                 manifest["pre_install"] = [FLATTEN_PRE_INSTALL]
-                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts，并（--flatten）附加扁平化 pre_install")
+                print(f"[提示] {manifest_path.name}: --exe-name {exe_name}：已写入 bin/shortcuts，并（--flatten）附加扁平化 pre_install")
             elif "pre_install" in manifest:
-                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts（已有 pre_install，未追加扁平化）")
+                print(f"[提示] {manifest_path.name}: --exe-name {exe_name}：已写入 bin/shortcuts（已有 pre_install，未追加扁平化）")
             else:
-                print(f"[提示] --exe-name {exe_name}：已写入 bin/shortcuts。"
+                print(f"[提示] {manifest_path.name}: --exe-name {exe_name}：已写入 bin/shortcuts。"
                       f"zip 结构未下载确认，未自动扁平化——确认是单层打包目录时可加 --flatten 重跑")
         else:
             manifest["notes"] = "请手动添加 bin 和 shortcuts，或运行脚本后补充。"
-            print("[提示] zip/7z 格式无法自动推测 exe 名，请手动添加 bin/shortcuts 或加 --exe-name")
+            print(f"[提示] {manifest_path.name}: zip/7z 格式无法自动推测 exe 名，请手动添加 bin/shortcuts 或加 --exe-name")
 
     # 写盘前合并保留既有人工字段（--add 重跑不冲掉 bin/shortcuts/pre_install 等；
     # --force-new 完全重建，不保留旧字段）
@@ -1517,7 +1517,7 @@ def _update_by_regex(manifest, cv, manifest_path, dry_run):
             old = old[7:]
         if digest.lower() == old:
             if (manifest.get("checkver") or {}).get("hash_unchanged_bump"):
-                print(f"  [提示] 内容未变（sha256 相同），但按 hash_unchanged_bump 提升版本：{current_version} → {latest_version}")
+                print(f"  [提示] {manifest_path.name}: 内容未变（sha256 相同），但按 hash_unchanged_bump 提升版本：{current_version} → {latest_version}")
             else:
                 print(f"  [跳过] 内容未变（sha256 相同），版本不提升：{latest_version}")
                 return None
@@ -1598,7 +1598,7 @@ def _update_by_script(manifest, cv, manifest_path, dry_run):
             old = old[7:]
         if digest.lower() == old:
             if (manifest.get("checkver") or {}).get("hash_unchanged_bump"):
-                print(f"  [提示] 内容未变（sha256 相同），但按 hash_unchanged_bump 提升版本：{current_version} → {latest_version}")
+                print(f"  [提示] {manifest_path.name}: 内容未变（sha256 相同），但按 hash_unchanged_bump 提升版本：{current_version} → {latest_version}")
             else:
                 print(f"  [跳过] 内容未变（sha256 相同），版本不提升：{latest_version}")
                 return None
@@ -1846,9 +1846,9 @@ def update_manifest(manifest_path, dry_run=False):
                 au["architecture"].pop(arch, None)
         if not manifest["architecture"]:
             del manifest["architecture"]
-            print("    [提示] architecture 块已清空，已整体移除")
+            print(f"    [提示] {manifest_path.name}: architecture 块已清空，已整体移除")
         elif len(manifest["architecture"]) == 1:
-            print("    [提示] 仅剩 1 个架构，可考虑转顶层 url")
+            print(f"    [提示] {manifest_path.name}: 仅剩 1 个架构，可考虑转顶层 url")
 
         # 同步 autoupdate 模板字段（bin/shortcuts/extract_dir 等）到各架构块，
         # 与 scoop 官方 autoupdate 的 arch_specific 行为一致
@@ -2831,7 +2831,7 @@ def finalize_direct_manifest(template, out_dir, app_name, drop=(), assume_digest
     if not url:
         print("[错误] 模板缺少 url（多架构清单需含 64bit 分支）")
         return None
-    _warn_if_prerelease(template.get("version") or version_from_link(url), "（直链/模板模式）")
+    _warn_if_prerelease(template.get("version") or version_from_link(url), "（直链/模板模式）", app_name)
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     tmp = out_dir / f".{app_name}_dl.tmp"
@@ -3024,7 +3024,7 @@ def finalize_direct_manifest(template, out_dir, app_name, drop=(), assume_digest
                         print("            已自动采用 installer 模式（检测到注册型软件：输入法/驱动/右键菜单类，需运行安装器完成系统注册）")
                 elif "pre_install" not in template:
                     if needs_registration(template) and portable:
-                        print(f"        [提示] {fname} 是便携版 → 不做 installer 模式，改用 7z 解包 pre_install")
+                        print(f"        [提示] {app_name}: {fname} 是便携版 → 不做 installer 模式，改用 7z 解包 pre_install")
                     template["pre_install"] = list(NSIS_PRE_INSTALL)
                     print(f"        已自动添加 pre_install（7z 动态解包 $dir\\*.exe，兼容 app-*.7z 双层结构，版本升级免改）")
         elif template.get("innosetup") is True:
@@ -3141,7 +3141,7 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
     if not url:
         print("[错误] 清单缺少 url（多架构清单需含 64bit 分支）")
         return None
-    _warn_if_prerelease(template.get("version") or version_from_link(url), "（--fill-bin）")
+    _warn_if_prerelease(template.get("version") or version_from_link(url), "（--fill-bin）", arg_value("--name") or Path(tpath).stem)
     if multi_arch:
         print(f"[探测] 多架构清单：下载 64bit 主架构资产探测（bin/extract_dir 各架构通用）")
     if not url.lower().endswith(".zip"):
@@ -3189,7 +3189,7 @@ def fill_bin_manifest(tpath, out_dir, app_name=None, select=None):
     exes.sort(key=lambda n: (("/" in n), n.lower()))
     if not exes:
         tmp.unlink(missing_ok=True)
-        print("[提示] zip 内未发现 exe（可能是脚本类应用），无法自动补 bin")
+        print(f"[提示] {app_name}: zip 内未发现 exe（可能是脚本类应用），无法自动补 bin")
         return None
     print(f"[探测] zip 内可执行文件（共 {len(exes)} 个）:")
     for i, e in enumerate(exes, 1):
@@ -3295,7 +3295,7 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
     if not version:
         m = re.search(r"/releases/download/v?([^/]+)/", url)
         version = m.group(1) if m else (version_from_link(url) or "1.0")
-    _warn_if_prerelease(version, "（--fill-bin URL）")
+    _warn_if_prerelease(version, "（--fill-bin URL）", app_name)
     template = {
         "version": version,
         "description": arg_value("--description") or "",
@@ -3322,7 +3322,7 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
                 template["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
             print(f"[仓库信息] {owner}/{repo}：已自动补全 description/homepage/license/checkver")
         except Exception as e:
-            print(f"[提示] GitHub 仓库信息获取失败（保持用户字段）: {e}")
+            print(f"[提示] {app_name}: GitHub 仓库信息获取失败（保持用户字段）: {e}")
     if cv_url and cv_regex:
         template["checkver"] = {"url": cv_url, "regex": cv_regex}
 
@@ -3355,7 +3355,7 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
 
     exes = sorted({n for n in names if n.lower().endswith(".exe")}, key=lambda n: n.lower())
     if not exes:
-        print("[提示] zip 内未发现 exe（可能是脚本类应用），无法自动补 bin")
+        print(f"[提示] {app_name}: zip 内未发现 exe（可能是脚本类应用），无法自动补 bin")
         return None
     print(f"[探测] zip 内可执行文件（共 {len(exes)} 个）:")
     for i, e in enumerate(exes, 1):
@@ -3371,7 +3371,7 @@ def _fill_bin_from_url(url, out_dir, app_name=None, select=None):
             print(f"[exe-name] {choice} → 命中 {full}")
             choice = full
         elif not full:
-            print(f"[提示] --exe-name {choice} 未在 zip 中找到精确匹配（仍按指定写入）")
+            print(f"[提示] {app_name}: --exe-name {choice} 未在 zip 中找到精确匹配（仍按指定写入）")
     elif select:
         if select.strip() == "0":
             skip_bin = True
@@ -3506,15 +3506,15 @@ def probe_exe(src, app_name=None):
     - Inno：静默安装到临时目录 → 列出真实 exe → 自动卸载回滚。
     用法: myscoop-update.py --exe-name <url|本地文件> [--name 应用名]（旧名 --probe-exe 兼容）"""
     url = str(src)
+    if not app_name:
+        app_name = arg_value("--name") or Path(url.split("#")[0].split("?")[0]).stem or "probe"
     is_local = not url.lower().startswith(("http://", "https://"))
     if not is_local and not url.split("?")[0].lower().endswith(".exe"):
-        print("[提示] 链接不是 .exe（不适用探测），按 --add 直链处理即可")
+        print(f"[提示] {app_name}: 链接不是 .exe（不适用探测），按 --add 直链处理即可")
         return None
     if is_local and not Path(url).exists():
         print("[错误] 本地文件不存在")
         return None
-    if not app_name:
-        app_name = arg_value("--name") or Path(url.split("#")[0].split("?")[0]).stem or "probe"
     if is_local:
         tmp = Path(url)
         print(f"[本地] 使用已有文件: {tmp}")
@@ -3544,7 +3544,7 @@ def probe_exe(src, app_name=None):
         print("[NSIS] 检测到 NSIS 安装器，开始 7z 解包探测…（无需真安装）")
         exes, _self_managing = probe_nsis_exes(tmp, app_name)
         if _self_managing:
-            print("        [提示] 载荷含 installer-helper：自管理式安装器，建议走 --add --dl 自动生成 script 形态")
+            print(f"        [提示] {app_name}: 载荷含 installer-helper：自管理式安装器，建议走 --add --dl 自动生成 script 形态")
         comment = "NSIS 请配合 --add 自动生成的 pre_install 解包"
     if exes:
         roots = [e for e in exes if (tmp.parent / e).exists() or True]
@@ -3553,7 +3553,7 @@ def probe_exe(src, app_name=None):
             print(f"    {i}: {e}")
         print(f"→ 请用 --exe-name <上选主程序名> 重新 --add 生成清单（{comment}）")
     else:
-        print("[提示] 未发现 exe（可能为服务/驱动类或解包失败）")
+        print(f"[提示] {app_name}: 未发现 exe（可能为服务/驱动类或解包失败）")
     print("[回滚] 临时文件已清理")
     return tmp
 
@@ -3595,7 +3595,7 @@ def add_direct_url(url, app_name=None):
                 template["checkver"] = {"github": f"https://github.com/{owner}/{repo}"}
             print(f"[仓库信息] {owner}/{repo}：已自动补全 description/homepage/license/checkver")
         except Exception as e:
-            print(f"[提示] GitHub 仓库信息获取失败（保持用户字段）: {e}")
+            print(f"[提示] {app_name}: GitHub 仓库信息获取失败（保持用户字段）: {e}")
     exe_name = arg_value("--exe-name")
     if exe_name:
         template["bin"] = exe_name
