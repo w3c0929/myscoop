@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 171 款
+- **收录软件总数**: 172 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 86 款
+- **第三方官方（引用原项目 Release）**: 87 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -190,6 +190,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **CI 提示补充清单名（2026-11-10）**：延续 `[警告]` 补名字，`myscoop-update.py` 里所有 `[提示]` 也带上对应清单名/json：更新路径用 `manifest_path.name`（内容未变提升版本、架构清空等）；`--add`/`--fill-bin`/`--exe-name`/`--fill-bin URL` 用 `app_name`（预发布提示新增 `name` 参数，调用处传 app_name）；`probe_exe` 调整为先确定 app_name 再输出。注意：企业微信通知目前仍只提取 `[警告]/[错误]/[跳过]/[异常]`，`[提示]` 只在 Actions 日志中可见；如需也推送可再加。
 
 - **企业微信通知纳入 [提示]（2026-11-10）**：workflow 的提取正则由 `[警告]/[错误]/[跳过]/[异常]` 扩展为包含 `[提示]`；配合上一轮脚本改动，所有提示都带 json/app 名。README CI 章节同步。
+
+- **收录 Snow Shot 1.5.4（2026-11-11）**：截图/标注/钉图/OCR 工具；官方 x64 便携 zip（`snow-shot-1.5.4-windows-x64-portable.zip`，sha256 `21ce96ba…`，与上游 digest 一致），`bin=bin\snow_shot.exe`、`persist=bin\portable`。**修正**：原清单把 API URL 放在 `checkver.github`（本项目脚本报「无法解析 repo 地址」而跳过），改为 `checkver.url`（jsonpath/regex 保留）；`hash` 补 `sha256:` 前缀；并把版本从 1.5.3 升到最新稳定 1.5.4。另：`config.json` 的 aria2 镜像顺序调整（`gh-proxy.org` 提前）一并提交。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 

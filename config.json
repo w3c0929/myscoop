@@ -17,6 +17,7 @@
   ],
   "alias": {},
   "aria2-mirrors": [
+    "https://gh-proxy.org",
     "https://hk.gh-proxy.org",
     "https://cdn.gh-proxy.com",
     "https://git.yylx.win",
@@ -29,7 +30,6 @@
     "https://gh.sixyin.com",
     "https://ghproxy.imciel.com",
     "https://cdn.akaere.online",
-    "https://gh-proxy.org",
     "https://gh-proxy.com",
     "https://free.cn.eu.org",
     "https://fastgit.cc",
