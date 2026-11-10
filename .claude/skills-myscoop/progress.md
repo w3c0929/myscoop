@@ -183,11 +183,7 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 
 - **收录 AltSnap 1.68（2026-11-10）**：按住 Alt 拖动窗口（AltDrag 的维护延续版）；自建/镜像仓库 release 的便携 zip（`AltSnap1.68bin_x64.zip`），`bin`/快捷方式 `AltSnap.exe`，`persist=AltSnap.ini`。`hash` 补成 `sha256:` 前缀（值不变；用户已实测）。README 第三方表置顶并全表重编号（1..86），计数 170→171、第三方 85→86（本地 85 不变）。
 
-- **AltSnap 1.68 资产被上游重传（2026-11-10）**：同一版本 `AltSnap1.68bin_x64.zip` 的哈希由 `28106e14…` 变为 `4a596c7b…`（上游 digest 核对一致）；清单 hash 已更新，版本/URL 不变。
-
-- **AltSnap 1.68 资产再次重传（2026-11-10）**：`AltSnap1.68bin_x64.zip` 又更新，hash `4a596c7b…` → `77332fe9…`（上游 digest 一致，size 217723）；版本/URL 不变。
-
-- **AltSnap 1.68 资产第三次重传（2026-11-10）**：`AltSnap1.68bin_x64.zip` 再次更新，hash `77332fe9…` → `08893308…`（上游 digest 一致，size 217306）；版本/URL 不变。
+- **AltSnap 1.68 同版本资产多次重传（2026-11-10）**：`AltSnap1.68bin_x64.zip` 同日被上游多次重传，hash `28106e14…` → `4a596c7b…` → `77332fe9…` → `08893308…` → `410c044c…`（均与上游 digest 核对一致）；版本/URL 不变。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
