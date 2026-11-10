@@ -378,8 +378,12 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 3ed4a42 (HEAD -> main) 企业微信通知纳入 [提示]（均带 json/app 名）
-* 3fe083e (origin/main, origin/HEAD) progress.md 更新提交历史
+* 1018d98 (HEAD -> main) README 同步 zhiyuime 版本 1.7.73 → 1.7.75
+* c9658e7 (origin/main, origin/HEAD) zhiyuime 1.7.75
+* be8a29b zhiyuime 1.7.74
+* d566f9c progress.md 更新提交历史
+* 3ed4a42 企业微信通知纳入 [提示]（均带 json/app 名）
+* 3fe083e progress.md 更新提交历史
 * d15fe56 CI 提示补充清单名：所有 [提示] 带 json/app 名
 * d0ecfd6 progress.md 更新提交历史
 * dd41249 CI 告警补充清单名：资产匹配失败带 json 名
