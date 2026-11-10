@@ -251,7 +251,7 @@ jobs:
           upd = ansi.sub('', read('/tmp/update.log'))
           chk = ansi.sub('', read('/tmp/check.log'))
 
-          imp_re = re.compile(r'\[(警告|错误|跳过|异常)\]|Traceback \(most recent call last\)|^\s*Error:|^\s*错误[:：]')
+          imp_re = re.compile(r'\[(警告|错误|跳过|异常|提示)\]|Traceback \(most recent call last\)|^\s*Error:|^\s*错误[:：]')
           summaries, important = [], []
           for label, text in (('更新', upd), ('校验', chk)):
               for line in text.splitlines():
