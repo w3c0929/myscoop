@@ -376,8 +376,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* dd41249 (HEAD -> main) CI 告警补充清单名：资产匹配失败带 json 名
-* 300a325 (origin/main, origin/HEAD) progress.md 更新提交历史
+* d15fe56 (HEAD -> main) CI 提示补充清单名：所有 [提示] 带 json/app 名
+* d0ecfd6 (origin/main, origin/HEAD) progress.md 更新提交历史
+* dd41249 CI 告警补充清单名：资产匹配失败带 json 名
+* 300a325 progress.md 更新提交历史
 * 1f52705 同步 README 第三方版本与日期列
 * 3f67130 自动更新第三方软件
 * 1901760 progress.md 更新提交历史
