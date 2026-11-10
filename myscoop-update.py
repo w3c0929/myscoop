@@ -1367,7 +1367,7 @@ def substitute_version(value, version):
     return value
 
 
-def _update_pair_block(blk, tmpl, old_url, version, assets):
+def _update_pair_block(blk, tmpl, old_url, version, assets, label=""):
     """逐项更新"配对资产"（--more 生成）的数组型 url/hash，返回命中项数。
 
     数组顺序= [主程序, cudart 运行时]。逐项：$version 模板替换 → match_asset →
@@ -1390,7 +1390,7 @@ def _update_pair_block(blk, tmpl, old_url, version, assets):
             hashes[i] = a.get("digest", "")
             n += 1
         else:
-            print(f"      [警告] 配对项 {i} 未匹配，保留旧值")
+            print(f"      [警告] {label + ': ' if label else ''}配对项 {i} 未匹配，保留旧值")
     if n:
         blk["url"] = urls
         blk["hash"] = hashes
@@ -1766,11 +1766,11 @@ def update_manifest(manifest_path, dry_run=False):
             if isinstance(old_url, list):
                 blk = manifest["architecture"][arch]
                 au_t = au.get("architecture", {}).get(arch, {}).get("url", old_url)
-                if _update_pair_block(blk, au_t, old_url, latest_version, assets):
+                if _update_pair_block(blk, au_t, old_url, latest_version, assets, manifest_path.name):
                     matched_any = True
                     print(f"    {arch}: 配对资产 {len(blk['url'])} 项已更新")
                 else:
-                    print(f"    {arch}: 配对资产未匹配，标记待删")
+                    print(f"    [警告] {manifest_path.name}: 配对资产未匹配（架构 {arch}），标记待删")
                     to_del.append(arch)
                 continue
             au_arch = au.get("architecture", {}).get(arch, {})
@@ -1862,8 +1862,8 @@ def update_manifest(manifest_path, dry_run=False):
         # 配对资产（--more，单架构）：顶层 url/hash 为数组，逐项更新后跳过标量逻辑
         if isinstance(old_url, list):
             au_t = au.get("url", old_url)
-            if not _update_pair_block(manifest, au_t, old_url, latest_version, assets):
-                print("    [警告] 配对资产未匹配")
+            if not _update_pair_block(manifest, au_t, old_url, latest_version, assets, manifest_path.name):
+                print(f"    [警告] {manifest_path.name}: 配对资产未匹配")
                 return None
             print(f"    配对资产 {len(manifest['url'])} 项已更新")
             chg = sync_autoupdate_fields(au, manifest, latest_version)
@@ -1924,7 +1924,7 @@ def update_manifest(manifest_path, dry_run=False):
                             print(f"    hash: {digest4[:16]}... [后缀重选: {asset4['name']}"
                                   + ("，autoupdate 模板文件名已刷新]" if rf4 else "]"))
                         else:
-                            print(f"    [警告] 无法匹配")
+                            print(f"    [警告] {manifest_path.name}: 无法匹配（架构 {arch}）")
                             return None  # 资产匹配失败：不写入、不计入已更新
 
             # 同步顶层 autoupdate 模板字段（bin/shortcuts/extract_dir 等）
