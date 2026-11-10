@@ -6,7 +6,7 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/w3c0929/AltSnap/releases/download/1.68/AltSnap1.68bin_x64.zip",
-            "hash": "sha256:7e1f5f1f9a9232fdb839bf6b59d1f2f97ec3539bb9aef9c15f3a7e1a45e5e940"
+            "hash": "sha256:35939d2576d3a017245606e08a167a40fcc13cfea763b35ac6f6f12d2201a88f"
         }
     },
     "shortcuts": [
