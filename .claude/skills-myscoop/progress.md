@@ -388,8 +388,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 3c039e2 (HEAD -> main) dsh 切换到官方 nightly 渠道（0.2.2-rc.2）
-* bef5584 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 0ea0d70 (HEAD -> main) todocue 补充生命周期钩子（post_install/pre_uninstall/uninstaller/suggest）
+* 051c26c (origin/main, origin/HEAD) progress.md 更新提交历史
+* 3c039e2 dsh 切换到官方 nightly 渠道（0.2.2-rc.2）
+* bef5584 progress.md 更新提交历史
 * 2c03a5a 同步 README 第三方版本与日期列
 * df48f97 自动更新第三方软件
 * 9e2aad0 progress.md 更新提交历史
