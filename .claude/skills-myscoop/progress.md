@@ -384,8 +384,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 8724094 (HEAD -> main) snowshot：仓库迁移到 mg-chao/snow-shot，新增 arm64，修 autoupdate
-* e18b41f (origin/main, origin/HEAD) progress.md 更新提交历史
+* 592aa0a (HEAD -> main) filee 更新到 2.5.1（仓库迁到 w3c0929/Filee）
+* b482014 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 8724094 snowshot：仓库迁移到 mg-chao/snow-shot，新增 arm64，修 autoupdate
+* e18b41f progress.md 更新提交历史
 * 99936b9 收录 Snow Shot 1.5.4（截图/标注/钉图/OCR，仅 x64）
 * 786d7ab progress.md 更新提交历史
 * 3811a75 同步 README 第三方版本与日期列
