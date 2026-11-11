@@ -1,10 +1,10 @@
 {
-    "version": "0.2.2-rc.1",
+    "version": "0.2.2-rc.2",
     "description": "DeepSeek Harness desktop client (official direct download, NSIS installer 7z-unpack portable)",
     "homepage": "https://www.deepseek.com/en/harness/",
     "license": "MIT",
-    "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe",
-    "hash": "sha256:830947f8996dc05d991ca9133fff4d3400073e47b9cfa6507754867e79482b23",
+    "url": "https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.2-rc.2-win-x64.exe",
+    "hash": "sha256:7e25286518ce520b5c0943e178c52cdba1cc9ec3680bc7da181b79879e080c32",
     "bin": "DeepSeek Harness.exe",
     "shortcuts": [
         [
@@ -18,10 +18,14 @@
         "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
     ],
     "checkver": {
-        "url": "https://api.github.com/repos/deepseek-ai/deepseek-harness/releases",
-        "regex": "\"tag_name\":\\s*\"dsh-v([^\"]+)\""
+        "url": "https://download.deepseek.com/dsh-desk/feeds/win-x64/nightly.yml",
+        "regex": "version:\\s*([^\\s]+)"
     },
     "autoupdate": {
-        "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe"
-    }
+        "url": "https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-$version-win-x64.exe"
+    },
+    "notes": [
+        "跟踪官方 nightly 渠道（与 APP 内更新器一致）：feed https://download.deepseek.com/dsh-desk/feeds/win-x64/nightly.yml。",
+        "如想用稳定版，可改用静态 latest：https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe（会落后于 nightly）。"
+    ]
 }

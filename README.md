@@ -73,7 +73,7 @@
 | 49 | [PawnIO](https://github.com/namazso/PawnIO.Setup) — Pawn 语言工具套件（官方安装器） | `scoop install pawnio` | 单 exe 官方 release | 2.2.0 | 2026-10-10 | 2026-10-10 |
 | 50 | [EcoPaste](https://github.com/EcoPasteHub/EcoPaste) — 跨平台剪贴板管理工具 | `scoop install ecopaste` | 多架构 exe 官方 release（NSIS 解包） | 1.1.0 | 2026-10-10 | 2026-10-10 |
 | 51 | [BongoCat](https://github.com/ayangweb/BongoCat) — 跨平台桌面宠物互动小工具（开源） | `scoop install bongocat` | 单 exe 官方 release（NSIS 解包） | 2.4.1 | 2026-10-10 | 2026-10-29 |
-| 52 | [DeepSeek Harness](https://www.deepseek.com/en/harness/) — DeepSeek 桌面客户端（官方直链，NSIS 安装器 7z 解包便携） | `scoop install dsh` | 单 exe 官方直链（NSIS 解包） | 0.2.2-rc.1 | 2026-10-10 | 2026-11-05 |
+| 52 | [DeepSeek Harness](https://www.deepseek.com/en/harness/) — DeepSeek 桌面客户端（官方直链，NSIS 安装器 7z 解包便携） | `scoop install dsh` | 单 exe 官方 nightly 直链（NSIS 解包） | 0.2.2-rc.2 | 2026-10-10 | 2026-11-12 |
 | 53 | [KVMem / NInfer](https://github.com/kvmem/kvmem-llama.cpp) — 统一版：NInfer + PolyStrata 双后端（.ninfer 三元模型 / GGUF），RTX 40 预编译包，内嵌控制台/聊天 | `scoop install kvninfer` | zip 官方 release | 0.19.1 | 2026-10-12 | 2026-10-31 |
 | 54 | [Rayburst](https://github.com/AnInsomniacy/rayburst) — 开源下载管理器（基于 Aria2 Next 引擎，NSIS 安装器解包便携） | `scoop install rayburst` | 多架构 exe 官方 release（NSIS 解包） | 4.1.2 | 2026-10-10 | 2026-11-10 |
 | 55 | [ZTools](https://github.com/ZToolsCenter/ZTools) — uTools 的开源实现，高性能可扩展的应用启动器与插件平台 | `scoop install ztools` | zip 官方 release | 3.2.0 | 2026-10-10 | 2026-10-10 |
