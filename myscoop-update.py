@@ -1832,6 +1832,7 @@ def update_manifest(manifest_path, dry_run=False):
                             print(f"    {arch}: {digest4[:16]}... [后缀重选: {asset4['name']}"
                                   + ("，autoupdate 模板文件名已刷新]" if rf4 else "]"))
                         else:
+                            print(f"    [警告] {manifest_path.name}: {arch} 架构无法匹配，标记待删")
                             to_del.append(arch)
         # 资产守卫：所有架构都未匹配到任何资产 → 视为无效更新，跳过不写入。
         # 防止上游噪音 tag（无资产）触发下方"规则③ 删架构"把整个清单改坏。
@@ -1924,7 +1925,7 @@ def update_manifest(manifest_path, dry_run=False):
                             print(f"    hash: {digest4[:16]}... [后缀重选: {asset4['name']}"
                                   + ("，autoupdate 模板文件名已刷新]" if rf4 else "]"))
                         else:
-                            print(f"    [警告] {manifest_path.name}: 无法匹配（架构 {arch}）")
+                            print(f"    [警告] {manifest_path.name}: 无法匹配（资产名与模板/旧名/前缀/后缀均不匹配）")
                             return None  # 资产匹配失败：不写入、不计入已更新
 
             # 同步顶层 autoupdate 模板字段（bin/shortcuts/extract_dir 等）
