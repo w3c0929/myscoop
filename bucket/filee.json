@@ -1,13 +1,13 @@
 {
-    "version": "2.5.1",
+    "version": "2.5.8",
     "description": "Free, open-source file converter. Convert 180+ formats offline by drag & drop — images, PDF, Word, Excel, PowerPoint, HWP/HWPX, video, audio, e-books and archives. No upload, no Office needed.",
     "homepage": "https://filee.sh",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/w3c0929/Filee"
     },
-    "url": "https://github.com/w3c0929/Filee/releases/download/v2.5.1/Filee-2.5.1-win-Portable.zip",
-    "hash": "sha256:272ceb1f97d6fa3b574bc540cdec6cd979a65f13fc8079bd23d8917924290053",
+    "url": "https://github.com/w3c0929/Filee/releases/download/v2.5.8/Filee-2.5.8-win-Portable.zip",
+    "hash": "sha256:0fd2bf416cc787ca249e77a6771289d73176ccf038bc7a9a2adedb87abd6dbef",
     "autoupdate": {
         "url": "https://github.com/w3c0929/Filee/releases/download/v$version/Filee-$version-win-Portable.zip"
     },
