@@ -388,9 +388,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 2c03a5a (HEAD -> main) 同步 README 第三方版本与日期列
+* 3c039e2 (HEAD -> main) dsh 切换到官方 nightly 渠道（0.2.2-rc.2）
+* bef5584 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 2c03a5a 同步 README 第三方版本与日期列
 * df48f97 自动更新第三方软件
-* 9e2aad0 (origin/main) progress.md 更新提交历史
+* 9e2aad0 progress.md 更新提交历史
 * a9eab0a 修 CI minidock 崩溃（arch NameError）+ minidock 更新到 2.6.3
 * ce07622 progress.md 更新提交历史
 * e9ef334 同步 README 第三方版本与日期列
