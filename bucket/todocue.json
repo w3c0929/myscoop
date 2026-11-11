@@ -37,5 +37,24 @@
         "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
         "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
         "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
-    ]
+    ],
+    "post_install": [
+        "New-Item -Path 'HKCU:\\Software\\Classes\\AppUserModelId\\com.todocue.app' -Force | Out-Null",
+        "Set-ItemProperty -Path 'HKCU:\\Software\\Classes\\AppUserModelId\\com.todocue.app' -Name DisplayName -Value 'TodoCue'",
+        "& \"$dir\\todocue-cli.exe\" install --skip-apps | Out-Null"
+    ],
+    "pre_uninstall": [
+        "& \"$dir\\todocue-cli.exe\" service stop 2>$null | Out-Null",
+        "Get-Process todocue-desktop, todocue-runtime, node -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"$dir\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue"
+    ],
+    "uninstaller": {
+        "script": [
+            "Remove-Item 'HKCU:\\Software\\Classes\\AppUserModelId\\com.todocue.app' -Recurse -Force -ErrorAction SilentlyContinue"
+        ]
+    },
+    "suggest": {
+        "Microsoft Edge WebView2 Runtime": [
+            "webview2"
+        ]
+    }
 }
