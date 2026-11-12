@@ -12,6 +12,11 @@
     },
     "hash": "sha256:a23fd2a4d0afa18e4f2a6fc52bea559e4a326466ad95f2775873a13284359bde",
     "pre_install": [
+        "Get-Service ArgusPrivileged -ErrorAction SilentlyContinue | Stop-Service -Force -ErrorAction SilentlyContinue",
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { try { $_.Path -like 'C:\\Program Files\\Argus Privileged\\*' -or $_.Path -like 'C:\\Program Files\\Argus Runtime\\*' } catch { $false } } | Stop-Process -Force -ErrorAction SilentlyContinue",
+        "sc.exe delete ArgusPrivileged 2>$null | Out-Null",
+        "foreach ($p in @('HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe','HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe')) { if (Test-Path $p) { $dbg = (Get-ItemProperty -Path $p -Name Debugger -ErrorAction SilentlyContinue).Debugger; if ($dbg -and $dbg -like '*Argus Privileged*') { Remove-ItemProperty -Path $p -Name Debugger -ErrorAction SilentlyContinue } } }",
+        "$ts = Get-Date -Format 'yyyyMMddHHmmss'; foreach ($d in @('C:\\Program Files\\Argus Privileged','C:\\Program Files\\Argus Runtime')) { if (Test-Path -LiteralPath $d) { try { Remove-Item -LiteralPath $d -Recurse -Force -ErrorAction Stop } catch { Move-Item -LiteralPath $d -Destination (\"$d.old-$ts\") -Force -ErrorAction SilentlyContinue } } }",
         "$e = Get-ChildItem \"$dir\\Argus*.exe\" | Select-Object -First 1; if ($e -and $e.Name -ne 'Argus.exe') { Rename-Item -Path $e.FullName -NewName 'Argus.exe' -Force }"
     ],
     "bin": "Argus.exe",
@@ -20,5 +25,16 @@
             "Argus.exe",
             "Argus"
         ]
+    ],
+    "pre_uninstall": [
+        "Get-Service ArgusPrivileged -ErrorAction SilentlyContinue | Stop-Service -Force -ErrorAction SilentlyContinue",
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { try { $_.Path -like 'C:\\Program Files\\Argus Privileged\\*' -or $_.Path -like 'C:\\Program Files\\Argus Runtime\\*' } catch { $false } } | Stop-Process -Force -ErrorAction SilentlyContinue",
+        "sc.exe delete ArgusPrivileged 2>$null | Out-Null",
+        "foreach ($p in @('HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe','HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe')) { if (Test-Path $p) { $dbg = (Get-ItemProperty -Path $p -Name Debugger -ErrorAction SilentlyContinue).Debugger; if ($dbg -and $dbg -like '*Argus Privileged*') { Remove-ItemProperty -Path $p -Name Debugger -ErrorAction SilentlyContinue } } }",
+        "$ts = Get-Date -Format 'yyyyMMddHHmmss'; foreach ($d in @('C:\\Program Files\\Argus Privileged','C:\\Program Files\\Argus Runtime')) { if (Test-Path -LiteralPath $d) { try { Remove-Item -LiteralPath $d -Recurse -Force -ErrorAction Stop } catch { Move-Item -LiteralPath $d -Destination (\"$d.old-$ts\") -Force -ErrorAction SilentlyContinue } } }"
+    ],
+    "notes": [
+        "Argus 的特权服务（ArgusPrivileged）与任务管理器替换组件装在 C:\\Program Files\\Argus Privileged / Argus Runtime，Scoop 不管理它们。安装/升级前会停用并删除旧服务、恢复 Windows 任务管理器（如果之前替换过），再清理这两个目录，由新版本首次启动时重新部署。需要管理员权限；非管理员安装会跳过清理。",
+        "升级后首次启动 Argus 会重新创建对应版本的特权组件；若之前开启了“替换任务管理器”，需在设置里重新开启。"
     ]
 }
