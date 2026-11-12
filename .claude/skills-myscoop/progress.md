@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 172 款
+- **收录软件总数**: 173 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 87 款
+- **第三方官方（引用原项目 Release）**: 88 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -206,6 +206,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **winshun 0.26.0 → 0.26.1（2026-11-12）**：url/hash 更新为 0.26.1（`WinShun-0.26.1-x64-portable.zip`，sha256 `3e49f79e…`，与上游 digest 一致）。README 版本同步。
 
 - **winshun 0.26.1 → 0.26.2（2026-11-12）**：url/hash 更新为 0.26.2（`WinShun-0.26.2-x64-portable.zip`，sha256 `0593ed59…`，与上游 digest 一致）。README 版本同步。
+
+- **收录 Argus 0.4.0（2026-11-12）**：现代 Windows 任务管理器（Rust + GPUI）；官方单 exe（`Argus_0.4.0_x64.exe`，sha256 `eef111d4…`，与上游 digest 一致）。**修正**：原清单 `bin`/快捷方式用了带版本号的文件名（升级后失效），已加 `pre_install` 改名为稳定的 `Argus.exe`，`bin`/`shortcuts` 指向它。README 第三方表置顶并全表重编号（1..88），计数 172→173、第三方 87→88（本地 85 不变）。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
