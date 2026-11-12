@@ -1,16 +1,16 @@
 {
-    "version": "0.4.0",
+    "version": "0.5.0",
     "description": "现代 Windows 任务管理器 · A modern task manager for Windows, built with Rust and GPUI Kit.",
     "homepage": "https://argustask.com",
     "license": "AGPL-3.0",
     "checkver": {
         "github": "https://github.com/Ray-lea/Argus"
     },
-    "url": "https://github.com/Ray-lea/Argus/releases/download/v0.4.0/Argus_0.4.0_x64.exe",
+    "url": "https://github.com/Ray-lea/Argus/releases/download/v0.5.0/Argus_0.5.0_x64.exe",
     "autoupdate": {
         "url": "https://github.com/Ray-lea/Argus/releases/download/v$version/Argus_$version_x64.exe"
     },
-    "hash": "sha256:eef111d449b3f425283b316bc7af8346475e7de925f2991e75fdf4c5131b835c",
+    "hash": "sha256:a23fd2a4d0afa18e4f2a6fc52bea559e4a326466ad95f2775873a13284359bde",
     "pre_install": [
         "$e = Get-ChildItem \"$dir\\Argus*.exe\" | Select-Object -First 1; if ($e -and $e.Name -ne 'Argus.exe') { Rename-Item -Path $e.FullName -NewName 'Argus.exe' -Force }"
     ],

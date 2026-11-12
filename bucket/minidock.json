@@ -1,5 +1,5 @@
 {
-    "version": "2.6.3",
+    "version": "2.6.6",
     "description": "极简dock栏，专注于Windows端dock的软件",
     "homepage": "https://github.com/wang01116/MiniDock",
     "license": "unknown",
@@ -7,11 +7,11 @@
         "github": "https://github.com/wang01116/MiniDock",
         "tag_regex": "^v([\\d.]+)$"
     },
-    "url": "https://github.com/wang01116/MiniDock/releases/download/v2.6.3/MiniDock-2.6.3.exe",
+    "url": "https://github.com/wang01116/MiniDock/releases/download/v2.6.6/MiniDock-2.6.6.exe",
     "autoupdate": {
         "url": "https://github.com/wang01116/MiniDock/releases/download/v$version/MiniDock-$version.exe"
     },
-    "hash": "sha256:fe56206d7923df8e2d5c97d571a5c23529d71d1c0b5ca24c03cc2c08ea4f9a4d",
+    "hash": "sha256:9139974e9ce9e7de4a3aa4e3b43229779314218b44f426e3ffbe4aa2670dda0c",
     "pre_install": [
         "$e=Get-ChildItem \"$dir\\MiniDock*.exe\" | Select-Object -First 1; if ($e -and $e.Name -ne 'MiniDock.exe') { Rename-Item -Path $e.FullName -NewName 'MiniDock.exe' -Force }"
     ],
