@@ -4,7 +4,7 @@
     "homepage": "https://uuyc.163.com/",
     "license": "Freeware",
     "url": "https://api.nrd.nie.163.com/api/v1/release/dl/1?channel=gwqd#/uuyc-setup.exe",
-    "hash": "sha256:f7bef4162213b038a246e05e130b40dde98610aeed19b3691e6e9497dc508dc4",
+    "hash": "sha256:fb2d24a40a51ae82701ae2d145db387df4fb63f8bad2d020db4afccda928195e",
     "installer": {
         "args": [
             "/S"
@@ -16,9 +16,13 @@
         "if (Test-Path $u) { Start-Process $u -ArgumentList '/S' -Wait -ErrorAction SilentlyContinue }"
     ],
     "checkver": {
-        "url": "https://api.nrd.nie.163.com/api/v1/release/dl-infos?channel=gwqd",
-        "regex": "\"1\":\\s*\\{[^}]*?\"version_name\":\\s*\"([\\d.]+)\"",
-        "hash_unchanged_bump": true
+        "script": [
+            "$url = 'https://api.nrd.nie.163.com/api/v1/release/dl/1?channel=gwqd'",
+            "$request = [System.Net.HttpWebRequest]::Create($url)",
+            "$response = $request.GetResponse()",
+            "Write-Output $response.ResponseUri.AbsoluteUri"
+        ],
+        "regex": "UURemote_Setup_([0-9]+\\.[0-9]+\\.[0-9]+)"
     },
     "autoupdate": {
         "url": "https://api.nrd.nie.163.com/api/v1/release/dl/1?channel=gwqd#/uuyc-setup.exe"
@@ -26,6 +30,7 @@
     "notes": [
         "真安装模式（installer）：安装器会创建 GameViewerService 服务、虚拟驱动（UUYCInput / nevaudio）与 config/bin/plugins 运行目录；解包成便携版会因缺少这些而无法启动（实测退出码 -1）。",
         "安装位置由安装器固定为 C:\\Program Files\\Netease\\GameViewer（忽略 /D），卸载由 post_uninstall 调用官方 Uninstall.exe 完成。",
-        "自动更新：checkver 读取官方 dl-infos 接口中 Windows（key=1）的稳定版本号；autoupdate 走下载接口（302 到安装包）。"
+        "自动更新：checkver 跟随下载接口的 302 最终地址（UURemote_Setup_<版本>_<构建>_...exe）解析版本，与真实安装包一致；autoupdate 走同一静态下载接口。",
+        "历史教训：曾用 dl-infos 接口 + hash_unchanged_bump，导致版本被提前提升而 hash 仍是旧包；上游换包后同版本不再触发检查 → Scoop 校验失败。现改为以 302 地址为准。"
     ]
 }
