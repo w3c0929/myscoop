@@ -394,8 +394,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 9f58013 (HEAD -> main) winshun 更新到 0.26.1
-* 609dc1c (origin/main, origin/HEAD) progress.md 更新提交历史
+* eb1ef8b (HEAD -> main) winshun 更新到 0.26.2
+* 7d399e8 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 9f58013 winshun 更新到 0.26.1
+* 609dc1c progress.md 更新提交历史
 * f691e3f winshun 更新到 0.26.0（仓库迁到 w3c0929/WinShun）
 * 0e7e597 progress.md 更新提交历史
 * 0ea0d70 todocue 补充生命周期钩子（post_install/pre_uninstall/uninstaller/suggest）
