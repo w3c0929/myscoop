@@ -1,15 +1,15 @@
 {
-    "version": "0.24.0",
+    "version": "0.26.0",
     "description": "Win顺 (WinShun): instant file, folder and content search | 文件、文件夹与内容搜索",
-    "homepage": "https://github.com/LingCore/WinShun",
+    "homepage": "https://github.com/w3c0929/WinShun",
     "license": "MIT",
     "notes": [
         "The index service is not installed by Scoop: without it Win顺 indexes the folders you pick.",
         "For whole-disk search, turn it on in Settings > Search scope > Disks > Index method (Windows asks for administrator rights).",
         "索引服务不随 Scoop 安装；要索引整个磁盘，到 设置 > 搜索范围 > 磁盘 > 索引方式 里开启。"
     ],
-    "url": "https://github.com/LingCore/WinShun/releases/download/v0.24.0/WinShun-0.24.0-x64-portable.zip",
-    "hash": "sha256:04600eeb4851b072a9525198b6d42c33c7067ee1b8d55773b5818925109468f4",
+    "url": "https://github.com/w3c0929/WinShun/releases/download/v0.26.0/WinShun-0.26.0-x64-portable.zip",
+    "hash": "sha256:9bc78a2f9cb01a1e716433607aebabaad2db694390000be5fa62fa4898a65155",
     "extract_dir": "WinShun",
     "bin": "bin\\ws.exe",
     "shortcuts": [
@@ -34,10 +34,10 @@
         "}"
     ],
     "checkver": {
-        "github": "https://github.com/LingCore/WinShun"
+        "github": "https://github.com/w3c0929/WinShun"
     },
     "autoupdate": {
-        "url": "https://github.com/LingCore/WinShun/releases/download/v$version/WinShun-$version-x64-portable.zip",
+        "url": "https://github.com/w3c0929/WinShun/releases/download/v$version/WinShun-$version-x64-portable.zip",
         "hash": {
             "url": "$baseurl/SHA256SUMS.txt",
             "regex": "$sha256\\s+$basename"
