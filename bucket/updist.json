@@ -1,14 +1,14 @@
 {
-    "version": "0.6.0",
+    "version": "0.7.0",
     "description": "二哥免费软件及资源更新",
     "homepage": "https://ergeaia.github.io/",
     "license": "unknown",
-    "url": "https://github.com/ErgeAIA/updates-dist/releases/download/aivault-v0.6.0/AI-Vault_0.6.0_x64-setup.exe",
+    "url": "https://github.com/ErgeAIA/updates-dist/releases/download/aivault-v0.7.0/AI-Vault_0.7.0_x64-setup.exe",
     "checkver": {
         "github": "https://github.com/ErgeAIA/updates-dist",
         "tag_regex": "^aivault-v([\\d.]+)$"
     },
-    "hash": "sha256:cfd0aae8e9d44a846b7cc4dd3351b417d7cdb3fa088039aa68530b4cc1b74b1a",
+    "hash": "sha256:c1e98ac8bfbe060e75b0b1759505b9f3f8715c723205179d6508b8bfddec728e",
     "bin": "ai-vault.exe",
     "shortcuts": [
         [
