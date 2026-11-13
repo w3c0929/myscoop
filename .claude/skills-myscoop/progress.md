@@ -400,8 +400,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 7c4a2a8 (HEAD -> main) argus：根治升级后旧特权组件残留
-* e35776e (origin/main, origin/HEAD) progress.md 更新提交历史
+* 1ade46c (HEAD -> main) winshun 更新到 0.26.3
+* fa8759a (origin/main, origin/HEAD) progress.md 更新提交历史
+* 7c4a2a8 argus：根治升级后旧特权组件残留
+* e35776e progress.md 更新提交历史
 * 62a31f2 修 uuyc 4.47.0 hash 校验失败：hash 用实测值 + checkver 改 302 地址
 * 8a7d591 progress.md 更新提交历史
 * 9832047 同步 README 第三方版本与日期列
