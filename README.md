@@ -30,7 +30,7 @@
 | 6 | [VMware Workstation](https://github.com/201853910/VMwareWorkstation) — 官网 VMware Workstation 安装包镜像（Windows x64，手动安装） | `scoop install vmware` | 单 exe 官方 release（手动安装，仅 x64） | 26H1 | 2026-11-09 | 2026-11-09 |
 | 7 | [LiveZoom](https://github.com/w3c0929/live-screen-studio) — 直播用的屏幕平滑放大工具（Windows 版）：中键放大、平滑跟随 | `scoop install livezoom` | portable zip 官方 release（仅 x64） | 0.8.5 | 2026-11-08 | 2026-11-08 |
 | 8 | [TodoCue](https://github.com/NanmiCoder/TodoCue) — 本地优先的任务管理客户端：原生 UI + CLI + MCP，供 AI Agent 使用 | `scoop install todocue` | 多架构 NSIS 解包（x64 / arm64） | 0.10.3 | 2026-11-07 | 2026-11-13 |
-| 9 | [Win顺 (WinShun)](https://github.com/w3c0929/WinShun) — 文件、文件夹与内容即时搜索 | `scoop install winshun` | portable zip 官方 release（仅 x64） | 0.27.1 | 2026-11-07 | 2026-11-13 |
+| 9 | [Win顺 (WinShun)](https://github.com/w3c0929/WinShun) — 文件、文件夹与内容即时搜索 | `scoop install winshun` | portable zip 官方 release（仅 x64） | 0.27.2 | 2026-11-07 | 2026-11-14 |
 | 10 | [OmniGet](https://github.com/OpenSelena/omniget) — 开源下载管理器：课程（Udemy/Hotmart）、YouTube、音乐及 1800+ 站点（Tauri 2 + Rust + Svelte） | `scoop install omniget` | 单 exe 官方 release（仅 x64） | 0.16.6 | 2026-11-07 | 2026-11-14 |
 | 11 | [Foxmail](https://www.foxmail.com/) — 邮件客户端（myscoop 覆盖 extras 滞后清单） | `scoop install foxmail` | 单 exe 官方直链（7z 解包） | 7.2.25.587 | 2026-11-07 | 2026-11-07 |
 | 12 | [NOIR](https://github.com/Verlintas/NOIR) — 手机隐私审计：用 adb 扫出 Android 应用的权限、上报端点与数据流向，并给出可回滚的处置 | `scoop install noir` | portable zip 官方 release | 0.4.3 | 2026-11-05 | 2026-11-13 |
