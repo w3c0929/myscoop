@@ -1,0 +1,72 @@
+{
+    "version": "12.84",
+    "description": "A quad window file manager based on Windows File Explorer",
+    "homepage": "https://www.softwareok.com/?seite=Freeware/Q-Dir",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.softwareok.com/?seite=Freeware/Q-Dir/Eula"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://www.softwareok.com/Download/Q-Dir_Portable_x64.zip",
+            "hash": "sha256:b634a9a9a43c51f7488aa10a12e11370c7ba5c541adc6a075490768ce6c7706a",
+            "bin": [
+                [
+                    "Q-Dir_x64.exe",
+                    "Q-Dir"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "Q-Dir_x64.exe",
+                    "Q-Dir"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://www.softwareok.com/Download/Q-Dir_Portable.zip",
+            "hash": "sha256:bb14b55c87d6a5a3f4c21a2a061c1efe711810b6b4c2f6e08115201f56cca909",
+            "extract_dir": "Q-Dir",
+            "bin": "Q-Dir.exe",
+            "shortcuts": [
+                [
+                    "Q-Dir.exe",
+                    "Q-Dir"
+                ]
+            ]
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$dir\\start.qdr\")) { New-Item \"$dir\\start.qdr\" | Out-Null }",
+        "if (!(Test-Path \"$dir\\Q-Dir.ini\")) { New-Item \"$dir\\Q-Dir.ini\" | Out-Null }",
+        "if (!(Test-Path \"$dir\\Favoriten\")) { New-Item -ItemType Directory \"$dir\\Favoriten\" | Out-Null }"
+    ],
+    "persist": [
+        "Favoriten",
+        "start.qdr",
+        "Q-Dir.ini"
+    ],
+    "checkver": {
+        "url": "https://www.softwareok.com/?seite=Microsoft/Q-Dir/History",
+        "regex": "version ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.softwareok.com/Download/Q-Dir_Portable_x64.zip"
+            },
+            "32bit": {
+                "url": "https://www.softwareok.com/Download/Q-Dir_Portable.zip"
+            }
+        },
+        "hash": {
+            "url": "https://www.softwareok.com/?Download=Q-Dir",
+            "regex": "$basename.*?$sha256<"
+        }
+    },
+    "notes": [
+        "覆盖 extras 的 q-dir：12.84 的 64bit zip 是根目录裸 Q-Dir_x64.exe（无 Q-Dir 目录），因此 64bit 不设 extract_dir；32bit 仍设 extract_dir=Q-Dir。",
+        "Scoop 的 extract_dir 支持架构级：64bit 解压根目录，32bit 解压 Q-Dir 子目录。",
+        "现有安装若来自 extras，需先卸载再从 myscoop 重装（scoop update 会优先读安装时记录的桶）。"
+    ]
+}

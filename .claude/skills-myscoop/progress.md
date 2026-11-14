@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-10-28）
 
-- **收录软件总数**: 173 款
+- **收录软件总数**: 174 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 88 款
+- **第三方官方（引用原项目 Release）**: 89 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -212,6 +212,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **修 uuyc 4.47.0 hash 校验失败（2026-11-13）**：清单 version 被旧 `dl-infos + hash_unchanged_bump` 提前提到 4.47.0，但 hash 仍是 4.46.0 的 `f7bef416…`；上游随后把同版本安装包换成真实 4.47.0（重定向 `UURemote_Setup_4.47.0.5146_...`，实测 sha256 `fb2d24a4…`），同版本不再触发检查 → Scoop 校验失败。修复：hash 改为实测 `fb2d24a4…`；checkver 改为跟随下载接口 302 最终地址解析版本（`UURemote_Setup_(x.y.z)`），移除 `hash_unchanged_bump`，避免版本与内容脱节。dl-infos 接口当前反而显示 4.45.1（滞后），不再使用。
 
 - **winshun 0.26.2 → 0.26.3（2026-11-13）**：url/hash 更新为 0.26.3（`WinShun-0.26.3-x64-portable.zip`，sha256 `df612a6b…`，与上游 digest 一致）。README 版本/日期同步。
+
+- **myscoop 覆盖 q-dir（修 extras 12.84 解压 bug）（2026-11-15）**：extras 官方清单用全局 extract_dir="Q-Dir"，但 12.84 的 64bit zip 只有根目录 Q-Dir_x64.exe（32bit 才有 Q-Dir\ 目录）→ 64bit 解压报 "Could not find 'Q-Dir'! (error 16)"。在 myscoop 新增 q-dir.json：64bit 不设 extract_dir，32bit 在 architecture.32bit 内设 extract_dir="Q-Dir"（Scoop extract_dir 支持架构级）；64bit 在 pre_install 创建 start.qdr/Q-Dir.ini/Favoriten 占位保证 persist。已从 myscoop 重装验证（12.84 安装成功，旧持久配置保留）。README 第三方表置顶并全表重编号（1..89），计数 173→174、第三方 88→89（本地 85 不变）。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
