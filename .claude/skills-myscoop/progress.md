@@ -25,7 +25,7 @@ GitHub: https://github.com/w3c0929/myscoop
   - 资产判定：x86_64/amd64 正确判 64bit（修复含 x86 子串误判），i686/i386 → 32bit；平台裸二进制（.arm/.x86_64/.s390x 等无 .exe 跨平台产物）与无扩展名校验文件（SHA256SUMS）不再混入 Windows 资产
 - `--add <直链|下载页|模板>`：直链/下载页/模板新增强（含 Inno/NSIS 探测、--fill-bin URL 模式）
 - `--installer-mode`：注册型软件存量清单迁移 installer 模式
-- `--all` / 单清单更新：GitHub API digest 免下载更新；CI 每晚 1 点自动执行；**资产守卫**：latest 无可下载 Windows 资产（如 monorepo 子包噪音 tag，assets 为空）时回退 releases 列表取带资产者，全架构匹配失败则跳过不写入
+- `--all` / 单清单更新：GitHub API digest 免下载更新；CI 每 4 小时自动执行（北京时间 8:20/12:20/16:20/20:20/0:20/4:20）；**资产守卫**：latest 无可下载 Windows 资产（如 monorepo 子包噪音 tag，assets 为空）时回退 releases 列表取带资产者，全架构匹配失败则跳过不写入
   - **更新后自动同步 README**（2026-10-12，`sync_readme_after_update` 内置）：版本列（第三方表=清单 version）+ 创建列（git 首次提交日期）+ 更新列（**本次真正变更的清单取当天**——随后即提交，与提交日一致；其余取最近提交日期）；幂等、`--dry-run` 不写、异常只警告。原先需单独跑 `tools/sync_readme_versions.py`（CI 用其内联副本），现本地一条 `--all` 到位；与 CI 内联步骤逻辑等价 → **CI 行为不变**（其内联步骤变幂等空操作）。首次实跑修正了 4 处 README 落后（zhiyiime 1.4.2 / anclicker 1.4.9 / bongocat 2.3.0 / kvninfer 创建日）
 - **配对资产自动更新**（`--more` 生成的数组型 url/hash，如 prllama）：`_update_pair_block` 逐项 `$version` 替换 → `match_asset` → 回写同下标 url/hash；cudart 项（名不含版本）强制精确匹配，防跨 CUDA 版本误配。数组走独立分支，标量清单行为不变（回归测试 `tools/test_pair_update.py`）
 - **收录预检（`--add`，与更新共用 `pick_effective_release`）**：只取"非 draft/untagged + 含 Windows 资产"的**最新** release——**只按资产判定，不看 prerelease/rc**；最新版若是零资产空 release 会自动往下探到最近带 Windows 资产的（如 kvllama `v0.17.0` 空 → 取 `v0.16.0-rc3-prism.3`）；全无则打印候选表后跳过、不写文件。archived/fork 默认警告（`--allow-archived` 静音）；直链/`--from`/`--fill-bin` 只提示不阻断（回归测试 `tools/test_effective_release.py`）
@@ -35,7 +35,7 @@ GitHub: https://github.com/w3c0929/myscoop
 - **资产筛选加固**：`is_windows_asset` 排除源码包（`-source`/`-src` 独立段）、脚本（`.ps1/.sh/.bat/.cmd/.py` 等）、校验/元数据；**校验和文件的其他写法**（`*.SHA256SUMS`/`*.sha512sums`/`*.md5sums`/`*.checksums`/`*.digest`/`*.sums`，正则大小写不敏感）也排除——原后缀匹配只覆盖 `.sum`/`.sha256`，`…x64.SHA256SUMS` 会漏且带 x64 时得 +2 分，可能被当成主资产（修 `vtracer`；回归测试 `tools/test_guards.py`）；generic 兜底仅限可安装包（防源码包被兜底进缺失架构）；`description` 为 null 时回退；`--add` 检测同一 checkver 来源重复（防重复收录/上游改名）；`arch_url_hash` 支持数组型 url（配对清单取主资产）
 - **"隐身"的 macOS/Linux 资产排除（`foreign_platform_assets`，两条规则叠加）**：① 权威——release 含 `latest-mac.yml` / `latest-linux.yml`（electron-builder 平台清单）时解析其列出的文件名排除；② 启发式——与同名 `.dmg` 成对的 `.zip`（去扩展名后相同）视为 macOS。接入两个判断点：`--add` 的 Windows 候选筛选 + `_release_has_windows_asset`（资产守卫，防"只发 mac 包"的 release 被误判为有 Windows 资产）。教训：`freellmapi` 的 `-x64.zip`/`-arm64.zip` 实为 macOS 包（名字无 mac 标记）被当 Windows 资产 → `--dl` 探测"未发现 exe"、真 Windows 包 `-win.zip` 被兜底塞进 32bit。影响实测：47 个 GitHub-release 型清单全扫，仅 freellmapi 受影响、0 误伤
 - **一致性校验 `--check`**：校验 README 两表行数之和 == `bucket/` 清单数、逐条一一对应、`progress.md` 计数一致，**外加表格结构**（数据行须紧随分隔行之后、序号须 1..N 连续）；不一致非零退出（已挂 CI）。结构校验补旧盲点：只数行数时"新行插到表头之前"与"序号 | 0 |"都会被漏过（`_parse_readme_table`，回归测试 `tools/test_check_struct.py`）。`--all` 逐文件异常打印 traceback + 汇总并以非零退出码报告（不再静默）；`fetch_json` 支持 `GH_TOKEN`/`GITHUB_TOKEN` 并对 429/5xx 退避重试（回归测试 `tools/test_guards.py`）
-- **清单编码（BOM）防线**（2026-10-14）：`bucket/*.json` 必须 **UTF-8 无 BOM**——BOM 会让 Python 工具链报 `Unexpected UTF-8 BOM (decode using utf-8-sig)` → **CI 每晚报异常**（`[异常] zhiyuime.json` → `##[error]`；教训：commit `9e1be96` 给 zhiyuime.json 带了 BOM）。`myscoop-update.py` **读取端统一 `utf-8-sig`**（11 处：`read_text` / `open(..., "r")` / `json.load(open(...))`，容忍 BOM），**写入端保持 `utf-8`（不写 BOM）**。实测：带 BOM 文件跑 `--dry-run` 不再报错
+- **清单编码（BOM）防线**（2026-10-14）：`bucket/*.json` 必须 **UTF-8 无 BOM**——BOM 会让 Python 工具链报 `Unexpected UTF-8 BOM (decode using utf-8-sig)` → **CI 报异常**（`[异常] zhiyuime.json` → `##[error]`；教训：commit `9e1be96` 给 zhiyuime.json 带了 BOM）。`myscoop-update.py` **读取端统一 `utf-8-sig`**（11 处：`read_text` / `open(..., "r")` / `json.load(open(...))`，容忍 BOM），**写入端保持 `utf-8`（不写 BOM）**。实测：带 BOM 文件跑 `--dry-run` 不再报错
 - **静态 latest 直链 + 文本正则 checkver**：安装包不在 GitHub Release 且只有免版本别名时（如 dsh），`checkver` 用 `url`+`regex` 取版本（**显式 url+regex 优先走文本分支**，即使 url 是 GitHub API）；`autoupdate.url` 写静态直链，版本变化时原样下载重算 hash、**内容未变不提升版本**（防幽灵更新）；`fetch_text` 支持 GitHub token（回归测试 `tools/test_static_au.py`）
 - **NSIS 双层探测修复**：`probe_nsis_exes` 只要存在 `app-*.7z` 就二次解包并**只用内层 exe**（内层为空则留空），排除 7z/卸载/更新器/vc_redist 等助手 exe，并**优先根级 exe**（滤掉 resources 下依赖）——修 `dsh` 把 7z 助手 `dsh-7za.exe` 当主程序导致建 shim 失败（实测该安装器现得到单候选 `DeepSeek Harness.exe`）
 - **GPU 资产优先级**：`score_asset` 非 N 卡专用（**HIP/ROCm/Radeon**）**降一级（-4）**，通用 x64 包优先——优先级为 NVIDIA 通用(+8) > 指定 CUDA(+6) > 通用包(0) > 非 N 卡(-4)；降级≠排除，仅当上游只发非 N 卡包时才选中（修 `strata` 选中 `strata-windows-x64-hip.zip`；回归测试 `tools/test_guards.py`）
@@ -842,7 +842,7 @@ scoop cat myscoop/appname
 * b02ce8a 文档：记录清单 BOM 防线（bucket/*.json 必须 UTF-8 无 BOM；工具读取端 utf-8-sig 容错 11 处）
 * 4240ca4 progress.md 更新提交历史
 * c7b7c49 同步 README 第三方版本与日期列
-* db28d6c 修 zhiyuime.json 带 UTF-8 BOM 导致 CI 每晚报异常（Unexpected UTF-8 BOM）：① 去 BOM ② myscoop-update.py 读取端统一 utf-8-sig 容错（11 处读；写入仍 utf-8、不写 BOM）——实测带 BOM 文件不再报错
+* db28d6c 修 zhiyuime.json 带 UTF-8 BOM 导致 CI 报异常（Unexpected UTF-8 BOM）：① 去 BOM ② myscoop-update.py 读取端统一 utf-8-sig 容错（11 处读；写入仍 utf-8、不写 BOM）——实测带 BOM 文件不再报错
 * 8ee61ed progress.md 更新提交历史
 * 0afa7ca mypsh推送
 * dc8cb26 zhiyuime 1.7.23 test build (local only)

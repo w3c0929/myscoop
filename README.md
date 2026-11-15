@@ -454,7 +454,7 @@ winget install --id Microsoft.WindowsTerminal -e --source winget --accept-source
 ```
 myscoop/
 ├── .github/workflows/
-│   └── auto-update.yml             ← 每晚 1 点（北京时间）自动更新第三方软件
+│   └── auto-update.yml             ← 每 4 小时（北京时间 8:20/12:20/16:20/20:20/0:20/4:20）自动更新第三方软件
 ├── bucket/        ← 所有 manifest JSON（共 126 个）
 │   ├── cmm-plus.json               (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用)
@@ -1092,7 +1092,7 @@ python3 myscoop-update.py --from ./pixpin.template.json --name pixpin
 
 > 这三类模式生成的清单**默认输出到仓库内 `staging/`**（草稿区，已被 .gitignore 忽略），确认无误后再用
 > `--out-dir` 指定正式目录（如 `--out-dir bucket/`）或手动移入 `bucket/`。
-> 直链/下载页清单使用网页 checkver（url + regex），`--all` 每晚也会自动检查更新
+> 直链/下载页清单使用网页 checkver（url + regex），`--all` 每 4 小时也会自动检查更新
 > （有新版本时才会下载文件实测 hash）。
 
 传统方式（需下载文件计算 hash）：
