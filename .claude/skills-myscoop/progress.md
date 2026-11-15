@@ -406,8 +406,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* df6447f (HEAD -> main) q-dir：修复配置不生效（Public 副本符号链接至 persist ini）
-* 702edc4 (origin/main, origin/HEAD) progress.md 更新提交历史
+* c625f41 (HEAD -> main) 卸载 q-dir 并从仓库清理
+* a1e3b87 (origin/main, origin/HEAD) progress.md 更新提交历史
+* df6447f q-dir：修复配置不生效（Public 副本符号链接至 persist ini）
+* 702edc4 progress.md 更新提交历史
 * 4d1c1fc q-dir：记录 Public 自部署与 Start=0 说明（配置失效排查）
 * aac0e6f progress.md 更新提交历史
 * 2135316 myscoop 覆盖 q-dir：修 extras 12.84 的 64bit 解压 bug
