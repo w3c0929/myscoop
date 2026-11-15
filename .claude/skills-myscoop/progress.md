@@ -406,8 +406,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* c625f41 (HEAD -> main) 卸载 q-dir 并从仓库清理
-* a1e3b87 (origin/main, origin/HEAD) progress.md 更新提交历史
+* c63e62f (HEAD -> main) 巡检频率由每天 1 次改为每 4 小时
+* 6f0992d (origin/main, origin/HEAD) progress.md 更新提交历史
+* c625f41 卸载 q-dir 并从仓库清理
+* a1e3b87 progress.md 更新提交历史
 * df6447f q-dir：修复配置不生效（Public 副本符号链接至 persist ini）
 * 702edc4 progress.md 更新提交历史
 * 4d1c1fc q-dir：记录 Public 自部署与 Start=0 说明（配置失效排查）
@@ -842,7 +844,7 @@ scoop cat myscoop/appname
 * b02ce8a 文档：记录清单 BOM 防线（bucket/*.json 必须 UTF-8 无 BOM；工具读取端 utf-8-sig 容错 11 处）
 * 4240ca4 progress.md 更新提交历史
 * c7b7c49 同步 README 第三方版本与日期列
-* db28d6c 修 zhiyuime.json 带 UTF-8 BOM 导致 CI 报异常（Unexpected UTF-8 BOM）：① 去 BOM ② myscoop-update.py 读取端统一 utf-8-sig 容错（11 处读；写入仍 utf-8、不写 BOM）——实测带 BOM 文件不再报错
+* db28d6c 修 zhiyuime.json 带 UTF-8 BOM 导致 CI 每晚报异常（Unexpected UTF-8 BOM）：① 去 BOM ② myscoop-update.py 读取端统一 utf-8-sig 容错（11 处读；写入仍 utf-8、不写 BOM）——实测带 BOM 文件不再报错
 * 8ee61ed progress.md 更新提交历史
 * 0afa7ca mypsh推送
 * dc8cb26 zhiyuime 1.7.23 test build (local only)
