@@ -1,5 +1,5 @@
 {
-    "version": "1.9.0",
+    "version": "1.9.1",
     "description": "图吧工具箱 CE",
     "homepage": "https://tubawinui3.cn/",
     "license": "GPL-3.0",
@@ -8,16 +8,16 @@
     },
     "architecture": {
         "32bit": {
-            "url": "https://github.com/luolangaga/tubatools/releases/download/v1.9.0/Tools.zip",
-            "hash": "sha256:8dca4ea86c3b8c973b89b963d90ae88d1f37e9b41c14da9744d46b70ae640714"
+            "url": "https://github.com/luolangaga/tubatools/releases/download/v1.9.1/Tools.zip",
+            "hash": "sha256:bf1665b176094020a660b48c271ff30003b6322d900c5649c6b1b9cc7d18b185"
         },
         "64bit": {
-            "url": "https://github.com/luolangaga/tubatools/releases/download/v1.9.0/TubaWinUi3_Portable_1.9.0_x64.zip",
-            "hash": "sha256:a66806cbba164955b04de0376855493b4a95aceb325e031a4b0897df0289c64d"
+            "url": "https://github.com/luolangaga/tubatools/releases/download/v1.9.1/TubaWinUi3_Portable_1.9.1_x64.zip",
+            "hash": "sha256:8bccec71536decc7725a40580c3c813750e2a3ac27a5feffdda31f5ca0b558b7"
         },
         "arm64": {
-            "url": "https://github.com/luolangaga/tubatools/releases/download/v1.9.0/TubaWinUi3_Portable_1.9.0_arm64.zip",
-            "hash": "sha256:4e8f1aa365c5c45194095da4da1d02d06b1f05aabed535150146d7aaf474fd8f"
+            "url": "https://github.com/luolangaga/tubatools/releases/download/v1.9.1/TubaWinUi3_Portable_1.9.1_arm64.zip",
+            "hash": "sha256:3242ca8c0d273b601c827019f0e8140e98486420045a089f7cecdd2731b5d1c1"
         }
     },
     "autoupdate": {
