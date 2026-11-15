@@ -1,5 +1,5 @@
 {
-    "version": "1.5.7",
+    "version": "1.5.8",
     "description": "Snow Shot is free, open-source screenshot software and a screen recording tool for Windows and macOS, with annotation, scrolling screenshots, offline OCR and image pinning. 免费开源截图软件，支持截图标注、滚动长截图、离线 OCR、贴图与录屏。",
     "homepage": "https://snowshot.top",
     "license": "NOASSERTION",
@@ -9,12 +9,12 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/mg-chao/snow-shot/releases/download/v1.5.7_snow-shot/snow-shot-1.5.7-windows-x64-portable.zip",
-            "hash": "sha256:42a12fdb8fdddfa33de02c397224f332883650ed9acd0624465e8818a1c385ed"
+            "url": "https://github.com/mg-chao/snow-shot/releases/download/v1.5.8_snow-shot/snow-shot-1.5.8-windows-x64-portable.zip",
+            "hash": "sha256:1f8f50a1ca9aceb76e1a5312cb0275c7f755ef8cb296b45c5ff1b651859ccb93"
         },
         "arm64": {
-            "url": "https://github.com/mg-chao/snow-shot/releases/download/v1.5.7_snow-shot/snow-shot-1.5.7-windows-arm64-portable.zip",
-            "hash": "sha256:a1f7d3b16faf476e0ccf621f81c6f394bd3955772684a6d8b8e33de11395983e"
+            "url": "https://github.com/mg-chao/snow-shot/releases/download/v1.5.8_snow-shot/snow-shot-1.5.8-windows-arm64-portable.zip",
+            "hash": "sha256:22c936bafc2c9893e95f66d6afc25fb5e0544068cf0470f83ccf4021700391ce"
         }
     },
     "autoupdate": {

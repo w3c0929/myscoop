@@ -1,5 +1,5 @@
 {
-    "version": "0.2.4",
+    "version": "0.2.5",
     "description": "A terminal on GPUI and Ely components",
     "homepage": "https://github.com/ELY-Open-Source/ELYTerminal",
     "license": "MIT",
@@ -8,12 +8,12 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/ELY-Open-Source/ELYTerminal/releases/download/v0.2.4/ELYTerminal-windows-x86_64.zip",
-            "hash": "sha256:e4d1e9381df6559ceedc305f6791f3bd27e1d5eb29c8f1f5ff05336c4ce4d838"
+            "url": "https://github.com/ELY-Open-Source/ELYTerminal/releases/download/v0.2.5/ELYTerminal-windows-x86_64.zip",
+            "hash": "sha256:05a05dd259d473bb422086e450f3e6059a5cfa193cccc92c9efcf2565f4e4d91"
         },
         "arm64": {
-            "url": "https://github.com/ELY-Open-Source/ELYTerminal/releases/download/v0.2.4/ELYTerminal-0.2.4-windows-aarch64.zip",
-            "hash": "sha256:18eaf76c8beb355632f7e855fa3b9d95669af2f1fcc0a81226a2084f1657f129"
+            "url": "https://github.com/ELY-Open-Source/ELYTerminal/releases/download/v0.2.5/ELYTerminal-0.2.5-windows-aarch64.zip",
+            "hash": "sha256:4d5683594948717f928abd2fdf0f612d43a8f51087737346c45c55c27ded9654"
         }
     },
     "autoupdate": {
