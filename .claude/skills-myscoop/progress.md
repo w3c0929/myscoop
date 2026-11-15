@@ -215,7 +215,7 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 
 - **myscoop 覆盖 q-dir（修 extras 12.84 解压 bug）（2026-11-15）**：extras 官方清单用全局 extract_dir="Q-Dir"，但 12.84 的 64bit zip 只有根目录 Q-Dir_x64.exe（32bit 才有 Q-Dir\ 目录）→ 64bit 解压报 "Could not find 'Q-Dir'! (error 16)"。在 myscoop 新增 q-dir.json：64bit 不设 extract_dir，32bit 在 architecture.32bit 内设 extract_dir="Q-Dir"（Scoop extract_dir 支持架构级）；64bit 在 pre_install 创建 start.qdr/Q-Dir.ini/Favoriten 占位保证 persist。已从 myscoop 重装验证（12.84 安装成功，旧持久配置保留）。README 第三方表置顶并全表重编号（1..89），计数 173→174、第三方 88→89（本地 85 不变）。
 
-- **q-dir 配置“失效”与 Public 文件排查（2026-11-15）**：现象：每次启动在 C:/Users/Public 生成 Q-Dir_x64.exe/start.qdr，设置像没保存。结论：① start.qdr 是 [Options] Start=7 的启动状态文件，Q-Dir 写到 Public 而不是 persist；改为 Start=0（上次状态）后不再写 Public，Q-Dir.ini 硬链接 persist 完好（实测 mtime 更新、LinkType=HardLink），设置正常保存。② Public 的 Q-Dir_x64.exe 是 Q-Dir 本地自部署的标准版副本（防火墙阻断 / %PUBLIC% 重定向均无效，和 Scoop/网络无关），可删、可能再生成；不要从该副本启动。已清理 Public 残留；清单 notes 记录。
+- **q-dir 配置“失效”根因与修复（2026-11-15）**：现象：每次启动在 C:/Users/Public 生成 Q-Dir_x64.exe/start.qdr，设置像没保存。实测定位：Scoop 的 current\Q-Dir_x64.exe（约 2.16MB，NotSigned）是便携版启动器，启动后把真正的签名版（约 1.95MB，Nenad Hrg/SoftwareOK 签名）释放到 C:/Users/Public/Q-Dir_x64.exe 并以子进程运行，约 60 秒后启动器自身退出（T+15s 可见父子两进程，T+60s 只剩 Public）。用户最终操作的是 Public 副本，而 Public 目录没有 Q-Dir.ini，因此设置改动写不回 persist → 表现为“配置不生效”。修复：清单新增 post_install，在 C:/Users/Public/Q-Dir.ini 建符号链接指向 $persist_dir\Q-Dir.ini（C: 与 D: 不同卷，硬链接不能跨卷，只能用符号链接），Public 副本即读写同一份配置；pre_uninstall 清理该链接与 Public 副本。已实测关闭时 persist Q-Dir.ini 的 mtime 更新且内容（UTF-16LE、Start=0 等）完好。另：start.qdr 在 [Options] Start=7 时会写到 Public，故建议 Start=0。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
