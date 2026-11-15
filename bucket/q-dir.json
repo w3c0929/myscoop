@@ -67,6 +67,7 @@
     "notes": [
         "覆盖 extras 的 q-dir：12.84 的 64bit zip 是根目录裸 Q-Dir_x64.exe（无 Q-Dir 目录），因此 64bit 不设 extract_dir；32bit 仍设 extract_dir=Q-Dir。",
         "Scoop 的 extract_dir 支持架构级：64bit 解压根目录，32bit 解压 Q-Dir 子目录。",
-        "现有安装若来自 extras，需先卸载再从 myscoop 重装（scoop update 会优先读安装时记录的桶）。"
+        "现有安装若来自 extras，需先卸载再从 myscoop 重装（scoop update 会优先读安装时记录的桶）。",
+        "Q-Dir 自身行为：运行时会把自己的标准版副本写到 C:/Users/Public/Q-Dir_x64.exe（实测与本机 Scoop/网络无关，防火墙阻断或改 PUBLIC 环境变量都无效；可删，可能再次生成；不要从该副本启动）。启动状态文件 start.qdr 在 Q-Dir.ini 的 [Options] Start=7 时会写到 C:/Users/Public，导致看起来配置未生效；建议设为 Start=0（使用 Q-Dir.ini/上次状态，已持久化到 persist）。"
     ]
 }
