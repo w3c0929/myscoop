@@ -23,7 +23,7 @@
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
 | 1 | [Argus](https://github.com/Ray-lea/Argus) — 现代 Windows 任务管理器（Rust + GPUI） | `scoop install argus` | 单 exe 官方 release（仅 x64） | 0.5.0 | 2026-11-12 | 2026-11-13 |
-| 2 | [Snow Shot](https://github.com/mg-chao/snow-shot) — 截图、标注、钉图、离线 OCR 与录屏工具 | `scoop install snowshot` | 多架构便携 zip 官方 release（x64 / arm64） | 1.5.8 | 2026-11-11 | 2026-11-16 |
+| 2 | [Snow Shot](https://github.com/mg-chao/snow-shot) — 截图、标注、钉图、离线 OCR 与录屏工具 | `scoop install snowshot` | 多架构便携 zip 官方 release（x64 / arm64） | 1.5.9 | 2026-11-11 | 2026-11-17 |
 | 3 | [AltSnap](https://github.com/w3c0929/AltSnap) — 按住 Alt 拖动窗口（AltDrag 的维护延续版） | `scoop install altsnap` | 便携 zip 官方 release（仅 x64） | 1.68 | 2026-11-10 | 2026-11-10 |
 | 4 | [ELYTerminal](https://github.com/ELY-Open-Source/ELYTerminal) — 基于 GPUI 与 Ely 组件的终端 | `scoop install elyterminal` | 多架构便携 zip 官方 release（x64 / arm64） | 0.2.5 | 2026-11-09 | 2026-11-16 |
 | 5 | [WhoShitsonMyC](https://github.com/Kami958/WhoShitsonMyC) — 磁盘空间变化对比轻量小工具 | `scoop install whoshitsonmyc` | 单 exe 官方 release | 1.2.0 | 2026-11-09 | 2026-11-16 |
@@ -37,7 +37,7 @@
 | 13 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 14 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
 | 15 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.6 | 2026-11-04 | 2026-11-05 |
-| 16 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4332 | 2026-11-03 | 2026-11-17 |
+| 16 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4338 | 2026-11-03 | 2026-11-17 |
 | 17 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.1 | 2026-10-31 | 2026-11-03 |
 | 18 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 19 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.13.5 | 2026-10-30 | 2026-11-16 |
