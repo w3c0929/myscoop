@@ -26,18 +26,18 @@
 | 2 | [Snow Shot](https://github.com/mg-chao/snow-shot) — 截图、标注、钉图、离线 OCR 与录屏工具 | `scoop install snowshot` | 多架构便携 zip 官方 release（x64 / arm64） | 1.5.8 | 2026-11-11 | 2026-11-16 |
 | 3 | [AltSnap](https://github.com/w3c0929/AltSnap) — 按住 Alt 拖动窗口（AltDrag 的维护延续版） | `scoop install altsnap` | 便携 zip 官方 release（仅 x64） | 1.68 | 2026-11-10 | 2026-11-10 |
 | 4 | [ELYTerminal](https://github.com/ELY-Open-Source/ELYTerminal) — 基于 GPUI 与 Ely 组件的终端 | `scoop install elyterminal` | 多架构便携 zip 官方 release（x64 / arm64） | 0.2.5 | 2026-11-09 | 2026-11-16 |
-| 5 | [WhoShitsonMyC](https://github.com/Kami958/WhoShitsonMyC) — 磁盘空间变化对比轻量小工具 | `scoop install whoshitsonmyc` | 单 exe 官方 release | 1.1.8 | 2026-11-09 | 2026-11-09 |
+| 5 | [WhoShitsonMyC](https://github.com/Kami958/WhoShitsonMyC) — 磁盘空间变化对比轻量小工具 | `scoop install whoshitsonmyc` | 单 exe 官方 release | 1.2.0 | 2026-11-09 | 2026-11-16 |
 | 6 | [VMware Workstation](https://github.com/201853910/VMwareWorkstation) — 官网 VMware Workstation 安装包镜像（Windows x64，手动安装） | `scoop install vmware` | 单 exe 官方 release（手动安装，仅 x64） | 26H1 | 2026-11-09 | 2026-11-09 |
-| 7 | [LiveZoom](https://github.com/w3c0929/live-screen-studio) — 直播用的屏幕平滑放大工具（Windows 版）：中键放大、平滑跟随 | `scoop install livezoom` | portable zip 官方 release（仅 x64） | 0.8.8 | 2026-11-08 | 2026-11-16 |
+| 7 | [LiveZoom](https://github.com/w3c0929/live-screen-studio) — 直播用的屏幕平滑放大工具（Windows 版）：中键放大、平滑跟随 | `scoop install livezoom` | portable zip 官方 release（仅 x64） | 0.9.2 | 2026-11-08 | 2026-11-16 |
 | 8 | [TodoCue](https://github.com/NanmiCoder/TodoCue) — 本地优先的任务管理客户端：原生 UI + CLI + MCP，供 AI Agent 使用 | `scoop install todocue` | 多架构 NSIS 解包（x64 / arm64） | 0.10.3 | 2026-11-07 | 2026-11-13 |
 | 9 | [Win顺 (WinShun)](https://github.com/w3c0929/WinShun) — 文件、文件夹与内容即时搜索 | `scoop install winshun` | portable zip 官方 release（仅 x64） | 0.31.2 | 2026-11-07 | 2026-11-15 |
 | 10 | [OmniGet](https://github.com/OpenSelena/omniget) — 开源下载管理器：课程（Udemy/Hotmart）、YouTube、音乐及 1800+ 站点（Tauri 2 + Rust + Svelte） | `scoop install omniget` | 单 exe 官方 release（仅 x64） | 0.16.6 | 2026-11-07 | 2026-11-14 |
 | 11 | [Foxmail](https://www.foxmail.com/) — 邮件客户端（myscoop 覆盖 extras 滞后清单） | `scoop install foxmail` | 单 exe 官方直链（7z 解包） | 7.2.25.587 | 2026-11-07 | 2026-11-07 |
-| 12 | [NOIR](https://github.com/Verlintas/NOIR) — 手机隐私审计：用 adb 扫出 Android 应用的权限、上报端点与数据流向，并给出可回滚的处置 | `scoop install noir` | portable zip 官方 release | 0.4.3 | 2026-11-05 | 2026-11-13 |
+| 12 | [NOIR](https://github.com/Verlintas/NOIR) — 手机隐私审计：用 adb 扫出 Android 应用的权限、上报端点与数据流向，并给出可回滚的处置 | `scoop install noir` | portable zip 官方 release | 0.4.4 | 2026-11-05 | 2026-11-16 |
 | 13 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 14 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
 | 15 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.6 | 2026-11-04 | 2026-11-05 |
-| 16 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4283 | 2026-11-03 | 2026-11-16 |
+| 16 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4291 | 2026-11-03 | 2026-11-16 |
 | 17 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.1 | 2026-10-31 | 2026-11-03 |
 | 18 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 19 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.13.4 | 2026-10-30 | 2026-11-15 |
@@ -59,7 +59,7 @@
 | 35 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.3 | 2026-10-10 | 2026-11-09 |
 | 36 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.2.1 | 2026-10-12 | 2026-11-07 |
 | 37 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.30 | 2026-10-11 | 2026-11-15 |
-| 38 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.32 | 2026-10-10 | 2026-11-15 |
+| 38 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.33 | 2026-10-10 | 2026-11-16 |
 | 39 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.10.5 | 2026-10-10 | 2026-11-12 |
 | 40 | [KeyCrash](https://github.com/Yuelioi/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.3.1 | 2026-10-10 | 2026-11-01 |
 | 41 | [SuMail](https://github.com/w3c0929/sumail-releases) — SuMail 桌面版（Windows 桌面版安装包与发布资产；源码仓库为私有） | `scoop install sumail` | zip 官方 release | 0.0.1 | 2026-10-10 | 2026-10-10 |
