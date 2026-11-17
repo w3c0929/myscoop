@@ -410,9 +410,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* c60cf29 (HEAD -> main) 同步 README 第三方版本与日期列
+* 2a9fc93 (HEAD) 收录 windinput 清风输入法；anclicker 改用官方 CDN 源
+* c13055f (origin/main, origin/HEAD) progress.md 更新提交历史
+* c60cf29 同步 README 第三方版本与日期列
 * e75cf21 自动更新第三方软件
-* c888d76 (origin/main) progress.md 更新提交历史
+* c888d76 progress.md 更新提交历史
 * a0e309a 同步 README 第三方版本与日期列
 * 1d69987 自动更新第三方软件
 * 4d0d185 winshun: update to 0.33.1
