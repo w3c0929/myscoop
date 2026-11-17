@@ -52,16 +52,22 @@ jobs:
         id: find
         shell: pwsh
         run: |
-          Write-Host '=== 候选目录 ==='
-          foreach ($r in @("$env:LOCALAPPDATA\Citro Labs", "$env:LOCALAPPDATA\ego lite", "$env:ProgramFiles\Citro Labs")) {
-            if (Test-Path $r) {
-              Write-Host "--- $r ---"
-              Get-ChildItem $r -Depth 2 -ErrorAction SilentlyContinue | Select-Object FullName | ForEach-Object { Write-Host "   $($_.FullName)" }
-            }
+          Write-Host '=== 注册表卸载项 ==='
+          foreach ($k in @('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*','HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*','HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*')) {
+            Get-ItemProperty $k -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -match 'ego' } |
+              ForEach-Object { Write-Host ("   {0} | {1} | {2}" -f $_.DisplayName, $_.DisplayVersion, $_.InstallLocation) }
           }
-          $exe = Get-ChildItem "$env:LOCALAPPDATA" -Recurse -Filter 'ego.exe' -Depth 5 -ErrorAction SilentlyContinue | Select-Object -First 1
+          Write-Host '=== LOCALAPPDATA 顶层（近 10 分钟新建）==='
+          Get-ChildItem $env:LOCALAPPDATA -Directory -ErrorAction SilentlyContinue |
+            Where-Object { $_.LastWriteTime -gt (Get-Date).AddMinutes(-10) } | ForEach-Object { Write-Host "   $($_.FullName)" }
+          Write-Host '=== Citro Labs 是否存在 ==='
+          Write-Host ("   LOCALAPPDATA: " + (Test-Path "$env:LOCALAPPDATA\Citro Labs"))
+          Write-Host ("   ProgramFiles: " + (Test-Path "$env:ProgramFiles\Citro Labs"))
+          Write-Host '=== 全盘搜索 ego.exe（C 盘，深度 6）==='
+          $hits = Get-ChildItem 'C:\' -Recurse -Filter 'ego.exe' -Depth 6 -ErrorAction SilentlyContinue | Select-Object -First 5
+          if ($hits) { $hits | ForEach-Object { Write-Host "   $($_.FullName)" } } else { Write-Host '   (未找到)' }
+          $exe = $hits | Select-Object -First 1
           if (-not $exe) { throw '未找到 ego.exe' }
-          Write-Host "找到主程序: $($exe.FullName)"
           "exe=$($exe.FullName)" >> $env:GITHUB_OUTPUT
           "dir=$($exe.DirectoryName)" >> $env:GITHUB_OUTPUT
 
