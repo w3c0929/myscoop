@@ -20,9 +20,23 @@
     "post_install": [
         "Start-Process \"$dir\\ego.exe\""
     ],
+    "checkver": {
+        "script": [
+            "$f = Join-Path ([IO.Path]::GetTempPath()) 'egolite_setup.exe'",
+            "Invoke-WebRequest -Uri 'https://cdn.ego.app/setup/windows/x64/egoliteSetup.exe' -OutFile $f -UseBasicParsing",
+            "$v = ([Diagnostics.FileVersionInfo]::GetVersionInfo($f)).FileVersion",
+            "Remove-Item $f -Force -ErrorAction SilentlyContinue",
+            "$v"
+        ]
+    },
+    "autoupdate": {
+        "url": "https://github.com/w3c0929/myscoop/releases/download/vEgoLite/egolite-$version.7z"
+    },
     "notes": [
-        "自托管便携版：由官方 Web 安装器安装后的程序目录打包（上游只提供在线安装器，GitHub release 仅有 226KB 更新包，无完整安装包）。",
-        "用户数据默认保存在 %LOCALAPPDATA%\\ego lite（与官方安装版一致；卸载 Scoop 不会删除）。",
-        "升级：重新安装官方新版 → 打包程序目录（Application\\*）→ 上传到同一 release（tag vEgoLite，文件名含版本号）→ 更新本清单 version/url/hash。"
+        "自托管便携版：由官方 Web 安装器安装后的程序目录打包（上游只提供 19MB 在线安装器，无完整安装包；GitHub release 的 ego-browser-*.zip 是 Agent 连接组件，不是浏览器本体）。",
+        "checkver 从官方安装器 PE 的 FileVersion 读版本（当前官方 0.6.3.17）。官方发新版后，CI 会尝试下载本仓库 egelite-<新版本>.7z，因尚未打包而报错——这条报错就是升级提醒。",
+        "升级流程：官方安装器装到临时目录 → 打包程序目录（不要包含 %LOCALAPPDATA%\\Citro Labs 用户数据）→ 上传到 release（tag vEgoLite，文件名 egelite-<版本>.7z）→ 更新本清单 version/url/hash。",
+        "用户数据在 %LOCALAPPDATA%\\Citro Labs\\ego\\User Data（1GB+，与程序目录分离；卸载 Scoop 不会删除）。",
+        "程序内「检查更新」不可用（错误码 0x80004005）：自托管包不含官方 Omaha 更新器（Citro Labs\\EgoUpdater），这是预期行为，升级请用 scoop update egelite。"
     ]
 }
