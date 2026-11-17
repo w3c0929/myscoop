@@ -1,0 +1,125 @@
+name: 打包 egolite
+
+# 上游只提供 19MB Web 安装器（Chromium Omaha），没有完整包直链。
+# 本 workflow 在 windows runner 上静默安装官方版，打包程序目录并上传到
+# release（tag vEgoLite），供 myscoop 自托管清单使用。
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '只探测目录结构，不打包上传'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pack-egolite
+  cancel-in-progress: false
+
+jobs:
+  pack:
+    runs-on: windows-latest
+    steps:
+      - name: 下载官方安装器
+        shell: pwsh
+        run: |
+          $dst = "$env:RUNNER_TEMP\ego_setup.exe"
+          Invoke-WebRequest -Uri 'https://cdn.ego.app/setup/windows/x64/egoliteSetup.exe' -OutFile $dst
+          Write-Host ("大小: {0:N0} 字节" -f (Get-Item $dst).Length)
+
+      - name: 读取官方版本
+        id: ver
+        shell: pwsh
+        run: |
+          $s = [Text.Encoding]::Unicode.GetString([IO.File]::ReadAllBytes("$env:RUNNER_TEMP\ego_setup.exe"))
+          if ($s -match 'FileVersion[^\d]{0,40}(\d+\.\d+\.\d+\.\d+)') {
+            $v = $matches[1]
+            Write-Host "官方版本: $v"
+            "version=$v" >> $env:GITHUB_OUTPUT
+          } else { throw '无法从安装器读取版本号' }
+
+      - name: 静默安装
+        shell: pwsh
+        run: |
+          $p = Start-Process "$env:RUNNER_TEMP\ego_setup.exe" -ArgumentList '/silent' -PassThru
+          if (-not $p.WaitForExit(900000)) { throw '安装超时（15 分钟）' }
+          Write-Host "安装器退出码: $($p.ExitCode)"
+          Start-Sleep -Seconds 5
+
+      - name: 探测安装目录
+        id: find
+        shell: pwsh
+        run: |
+          Write-Host '=== 候选目录 ==='
+          foreach ($r in @("$env:LOCALAPPDATA\Citro Labs", "$env:LOCALAPPDATA\ego lite", "$env:ProgramFiles\Citro Labs")) {
+            if (Test-Path $r) {
+              Write-Host "--- $r ---"
+              Get-ChildItem $r -Depth 2 -ErrorAction SilentlyContinue | Select-Object FullName | ForEach-Object { Write-Host "   $($_.FullName)" }
+            }
+          }
+          $exe = Get-ChildItem "$env:LOCALAPPDATA" -Recurse -Filter 'ego.exe' -Depth 5 -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $exe) { throw '未找到 ego.exe' }
+          Write-Host "找到主程序: $($exe.FullName)"
+          "exe=$($exe.FullName)" >> $env:GITHUB_OUTPUT
+          "dir=$($exe.DirectoryName)" >> $env:GITHUB_OUTPUT
+
+      - name: 打包程序目录
+        if: ${{ !inputs.dry_run }}
+        id: pack
+        shell: pwsh
+        run: |
+          $exe = '${{ steps.find.outputs.exe }}'
+          $ver = '${{ steps.ver.outputs.version }}'
+          # 主程序所在目录的父级 = 应用根目录（含版本子目录、Dictionaries 等）
+          $appRoot = Split-Path (Split-Path $exe -Parent) -Parent
+          Write-Host "应用根目录: $appRoot"
+          Get-ChildItem $appRoot | Select-Object Name | ForEach-Object { Write-Host "   $($_.Name)" }
+
+          # 排除用户数据与日志（确保不含个人信息）
+          $out = "$env:RUNNER_TEMP\egolite-$ver.7z"
+          $7z = "$env:ProgramFiles\7-Zip\7z.exe"
+          if (-not (Test-Path $7z)) { $7z = "${env:ProgramFiles(x86)}\7-Zip\7z.exe" }
+          & $7z a $out "$appRoot\*" '-xr!User Data' '-xr!*.log' '-xr!Dictionaries' -mx=9 | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "7z 打包失败: $LASTEXITCODE" }
+
+          Write-Host '=== 包内自查（应无输出）==='
+          & $7z l $out | Select-String -Pattern 'User Data|Cookies|Login Data|History|Bookmark|Preferences|Local State' | ForEach-Object { Write-Host $_ }
+          Write-Host '=== 自查结束 ==='
+
+          $hash = (Get-FileHash $out -Algorithm SHA256).Hash.ToLower()
+          $size = (Get-Item $out).Length
+          Write-Host ("包: {0}  {1:N0} 字节  sha256:{2}" -f $out, $size, $hash)
+          "path=$out" >> $env:GITHUB_OUTPUT
+          "hash=$hash" >> $env:GITHUB_OUTPUT
+
+      - name: 上传到 release
+        if: ${{ !inputs.dry_run }}
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ver = '${{ steps.ver.outputs.version }}'
+          $pkg = '${{ steps.pack.outputs.path }}'
+          $tag = 'vEgoLite'
+          # tag 不存在则创建
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --title "egolite 自托管包" --notes "由 pack-egolite workflow 从官方 Web 安装器打包（仅程序文件，不含用户数据）"
+          }
+          gh release upload $tag $pkg --clobber
+          if ($LASTEXITCODE -ne 0) { throw '上传失败' }
+          Write-Host '上传完成'
+
+      - name: 输出清单字段
+        if: ${{ !inputs.dry_run }}
+        shell: pwsh
+        run: |
+          $ver = '${{ steps.ver.outputs.version }}'
+          $hash = '${{ steps.pack.outputs.hash }}'
+          Write-Host '===== 请把以下内容写入 bucket/egolite.json ====='
+          Write-Host "version: $ver"
+          Write-Host "url:     https://github.com/${{ github.repository }}/releases/download/vEgoLite/egolite-$ver.7z"
+          Write-Host "hash:    sha256:$hash"
+          Write-Host '==============================================='
