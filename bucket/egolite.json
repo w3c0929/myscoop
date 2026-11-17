@@ -24,9 +24,9 @@
         "script": [
             "$f = Join-Path ([IO.Path]::GetTempPath()) 'egolite_setup.exe'",
             "Invoke-WebRequest -Uri 'https://cdn.ego.app/setup/windows/x64/egoliteSetup.exe' -OutFile $f -UseBasicParsing",
-            "$v = ([Diagnostics.FileVersionInfo]::GetVersionInfo($f)).FileVersion",
+            "$s = [Text.Encoding]::Unicode.GetString([IO.File]::ReadAllBytes($f))",
             "Remove-Item $f -Force -ErrorAction SilentlyContinue",
-            "$v"
+            "if ($s -match 'FileVersion[^\\d]{0,40}(\\d+\\.\\d+\\.\\d+\\.\\d+)') { $matches[1] }"
         ]
     },
     "autoupdate": {
