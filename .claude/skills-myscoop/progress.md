@@ -415,8 +415,14 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 8904d9f (HEAD) progress：记录 egolite 官方版本检测方案与调查结论
-* 968a86f (origin/main, origin/HEAD) progress.md 更新提交历史
+* 5003f1d (HEAD -> main) egolite 升级到 0.6.3.17（CI 自动打包）
+* 3f7e2a5 (origin/main, origin/HEAD) pack-egolite：gh 命令显式指定仓库（无 checkout 时无法推断）
+* c1fc82b pack-egolite：修正打包根目录为 Application 并加隐私自查
+* 9a4a049 pack-egolite：改进安装目录探测（注册表+全盘搜索）
+* 41ee35f 新增 pack-egolite workflow：从官方 Web 安装器打包自托管包
+* ce8525f progress.md 更新提交历史
+* 8904d9f progress：记录 egolite 官方版本检测方案与调查结论
+* 968a86f progress.md 更新提交历史
 * a282a86 progress.md 更新提交历史
 * 922860a egolite：checkver 改用 PE 字节搜索提取版本（Linux runner 不支持 FileVersionInfo）
 * b346243 progress.md 更新提交历史
