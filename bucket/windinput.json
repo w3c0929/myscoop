@@ -1,0 +1,40 @@
+{
+    "version": "0.132.0",
+    "description": "清风输入法 | 轻量、快速、可定制的开源中文输入法，专为五笔和码表输入方案设计，支持全拼/双拼（Windows / macOS / Linux）",
+    "homepage": "https://windinput.com",
+    "license": "GPL-3.0",
+    "checkver": {
+        "github": "https://github.com/huanfeng/WindInput"
+    },
+    "url": "https://github.com/huanfeng/WindInput/releases/download/v0.132.0/WindInput-Portable-0.132.0.zip",
+    "hash": "sha256:78ceaec4c58f4fcd37ab115d5e4374f754aa7adc0675555edfe6aac9a1b8984c",
+    "extract_dir": "WindInput-0.132.0",
+    "bin": "wind_setting.exe",
+    "shortcuts": [
+        [
+            "wind_setting.exe",
+            "WindInput"
+        ]
+    ],
+    "persist": "userdata",
+    "post_install": [
+        "$p = Start-Process -FilePath \"$dir\\wind_portable.exe\" -ArgumentList '-start' -PassThru -WindowStyle Hidden; if ($p) { $null = $p.WaitForExit(120000) }"
+    ],
+    "pre_uninstall": [
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -like \"*\\apps\\windinput\\*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
+        "Start-Sleep -Milliseconds 500",
+        "$wp = Join-Path (Split-Path $dir) 'current\\wind_portable.exe'; if (-not (Test-Path $wp)) { $wp = \"$dir\\wind_portable.exe\" }; $p = Start-Process -FilePath $wp -ArgumentList '-stop' -PassThru -WindowStyle Hidden; if ($p) { $null = $p.WaitForExit(120000) }"
+    ],
+    "autoupdate": {
+        "url": "https://github.com/huanfeng/WindInput/releases/download/v$version/WindInput-Portable-$version.zip",
+        "extract_dir": "WindInput-$version",
+        "hash": {
+            "url": "$baseurl/WindInput-Portable-$version.zip.sha256"
+        }
+    },
+    "notes": [
+        "安装后自动注册 TSF 输入法（wind_portable -start），按 Win+Space 切换到「清风输入法」。",
+        "卸载前自动注销（wind_portable -stop），不会残留注册表项。",
+        "用户配置持久化在 persist\\windinput\\userdata；localdata 是词典缓存（约 152MB），不持久化，升级后自动重建。"
+    ]
+}

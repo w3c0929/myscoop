@@ -10,11 +10,11 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 
 GitHub: https://github.com/w3c0929/myscoop
 
-## 当前状态（截至 2026-11-15）
+## 当前状态（截至 2026-11-17）
 
-- **收录软件总数**: 173 款
+- **收录软件总数**: 174 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 88 款
+- **第三方官方（引用原项目 Release）**: 89 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -218,6 +218,10 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **q-dir 配置“失效”根因与修复（2026-11-15）**：现象：每次启动在 C:/Users/Public 生成 Q-Dir_x64.exe/start.qdr，设置像没保存。实测定位：Scoop 的 current\Q-Dir_x64.exe（约 2.16MB，NotSigned）是便携版启动器，启动后把真正的签名版（约 1.95MB，Nenad Hrg/SoftwareOK 签名）释放到 C:/Users/Public/Q-Dir_x64.exe 并以子进程运行，约 60 秒后启动器自身退出（T+15s 可见父子两进程，T+60s 只剩 Public）。用户最终操作的是 Public 副本，而 Public 目录没有 Q-Dir.ini，因此设置改动写不回 persist → 表现为“配置不生效”。修复：清单新增 post_install，在 C:/Users/Public/Q-Dir.ini 建符号链接指向 $persist_dir\Q-Dir.ini（C: 与 D: 不同卷，硬链接不能跨卷，只能用符号链接），Public 副本即读写同一份配置；pre_uninstall 清理该链接与 Public 副本。已实测关闭时 persist Q-Dir.ini 的 mtime 更新且内容（UTF-16LE、Start=0 等）完好。另：start.qdr 在 [Options] Start=7 时会写到 Public，故建议 Start=0。
 
 - **卸载 q-dir 并清理仓库（2026-11-15）**：用户决定移除 q-dir。`scoop uninstall q-dir`（apps/persist 均已清除）；删除 `bucket/q-dir.json`；README 第三方表移除该行并重编号（89→88），计数 174→173、第三方 89→88（本地 85 不变）。另：删 q-dir 文件夹时被 `C:\ProgramData\Microsoft\DeviceSync\...\py_client_dsv2.py`（伪装微软目录的远控 agent：连公网 8.210.69.51:9876，HKCU 自启动 DeviceSyncUpdate_b2，websockets+AES+屏幕串流/黑屏插件）占用目录句柄；已结束进程、移除自启动项、删除 DeviceSync 目录，复查无其它 Run/计划任务/WMI 持久化、无 C2 连接。证据存 `%TEMP%\devicesync_evidence.txt`。
+
+- **新增收录 windinput（清风输入法）（2026-11-17）**：0.132.0 官方便携 zip（`WindInput-Portable-0.132.0.zip`）。它是 TSF 输入法，便携版靠 `wind_portable.exe -start`（注册 TSF + 自启 + 起服务）与 `-stop`（停服务 + 移自启 + 注销）完成安装/卸载，只解压不注册时语言栏里看不到。清单三处关键修复：① **`Start-Process -Wait` 会等整个进程树**，而 `wind_input.exe` 是常驻服务 → post_install 永久挂起、Scoop 报 `Install failed`；改用 `-PassThru` + `WaitForExit(120000)`。② Scoop 的 `$dir` 是版本目录（`0.132.0`），而进程路径走 `current` 软链 → pre_uninstall 按 `*\apps\windinput\*` 杀进程，否则报 `instances still running`。③ `wind_portable -stop` 从版本目录运行**不注销**（TIP/CLSID/用户 tag 全残留）→ 改用 `current\wind_portable.exe` 执行。另：`persist` 为 `userdata`（3KB 配置）；`localdata` 是词典缓存（152MB，可再生）不持久化；`autoupdate.hash` 取官方 `.zip.sha256` 资产。实测整轮：安装自动注册（就地部署，DLL 指向 `current\wind_tsf.dll`，不写 System32）、语言栏与知语并存、卸载后 TIP/CLSID/User Profile tag/自启项全清、无残留进程，知语输入法全程未受影响。
+
+- **anclicker 下载源改为官方 CDN（2026-11-17）**：上游把 2.1GB 本体放到 `https://updates.ytsoftware.cn/an-clicker/win-x64/AnClicker-v$version-win.zip`，GitHub release 只保留 `.zip.sha256`（不放本体）。包结构也变了：旧 DaiMa 包是 `AnClicker\AnClicker.exe` 子目录，新包是 Squirrel/Velopack 布局（根 `AnClicker.exe` 启动器 458KB + `current\AnClicker.exe` 本体 9MB + `Update.exe` + `.portable` + `Data\`）。清单：url/hash 换新源，`bin`/`shortcuts` 改为根目录 `AnClicker.exe`（随包说明要求，current 不可单独移动），新增 `persist: Data`（用户数据），`autoupdate.hash` 取 CDN 的 `.sha256`；`checkver` 仍用 GitHub（CDN 无 RELEASES/latest.json）。包体约 2.1GB，解压后相近，notes 已提示磁盘占用并建议用 `scoop update` 而非程序内 Update.exe。实测另遇两坑：① **Scoop 解压 2.1GB 包后 `-Removal` 删源 zip 失败**（文件句柄延迟释放），`$dir` 残留 2.1GB 的 `AnClicker-v1.8.9-win.zip`，磁盘占用 5.3GB → 清单加 `post_install` 补删 zip 与 `7zip.log`（重装后实测 3.3GB，无残留）。② **`bin` 不能指向 `AnClicker.exe`**——Scoop shim 与程序同名，程序内部按名启动自身时 PATH 先命中 `D:\scoop\shims\anclicker.exe`，形成**无限递归进程链**（实测十几秒内数十个 anclicker.exe，父进程全是 shim）→ 移除 `bin`，只保留 `shortcuts`（直接指向 `$dir\AnClicker.exe`，不经 PATH）。移除后直启只有 1 个进程（`current\current\AnClicker.exe`），Data 正常写入 persist。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
