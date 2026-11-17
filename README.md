@@ -117,7 +117,7 @@
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
 | 1 | [INPHIC HUB](https://www.inphic.com/) — 英菲克外设设置工具 | `scoop install inphic` | 7z 便携解压即用（Inno Setup 解包） | 1.0.1.24 | 2026-10-28 | 2026-10-28 |
-| 2 | ego lite — AI Agent 浏览器（Chromium 内核，可导入 Chrome 数据；让 Claude Code / Codex 等在隔离 Space 执行网页自动化） | `scoop install egolite` | 7z 便携（自托管：官方 Web 安装器目录打包） | 0.6.0.16 | 2026-10-20 | 2026-11-17 |
+| 2 | ego lite — AI Agent 浏览器（Chromium 内核，可导入 Chrome 数据；让 Claude Code / Codex 等在隔离 Space 执行网页自动化） | `scoop install egolite` | 7z 便携（自托管：官方 Web 安装器目录打包） | 0.6.3.17 | 2026-10-20 | 2026-11-17 |
 | 3 | [NInfer](https://github.com/w3c0929/myscoop) — 三元推理引擎（Ternary-Bonsai 模型，CUDA 13.3 sm_89，自带运行库） | `scoop install ninfer` | zip 便携（单文件服务端 + 自带运行库） | 1.2.0 | 2026-10-10 | 2026-10-10 |
 | 4 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 | 2026-10-10 | 2026-10-10 |
 | 5 | BT种子转磁力链工具 — BT种子转磁力链接 | `scoop install btseed` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |

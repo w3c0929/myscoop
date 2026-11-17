@@ -1,10 +1,10 @@
 {
-    "version": "0.6.0.16",
+    "version": "0.6.3.17",
     "description": "AI Agent 浏览器（Chromium 内核）：可直接导入 Chrome 数据，并让 Claude Code / Codex 等 Agent 在隔离 Space 中执行网页自动化，不干扰当前标签页。",
     "homepage": "https://lite.ego.app/zh-cn",
     "license": "MIT",
-    "url": "https://github.com/w3c0929/myscoop/releases/download/vEgoLite/egolite-0.6.0.16.7z",
-    "hash": "sha256:546654d58036ed2417259ad53d92b6e294e9a8e0023ace185df2682d3617fd6a",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vEgoLite/egolite-0.6.3.17.7z",
+    "hash": "sha256:ea673e167af0a25ea8d9de4d259b57902214c03abae331db526cdbc4f4f48dd0",
     "bin": [
         [
             "ego.exe",
@@ -33,10 +33,9 @@
         "url": "https://github.com/w3c0929/myscoop/releases/download/vEgoLite/egolite-$version.7z"
     },
     "notes": [
-        "自托管便携版：由官方 Web 安装器安装后的程序目录打包（上游只提供 19MB 在线安装器，无完整安装包；GitHub release 的 ego-browser-*.zip 是 Agent 连接组件，不是浏览器本体）。",
-        "checkver 从官方安装器 PE 的 FileVersion 读版本（当前官方 0.6.3.17）。官方发新版后，CI 会尝试下载本仓库 egelite-<新版本>.7z，因尚未打包而报错——这条报错就是升级提醒。",
-        "升级流程：官方安装器装到临时目录 → 打包程序目录（不要包含 %LOCALAPPDATA%\\Citro Labs 用户数据）→ 上传到 release（tag vEgoLite，文件名 egelite-<版本>.7z）→ 更新本清单 version/url/hash。",
-        "用户数据在 %LOCALAPPDATA%\\Citro Labs\\ego\\User Data（1GB+，与程序目录分离；卸载 Scoop 不会删除）。",
-        "程序内「检查更新」不可用（错误码 0x80004005）：自托管包不含官方 Omaha 更新器（Citro Labs\\EgoUpdater），这是预期行为，升级请用 scoop update egelite。"
+        "自托管便携版：由 pack-egolite workflow 在 windows runner 上静默安装官方版后打包 Application 目录（上游只提供 19MB Web 安装器，无完整安装包；GitHub release 的 ego-browser-*.zip 是 Agent 连接组件，不是浏览器本体）。",
+        "升级：GitHub Actions 手动触发「打包 egolite」workflow → 自动下载官方安装器、按 /silent 安装、打包并上传到 release → 从 workflow 日志末尾取 version 与 hash，更新本清单。",
+        "打包已排除 User Data / *.log / Dictionaries，包内自查不含任何用户数据；用户数据在 %LOCALAPPDATA%\\Citro Labs\\ego\\User Data（1GB+，与程序目录分离；卸载 Scoop 不会删除）。",
+        "程序内「检查更新」不可用（错误码 0x80004005）：自托管包不含官方 Omaha 更新器（Citro Labs\\EgoUpdater），这是预期行为，升级请用 scoop update egolite。"
     ]
 }
