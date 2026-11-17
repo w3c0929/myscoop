@@ -1,5 +1,5 @@
 {
-    "version": "0.1.4364",
+    "version": "0.1.4367",
     "description": "Every agent's model. One place. Codex on DeepSeek, Claude Code on Kimi, from the menu bar.",
     "homepage": "https://usemagpie.ai",
     "license": "MIT",
@@ -8,12 +8,12 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/yetone/magpie/releases/download/v0.1.4364/magpie-windows-amd64.exe",
-            "hash": "sha256:889720fd2f80837888114225ca4e08c2d69151b2ea172c9388e26c5a79bfa675"
+            "url": "https://github.com/yetone/magpie/releases/download/v0.1.4367/magpie-windows-amd64.exe",
+            "hash": "sha256:0e4d5625335b43c6a54d778df5e7147e70aba9c396c5f6bc673bcf94b0aa5240"
         },
         "arm64": {
-            "url": "https://github.com/yetone/magpie/releases/download/v0.1.4364/magpie-windows-arm64.exe",
-            "hash": "sha256:0fc035bb739d1569bd17c0b6a6fa9d0f4b4140441a7a063d164c8637bb260b9d"
+            "url": "https://github.com/yetone/magpie/releases/download/v0.1.4367/magpie-windows-arm64.exe",
+            "hash": "sha256:3109048ff77ac71ba74494a622d1bf51e41d0b08a9f19a9aa2f7d5ab6f3b5752"
         }
     },
     "autoupdate": {
