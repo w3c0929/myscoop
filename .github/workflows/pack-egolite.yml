@@ -76,12 +76,13 @@ jobs:
         id: pack
         shell: pwsh
         run: |
-          $exe = '${{ steps.find.outputs.exe }}'
+          $appRoot = '${{ steps.find.outputs.dir }}'
           $ver = '${{ steps.ver.outputs.version }}'
-          # 主程序所在目录的父级 = 应用根目录（含版本子目录、Dictionaries 等）
-          $appRoot = Split-Path (Split-Path $exe -Parent) -Parent
-          Write-Host "应用根目录: $appRoot"
+          Write-Host "应用目录: $appRoot"
           Get-ChildItem $appRoot | Select-Object Name | ForEach-Object { Write-Host "   $($_.Name)" }
+          Write-Host '=== 用户数据类路径检查（应无输出）==='
+          Get-ChildItem $appRoot -Recurse -Depth 2 -Include 'User Data','Cookies','Login Data','History','Bookmarks','Preferences','Local State' -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "   $($_.FullName)" }
+          Write-Host '=== 检查结束 ==='
 
           # 排除用户数据与日志（确保不含个人信息）
           $out = "$env:RUNNER_TEMP\egolite-$ver.7z"
