@@ -110,12 +110,13 @@ jobs:
           $ver = '${{ steps.ver.outputs.version }}'
           $pkg = '${{ steps.pack.outputs.path }}'
           $tag = 'vEgoLite'
+          $repo = '${{ github.repository }}'
           # tag 不存在则创建
-          gh release view $tag 2>$null
+          gh release view $tag -R $repo 2>$null
           if ($LASTEXITCODE -ne 0) {
-            gh release create $tag --title "egolite 自托管包" --notes "由 pack-egolite workflow 从官方 Web 安装器打包（仅程序文件，不含用户数据）"
+            gh release create $tag -R $repo --title "egolite 自托管包" --notes "由 pack-egolite workflow 从官方 Web 安装器打包（仅程序文件，不含用户数据）"
           }
-          gh release upload $tag $pkg --clobber
+          gh release upload $tag $pkg -R $repo --clobber
           if ($LASTEXITCODE -ne 0) { throw '上传失败' }
           Write-Host '上传完成'
 
