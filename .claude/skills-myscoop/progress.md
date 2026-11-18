@@ -417,9 +417,12 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 27f0db8 (HEAD -> main) 同步 README 第三方版本与日期列
+* 1d4f66c (HEAD -> main) winsdk 修复：URL 模板变量错误导致 hash 失败
+* 8d0bf75 (origin/main, origin/HEAD) winshun: update to 0.36.1
+* 161b7f5 progress.md 更新提交历史
+* 27f0db8 同步 README 第三方版本与日期列
 * a29427f 自动更新第三方软件
-* c1d2903 (origin/main) winshun: update to 0.35.1
+* c1d2903 winshun: update to 0.35.1
 * 15dae7d progress.md 更新提交历史
 * 6989156 同步 README 第三方版本与日期列
 * 1f13998 自动更新第三方软件
