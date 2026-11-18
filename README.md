@@ -37,8 +37,8 @@
 | 13 | [NOIR](https://github.com/Verlintas/NOIR) — 手机隐私审计：用 adb 扫出 Android 应用的权限、上报端点与数据流向，并给出可回滚的处置 | `scoop install noir` | portable zip 官方 release | 0.4.4 | 2026-11-05 | 2026-11-16 |
 | 14 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 15 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
-| 16 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.6 | 2026-11-04 | 2026-11-05 |
-| 17 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4402 | 2026-11-03 | 2026-11-18 |
+| 16 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.7 | 2026-11-04 | 2026-11-18 |
+| 17 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4408 | 2026-11-03 | 2026-11-18 |
 | 18 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.1 | 2026-10-31 | 2026-11-03 |
 | 19 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 20 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.13.5 | 2026-10-30 | 2026-11-16 |
@@ -47,7 +47,7 @@
 | 23 | [Inno Setup](https://www.jrsoftware.org/isinfo.php) — Windows 安装程序制作工具（installer 静默安装，覆盖 extras 解包） | `scoop install inno-setup` | 单 exe 官方 release（installer 静默安装） | 7.1.1 | 2026-10-29 | 2026-10-31 |
 | 24 | [MiHome-Windows](https://github.com/huanyuejue/MiHome-Windows) — 米家设备 Windows 桌面控制端（扫码登录，本地查看/控制设备） | `scoop install mihome` | portable zip 官方 release | 0.5.0 | 2026-10-28 | 2026-11-02 |
 | 25 | [MiniDock](https://github.com/wang01116/MiniDock) — 极简 Windows dock 栏工具 | `scoop install minidock` | 单 exe 官方 release | 2.8.0 | 2026-10-28 | 2026-11-17 |
-| 26 | [sdkm](https://github.com/borenchan/sdkmate) — 全栈开发者的跨平台 SDK 版本管理器：Java / Node.js / Python / Maven / Go 等 40+ 工具一键安装与切换（Rust 编写，约 4MB 单文件） | `scoop install sdkm` | zip 官方 release（安装时自动 init） | 0.5.7 | 2026-10-24 | 2026-11-14 |
+| 26 | [sdkm](https://github.com/borenchan/sdkmate) — 全栈开发者的跨平台 SDK 版本管理器：Java / Node.js / Python / Maven / Go 等 40+ 工具一键安装与切换（Rust 编写，约 4MB 单文件） | `scoop install sdkm` | zip 官方 release（安装时自动 init） | 0.5.8 | 2026-10-24 | 2026-11-18 |
 | 27 | [网易UU远程](https://uuyc.163.com/) — 超低延迟的远程控制工具（Windows / macOS / iOS / Android / TV） | `scoop install uuyc` | NSIS 安装器安装（服务/驱动注册） | 4.46.0 | 2026-10-10 | 2026-11-17 |
 | 28 | [evanOCR](https://github.com/duyuanfu/evan-ocr) — C++ 写了一款比 Snipaste/PixPin 更爽的免费截贴图 OCR 神器 | `scoop install evanocr` | portable zip 官方 release | 1.2.1 | 2026-10-18 | 2026-10-21 |
 | 29 | [Sunpack](https://github.com/Qinjingxue/Sunpack) — Windows 全自动压缩包处理工具：后台监控文件夹、自动识别并解压、递归处理与崩溃恢复 | `scoop install sunpack` | 多架构 exe 官方 release（Inno Setup 解包） | 1.4.1 | 2026-10-15 | 2026-11-11 |
@@ -84,7 +84,7 @@
 | 60 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.9.1 | 2026-10-10 | 2026-11-15 |
 | 61 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.8.1 | 2026-10-10 | 2026-11-17 |
 | 62 | [Magpiee (实验版)](https://github.com/SAOG0721/Magpie) — 游戏画面缩放/超分工具的非官方实验 fork（原 magpie 清单改名，与官方 Magpie 区分；shim: magpiee.exe） | `scoop install magpiee` | zip 官方直链 | 0.6.12-experimental | 2026-11-03 | 2026-11-07 |
-| 63 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.3.3 | 2026-10-10 | 2026-11-08 |
+| 63 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.3.4 | 2026-10-10 | 2026-11-18 |
 | 64 | [Windows App SDK 运行时](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — Microsoft Windows App Runtime (WindowsAppSDK) 2.6 运行时官方直链（安装时自动静默安装） | `scoop install winsdk` | 单 exe 官方直链（post_install 静默安装） | 2.7.0 | 2026-10-10 | 2026-11-18 |
 | 65 | [Netcatty](https://github.com/binaricat/Netcatty) — SSH 工作区、SFTP 与终端一体的跨平台客户端 | `scoop install netcatty` | NSIS 解包便携（Netcatty.exe，data 持久化） | 1.1.90 | 2026-10-10 | 2026-10-26 |
 | 66 | [Context Menu Manager Plus](https://github.com/PLFJY/ContextMenuMgr) — Windows 右键菜单管理工具 | `scoop install cmm-plus` | 多架构 portable zip | 1.7.13 | 2026-10-10 | 2026-11-15 |
