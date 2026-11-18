@@ -1356,14 +1356,57 @@ def add_manifest(repo_url, app_name=None, more=False):
     return manifest_path_str
 
 
-def substitute_version(value, version):
-    """递归替换结构中的 $version 模板为实际版本号"""
+def _version_vars(version):
+    """对齐 Scoop v0.6.0 `Get-VersionSubstitution`（lib/autoupdate.ps1）的变量集合。
+
+    Scoop 原生支持这些模板变量，但安装时只做字面量读取——必须在 autoupdate
+    写回清单前就替换掉，否则畸形 URL 会被写进清单并导致 hash 校验失败
+    （教训：winsdk 的 `$majorVersion.$minorVersion` 未被替换，aka.ms 返回 HTML）。
+    """
+    first = version.split("-")[0]
+    last = version.split("-")[-1]
+    parts = first.split(".")
+
+    def part(idx):
+        return parts[idx] if idx < len(parts) else ""
+
+    table = {
+        "$version": version,
+        "$dotVersion": re.sub(r"[._-]", ".", version),
+        "$underscoreVersion": re.sub(r"[._-]", "_", version),
+        "$dashVersion": re.sub(r"[._-]", "-", version),
+        "$cleanVersion": re.sub(r"[._-]", "", version),
+        "$majorVersion": part(0),
+        "$minorVersion": part(1),
+        "$patchVersion": part(2),
+        "$buildVersion": part(3),
+        "$preReleaseVersion": last,
+    }
+    m = re.match(r"(\d+\.\d+(?:\.\d+)?)(.*)", version)
+    if m:
+        table["$matchHead"] = m.group(1)
+        table["$matchTail"] = m.group(2)
+    return table
+
+
+def substitute_version(value, version, extra=None):
+    """递归替换结构中的 Scoop 版本变量（$version / $majorVersion / $underscoreVersion 等）。
+
+    与 Scoop 一致：按变量名长度降序替换，避免短变量抢先匹配；值为空时替换为空串。
+    `extra` 可传入 checkver 命名捕获组（如 {"$matchFoo": "..."}）。
+    """
     if isinstance(value, str):
-        return value.replace("$version", version)
+        table = _version_vars(version)
+        if extra:
+            table.update(extra)
+        for key in sorted(table, key=len, reverse=True):
+            rep = table[key]
+            value = value.replace(key, "" if rep is None else str(rep))
+        return value
     if isinstance(value, list):
-        return [substitute_version(v, version) for v in value]
+        return [substitute_version(v, version, extra) for v in value]
     if isinstance(value, dict):
-        return {k: substitute_version(v, version) for k, v in value.items()}
+        return {k: substitute_version(v, version, extra) for k, v in value.items()}
     return value
 
 

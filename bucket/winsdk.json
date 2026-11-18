@@ -12,7 +12,7 @@
     "url": "https://aka.ms/windowsappsdk/2.7/2.7.0/windowsappruntimeinstall-x64.exe",
     "hash": "sha256:ed1ac8aa9497473389a288017c7fc352c382ba8df6c08f36ddb5815bff283b2a",
     "autoupdate": {
-        "url": "https://aka.ms/windowsappsdk/2.7/$version/windowsappruntimeinstall-x64.exe"
+        "url": "https://aka.ms/windowsappsdk/$majorVersion.$minorVersion/$version/windowsappruntimeinstall-x64.exe"
     },
     "post_install": [
         "Start-Process -FilePath \"$dir\\windowsappruntimeinstall-x64.exe\" -ArgumentList '--quiet' -Wait"
@@ -20,6 +20,6 @@
     "notes": [
         "安装时自动执行 windowsappruntimeinstall-x64.exe --quiet，静默安装 Windows App Runtime（实测非管理员 exit 0）。",
         "该包只安装运行时，没有 bin/快捷方式；WinUI / WindowsAppSDK 应用依赖它运行。",
-        "aka.ms 路径格式为 windowsappsdk/<major.minor>/<完整版本>/，Scoop 只认 $version，所以 autoupdate 里 major.minor 段（当前 2.7）是硬编码的——上游升到 2.8 时需手动改这一处。"
+        "aka.ms 路径格式为 windowsappsdk/<major.minor>/<完整版本>/，autoupdate 用 Scoop 原生变量 $majorVersion.$minorVersion/$version 自动生成（myscoop-update.py 已支持全套版本变量）。"
     ]
 }
