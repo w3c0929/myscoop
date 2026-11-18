@@ -1,16 +1,13 @@
 {
-    "version": "0.4.9",
+    "version": "0.5.0",
     "description": "KVarN, KV cache precision tail, low-bit quants in llama.cpp for longer context of better precision in the same VRAM",
     "homepage": "https://anbeeld.com/projects/beellama-cpp",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/Anbeeld/beellama.cpp"
     },
-    "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.4.9/beellama-v0.4.9-bin-win-cuda-13.3-x64.zip",
-    "hash": "sha256:21f1b0a12b26a2967f079b94f52e22c7448b483624dec30d31b36995aff31d87",
-    "autoupdate": {
-        "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v$version/beellama-v$version-bin-win-cuda-13.3-x64.zip"
-    },
+    "url": "https://github.com/Anbeeld/beellama.cpp/releases/download/v0.5.0/beellama-v0.5.0-bin-win-cuda-12.8-x64.zip",
+    "hash": "sha256:ce3bc7156c24d0afc710cbbaf94384432ce288872d4468aba179243890176b81",
     "notes": "NVIDIA CUDA 13.3 版（llama-server/llama-cli）。注：v0.4.6 上游曾短暂把该包替换成缺 exe 的残包（390MB），已恢复为 511MB 完整包，本 hash 为恢复后的最新值。",
     "bin": [
         "llama-server.exe",
