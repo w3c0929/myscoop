@@ -1,5 +1,5 @@
 {
-    "version": "2.6.5",
+    "version": "2.7.0",
     "description": "Microsoft Windows App Runtime (WindowsAppSDK) 2.6 - WinUI / WinAppSDK 应用依赖的运行时",
     "homepage": "https://learn.microsoft.com/windows/apps/windows-app-sdk/",
     "license": {
@@ -9,8 +9,8 @@
         "url": "https://api.github.com/repos/microsoft/WindowsAppSDK/releases/latest",
         "regex": "\"tag_name\":\\s*\"v?([\\d.]+)\""
     },
-    "url": "https://aka.ms/windowsappsdk/2.6/2.6.5/windowsappruntimeinstall-x64.exe",
-    "hash": "sha256:908e9a8ed8ad2ac765d6679543b0758812437e3ad6e3223f08d1730635cec8ec",
+    "url": "https://aka.ms/windowsappsdk/$majorVersion.$minorVersion/2.7.0/windowsappruntimeinstall-x64.exe",
+    "hash": "sha256:10c7349cdff9314943de504521e70c50ef56a262f3f514825e974923a456eb85",
     "autoupdate": {
         "url": "https://aka.ms/windowsappsdk/$majorVersion.$minorVersion/$version/windowsappruntimeinstall-x64.exe"
     },
