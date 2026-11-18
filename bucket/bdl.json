@@ -1,16 +1,16 @@
 {
-    "version": "0.10.5",
+    "version": "0.10.6",
     "description": "Bilibili rust下载器, 支持win mac linux 安卓。4k,up主空间, 批量, 字幕等等",
     "homepage": "https://apps.yuelili.com/software/bdl",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/Yuelioi/bdl"
     },
-    "url": "https://github.com/Yuelioi/bdl/releases/download/v0.10.5/BDL_0.10.5_x64-setup.exe",
+    "url": "https://github.com/Yuelioi/bdl/releases/download/v0.10.6/BDL_0.10.6_x64-setup.exe",
     "autoupdate": {
         "url": "https://github.com/Yuelioi/bdl/releases/download/v$version/BDL_$version_x64-setup.exe"
     },
-    "hash": "sha256:04fef028fdef2592747c3c0844a5fbc9e2b24b2212680c9a435041a547302cef",
+    "hash": "sha256:2e9ba7c1c01f4a3721e837c1cb36c7dcaf9982867e7315af2e4580d082d40b25",
     "bin": "bdl-desktop.exe",
     "shortcuts": [
         [
