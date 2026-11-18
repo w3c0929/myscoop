@@ -38,7 +38,7 @@
 | 14 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 15 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
 | 16 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.7 | 2026-11-04 | 2026-11-18 |
-| 17 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4488 | 2026-11-03 | 2026-11-19 |
+| 17 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4501 | 2026-11-03 | 2026-11-19 |
 | 18 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.1 | 2026-10-31 | 2026-11-03 |
 | 19 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 20 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.13.6 | 2026-10-30 | 2026-11-18 |
@@ -95,7 +95,7 @@
 | 71 | [TOKENICODE DeepSeek Alpha](https://github.com/mistydew/tokenicode-deepseek-alpha) — DeepSeek/CC Switch TOKENICODE 分支 | `scoop install tokenicode` | 单 exe 官方 release | 1.0.8 | 2026-10-10 | 2026-10-10 |
 | 72 | [MSST-GUI](https://github.com/AliceNavigator/Music-Source-Separation-Training-GUI) — 音乐源分离推理工具 | `scoop install msst-gui` | 单 exe 中文版 | 1.4.0 | 2026-10-10 | 2026-10-10 |
 | 73 | [Lertaro](https://github.com/Lertaro/Lertaro) — 本地文件搜索与生产力工具（Everything/Listary 替代品，C# WPF + NT 服务，NTFS MFT 解析与实时 USN 监控） | `scoop install lertaro` | 多架构 portable zip 官方 release | 5.13.4 | 2026-10-10 | 2026-11-19 |
-| 74 | [BeeLlama](https://github.com/Anbeeld/beellama.cpp) — llama.cpp 分支，KV 缓存精度优化，更长上下文同显存更高精度（Windows CUDA 13.3） | `scoop install beellama-cpp` | portable zip 官方 release (CUDA 13.3) | 0.4.9 | 2026-10-10 | 2026-10-30 |
+| 74 | [BeeLlama](https://github.com/Anbeeld/beellama.cpp) — llama.cpp 分支，KV 缓存精度优化，更长上下文同显存更高精度（Windows CUDA 13.3） | `scoop install beellama-cpp` | portable zip 官方 release (CUDA 13.3) | 0.5.0 | 2026-10-10 | 2026-11-19 |
 | 75 | [baulk](https://github.com/baulk/baulk) — Minimal Package Manager for Windows | `scoop install baulk` | 多架构 portable zip | 6.1.0 | 2026-10-10 | 2026-10-10 |
 | 76 | [Keyviz](https://github.com/mulaRahul/keyviz) — 键盘/鼠标操作实时可视化 | `scoop install keyviz` | MSI 官方 release | 2.1.1 | 2026-10-10 | 2026-10-10 |
 | 77 | [Windows磁盘迁移工具](https://github.com/bjfwan/windows-disk-tool) — 智能扫描、批量迁移、符号链接 | `scoop install windisktool` | 单 exe 官方 release | 2.0 | 2026-10-10 | 2026-10-10 |
