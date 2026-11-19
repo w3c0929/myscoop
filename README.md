@@ -209,6 +209,14 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 ```
 
 > **重要提示（添加桶后必做）**：上述命令仅将本桶登记到 Scoop，**尚不足以正常使用**。还须进入 myscoop 仓库目录（如 `D:\scoop\buckets\myscoop`），**以管理员身份双击运行 `symlink.bat`**，完成本桶所需的部署——将 `manifest.ps1`、`download.ps1`、`config.json` 三个文件以软链接方式部署到 Scoop 对应位置，并把仓库 `*.bat` 链接到 `D:\scoop\shims` 以提供全局命令。**未完成该步骤前，本桶软件将无法正常安装与更新**；Scoop 自更新后亦需重新运行一次。详见下文「部署」章节。
+>
+> **Scoop 不在默认目录时（额外一步）**：若 Scoop 装在自定义路径（如 `D:\scoop`）而**未设置 `SCOOP` 环境变量**，第三方工具 `scoop-search` 会报 `Could not open the buckets directory: C:\Users\<用户>\scoop\buckets`——它只认 `SCOOP` 变量或默认的 `~\scoop`（`scoop` 命令本身从 shim 路径推断根目录，所以不受影响）。修复（PowerShell，普通权限即可）：
+>
+> ```powershell
+> [Environment]::SetEnvironmentVariable("SCOOP", "D:\scoop", "User")
+> ```
+>
+> 设置后**需重开终端**才生效；验证：`scoop-search <关键词>` 能正常列出结果。
 
 ### 2. 安装软件
 
