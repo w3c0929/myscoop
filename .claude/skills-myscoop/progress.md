@@ -10,11 +10,11 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 
 GitHub: https://github.com/w3c0929/myscoop
 
-## 当前状态（截至 2026-11-17）
+## 当前状态（截至 2026-11-20）
 
-- **收录软件总数**: 174 款
+- **收录软件总数**: 175 款
 - **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 89 款
+- **第三方官方（引用原项目 Release）**: 90 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -231,6 +231,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **winsdk 2.6.5 → 2.7.0 修复（2026-11-18）**：用户报 `hash check failed`，Actual 首字节 `3C 21 64 6F 63 74 79 70`（`<!doctyp`，即 HTML）。根因：清单 autoupdate 用了 `$majorVersion.$minorVersion`，**这不是 Scoop 支持的变量**（只认 `$version`/`$basename`/`$match1..`），模板展开后 URL 残留字面 `$majorVersion.$minorVersion`，aka.ms 返回 HTML 错误页。aka.ms 正确路径是 `windowsappsdk/<major.minor>/<完整版本>/windowsappruntimeinstall-x64.exe`（2.7/2.7.0 → 301 到 download.microsoft.com 固定文件，125,486,904 字节，签名 Valid，FileVersionRaw 2.7.0.0）。修复：`url` 写完整路径；`autoupdate.url` 改为 `windowsappsdk/2.7/$version/...`（major.minor 段硬编码，升 2.8 时手动改一处，已写进 notes）；**hash 更正**——清单原值 `10c7349c…` 与真实文件不符，实测 2.7.0 为 `ed1ac8aa9497473389a288017c7fc352c382ba8df6c08f36ddb5815bff283b2a`。已本地 `scoop update winsdk` 实测：校验通过、post_install 静默安装成功，`Get-AppxPackage` 显示 `Microsoft.WindowsAppRuntime.2` = 2.7.0.0。README 描述同步为 2.7。
 
 - **修复 substitute_version 只认 $version（2026-11-18）**：winsdk 报 hash 失败的**真正根因在我们自己的工具**——`myscoop-update.py` 的 `substitute_version` 只做 `value.replace("$version", v)`，而 Scoop v0.6.0（`lib/autoupdate.ps1:438 Get-VersionSubstitution`）原生支持 `$majorVersion`/`$minorVersion`/`$patchVersion`/`$dotVersion`/`$underscoreVersion`/`$dashVersion`/`$cleanVersion`/`$buildVersion`/`$preReleaseVersion`/`$matchHead`/`$matchTail`。CI 的 autoupdate 只替换 `$version`，把 `$majorVersion.$minorVersion` 原样写回清单 → `scoop update` 读字面量 URL → aka.ms 返回 HTML（首字节 `<!doctyp`）→ hash 失败。修复：新增 `_version_vars()`（逐项对齐 Scoop 定义，含 `$matchHead/$matchTail` 正则与 `-` 预发布拆分），`substitute_version(value, version, extra=None)` 按 key 长度降序替换、空值替换为空串、支持 `extra` 传命名捕获组。回归：新增 `tools/test_version_vars.py`（覆盖 2.7.0 / 2.7 / 1.2.3-beta.1 / 递归结构 / winsdk 与 inno-setup 真实模板 / 向后兼容），与 test_guards、test_pair_update、test_sync_bin_version 全部通过。winsdk 恢复优雅写法 `$majorVersion.$minorVersion/$version`（升 2.8 不再需要手改）；`inno-setup` 的 `$underscoreVersion`（`is-7_1_1`）同源隐患一并消除。
+
+- **新增收录 mojian3d（MoJian3D 0.1.6）（2026-11-20）**：用户提供 `MoJian3D-0.1.6-windows-x64.zip` 要求自托管，核查后发现官方下载仓库 `LingCore/MoJian3D-Downloads` 已有同版本 release 资产，本地 sha256 `dd0a6b01…` 与官方 `SHA256SUMS.txt` **逐字一致**，遂改为**第三方官方**清单（自动 checkver + autoupdate，不占自有 Release 空间）。包结构：顶层 `MoJian3D-0.1.6-windows-x64/`，主程序 `MoJian3D.exe`（70MB，FileVersion 0.1.6，MIT）、`mojian-cli.exe`（40MB，CLI：info/tree/remove 等）、`MoJianStepWorker.exe`、**自带 `MoJianUpdater.exe` 更新器**、`skills/mojian3d-control`（AI Agent 控制技能）、大量 Qt6/assimp/lib3mf DLL。清单：`extract_dir` 带版本、`bin` 同时暴露 `mojian3d` 与 `mojian-cli`、`shortcuts` 指向 GUI，notes 提示用 `scoop update` 而非程序内更新器。实测安装成功（shim 正常，`mojian-cli --help` 输出正常）。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 

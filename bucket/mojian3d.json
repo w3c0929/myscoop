@@ -1,0 +1,37 @@
+{
+    "version": "0.1.6",
+    "description": "MoJian3D - 3D 模型查看器（Qt 桌面应用）：支持 AI Agent 通过 skills/mojian3d-control 检查并控制当前打开的模型",
+    "homepage": "https://github.com/LingCore/MoJian3D-Downloads",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/LingCore/MoJian3D-Downloads"
+    },
+    "url": "https://github.com/LingCore/MoJian3D-Downloads/releases/download/v0.1.6/MoJian3D-0.1.6-windows-x64.zip",
+    "hash": "sha256:dd0a6b01f73f8ffe39ef6193420848bacb5292254378ba34bb18ea62ed445d90",
+    "extract_dir": "MoJian3D-0.1.6-windows-x64",
+    "bin": [
+        [
+            "MoJian3D.exe",
+            "mojian3d"
+        ],
+        [
+            "mojian-cli.exe",
+            "mojian-cli"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "MoJian3D.exe",
+            "MoJian3D"
+        ]
+    ],
+    "autoupdate": {
+        "url": "https://github.com/LingCore/MoJian3D-Downloads/releases/download/v$version/MoJian3D-$version-windows-x64.zip",
+        "extract_dir": "MoJian3D-$version-windows-x64"
+    },
+    "notes": [
+        "官方只发 windows-x64 便携 zip 与 setup.exe，本清单使用便携包（hash 与官方 SHA256SUMS.txt 一致）。",
+        "包内自带 MoJianUpdater.exe 更新器；升级请用 scoop update mojian3d，不要在程序内更新，否则会与 Scoop 管理的目录冲突。",
+        "CLI 入口：mojian-cli；AI Agent 控制技能位于安装目录 skills\\mojian3d-control。"
+    ]
+}
