@@ -423,9 +423,12 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 9741632 (HEAD -> main) 同步 README 第三方版本与日期列
+* 1da87af (HEAD -> main) 新增收录 Atrium Desktop 2.7.0（第三方官方）
+* aea763e (origin/main, origin/HEAD) winshun: 0.42.1
+* f87b210 progress.md 更新提交历史
+* 9741632 同步 README 第三方版本与日期列
 * 2ddc1b9 自动更新第三方软件
-* ddf144a (origin/main) progress.md 更新提交历史
+* ddf144a progress.md 更新提交历史
 * a32e3b1 同步 README 第三方版本与日期列
 * 160d590 自动更新第三方软件
 * 516a81b progress.md 更新提交历史
