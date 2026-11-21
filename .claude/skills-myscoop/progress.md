@@ -427,8 +427,12 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* a23789f (HEAD -> main) mykeymap
-* eb977a4 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 8bf573d (HEAD -> main) 同步 README 第三方版本与日期列
+* 2a7f077 自动更新第三方软件
+* 103a675 (origin/main) winshun: 0.43.1
+* e5418ef progress.md 更新提交历史
+* a23789f mykeymap
+* eb977a4 progress.md 更新提交历史
 * 34fd100 mykeymap 迁移为第三方官方（自建构建仓库 w3c0929/MyKeymap）
 * 56263ca progress.md 更新提交历史
 * 6c6431a 修复资产评分把签名文件当安装包；收录 quietmd 0.1.13
