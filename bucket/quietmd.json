@@ -1,0 +1,29 @@
+{
+    "version": "0.1.13",
+    "description": "Blazing-fast native notes app and rich-text editor for macOS, Windows, and Linux. Built with Rust + GPUI. Local-first and beautifully designed.",
+    "homepage": "https://quiet.md",
+    "license": "MIT",
+    "checkver": {
+        "github": "https://github.com/s1dashu/quiet-md"
+    },
+    "url": "https://github.com/s1dashu/quiet-md/releases/download/v0.1.13/quiet-md-0.1.13-windows-x64-setup.exe",
+    "hash": "sha256:750be76ea17cd9bd9e428edd632fb86afb48989fa3f93c227d11d3067944b906",
+    "innosetup": true,
+    "bin": "quiet_md.exe",
+    "shortcuts": [
+        [
+            "quiet_md.exe",
+            "Quiet.md"
+        ]
+    ],
+    "autoupdate": {
+        "url": "https://github.com/s1dashu/quiet-md/releases/download/v$version/quiet-md-$version-windows-x64-setup.exe",
+        "hash": {
+            "url": "$baseurl/quiet-md-$version-windows-x64-setup.exe.sha256"
+        }
+    },
+    "notes": [
+        "官方只发 Inno Setup 安装包（Windows x64），本清单用 innosetup 解包为便携目录，不执行系统安装。",
+        "同一 release 里的 *.minisig / *.sha256 / SHA256SUMS 是签名与校验文件，不是安装包。"
+    ]
+}

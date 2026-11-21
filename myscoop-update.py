@@ -631,9 +631,16 @@ def is_windows_asset(name):
     if any(m in lower for m in [".dmg", ".appimage", ".rpm", ".deb", ".apk", ".bundle"]):
         return False
     # 排除源码包/校验与元数据文件
-    if name.lower().endswith((".tar", ".tar.gz", ".tar.xz", ".txt", ".json",
-                             ".md", ".sum", ".sha256", ".asc", ".list", ".html",
-                             ".yml", ".blockmap", ".sig")):
+    # .minisig 要单独列出：它以 ".minisig" 结尾，不匹配下面的 ".sig"
+    # （教训：quiet-md 的 *-setup.exe.minisig 含 x64 拿到 +2 分，把真正的 setup.exe（-8 分）挤掉）
+    # .pdb 是 Windows 调试符号（常与 setup.exe 同名），.zsync/.nupkg/.snupkg 等是更新与包管理元数据，
+    # 都不是可安装的 Windows 包。
+    if name.lower().endswith((".tar", ".tar.gz", ".tar.xz", ".tar.zst", ".txz",
+                             ".txt", ".json", ".md", ".sum", ".sha256", ".asc", ".list", ".html",
+                             ".yml", ".blockmap", ".sig", ".minisig", ".sbom",
+                             ".pem", ".crt", ".attestation", ".intoto",
+                             ".pdb", ".zsync", ".nupkg", ".snupkg", ".snap", ".flatpak",
+                             ".ipa", ".debug", ".dwarf", ".map")):
         return False
     # 校验和文件的其他写法：*.SHA256SUMS / *.sha512sums / *.md5sums / *.checksums / *.digest
     # （上面的 endswith 只覆盖 ".sum"/".sha256"；"…x64.SHA256SUMS" 这类写法会漏，且带 x64 时
@@ -846,6 +853,11 @@ def score_asset(name):
     # arm64 降级：通用版（无架构标记）应优先于 arm64 专版
     if "arm64" in lower or "aarch64" in lower:
         score -= 5
+    # 防御性兜底：签名 / 校验 / SBOM / 调试符号等元数据一律沉底。
+    # is_windows_asset 已排除这些后缀，此处防止规则漏网时靠 "x64" 加分反超真正的安装包。
+    if re.search(r'(?i)\.(?:minisig|sig|asc|sha\d*|sums?|sbom|pem|crt|attestation|intoto|'
+                 r'pdb|zsync|nupkg|snupkg|snap|flatpak|ipa|debug|dwarf|map)$', lower):
+        score -= 100
     return score
 
 
