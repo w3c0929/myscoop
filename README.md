@@ -22,11 +22,11 @@
 
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
-| 1 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具（AutoHotkey） | `scoop install mykeymap` | 官方 release 便携 zip（自建构建仓库 w3c0929/MyKeymap） | 2.0-beta34 | 2026-10-10 | 2026-11-21 |
-| 2 | [Quiet.md](https://quiet.md) — 极速原生笔记与富文本编辑器（Rust + GPUI），本地优先 | `scoop install quietmd` | 官方 release Inno 安装包（解包为便携） | 0.1.13 | 2026-11-21 | 2026-11-21 |
+| 1 | [MyKeymap](https://github.com/w3c0929/MyKeymap) — 键盘映射效率工具（AutoHotkey） | `scoop install mykeymap` | 官方 release 便携 zip（自建构建仓库 w3c0929/MyKeymap） | 2.0-beta34 | 2026-10-10 | 2026-11-21 |
+| 2 | [Quiet.md](https://github.com/s1dashu/quiet-md) — 极速原生笔记与富文本编辑器（Rust + GPUI），本地优先 | `scoop install quietmd` | 官方 release Inno 安装包（解包为便携） | 0.1.13 | 2026-11-21 | 2026-11-21 |
 | 3 | [Atrium Desktop](https://github.com/wynter-yaxley/atrium-desktop) — Windows 11 原生玻璃质感桌面：浮动任务栏与桌面小组件，实时折射效果 | `scoop install atrium` | 官方 release 便携 zip（仅 x64） | 2.7.0 | 2026-11-20 | 2026-11-20 |
 | 4 | [MoJian3D](https://github.com/LingCore/MoJian3D-Downloads) — 3D 模型查看器（Qt 桌面应用）：支持 AI Agent 通过内置 mojian3d-control 技能检查并控制当前模型 | `scoop install mojian3d` | 官方 release 便携 zip（仅 x64） | 0.1.6 | 2026-11-20 | 2026-11-20 |
-| 5 | [清风输入法 (WindInput)](https://windinput.com) — 轻量、快速、可定制的开源中文输入法，专为五笔和码表方案设计，支持全拼/双拼 | `scoop install windinput` | 官方 release 便携 zip（TSF 需 wind_portable -start 注册） | 0.132.0 | 2026-11-17 | 2026-11-17 |
+| 5 | [清风输入法 (WindInput)](https://github.com/huanfeng/WindInput) — 轻量、快速、可定制的开源中文输入法，专为五笔和码表方案设计，支持全拼/双拼 | `scoop install windinput` | 官方 release 便携 zip（TSF 需 wind_portable -start 注册） | 0.132.0 | 2026-11-17 | 2026-11-17 |
 | 6 | [Argus](https://github.com/Ray-lea/Argus) — 现代 Windows 任务管理器（Rust + GPUI） | `scoop install argus` | 单 exe 官方 release（仅 x64） | 0.5.0 | 2026-11-12 | 2026-11-13 |
 | 7 | [Snow Shot](https://github.com/mg-chao/snow-shot) — 截图、标注、钉图、离线 OCR 与录屏工具 | `scoop install snowshot` | 多架构便携 zip 官方 release（x64 / arm64） | 1.6.1 | 2026-11-11 | 2026-11-21 |
 | 8 | [AltSnap](https://github.com/w3c0929/AltSnap) — 按住 Alt 拖动窗口（AltDrag 的维护延续版） | `scoop install altsnap` | 便携 zip 官方 release（仅 x64） | 1.68 | 2026-11-10 | 2026-11-10 |

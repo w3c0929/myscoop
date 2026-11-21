@@ -10,7 +10,7 @@ scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 
 GitHub: https://github.com/w3c0929/myscoop
 
-## 当前状态（截至 2026-11-20）
+## 当前状态（截至 2026-11-21）
 
 - **收录软件总数**: 177 款
 - **本地维护（自托管 Release）**: 84 款
@@ -239,6 +239,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **修复资产评分把签名文件当安装包（2026-11-21）**：用户收录 quietmd（`s1dashu/quiet-md`）时，工具选中了 `quiet-md-0.1.13-windows-x64-setup.exe.minisig`（299 字节签名），真正的 `...setup.exe`（27.7MB）被忽略。根因：`is_windows_asset` 只排除了 `.sig`，**`.minisig` 以 `.minisig` 结尾不匹配**；而 `score_asset` 里 `.minisig` 因含 `x64` 得 +2，真正的 setup.exe 因含 `setup` 被 -10 得 -8 → 签名文件反超。修复两处：① `is_windows_asset` 后缀黑名单补 `.minisig`/`.sbom`/`.pem`/`.crt`/`.attestation`/`.intoto`；② `score_asset` 增加元数据兜底 `-100`（防规则漏网时靠 x64 加分反超）。验证：`.minisig` windows=False/score=-98，`setup.exe` windows=True/score=-8。quietmd 实际是 **Inno Setup** 安装包（字符串含 "Inno Setup"×4、7z 无法直接解），用 `innounp` 解包得到 `{app}\quiet_md.exe` + `vcruntime140.dll`；清单改用 `innosetup: true` + `bin: quiet_md.exe`，并补 `autoupdate.hash` 指向官方 `.exe.sha256`。实测卸载旧错误安装（current 删除曾报 Access denied，`rm -rf` 可清）后重装成功，shim/shortcut 正常。
 
 - **mykeymap 由自托管迁移为第三方官方（2026-11-21）**：`w3c0929/MyKeymap` 开始自己发 release（tag `v2.0-beta33`，资产 `mykeymap.zip` 10.5MB，digest `sha256:ffc35336…` 与清单逐字一致），清单相应改造：`url` 从 `myscoop/releases/download/v2.0-beta33-mykeymap/` 切到 `MyKeymap/releases/download/v$version/`，新增 `checkver`（github + `tag_regex ^v(.+)$`，兼容 `v2.0-beta33` 这类带后缀 tag）与 `autoupdate`，hash 同步为新构建值。README 中该行从「本地维护」表移到「第三方官方」表（置顶），两表重编号，计数变为 **177 / 第三方 93 / 本地 84**（总数不变）；目录树注释补「官方 release」。
+
+- **mykeymap 更新 v2.0-beta34（2026-11-21）**：tag `v2.0-beta34`，资产仍为 `mykeymap.zip`（10.5MB，无版本号），API digest `sha256:1a1b7f1e…`；该版本新增「文字编辑相关」4 个快捷键（Alt+Esc / Alt+Shift+Esc / Win+Home / Ctrl+Shift+Esc）。同日按铁律 22 修正 README 第三方表 3 处跳转链接：mykeymap→`w3c0929/MyKeymap`、quietmd→`s1dashu/quiet-md`、windinput→`huanfeng/WindInput`（全表复审：84 一致 / 0 不一致 / 9 例外）。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
