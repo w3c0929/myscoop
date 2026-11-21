@@ -22,7 +22,7 @@
 
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
-| 1 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具（AutoHotkey） | `scoop install mykeymap` | 官方 release 便携 zip（自建构建仓库 w3c0929/MyKeymap） | 2.0-beta33 | 2026-10-10 | 2026-11-21 |
+| 1 | [MyKeymap](https://xianyukang.com/MyKeymap.html) — 键盘映射效率工具（AutoHotkey） | `scoop install mykeymap` | 官方 release 便携 zip（自建构建仓库 w3c0929/MyKeymap） | 2.0-beta34 | 2026-10-10 | 2026-11-21 |
 | 2 | [Quiet.md](https://quiet.md) — 极速原生笔记与富文本编辑器（Rust + GPUI），本地优先 | `scoop install quietmd` | 官方 release Inno 安装包（解包为便携） | 0.1.13 | 2026-11-21 | 2026-11-21 |
 | 3 | [Atrium Desktop](https://github.com/wynter-yaxley/atrium-desktop) — Windows 11 原生玻璃质感桌面：浮动任务栏与桌面小组件，实时折射效果 | `scoop install atrium` | 官方 release 便携 zip（仅 x64） | 2.7.0 | 2026-11-20 | 2026-11-20 |
 | 4 | [MoJian3D](https://github.com/LingCore/MoJian3D-Downloads) — 3D 模型查看器（Qt 桌面应用）：支持 AI Agent 通过内置 mojian3d-control 技能检查并控制当前模型 | `scoop install mojian3d` | 官方 release 便携 zip（仅 x64） | 0.1.6 | 2026-11-20 | 2026-11-20 |
