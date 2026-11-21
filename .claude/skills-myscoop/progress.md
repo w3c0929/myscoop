@@ -13,8 +13,8 @@ GitHub: https://github.com/w3c0929/myscoop
 ## 当前状态（截至 2026-11-20）
 
 - **收录软件总数**: 177 款
-- **本地维护（自托管 Release）**: 85 款
-- **第三方官方（引用原项目 Release）**: 92 款
+- **本地维护（自托管 Release）**: 84 款
+- **第三方官方（引用原项目 Release）**: 93 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -237,6 +237,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **新增收录 atrium（Atrium Desktop 2.7.0）（2026-11-20）**：用户提供 `bucket/atrium.json`（第三方官方，`wynter-yaxley/atrium-desktop`，507 stars，2026-10-31 建仓、8 天发 8 版，更新很勤）。核对：release v2.7.0 资产 `Atrium-2.7.0-win-x64.zip`（91,669,810 字节）的 GitHub digest `sha256:b18bad73…` 与清单 hash **逐字一致**，另有官方 `.zip.sha256`；用户已自行验证包内容，未再重复下载。清单改进：`autoupdate` 增加 `hash.url = $baseurl/Atrium-$version-win-x64.zip.sha256`（官方提供标准 sha256sum 格式，避免 autoupdate 后 hash 漂移）。结构：`extract_dir: Atrium`、`bin/shortcuts: Atrium.exe`。
 
 - **修复资产评分把签名文件当安装包（2026-11-21）**：用户收录 quietmd（`s1dashu/quiet-md`）时，工具选中了 `quiet-md-0.1.13-windows-x64-setup.exe.minisig`（299 字节签名），真正的 `...setup.exe`（27.7MB）被忽略。根因：`is_windows_asset` 只排除了 `.sig`，**`.minisig` 以 `.minisig` 结尾不匹配**；而 `score_asset` 里 `.minisig` 因含 `x64` 得 +2，真正的 setup.exe 因含 `setup` 被 -10 得 -8 → 签名文件反超。修复两处：① `is_windows_asset` 后缀黑名单补 `.minisig`/`.sbom`/`.pem`/`.crt`/`.attestation`/`.intoto`；② `score_asset` 增加元数据兜底 `-100`（防规则漏网时靠 x64 加分反超）。验证：`.minisig` windows=False/score=-98，`setup.exe` windows=True/score=-8。quietmd 实际是 **Inno Setup** 安装包（字符串含 "Inno Setup"×4、7z 无法直接解），用 `innounp` 解包得到 `{app}\quiet_md.exe` + `vcruntime140.dll`；清单改用 `innosetup: true` + `bin: quiet_md.exe`，并补 `autoupdate.hash` 指向官方 `.exe.sha256`。实测卸载旧错误安装（current 删除曾报 Access denied，`rm -rf` 可清）后重装成功，shim/shortcut 正常。
+
+- **mykeymap 由自托管迁移为第三方官方（2026-11-21）**：`w3c0929/MyKeymap` 开始自己发 release（tag `v2.0-beta33`，资产 `mykeymap.zip` 10.5MB，digest `sha256:ffc35336…` 与清单逐字一致），清单相应改造：`url` 从 `myscoop/releases/download/v2.0-beta33-mykeymap/` 切到 `MyKeymap/releases/download/v$version/`，新增 `checkver`（github + `tag_regex ^v(.+)$`，兼容 `v2.0-beta33` 这类带后缀 tag）与 `autoupdate`，hash 同步为新构建值。README 中该行从「本地维护」表移到「第三方官方」表（置顶），两表重编号，计数变为 **177 / 第三方 93 / 本地 84**（总数不变）；目录树注释补「官方 release」。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
