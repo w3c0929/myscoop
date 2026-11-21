@@ -1,13 +1,13 @@
 {
-    "version": "0.4.4",
+    "version": "0.4.5",
     "description": "手机隐私审计：用 adb 扫出 Android 应用的权限、上报端点与数据流向，并给出可回滚的处置。Desktop Android leak audit: permissions, endpoints, data flows, reversible fixes.",
     "homepage": "https://verlintas.dev/noir/",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/Verlintas/NOIR"
     },
-    "url": "https://github.com/Verlintas/NOIR/releases/download/v0.4.4/noir-v0.4.4-Windows-portable.zip",
-    "hash": "sha256:4fa953ecfe11443ebfd13a57e3eab33073299e72f7087771b094204b5e9d1b5c",
+    "url": "https://github.com/Verlintas/NOIR/releases/download/v0.4.5/noir-v0.4.5-Windows-portable.zip",
+    "hash": "sha256:3ddf9b17f1b51fea8d557d67076d436f25a154baa29861b75d3458296eaca5d9",
     "autoupdate": {
         "url": "https://github.com/Verlintas/NOIR/releases/download/v$version/noir-v$version-Windows-portable.zip"
     },
