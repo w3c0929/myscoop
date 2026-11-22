@@ -260,40 +260,19 @@ scoop uninstall cmm-plus
 
 ## 智能模式：Scoop 工具箱文件名预选
 
-仓库的 `智能模式Scoop(3).ps1`（Scoop 工具箱智能模式版）支持**文件名预选**：复制脚本并改名，文件名末尾括号中的数字（1-4）即对应当执行的菜单项，双击即可**自动执行、完成后自动退出**，无需手动点选。
+`智能模式Scoop(3).ps1` 支持**文件名预选**：复制脚本并改名为末尾带 `(1)`-`(4)` 的形式，双击即自动执行对应菜单并退出。
 
-> **⚠️ 首次运行前（必做）**：Windows 默认禁运本地脚本，第一次双击运行 `智能模式Scoop(3).ps1` 前，先打开 PowerShell 执行下面这条命令——**允许运行本地脚本，远程脚本需签名**：
->
-> ```powershell
-> Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
-> ```
->
-> 执行后即可正常双击运行脚本；提示输入 Y 确认即可。
+> **首次运行前（必做）**：先执行一次 `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`（允许本地脚本，远程脚本仍需签名）。
 
 | 文件名 | 自动执行行为 |
 |--------|-------------|
-| `智能模式Scoop.ps1`（无括号） | 打开菜单手动选择；任务完成后停留等待按键 |
-| `智能模式Scoop(1).ps1` | 第 1 项：管理员身份全局安装 Scoop（需管理员权限），完成后自动退出 |
-| `智能模式Scoop(2).ps1` | 第 2 项：当前普通用户安装 Scoop，完成后自动退出 |
-| `智能模式Scoop(3).ps1` | 第 3 项：导出当前 Scoop 备份（Bucket + 已装软件，自动带 bucket 前缀），完成后自动退出 |
-| `智能模式Scoop(4).ps1` | 第 4 项：退出（一般不需要） |
+| `智能模式Scoop.ps1`（无括号） | 打开菜单手动选择，任务完成后停留等待按键 |
+| `智能模式Scoop(1).ps1` | 管理员身份全局安装 Scoop |
+| `智能模式Scoop(2).ps1` | 当前用户安装 Scoop |
+| `智能模式Scoop(3).ps1` | 导出 Scoop 备份（Bucket + 已装软件） |
+| `智能模式Scoop(4).ps1` | 退出 |
 
-> **识别规则**：脚本名**末尾**的半角或全角括号 `( )`/`（ ）` 内的数字 1-4 生效，前缀不限（`智能模式Scoop(3).ps1`、`自动更新Scoop(3).ps1` 均可）。数字非 1-4、括号不在末尾、或无括号 → 回退到手动菜单。
->
-> **强制打开菜单**：预选模式文件加 `-Menu` 参数即可强制进入菜单手动选择：
-> ```powershell
-> powershell -ExecutionPolicy Bypass -File "智能模式Scoop(3).ps1" -Menu
-> ```
-
-**使用步骤**：
-1. 复制 `智能模式Scoop(3).ps1`，按上表改名为目标模式（如 `智能模式Scoop(1).ps1` = 管理员全局安装预选版）；
-2. 双击运行（或右键 → 使用 PowerShell 运行）；
-3. 等待自动执行完毕（预选模式窗口自动关闭，无需按键）。
-
-**注意事项**：
-- 预选模式**完成后自动退出**（不等待按键）；无括号版本会停留等待确认；
-- 各模式共用相同前置流程：执行策略设置、Scoop 本体镜像回退、`.ssh` 权限自动体检；
-- 仓库自带示例 `智能模式Scoop(3).ps1`（导出备份的智能模式版），可直接复制改名复用。
+> 括号须在文件名末尾（半角/全角均可）；加 `-Menu` 参数可强制进入菜单。
 
 ---
 
@@ -309,32 +288,17 @@ git config --global --add safe.directory D:/scoop/buckets/*
 
 ## Scoop 辅助文件（本机部署）
 
-仓库根目录提供供使用者部署到**本机 Scoop 安装**的辅助文件，用于调整仓库下载优先级（同名软件存在于多个 bucket 时，按优先级选择来源）以及 GitHub 下载加速。部署有**覆盖**与**链接**两种方式，任选其一：
+仓库根目录提供部署到本机 Scoop 的辅助文件，用于调整 bucket 下载优先级与 GitHub 下载加速：
 
 | 文件 | 部署位置 | 作用 |
 |------|----------|------|
-| `manifest.ps1` | `D:\scoop\apps\scoop\current\lib\manifest.ps1` | Scoop 库补丁，修改下载文件时优先选择仓库的顺序 |
-| `download.ps1` | `D:\scoop\apps\scoop\current\lib\download.ps1` | Scoop 库补丁，GitHub Release 下载优先走加速镜像（aria2 与默认下载器通用） |
-| `config.json`  | `C:\Users\Administrator\.config\scoop\config.json` | Scoop 配置文件，`bucketlist` 数组控制各仓库的下载优先级顺序 |
+| `manifest.ps1` | `D:\scooppps\scoop\current\lib\manifest.ps1` | 修改同名软件跨 bucket 的选择顺序 |
+| `download.ps1` | `D:\scooppps\scoop\current\lib\download.ps1` | GitHub Release 下载走加速镜像 |
+| `config.json` | `%USERPROFILE%\.config\scoop\config.json` | `bucketlist` 控制仓库优先级 |
 
-> **⚠️ 需要覆盖的文件（部署清单）**：从仓库复制以下 3 个文件，**覆盖**到对应位置（覆盖前建议先备份原文件）：
->
-> 1. `manifest.ps1` → 覆盖到 **`D:\scoop\apps\scoop\current\lib\manifest.ps1`**
-> 2. `download.ps1` → 覆盖到 **`D:\scoop\apps\scoop\current\lib\download.ps1`**
-> 3. `config.json` → 覆盖到 **`C:\Users\Administrator\.config\scoop\config.json`**
+**部署方式**：运行仓库根目录的 `symlink.bat`（**需管理员权限**）——两个 `.ps1` 以**软链接**部署（`git pull` 后立即生效），`config.json` 以**镜像拷贝**部署（Scoop 自身会重写该文件，故每次重跑同步）；同时把仓库 `*.bat` 链接到 `D:\scoop\shims`。Scoop 自更新后需重跑一次。
 
-> **部署方式一（覆盖）**：将仓库中的 `manifest.ps1` 覆盖到 Scoop 的 `lib\manifest.ps1`，将 `download.ps1` 覆盖到 Scoop 的 `lib\download.ps1`，将 `config.json` 覆盖到上述 `.config\scoop\` 目录即可。
->
-> **部署方式二（脚本部署，推荐）**：运行仓库根目录的 `symlink.bat`（**需管理员权限**），脚本分三段执行——`manifest.ps1` / `download.ps1` 以 **mklink 软链接**部署（参考 `E:\09.同步\目录链接.bat` 的写法），`config.json` 以**镜像拷贝**部署（真实文件，源为权威）；目标位置原有的旧文件会被删除后重建：
-> - 两个 `.ps1` 链接指向仓库源文件，**`git pull` 更新仓库后立即生效，无需再手动覆盖**；`config.json` 为真实文件拷贝，**仓库改过 config.json 后需重跑一次 `symlink.bat` 才生效**（原因：Scoop 自身会重写 config.json——`scoop config` 写入、更新时写 `last_update`——会把软链接删掉重建为普通文件导致链接失效，故改用拷贝，每次运行重新同步为仓库版本）；
-> - Scoop 自更新会重建 `current` 目录导致链接失效——届时**重新运行一次 `symlink.bat` 即可**（比重新覆盖快，也是一键完成）；
-> - 脚本顺带执行原有功能：把仓库根目录所有 `*.bat` 链接到 `D:\scoop\shims` 供全局命令使用。
-> - **补丁按 Scoop 版本自动分发（数据驱动）**：`manifest.ps1` / `download.ps1` 补丁维护多个基线——**仓库根目录文件 = 最新基线**（版本号记录在 `patches\baseline.txt`），**`patches\<版本>\` = 该版本冻结补丁**（现有 `patches\v0.5.3\`）。`symlink.bat` 运行时用 `git describe --tags --abbrev=0` 读取当前 Scoop 版本并分发：版本 == 基线 → 根补丁；`patches\<版本>\` 存在 → 该版本专用补丁；都不匹配 → 根补丁 + **明确警告**（Scoop 比补丁新，可能不适用，提示更新仓库）；git 不可用/无标签 → 根补丁 + 警告。
->   - **Scoop 大版本更新时的维护三步（`symlink.bat` 无需改动）**：① 复制当前根两个补丁文件到 `patches\<旧基线>\`（冻结）② 用新官方文件重建根补丁 ③ 把 `patches\baseline.txt` 改为新版本号。
->   - 低版本补丁仅维护到 v0.5.3。
-> - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
-> - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
-> - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用（数组形式须直接编辑 config.json，`scoop config` 不支持）。镜像写法只有一种：**镜像前缀 + 完整原始 URL**（只接受 release 资产代理型；git 克隆加速器如 `gitclone.com` 不适用）。测速算法、排名缓存（`%LOCALAPPDATA%\myscoop\mirror-rank.json`）与降权策略见 `.claude/skills-myscoop/progress.md`「Scoop 库补丁与版本分发」。
+补丁按 Scoop 版本自动分发（根 = 最新基线，`patches\<版本>\` = 冻结补丁）；升级维护流程与镜像测速细节见 `.claude/skills-myscoop/progress.md`「Scoop 库补丁与版本分发」。
 
 ### sync-chrome-to-ego.bat（Chrome → ego lite 一键同步）
 
@@ -388,32 +352,6 @@ git config --global --add safe.directory D:/scoop/buckets/*
 | `win11右键菜单转win10菜单.bat` | **Win11 右键菜单切换工具**：1 = 转 Win10 经典右键菜单；2 = 恢复 Win11 默认菜单；0 = 退出 | 双击运行，按提示输入数字，自动重启资源管理器生效 |
 ---
 
-## choco 与 Windows Terminal 安装（可选）
-
-以下为按需选装的终端环境工具，与 Scoop 功能无关，需要时取用：
-
-### 安装 choco（包管理器）
-
-方法一：cmd
-
-```powershell
-@powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
-```
-
-方法二：powershell
-
-```powershell
-iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
-```
-
-### 安装 Windows Terminal（终端）
-
-```powershell
-winget install --id Microsoft.WindowsTerminal -e --source winget --accept-source-agreements --accept-package-agreements
-```
-
----
-
 ## 获取所有权（可选）
 
 `获取所有权.ps1` 是 Windows 全盘权限体检修复工具（源自《智能模式Scoop.ps1》的 `.ssh` 权限体检功能改造），处理旧机器/旧账号迁移数据盘遗留的权限垃圾：
@@ -464,145 +402,34 @@ winget install --id Microsoft.WindowsTerminal -e --source winget --accept-source
 myscoop/
 ├── .github/workflows/
 │   └── auto-update.yml             ← 外部服务器每 4 小时触发；GitHub cron 每天 1 次兜底
-├── bucket/        ← 所有 manifest JSON（共 178 个）
-│   ├── cmm-plus.json               (模式1：多架构 zip 官方 release)
-│   ├── mykeymap.json                (模式2：zip 便携解压即用，官方 release)
-│   ├── litemonitor.json             (模式1：portable zip 官方 release)
-│   ├── windowsclear.json            (模式2：单 exe 便携)
-│   ├── tinytask.json                (模式2：单 exe 便携)
-│   ├── 360bwtest.json               (模式2：单 exe 便携)
-│   ├── hibituninstaller.json        (模式2：单 exe 便携 自托管)
-│   ├── btsou.json                   (模式2：zip 便携 自托管)
-│   ├── floral.json                  (模式1：多架构 exe 官方 release)
-│   ├── wgestures.json               (模式4：自托管便携)
-│   ├── uninstalltool.json           (模式5：静默安装)
-│   ├── bcompare.json                (模式5：静默安装)
-│   ├── termius.json                 (模式5：NSIS 解包+asar)
-│   ├── 2345pic.json                 (模式5：已绿化)
-│   ├── apollo.json                  (模式6：单 exe 手动安装)
-│   ├── iobit.json                   (模式6：单 exe 手动安装)
-│   ├── idm.json                     (模式6：单 exe 手动安装)
-│   ├── bandizip6.json               (模式6：单 exe 手动安装)
-│   ├── sougoupy.json                (模式6：单 exe 手动安装)
-│   ├── uuyc.json                    (模式6：单 exe 手动安装)
-│   ├── pixpin.json                  (模式1：官方直链 Inno Setup)
-│   ├── sysdiag.json                 (模式6：单 exe 手动安装)
-│   ├── dotnet-desktopruntime.json   (模式6：单 exe 手动安装)
-│   ├── keycastow.json               (模式6：zip 便携+自动启动)
-│   ├── dianshishiguang.json          (模式6：单 exe 手动安装)
-│   ├── rdriveimage.json               (模式2：zip 便携解压即用)
-│   ├── winmtr.json                     (模式2：zip 便携解压即用)
-│   ├── networkfixtool.json             (模式2：单 exe 便携)
-│   ├── syshelper.json                  (模式2：单 exe 便携)
-│   ├── amcfy-music.json                 (模式1：官方 release+自动更新)
-│   ├── dropit.json                      (模式2：便携 zip 自托管)
-│   ├── gstarcad.json                    (模式5：多层 NSIS 解包自托管)
-│   ├── cutsilence.json                  (模式2：zip 便携解压即用)
-│   ├── audio-recorder.json              (模式5：Inno 解包自托管)
-│   ├── chromesetup.json                 (模式6：单 exe 手动安装)
-│   ├── wcap.json                       (模式2：zip 便携解压即用)
-│   ├── cherry.json                       (模式1：多架构 portable exe)
-│   ├── cc-haha.json                    (模式1：多架构 portable exe)
-│   ├── musictag.json                   (模式2：7z 便携解压即用)
-│   ├── miaomi.json                     (模式5：NSIS 解包便携)
-│   ├── cinetry.json                    (模式1：zip 官方 release)
-│   ├── etlp.json                       (模式1：多架构 zip 官方 release)
-│   ├── eserver.json                    (模式1：多架构 zip 官方 release)
-│   ├── fileconv.json                   (模式7：MSI 手动安装)
-│   ├── bandicam.json                   (模式2：7z 便携解压即用)
-│   ├── vp9-video-extensions.json       (模式6：Appx 手动安装)
-│   ├── webview2-runtime.json           (模式6：单 exe 手动安装)
-│   └── tokenicode.json                 (模式1：单 exe 官方 release)
-│   ├── terminal.json                       (模式1：多架构 zip 官方 release)
-│   ├── hardlinkshellext.json               (模式6：单 exe 手动安装)
-│   ├── ultraiso.json                       (模式6：单 exe 手动安装)
-│   └── edgeblock.json                      (模式2：zip 便携解压即用)
-│   ├── dingtalk-downloader.json            (模式6：单 exe 手动安装)
-│   ├── hipc.json                            (模式6：单 exe 手动安装)
-│   ├── qq.json                              (模式6：单 exe 手动安装)
-│   ├── wechat.json                          (模式1：官方 release 7z 解包)
-│   └── wecom.json                           (模式6：单 exe 手动安装)
-│   ├── waifu2x-caffe.json                   (模式2：zip 便携解压即用)
-│   ├── vs-buildtools.json                 (模式6：单 exe 手动安装)
-│   ├── athena-loc.json                   (模式2：7z 便携解压即用)
-│   ├── pcmaster.json                     (模式2：zip 便携解压即用)
-│   ├── btseed.json                       (模式2：zip 便携解压即用)
-│   ├── video-captioner.json              (模式6：单 exe 手动安装)
-│   ├── hcsstudio.json                   (模式6：单 exe 手动安装)
-│   ├── cfwarp.json                      (模式7：MSI 手动安装)
-│   ├── gzh-formatter.json               (模式2：单 exe 便携)
-│   ├── wps.json                         (模式6：单 exe 手动安装)
-│   ├── msst-gui.json                   (模式1：单 exe 中文版)
-│   ├── comfyui.json                     (模式1：portable 7z 官方 release)
-│   ├── qlcad.json                      (qlplugin 自启动安装)
-│   ├── qloffice.json                   (qlplugin 自启动安装)
-│   ├── qlgit.json                      (qlplugin 自启动安装)
-│   ├── windisktool.json                 (模式1：单 exe 官方 release)
-│   ├── keyviz.json                      (模式7：MSI 手动安装)
-│   ├── getdict.json                       (模式6：单 exe 手动安装)
-│   ├── easytshark.json                    (模式2：zip 便携解压即用)
-│   ├── switchhosts.json                   (模式1：zip 官方 release，自建构建仓库)
-│   ├── sdkm.json                          (模式1：zip 官方 release，安装时自动 init)
-│   ├── baulk.json                         (模式1：多架构 zip 官方 release)
-├── .claude/
-│   └── skills-myscoop/
-│       ├── SKILL.md                 ← AI 自动收录技能
-│       └── progress.md              ← 项目进展
-├── myscoop-update.py                ← 免下载自动更新脚本
-├── 智能模式Scoop(3).ps1              ← Scoop 工具箱（文件名预选智能模式）：复制改名 (1)(2)(4).ps1 自动执行对应菜单
-├── 获取所有权.ps1                  ← Windows 全盘权限体检修复（残留SID/无访问权/旧机账号，文件名预选）
-├── 获取所有权.ps1使用说明.md       ← 获取所有权.ps1 完整使用手册
-├── cd-comfyui.bat                   ← 启动 ComfyUI（HF 镜像）
-├── cd-models.bat                    ← 切换到 llama.cpp 模型目录
-├── down-node.bat                    ← ComfyUI 插件批量安装（入口，逻辑在 down-node.py）
-├── symlink.bat                      ← 一键部署：manifest/download 软链接 + config.json 镜像拷贝 + 仓库 .bat 链接到 shims
-├── 添加gitbash右键菜单.reg           ← 右键菜单添加 "Git Bash Here" 入口
-├── win11右键菜单转win10菜单.bat      ← Win11/Win10 右键菜单模式切换工具
-├── manifest.ps1                     ← Scoop 库补丁（v0.6.0 基线）：调整仓库下载优先级顺序
-├── download.ps1                     ← Scoop 库补丁（v0.6.0 基线）：GitHub 下载镜像加速
-├── patches/
-│   ├── baseline.txt                 ← 根补丁基线版本号（symlink.bat 版本分发用）
-│   └── v0.5.3/                      ← 旧版 Scoop 专用补丁（v0.5.3 基线，symlink.bat 自动分发）
-│       ├── manifest.ps1
-│       └── download.ps1
-├── config.json                      ← Scoop 配置：bucketlist 控制仓库优先级顺序
-└── README.md                        ← 此文件
+├── bucket/                         ← 所有 manifest JSON（清单见上方收录表）
+├── .claude/skills-myscoop/
+│   ├── SKILL.md                    ← AI 收录技能与全部制作规则
+│   └── progress.md                 ← 项目进展与决策记录
+├── myscoop-update.py               ← 免下载自动更新脚本
+├── patches/                        ← Scoop 库补丁（按版本分发：baseline.txt + v0.5.3/）
+├── manifest.ps1 / download.ps1     ← Scoop 库补丁（最新基线）
+├── config.json                     ← Scoop 配置（bucketlist 优先级）
+├── symlink.bat                     ← 一键部署补丁与 shim
+├── 智能模式Scoop(3).ps1            ← Scoop 工具箱（文件名预选）
+├── 获取所有权.ps1                  ← Windows 权限体检修复
+└── README.md                       ← 此文件
 ```
----
-
-## 收录策略：第三方资产按架构分组择优
-
-`myscoop-update.py` 收录第三方应用时的处理顺序（完整规则与历次教训见 `.claude/skills-myscoop/SKILL.md` 规则 20）：
-
-1. **过滤**：排除非 Windows 资产（macOS/Linux/源码包/脚本），以及校验与元数据文件（`SHA256SUMS`、`*.sha256sums`、`*.md5sums`、`*.checksums`、`*.digest`、`*.minisig`、`*.sig`、`*.pdb`、`*.zsync` 等）；
-2. **分组**：按文件名架构标记分为 `64bit / 32bit / arm64 / 通用` 四组；
-3. **组内择优**：按 `score_asset` 打分（portable > zip/7z > 免安装 exe > 安装包；NVIDIA 通用 > 指定 CUDA > 通用 > 非 N 卡专用；CLI/裸二进制与拼音源码包降级），同分取版本号最大者；
-4. **兜底**：某架构缺专用包时用通用包兜底；全架构匹配失败则跳过，不写入；
-5. **生成**：候选架构 ≥2 时生成 `architecture` 块，否则用顶层 `url`。
-
-> 打分表以代码 `score_asset` 为准（本文件不再镜像维护）；历次调整原因见 SKILL 规则 20。自托管包维持单包，不参与分组。
 
 ---
 
 ## 制作 Manifest
 
-完整流程、资产类型判断（情况 A–I）与全部规则见 **`.claude/skills-myscoop/SKILL.md`**。AI 助手可直接调用该 Skill 完成收录，最小手动步骤如下：
+完整流程、资产选择规则（`score_asset` 打分、架构分组兜底）与全部教训见 **`.claude/skills-myscoop/SKILL.md`**（规则 17/20）。最小手动步骤：
 
 ```bash
-# 1. 生成（GitHub 仓库链接必须用脚本，不要手写）
-python3 myscoop-update.py --add https://github.com/owner/repo --name appname
-
-# 2. 验证
-python3 -m json.tool bucket/appname.json
-scoop cat myscoop/appname
-
-# 3. 同步文档并提交
-python3 tools/rebuild_progress.py
-git add bucket/ README.md .claude/skills-myscoop/progress.md
-git commit -m "add appname" && git push
+python3 myscoop-update.py --add https://github.com/owner/repo --name appname   # 生成（仓库链接必须用脚本）
+python3 -m json.tool bucket/appname.json && scoop cat myscoop/appname          # 验证
+python3 tools/rebuild_progress.py                                              # 重建提交历史
+git add bucket/ README.md .claude/skills-myscoop/progress.md && git commit -m "add appname" && git push
 ```
 
-`--add` 关键参数：`--dl` 生成后强制下载探测（Inno/NSIS 解包、自动补 bin/shortcuts、hash 实测）；`--more` 主程序 + 运行时配对收录。字段含义见下文「附录：Manifest 字段速查」。
+`--dl` 生成后强制下载探测（Inno/NSIS 解包、自动补 bin/shortcuts、hash 实测）；`--more` 主程序 + 运行时配对收录。字段含义见下文「附录：Manifest 字段速查」。
 
 ---
 
@@ -638,27 +465,18 @@ git add bucket/ README.md && git commit -m "批量更新第三方软件" && git 
 
 ### Q: 安装版 .exe 没有便携版怎么办？
 
-优先选择方式：
-1. 先用 7-Zip 尝试直接解压 setup.exe，有些安装包本身就是自解压包
-2. 如果 7-Zip 不行，用 `innounp` 解包 Inno Setup 安装包
-3. 实在不行才考虑用安装参数静默安装（不推荐，Scoop 不应静默执行安装包）
+依次尝试：7-Zip 直接解压（部分 setup 是自解压包）→ `innounp` 解 Inno Setup → 最后才考虑静默安装。判断与探测细节见 SKILL 情况 D。
 
 ### Q: zip 内文件名含中文，解压后乱码/找不到文件？
 
-Windows 下 zip 的中文文件名在 Scoop 解压后可能编码损坏，导致 `bin`/`shortcuts` 找不到文件。解决方案：用 `installer.script` 通配匹配并重命名为 ASCII 文件名：
+用 `installer.script` 通配匹配后重命名为 ASCII（在解压后、建 shim 前执行）：
 
 ```json
-"installer": {
-    "script": [
-        "$exe = Get-ChildItem \"$dir\" -Filter '*-win-portable.exe' | Select-Object -First 1",
-        "if ($exe) { Rename-Item -Path $exe.FullName -NewName 'app-name.exe' }"
-    ]
-},
-"bin": "app-name.exe",
-"shortcuts": [["app-name.exe", "中文显示名称"]]
+"installer": { "script": ["$exe = Get-ChildItem \"$dir\" -Filter '*-win-portable.exe' | Select-Object -First 1", "if ($exe) { Rename-Item -Path $exe.FullName -NewName 'app-name.exe' }"] },
+"bin": "app-name.exe"
 ```
 
-> `installer.script` 在 Scoop 解压后、shim 创建前执行，此时重命名有效。用 `-Filter` 通配避开乱码文件名。示例：gzh-formatter。
+示例：gzh-formatter。
 
 ### Q: 需要额外依赖怎么办？
 

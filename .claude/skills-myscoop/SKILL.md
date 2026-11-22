@@ -512,7 +512,7 @@ git add bucket/ README.md && git commit -m "批量更新第三方软件" && git 
 
 ## 关键规则
 
-1. **优先 portable/zip**：上游同时提供便携版（portable/zip/7z）与安装包时选便携（打分见规则 20 / README 收录策略）；**仅发安装包时照用**——能解包就解包便携化（NSIS/Inno 7z 解包，如 bdl/vtracer/dsh），注册型（输入法/驱动/右键菜单）走 `installer` 模式完成系统注册（如 qingjian）。安装包在打分中**降级 -10（排后，非排除）**
+1. **优先 portable/zip**：上游同时提供便携版（portable/zip/7z）与安装包时选便携（打分见规则 20）；**仅发安装包时照用**——能解包就解包便携化（NSIS/Inno 7z 解包，如 bdl/vtracer/dsh），注册型（输入法/驱动/右键菜单）走 `installer` 模式完成系统注册（如 qingjian）。安装包在打分中**降级 -10（排后，非排除）**
 2. **优先 self-contained**（自带运行时），少用 framework-dependent（需额外依赖）
 3. **Hash 格式固定**：`sha256:xxxx`（全小写）
 4. **版本号去 v 前缀**：tag `v1.2.3` → version `1.2.3`
