@@ -447,8 +447,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* a88c987 (HEAD -> main) 修复 minidock 自动更新告警：上游资产名改为固定 MiniDock.exe
-* 61c9c50 (origin/main, origin/HEAD) progress.md 更新提交历史
+* 2c79539 (HEAD -> main) 清理文档过时项
+* 22f2c69 (origin/main, origin/HEAD) progress.md 更新提交历史
+* a88c987 修复 minidock 自动更新告警：上游资产名改为固定 MiniDock.exe
+* 61c9c50 progress.md 更新提交历史
 * 3ef7cb6 修复 README 乱码并整理文档结构
 * 7cd07c7 progress.md 更新提交历史
 * 05c0eb3 同步 README 第三方版本与日期列
