@@ -212,7 +212,7 @@
 scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 ```
 
-> **重要提示（添加桶后必做）**：上述命令仅将本桶登记到 Scoop，**尚不足以正常使用**。还须进入 myscoop 仓库目录（如 `D:\scoop\buckets\myscoop`），**以管理员身份双击运行 `symlink.bat`**，完成本桶所需的部署——将 `manifest.ps1`、`download.ps1`、`config.json` 三个文件以软链接方式部署到 Scoop 对应位置，并把仓库 `*.bat` 链接到 `D:\scoop\shims` 以提供全局命令。**未完成该步骤前，本桶软件将无法正常安装与更新**；Scoop 自更新后亦需重新运行一次。详见下文「部署」章节。
+> **重要提示（添加桶后必做）**：上述命令仅将本桶登记到 Scoop，**尚不足以正常使用**。还须进入 myscoop 仓库目录（如 `D:\scoop\buckets\myscoop`），**以管理员身份双击运行 `symlink.bat`**，完成本桶所需的部署——将 `manifest.ps1`、`download.ps1`、`config.json` 三个文件以软链接方式部署到 Scoop 对应位置，并把仓库 `*.bat` 链接到 `D:\scoop\shims` 以提供全局命令。**未完成该步骤前，本桶软件将无法正常安装与更新**；Scoop 自更新后亦需重新运行一次。详见下文「Scoop 辅助文件」章节。
 >
 > **Scoop 不在默认目录时（额外一步）**：若 Scoop 装在自定义路径（如 `D:\scoop`）而**未设置 `SCOOP` 环境变量**，第三方工具 `scoop-search` 会报 `Could not open the buckets directory: C:\Users\<用户>\scoop\buckets`——它只认 `SCOOP` 变量或默认的 `~\scoop`（`scoop` 命令本身从 shim 路径推断根目录，所以不受影响）。修复（PowerShell，普通权限即可）：
 >
@@ -334,11 +334,7 @@ git config --global --add safe.directory D:/scoop/buckets/*
 >   - 低版本补丁仅维护到 v0.5.3。
 > - `config.json` 的 `bucketlist` 顺序即仓库优先级（靠前的优先，当前为 `myscoop > main > extras > versions > sysinternals > official`）。
 > - `manifest.ps1` 中带 `# ========== bucketlist 补丁开始 ==========` 标记的代码段与其保持一致，二者需同步更新。
-> - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用：
->   - 下载 `https://github.com/*/releases/download/` 资产时，用 Scoop 自己的 .NET 下载栈做 3 次短测速（**同协议/同代理**，避免“测 h2、下 h1.1”），按 EWMA 排名选最优镜像并缓存到 `%LOCALAPPDATA%\myscoop\mirror-rank.json`；10 分钟内有新鲜冠军走**热路径（0 探测）**；下载前对实际资产做 1.2s/4MB 同栈验证（固定 1MB/s 底线），失败立即降权并换下一个，**原始直链始终作为最后兜底**。（`aria2-mirrors` **数组形式，须直接编辑 config.json 设置**——`scoop config` 命令不支持数组参数。）
->   - 镜像地址可写完整 URL 或裸域名（自动补 `https://`），数组顺序作为**冷启动种子**（不再是“第一个可达就用”）。当前为 2026-10-10 实测去重排序的 24 个，前 3 名：`hk.gh-proxy.org` > `cdn.gh-proxy.com` > `git.yylx.win`。
->   - **只放"release 资产代理"型镜像**：拼接方式只有一种——**镜像前缀 + 完整原始 URL**（如 `https://hk.gh-proxy.org/https://github.com/…`）。git 克隆加速器（如 `gitclone.com`，写法为 `gitclone.com/github.com/owner/repo`）不代理 release 下载路径，放进列表只会 404/500，勿加。
->   - 对 aria2（`aria2-enabled: true`）与默认下载器两条路径均生效（**共用排名**）；但**下载期自动换源目前只对默认下载器生效**，aria2 仅使用排名结果。**Scoop 自更新后补丁会丢失**（链接也会失效），**重新覆盖或重新运行 `symlink.bat`** 即可（原版备份在仓库 `staging/scoop-backup/`）。
+> - `download.ps1` 中带 `# ========== GitHub 镜像加速补丁开始 ==========` 标记的代码段为 GitHub 镜像加速逻辑，与 `config.json` 的 `aria2-mirrors` 配合使用（数组形式须直接编辑 config.json，`scoop config` 不支持）。镜像写法只有一种：**镜像前缀 + 完整原始 URL**（只接受 release 资产代理型；git 克隆加速器如 `gitclone.com` 不适用）。测速算法、排名缓存（`%LOCALAPPDATA%\myscoop\mirror-rank.json`）与降权策略见 `.claude/skills-myscoop/progress.md`「Scoop 库补丁与版本分发」。
 
 ### sync-chrome-to-ego.bat（Chrome → ego lite 一键同步）
 
@@ -468,7 +464,7 @@ winget install --id Microsoft.WindowsTerminal -e --source winget --accept-source
 myscoop/
 ├── .github/workflows/
 │   └── auto-update.yml             ← 外部服务器每 4 小时触发；GitHub cron 每天 1 次兜底
-├── bucket/        ← 所有 manifest JSON（共 126 个）
+├── bucket/        ← 所有 manifest JSON（共 178 个）
 │   ├── cmm-plus.json               (模式1：多架构 zip 官方 release)
 │   ├── mykeymap.json                (模式2：zip 便携解压即用，官方 release)
 │   ├── litemonitor.json             (模式1：portable zip 官方 release)
@@ -576,542 +572,54 @@ myscoop/
 
 ## 收录策略：第三方资产按架构分组择优
 
-`myscoop-update.py` 收录第三方应用时的资产选择规则：
+`myscoop-update.py` 收录第三方应用时的处理顺序（完整规则与历次教训见 `.claude/skills-myscoop/SKILL.md` 规则 20）：
 
-1. **过滤**：排除非 Windows 资产（macOS/Linux/源码包/脚本，以及校验与元数据文件——含 `SHA256SUMS`、`*.sha256sums`、`*.md5sums`、`*.checksums`、`*.digest` 等各种写法）。**"隐身"的 macOS/Linux 资产**再按两条规则排除（`foreign_platform_assets`）：① release 含 `latest-mac.yml` / `latest-linux.yml`（electron-builder 平台清单）时，解析其列出的文件名排除（权威）；② 与同名 `.dmg` 成对的 `.zip`（去扩展名后相同）视为 macOS 排除（启发式）。教训：`freellmapi` 的 `-x64.zip`/`-arm64.zip` 实为 macOS 包（名字里没有 mac 标记），被当 Windows 资产选走 → `--dl` 探测"未发现 exe"，真正的 `-win.zip` 反被通用兜底塞进 32bit 槽位；
-2. **分组**：按文件名架构标记分为 `64bit / 32bit / arm64 / 通用（无标记）` 四组；
-3. **组内择优**：每组内按**打分**（`score_asset`）选最佳资产，**同分取文件名数字最大者（= 最新）**。当前打分规则：
+1. **过滤**：排除非 Windows 资产（macOS/Linux/源码包/脚本），以及校验与元数据文件（`SHA256SUMS`、`*.sha256sums`、`*.md5sums`、`*.checksums`、`*.digest`、`*.minisig`、`*.sig`、`*.pdb`、`*.zsync` 等）；
+2. **分组**：按文件名架构标记分为 `64bit / 32bit / arm64 / 通用` 四组；
+3. **组内择优**：按 `score_asset` 打分（portable > zip/7z > 免安装 exe > 安装包；NVIDIA 通用 > 指定 CUDA > 通用 > 非 N 卡专用；CLI/裸二进制与拼音源码包降级），同分取版本号最大者；
+4. **兜底**：某架构缺专用包时用通用包兜底；全架构匹配失败则跳过，不写入；
+5. **生成**：候选架构 ≥2 时生成 `architecture` 块，否则用顶层 `url`。
 
-| 维度 | 加减分 | 触发条件与说明 |
-|------|-------|----------------|
-| 便携版 | **+10** | 文件名含 `portable` |
-| 压缩包 | **+5** | `.zip` / `.7z` |
-| 免安装 exe | 0 | 单 exe 直用（不含 setup/install 字样） |
-| 安装包 | **-10** | `.exe` 且含 `setup` / `install`；`.msi` 同档 |
-| **CLI / 裸二进制** | **-20** | 含 `cli` / `msvc` / `gnu` 独立段——是命令行工具或裸二进制，**不是 GUI 应用的替代品**，排到安装包之后（教训：`bdl` 曾选中 `bdl-cli-…zip`、`vtracer` 曾选中 `-msvc.zip`，把 GUI 应用装成了命令行工具） |
-| **源码包（拼音标记）** | **-20** | 含 `daima` / `yuanma` 独立段——中文项目用拼音命名源码包（与 `-source`/`-src` 同义），不是可安装的 Windows 包；**只降级不排除**（上游仅发源码包时仍可兜底选中）（教训：`anclicker` 的 `AnClicker-v1.5.2-win-DaiMa.zip` 与 `-win.zip` 同分被按顺序选中） |
-| NVIDIA 通用 | **+8** | 含 `nvidia` 且无 CUDA 版本号 |
-| 指定 CUDA | **+6** | 含 `cuda13` / `cuda-13.3` / `cu12` 等 |
-| 通用包 | 0 | 无 GPU 标记 |
-| **非 N 卡专用** | **-4** | 含 `hip` / `rocm` / `radeon`——排到通用包之后（教训：`strata` 的 `-hip` 包曾与通用包同分被顺序选中） |
-| 中文版 | **+3** | 含 `_zh` / `-zh` / `chs` / `-cn` 等 |
-| x64 | **+2** | 含 `x64` / `64bit` / `amd64` |
-| arm64 | **-5** | 含 `arm64` / `aarch64`（通用版优先于 arm64 专版） |
-
-**优先级总览**（形态）：`portable` > `zip/7z` > 免安装 `exe` > 安装包（`setup`/`msi`）> **CLI/裸二进制、源码包（拼音标记 daiMa/yuanMa）**；
-**优先级总览**（GPU）：NVIDIA 通用 > 指定 CUDA > 通用包 > 非 N 卡专用（HIP/ROCm/Radeon）。
-
-4. **兜底**：专用包优先；某架构缺少专用包时，用通用包（无架构标记）兜底；
-5. **生成**：最终候选架构 ≥2 时生成 `architecture` 块（逐架构 url/hash/autoupdate），否则用顶层 url；
-6. **更新容错**：某版本上游缺失某架构资产时，自动删除该架构块（该架构用户自动回退 64bit/通用包）；上游补回时 CI 全量重算自动恢复。
-
-> 打分规则仅作用于 `--add` 收录时的资产选择；既有清单的日常更新走名称匹配（`match_asset`：精确 → 忽略大小写 → 数字归一化 → **前缀重选兜底**，覆盖资产名挂构建 sha 等每版变化的标记），不受影响。
-> 自托管包（本地维护 86 款）维持单包不变，不参与分组。
+> 打分表以代码 `score_asset` 为准（本文件不再镜像维护）；历次调整原因见 SKILL 规则 20。自托管包维持单包，不参与分组。
 
 ---
 
-## 维护指南（制作 Manifest）
+## 制作 Manifest
 
-### 前置条件
-
-- 安装 [Scoop](https://scoop.sh)（Windows 包管理器）
-- 一个文本编辑器（VS Code 推荐）
-- 7-Zip（查看 zip 内部结构）
-
-### 第一步：分析目标项目
-
-通过 GitHub API 快速获取项目信息（比打开网页快 10 倍，且不会因页面渲染失败报错）：
-
-| 关键信息       | API / 方法                                                      |
-| -------------- | --------------------------------------------------------------- |
-| 项目描述/License | `curl -s api.github.com/repos/{owner}/{repo}` + `python3 -m json` |
-| Release 资产   | `curl -s api.github.com/repos/{owner}/{repo}/releases/latest`   |
-| 架构支持       | 看 asset 文件名中的 x64/x86/arm64                                |
-| zip 内部结构   | `curl -L -o temp.zip "{url}" && 7z l temp.zip`                  |
-| 版本号         | Tag 名（注意有无 `v` 前缀）                                      |
-
-**两条核心命令（并行执行）：**
+完整流程、资产类型判断（情况 A–I）与全部规则见 **`.claude/skills-myscoop/SKILL.md`**。AI 助手可直接调用该 Skill 完成收录，最小手动步骤如下：
 
 ```bash
-# 1. 项目元信息（描述、License）
-curl -s "https://api.github.com/repos/{owner}/{repo}" | python3 -c "
-import sys,json; r=json.load(sys.stdin)
-print('Description:', r.get('description'))
-print('License:', r.get('license',{}).get('spdx_id','unknown'))
-"
+# 1. 生成（GitHub 仓库链接必须用脚本，不要手写）
+python3 myscoop-update.py --add https://github.com/owner/repo --name appname
 
-# 2. 最新 Release 资产（文件名、大小、下载 URL）
-curl -s "https://api.github.com/repos/{owner}/{repo}/releases/latest" | python3 -c "
-import sys,json; r=json.load(sys.stdin)
-print('Tag:', r['tag_name'])
-for a in r['assets']:
-    print(f'  {a[\"name\"]}  ({a[\"size\"]} bytes)')
-"
+# 2. 验证
+python3 -m json.tool bucket/appname.json
+scoop cat myscoop/appname
+
+# 3. 同步文档并提交
+python3 tools/rebuild_progress.py
+git add bucket/ README.md .claude/skills-myscoop/progress.md
+git commit -m "add appname" && git push
 ```
 
-> 为什么用 API 而不是打开网页？GitHub API 返回纯 JSON（几 KB），网页则是完整 HTML（几百 KB）。前者更快、更稳定，且可直接用 `jsonpath` 精确提取字段。
-
-**判断 extract_dir（重要）：**
-
-```
-# 情况 A：有顶层目录 → 需要设置 extract_dir
-app-v1.0/
-  ├── app.exe
-  └── ...
-
-# 情况 B：扁平结构 → 不需要 extract_dir
-app.exe
-config.ini
-...
-```
-
-### 第二步：生成 SHA256
-
-**方法1（推荐，无需下载）**：从 GitHub Release API 的 `digest` 字段直接获取：
-
-```bash
-curl -s "https://api.github.com/repos/{owner}/{repo}/releases/latest" | python3 -c "
-import sys,json; r=json.load(sys.stdin)
-for a in r['assets']:
-    print(a['name'], '→', a.get('digest',''))
-"
-```
-
-**方法2（兜底）**：下载后本地计算：
-```bash
-curl -L -o _temp.zip "<下载链接>"
-certutil -hashfile _temp.zip SHA256
-```
-
-**Hash 格式**：在 manifest 中写为 `sha256:xxxxxxxx`。
-
-### 第三步：编写 Manifest
-
-在 `bucket/` 目录下创建 JSON 文件，文件名用**小写 + 连字符**命名。完整字段说明见附录。
-
-**极简模板（单架构、无自动更新）：**
-
-```json
-{
-    "version": "1.0.0",
-    "description": "软件一句话描述",
-    "homepage": "https://github.com/owner/repo",
-    "license": "MIT",
-    "url": "https://github.com/owner/repo/releases/download/v1.0.0/app-portable.zip",
-    "hash": "sha256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "bin": "app.exe",
-    "shortcuts": [
-        ["app.exe", "App Name"]
-    ]
-}
-```
-
-**完整模板（多架构 + 自动更新）：**
-
-```json
-{
-    "version": "1.0.0",
-    "description": "软件描述",
-    "homepage": "https://github.com/owner/repo",
-    "license": "MIT",
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/owner/repo/releases/download/v1.0.0/app-1.0.0-x64-portable.zip",
-            "hash": "sha256:xxxx"
-        },
-        "32bit": {
-            "url": "https://github.com/owner/repo/releases/download/v1.0.0/app-1.0.0-x86-portable.zip",
-            "hash": "sha256:xxxx"
-        },
-        "arm64": {
-            "url": "https://github.com/owner/repo/releases/download/v1.0.0/app-1.0.0-arm64-portable.zip",
-            "hash": "sha256:xxxx"
-        }
-    },
-    "bin": "app.exe",
-    "shortcuts": [
-        ["app.exe", "App Name"]
-    ],
-    "checkver": {
-        "github": "https://github.com/owner/repo"
-    },
-    "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x64-portable.zip"
-            },
-            "32bit": {
-                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x86-portable.zip"
-            },
-            "arm64": {
-                "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-arm64-portable.zip"
-            }
-        }
-    }
-}
-```
-
-### 第四步：测试 Manifest
-
-```powershell
-# 1. 验证 JSON 语法
-python3 -m json.tool bucket/<appname>.json
-
-# 2. 确认 Scoop 能正确解析
-scoop cat myscoop/<appname>
-
-# 3. 确认搜索结果可见
-scoop search <appname>
-
-# 4. 安装测试（可选，安装到本地验证程序能否启动）
-scoop install <appname>
-```
-
-### 第五步：提交到仓库
-
-```bash
-git add bucket/<appname>.json
-git commit -m "add <appname> manifest"
-git push origin main
-```
-
-用户只需 `scoop update` 即可获取新 manifest。
-
-### 两种典型 Manifest 模式
-
-通过两个实际案例展示最常见的两种模式：
-
-**模式 1 — 多架构 portable zip**（`cmm-plus.json`）
-
-适用于 release 有多个架构 zip 包的项目。使用 `architecture` 块区分 64bit/32bit/arm64：
-
-```json
-{
-    "version": "1.7.0",
-    "license": "GPL-3.0",
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/.../ContextMenuMgrPlus-1.7.0-x64-self-contained-portable.zip",
-            "hash": "sha256:7fd2c90bb94b9f7c1da80332037989702e216725eb58c43e3a350ea7e83ecc1a"
-        },
-        "32bit": { ... },
-        "arm64": { ... }
-    },
-    "bin": "ContextMenuManagerPlus.exe",
-    "shortcuts": [["ContextMenuManagerPlus.exe", "Context Menu Manager Plus"]],
-    "checkver": { "github": "https://github.com/PLFJY/ContextMenuMgr" },
-    "autoupdate": {
-        "architecture": {
-            "64bit": { "url": "https://.../v$version/ContextMenuMgrPlus-$version-x64-self-contained-portable.zip" },
-            "32bit": { ... },
-            "arm64": { ... }
-        }
-    }
-}
-```
-
-**模式 2 — 单 exe 直链**（`windowsclear.json`）
-
-适用于 release 直接提供 .exe 文件（非安装包、无 zip）的项目。不设 architecture 块，用顶层 url/hash：
-
-```json
-{
-    "version": "0.1.3",
-    "license": "MIT",
-    "url": "https://github.com/tanaer/WindowsClear/releases/download/v0.1.3/WindowsClear.exe",
-    "hash": "sha256:7ecb608bd061acb63eec73733589ad86fd4dc2037921973df53659d3e28905c5",
-    "bin": "WindowsClear.exe",
-    "shortcuts": [["WindowsClear.exe", "WindowsClear"]],
-    "checkver": { "github": "https://github.com/tanaer/WindowsClear" },
-    "autoupdate": {
-        "url": "https://github.com/tanaer/WindowsClear/releases/download/v$version/WindowsClear.exe"
-    }
-}
-```
-
-关键区别：模式 1 用 `architecture` 块，模式 2 用顶层 `url`/`hash`。
-
-**模式 3 — zip 内含 MSI**
-
-适用于 release 提供 zip，但 zip 内只有一个 `.msi` 安装包的项目。需要 `lessmsi` 解包：
-
-```json
-{
-    "version": "1.0.0",
-    "license": "MIT",
-    "url": "https://github.com/owner/repo/releases/download/1.0.0/1.0.0.zip",
-    "hash": "sha256:xxxx",
-    "depends": "lessmsi",
-    "installer": {
-        "script": [
-            "Push-Location \"$dir\"",
-            "lessmsi xo \"Setup.msi\"",
-            "Get-ChildItem \".\\<ProductName>\\SourceDir\\<AppName>\\*\" -Recurse | Move-Item -Destination \"$dir\" -Force",
-            "Remove-Item \".\\<ProductName>\" -Recurse -Force",
-            "Remove-Item \"Setup.msi\" -Force",
-            "Pop-Location"
-        ]
-    },
-    "bin": "app.exe",
-    "shortcuts": [["app.exe", "App Name"]],
-    "checkver": { "github": "https://github.com/owner/repo" },
-    "autoupdate": {
-        "url": "https://github.com/owner/repo/releases/download/$version/$version.zip"
-    }
-}
-```
-
-**关键**：必须用 `installer.script` 而非 `post_install`。Scoop 执行顺序是 `installer.script → 创建 shim → post_install`，shim 创建时 exe 必须已存在。
-
-**模式 4 — 上游停更，自托管**（`wgestures.json` 当前实际方案）
-
-当上游项目已归档/停更，拿到新版 MSI 后，提取内容做成便携 zip，自托管到 bucket 仓库的 Release：
-
-```json
-{
-    "version": "1.8.5.0",
-    "description": "Modern mouse gestures for Windows (community-maintained, upstream archived)",
-    "homepage": "https://github.com/yingDev/WGestures",
-    "license": "GPL-2.0",
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.8.5.0/WGestures-1.8.5.0-portable.zip",
-    "hash": "sha256:ccf49874f125cbc0f1e0415b8eb88c3a127ab2526378e3ff6e00ba6baeba191b",
-    "bin": "WGestures.exe",
-    "shortcuts": [["WGestures.exe", "WGestures"]]
-}
-```
-
-自托管流程：提取安装包 → 打包便携 zip → `gh release create` → 更新 manifest。不设 `checkver`/`autoupdate`。
-
-**模式 5 — 安装器解包/静默安装**
-
-当只有安装器（Inno Setup、NSIS 等），通过 `innounp` 解包或静默安装提取文件，打包便携 zip 自托管：
-
-| 场景 | 工具 | 示例 |
-|------|------|------|
-| Inno Setup 解密 | `innoextract` 枚举密码 | `uninstalltool.json` |
-| Inno Setup 静默安装 | `/VERYSILENT /DIR=` | `uninstalltool.json`、`bcompare.json` |
-| NSIS 解包+asar 替换 | `7z` + 文件替换 | `termius.json` |
-| 已绿化便携版 | 直接打包 | `2345pic.json` |
-
-**模式 5c — 自托管便携 + 注册资源管理器右键菜单**（技术记录；`bandizip6` 现已改回模式 6，无当前示例）
-
-适用于解包/复制后需要注册 Shell 扩展的便携软件（压缩工具、右键工具等）：把已安装目录打包成 7z（配置文件改为便携模式），安装时 `regsvr32` 注册 DLL，卸载时反注册。
-
-```json
-"bin": ["Bandizip.exe", "bc.exe"],
-"shortcuts": [["Bandizip.exe", "Bandizip"]],
-"persist": "config.ini",
-"post_install": [
-    "regsvr32 /s \"$dir\\bdzshl64.dll\"",
-    "if (Test-Path \"$env:WINDIR\\SysWOW64\\regsvr32.exe\") { & \"$env:WINDIR\\SysWOW64\\regsvr32.exe\" /s \"$dir\\bdzshl32.dll\" }",
-    "reg copy \"HKCU\\Software\\Classes\\CLSID\\{GUID}\" \"HKLM\\SOFTWARE\\Classes\\CLSID\\{GUID}\" /s /f",
-    "……（* / Directory / Directory\\Background / Drive 的 ContextMenuHandlers + DragDropHandlers 同样复制到 HKLM）"
-],
-"pre_uninstall": [
-    "$id = '{5B69A6B4-393B-459C-8EBB-214237A9E7AC}'",
-    "$k = \"HKCU:\\Software\\Classes\\CLSID\\$id\\InprocServer32\"",
-    "if ((Get-ItemProperty -Path $k -ErrorAction SilentlyContinue).'(default)' -like \"$dir\\*\") { regsvr32 /u /s \"$dir\\bdzshl64.dll\" }"
-]
-```
-
-要点：实测 Bandizip 6.18 的 `regsvr32` **只写 HKCU**；而 **UAC 关闭时 Explorer 提权运行，只加载 HKLM 注册的 Shell 扩展**（本机症状：HKCU 注册项齐全、菜单却不出现）。（注意 `regsvr32` 是 GUI 程序，PowerShell **不会等待**它，必须用 `Start-Process -Wait`，否则后面的 `reg copy` 会抢在 HKCU 写完之前执行，导致 HKLM 为空、提权 Explorer 下菜单不出现）所以 regsvr32 之后要再把 `CLSID\{GUID}` 与 6 个挂载点（`*` / `Directory` / `Directory\Background` / `Drive` 的 ContextMenuHandlers + Directory / Drive 的 DragDropHandlers）用 `reg copy HKCU\... HKLM\... /s /f` 同步到 HKLM（需管理员；失败不影响普通用户下的 HKCU 生效）。**HKLM 是全机器范围**：同一台电脑其他 Windows 用户也会看到菜单。`pre_uninstall` 先核对 HKCU/HKLM 的 `InprocServer32` 是否指向**本版本目录**，再反注册 / `reg delete`——Scoop 升级是「装新 → 卸旧」，无条件清理会删掉新版本刚写入的项；若 `Remove-Item $dir` 因 Explorer 已加载 DLL 而失败，则 `Move-Item` 移动到 `$persist_dir\bandizip6.busy-<时间戳>`（Windows 允许重命名被占用 DLL 所在目录），并在 `pre_install` 里自动清理遗留的 `*.busy-*`（参考 `zhiyuime`）；更稳的做法是**条件重启**：先删，删不掉才重启资源管理器释放 DLL 锁并重试，仍失败再改名兜底（`bandizip6` / `zhiyuime` 已启用；重启会关闭已打开的文件夹窗口）。以上用于避免 `scoop uninstall` 报 "Couldn't remove …may be in use"。**语言**：Shell 扩展优先读 `config.ini` 的 `default_language`（为空会回退英文），简体中文设 `SimpChinese`。Win11 旧式扩展在右键 →“显示更多选项”里看。便携配置用 `persist` 保存（`is_portable=1`）。
-
-**文件关联（可选，曾在 bandizip6 上启用）**：安装时为常用压缩格式建 ProgID `Bandizip.<ext>`（`shell\open\command` 指向 `"$dir\Bandizip.exe" "%1"`），把 `HKCU\Software\Classes\.<ext>` 默认值指向它、写入 `OpenWithProgids`，并在 `HKCU\Software\Bandizip\Capabilities\FileAssociations` + `RegisteredApplications` 注册，使 Bandizip 出现在“默认应用 / 打开方式”。**Win10/11 的 UserChoice 保护**：已有 UserChoice 的扩展名（如 .zip/.rar）直接生效；没有 UserChoice 的（如 .7z/.tar）首次打开仍会弹“选择打开方式”，选一次 Bandizip 后固定——无法在不绕过 UserChoice 的前提下静默改默认。卸载时 `pre_uninstall` 清理这些 ProgID/Capabilities（按 ApplicationIcon 路径守卫，避免升级误删）。
-
-**模式 6 — 单 exe 手动安装**
-
-exe 直接上传 GitHub Release，不做解包。`post_install` 自动启动安装/启动器，用户手动操作：
-
-```json
-{
-    "version": "6.4.3",
-    "license": {"identifier": "Proprietary"},
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v6.4.3/idm-6.4.3.exe",
-    "hash": "sha256:xxxx",
-    "post_install": "Start-Process \"$dir\\idm-6.4.3.exe\""
-}
-```
-
-不设 `bin`/`shortcuts`/`checkver`/`autoupdate`。适用于：安装器类 exe（IDM/IObit）、zip 便携+自动启动（KeyCastOW）。
-
-**模式 7 — MSI 手动安装**
-
-MSI 直引上游 GitHub Release，自动弹出安装向导让用户手动完成：
-
-```json
-{
-    "version": "2.2",
-    "license": "GPL-3.0",
-    "url": "https://github.com/Tichau/FileConverter/releases/download/v2.2/FileConverter-2.2-x64-setup.msi",
-    "hash": "sha256:xxx",
-    "pre_install": [
-        "$appname = Split-Path (Split-Path $dir -Parent) -Leaf",
-        "$cachedir = $dir -replace '\\\\apps\\\\.*$', '\\cache'",
-        "$msi = Get-ChildItem $cachedir -Filter \"$appname#*.msi\" | Sort-Object LastWriteTime -Descending | Select-Object -First 1",
-        "if ($msi) { Copy-Item $msi.FullName \"$dir\\setup.msi\" }"
-    ],
-    "post_install": "Start-Process \"$dir\\setup.msi\"",
-    "notes": "MSI 手动安装包，scoop install 下载后自动启动，用户手动选择安装目录。"
-}
-```
-
-Scoop 对 `.msi` 硬编码了 `msiexec /a` 自动解包（无法禁止），所以用 `pre_install` 从缓存复制原始 MSI 保存，再 `post_install` 启动。Scoop 缓存文件已重命名为 `{app}#{ver}#{hash}.msi`，需用 `{appname}#*.msi` 通配符查找。不设 `bin`/`shortcuts`/`checkver`/`autoupdate`。示例：fileconverter。
-
-### 使用 AI Skill 自动化（推荐）
-
-项目内置了 `.claude/skills-myscoop/SKILL.md`，向 AI 助手发送以下指令即可自动完成收录：
-
-```
-把这个项目加到 myscoop：<GitHub 仓库链接>
-```
-
-Skill 会自动执行：分析资产类型 → 选择对应模式 → 计算 hash → 生成 manifest → 验证。
+`--add` 关键参数：`--dl` 生成后强制下载探测（Inno/NSIS 解包、自动补 bin/shortcuts、hash 实测）；`--more` 主程序 + 运行时配对收录。字段含义见下文「附录：Manifest 字段速查」。
 
 ---
 
-## 自动更新机制详解
+## 自动更新机制
 
-### CI 异常推送（企业微信）
+CI 由外部定时器每 4 小时触发（GitHub 自家 cron 每天 1 次兜底），运行 `myscoop-update.py --all`：通过 GitHub Release API 的 `digest` 字段**免下载**获取新版本与 hash，自动同步 README 版本/日期列并提交推送。
 
-`.github/workflows/auto-update.yml` 在更新/校验结束后（`if: always()`）会汇总本次输出中的 `[警告]` / `[错误]` / `[跳过]` / `[提示]`（均含对应 json）、`Traceback` 与汇总行，推送到企业微信机器人。
+- **checkver**：`{"github": "https://github.com/owner/repo"}`（自动去 `v` 前缀）；特殊 tag 用 `tag_regex`；包不在 GitHub Release 时用 `url` + `regex`。详见 SKILL 规则 5/6/20。
+- **autoupdate**：新版本 URL 模板，`$version` 替换（tag 带 v 时写 `v$version`）；hash 默认不写，由 API digest 或脚本计算。
+- **CI 告警**：更新/校验出现 `[警告]`/`[错误]`/`[跳过]` 时推送到企业微信。Webhook 只从仓库 Secret `WECHAT_WEBHOOK_URL` 读取，未配置则自动跳过。
 
-- Webhook 地址只从仓库 Secret 读取：`Settings → Secrets and variables → Actions → WECHAT_WEBHOOK_URL`（值为完整的 `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=...`）
-- **不要把 key 写进仓库或 workflow**；GitHub 会自动在日志中脱敏 Secret，未配置时自动跳过
-- 推送失败不影响 job；内容超过企业微信 text 的 2048 字节上限会截断（保留前 30 条重要信息）
-
-### checkver — 版本检测
-
-`checkver` 定义了如何获取最新版本号。最常用的是 GitHub 模式：
-
-```json
-"checkver": {
-    "github": "https://github.com/owner/repo"
-}
-```
-
-这会自动检查 GitHub Releases 的**最新 tag**（自动去掉 `v` 前缀），所以 tag `v1.7.0` 对应的 `$version` 是 `1.7.0`。
-
-**手动指定匹配规则（当 GitHub 默认规则不满足时）：**
-
-```json
-"checkver": {
-    "url": "https://api.github.com/repos/owner/repo/releases/latest",
-    "jsonpath": "$.tag_name",
-    "regex": "v([\\d.]+)"
-}
-```
-
-### autoupdate — 下载地址模板
-
-`autoupdate` 定义新版本发布后，下载 URL 如何拼接。用 `$version` 代替版本号：
-
-```json
-"autoupdate": {
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/owner/repo/releases/download/v$version/app-$version-x64.zip"
-        }
-    }
-}
-```
-
-#### 哈希自动更新
-
-Scoop 不设 `hash` 规则时，`checkver -u` 会自动下载文件并计算 SHA256，无需手动填哈希。
-
-**如果项目提供了 checksums 文件**，可以在 `autoupdate` 顶层设置共享 hash 规则：
-
-```json
-"autoupdate": {
-    "architecture": {
-        "64bit": { "url": "https://.../$version/app-x64.zip" },
-        "arm64": { "url": "https://.../$version/app-arm64.zip" }
-    },
-    "hash": {
-        "url": "$baseurl/checksums.txt"
-    }
-}
-```
-
-`$baseurl` 指向 release 下载基地址，Scoop 会自动按文件名匹配对应哈希。**不要使用 `$url.sha256`**，绝大多数项目不提供 `.sha256` 文件。
-
-### 更新流程
-
-```
-新版本发布 → 用户执行 scoop update → Scoop 运行 checkver 检测新版本
-→ 用 autoupdate 模板拼接新 URL → 下载 → 校验 hash → 替换旧版本
-```
-
-> **注意**：`autoupdate` 不会自动更新 hash。需要定期运行 `scoop checkver <appname> --update` 来更新 manifest 中的 hash 值并推送到仓库。
-
-### 维护者定期更新步骤（推荐：免下载脚本）
+维护者本地操作：
 
 ```bash
-# 全局命令（安装后任何目录可用）
-myscoop-update --all --dry-run    # 检查更新
-myscoop-update --all              # 自动更新全部
-myscoop-update --add <github-url> # 粘贴链接添加新软件
-
-# --add 增强（仓库模式）：
-#   --more  主程序 + cudart 运行时配对合并收录（如同仓库拆分发 CUDA 主程序与运行库两个 zip，
-#            自动配对生成 url/hash 数组，Scoop 解压合并；同架构多 CUDA 版本取最高）
-#   --dl    生成 json 后必须下载探测：清空 API digest 强制实测下载重算 hash，自动补全
-#           bin/shortcuts/extract_dir——zip/7z 列 exe 交互选主程序（--select 编号|exe名 免交互）；
-#           exe（portable/setup 统一）Inno/NSIS 解包探测内部主程序并自动加 pre_install；
-#           msi 实测下载回填 hash；多架构自动下载 64bit 主架构
-#   示例：
-#   myscoop-update --add https://github.com/PrismML-Eng/llama.cpp.git --more
-#   myscoop-update --add https://github.com/CherryHQ/cherry-studio.git --name cherry --dl
-
-# 或直接运行脚本
-cd D:\scoop\buckets\myscoop
-python3 myscoop-update.py --all
-
-# 提交更新
-git add bucket/ && git commit -m "批量更新第三方软件" && git push
-```
-
-脚本通过 GitHub API 的 `digest` 字段直接获取 SHA256，无需下载软件包。也可以单独更新某个软件：
-
-```bash
-python3 myscoop-update.py bucket/amcfy-music.json
-```
-
-### 非 GitHub 软件的新增（直链 / 下载页 / 模板）
-
-> **GitHub 下载镜像加速（脚本）**：`myscoop-update.py` 的实际下载路径（直链/下载页/补全/hash 实测）对 GitHub release 文件**优先走加速镜像**——按环形顺序逐个候选测速，取第一个达到 1MB/s 的镜像；全部不达标/不可达回退原始 URL（与 Scoop `download.ps1` **共用镜像列表**；两侧测速实现已分叉，Scoop 侧见上文）。镜像列表来源：
-> - 环境变量 `MYSCOOP_GH_MIRRORS`（逗号分隔，可写完整 URL 或裸域名，跨机/CI 可用）：
->   ```powershell
->   $env:MYSCOOP_GH_MIRRORS = "https://hk.gh-proxy.org,https://gh-proxy.com"
->   ```
-> - 未设置时自动读 Scoop config.json 的 `aria2-mirrors` 数组（本机零配置复用）。
-> - 均不设置时行为与原来完全一致（不走镜像）。
->
-> **注意**：Scoop 端 `download.ps1` 已于 2026-10-27 改为同栈 WebRequest + EWMA 排名（缓存 `mirror-rank.json`），与本脚本的 `mirror-cache.json` **暂不共享**；两侧只在镜像列表上保持一致。
-
-没有 GitHub/Gitee 仓库的软件（官网直链）用以下方式新增，脚本自动下载计算 SHA256、
-检测 Inno Setup、生成 checkver/autoupdate：
-
-```bash
-# 1) 下载页模式：给官网下载页 URL，自动提取安装包链接与版本号
-python3 myscoop-update.py --add "https://pixpin.cn/download/" --name pixpin
-
-# 2) 直链模式：给安装包直链（可带 --version/--checkver-url/--checkver-regex/--exe-name 等）
-python3 myscoop-update.py --add "https://down.pixpin.cn/PixPin_win_3.5.5.1.exe" --name pixpin --version 3.5.5.1
-
-# 3) 模板模式：手写/粘贴 manifest 模板（url 指向官网直链），脚本补全 hash 并校验
-python3 myscoop-update.py --from ./pixpin.template.json --name pixpin
-```
-
-> 这三类模式生成的清单**默认输出到仓库内 `staging/`**（草稿区，已被 .gitignore 忽略），确认无误后再用
-> `--out-dir` 指定正式目录（如 `--out-dir bucket/`）或手动移入 `bucket/`。
-> 直链/下载页清单使用网页 checkver（url + regex），`--all` 每 4 小时（外部定时器触发）也会自动检查更新
-> （有新版本时才会下载文件实测 hash）。
-
-传统方式（需下载文件计算 hash）：
-
-```powershell
-scoop checkver <appname> --update
+python3 myscoop-update.py --all --dry-run   # 只检查
+python3 myscoop-update.py --all             # 更新（自动同步 README）
+git add bucket/ README.md && git commit -m "批量更新第三方软件" && git push
 ```
 
 ---
@@ -1188,49 +696,7 @@ Windows 下 zip 的中文文件名在 Scoop 解压后可能编码损坏，导致
 
 ### Q: 注册型软件（输入法/驱动/右键菜单类）装完没生效？
 
-**症状**：输入法装完不出现在系统输入法选项、右键菜单空白、Shell 扩展无反应。
-
-**根因**：这类软件必须由**安装器脚本完成系统注册**（如输入法的 TSF 文本服务注册：
-`HKLM\SOFTWARE\Microsoft\CTF\TIP\{GUID}` + COM 组件注册指向安装目录 DLL）。
-Scoop 的 `innosetup: true` / `pre_install` 解包安装只是 7z 解文件，**不执行注册脚本**，
-系统自然不认识它。实测案例：青简输入法（qingjian），解包安装后不在输入法选项，
-改安装器模式后注册表出现 `Description=青简` 的 TSF 项，立即可用。
-
-**正确形态（installer 模式）**：真跑安装器（静默装进 scoop 目录），注册随安装执行；
-卸载时跑安装器的卸载器清理注册，不留残留：
-
-```json
-"installer": {
-    "args": ["/VERYSILENT", "/NORESTART", "/DIR=$dir"]   // Inno；NSIS 用 ["/S", "/D=$dir"]
-},
-"post_uninstall": [
-    // 三级回退：① $dir\unins*.exe ② 注册表 Uninstall 键搜索（自管理式安装器）③ 提示
-    // ②：按应用名匹配 InstallLocation/InstallBaseLocation/DisplayIcon → 定位 unins*.exe 运行
-]
-```
-
-升级时 installer 模式会重跑安装器 → 注册自动指向新版本组件，版本化文件名不失配。
-
-**自管理式安装器（载荷含 `*installer-helper.exe` 标记）**：个别安装器（如知意输入法）自带版本生命周期管理。`--add --dl` 探针在 NSIS 载荷中发现 `installer-helper` 时**自动判定**：
-- **不建立 bin/shortcuts**（安装器自建快捷方式/自注册，无需 shim；也不再提示选择主程序）
-- 生成 **script 形态 installer**：`RunAs` 提权 + `/D=$persist_dir\<应用名>`（persist 下的**全新稳定**目录——安装器尊重 `/D` 后，指向已存在目录会直接拒绝退出 1；persist 路径跨版本稳定，应用自管版本退休）
-- 卸载走三级回退的第②层（注册表搜索；实测 `InstallLocation`/`InstallBaseLocation` 含应用名可命中 persist 落点）
-- 手动场景：探针处也可直接输入 **`0`**（不建 bin/shortcuts；`--select 0` 免交互，zip 路径同样可用）
-
-**自动处理**：`myscoop-update.py --add` 检测到 Inno/NSIS 安装器且名称/描述命中
-注册型关键词（ime 输入法 tsf driver 驱动 右键 context menu registry 等）时，
-**自动生成 installer 模式**（卸载脚本含三级回退）；载荷含 `installer-helper` 的自管理式
-安装器自动生成 script 形态（RunAs + persist `/D`），无需手工改造。
-
-**存量清单一键迁移**（把已入库的 `innosetup`/`pre_install` 解包形态转 installer 模式，幂等）：
-
-```powershell
-python3 myscoop-update.py --installer-mode bucket/qingjian.json   # 单个/多个
-python3 myscoop-update.py --installer-mode --all                  # 全库扫描
-```
-
-**不适合 installer 模式的例外**：安装器只做解包搬运、无注册逻辑时，用解包方式更
-轻量。判断标准：官方安装后是否新增系统级注册项（注册表/服务/右键菜单/输入法）。
+输入法（TSF）需要两层登记：系统级注册 + 当前用户登记。第三方安装器常只做前者，装完语言栏里看不到。正确做法是用 `InstallLayoutOrTip` **增量**登记（**绝不要用 `Set-WinUserLanguageList`**，它是全量覆盖，会清空用户其他输入法），并重启 `ctfmon`。完整方案（含卸载清理、DLL 文件锁与 rename 兜底）见 SKILL 规则 23。
 
 ### Q: self-contained 还是 framework-dependent？
 
