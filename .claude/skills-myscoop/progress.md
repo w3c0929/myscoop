@@ -446,8 +446,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* cbeed43 (HEAD -> main) 修正铁律两处冲突
-* dd6f366 (origin/main, origin/HEAD) progress.md 更新提交历史
+* a608fef (HEAD -> main) 新增收录 CrossDesk 1.7.6-20261112（第三方官方）
+* 2069f49 (origin/main, origin/HEAD) progress.md 更新提交历史
+* cbeed43 修正铁律两处冲突
+* dd6f366 progress.md 更新提交历史
 * 68fe621 铁律收敛到 SKILL.md 单处维护（27 条）
 * 31713f0 progress.md 更新提交历史
 * 74f55b6 清理废弃 release/tag 并记录为铁律
