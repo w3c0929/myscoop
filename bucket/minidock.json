@@ -1,5 +1,5 @@
 {
-    "version": "2.8.1",
+    "version": "2.8.3",
     "description": "极简dock栏，专注于Windows端dock的软件",
     "homepage": "https://github.com/wang01116/MiniDock",
     "license": "unknown",
@@ -7,19 +7,19 @@
         "github": "https://github.com/wang01116/MiniDock",
         "tag_regex": "^v([\\d.]+)$"
     },
-    "url": "https://github.com/wang01116/MiniDock/releases/download/v2.8.1/MiniDock-2.8.1.exe",
+    "url": "https://github.com/wang01116/MiniDock/releases/download/v2.8.3/MiniDock.exe",
     "autoupdate": {
-        "url": "https://github.com/wang01116/MiniDock/releases/download/v$version/MiniDock-$version.exe"
+        "url": "https://github.com/wang01116/MiniDock/releases/download/v$version/MiniDock.exe"
     },
-    "hash": "sha256:7213485eea597926af064079c5a289e6cf59e4ab5af1fd6ba8ecf78b8e1ecdd6",
-    "pre_install": [
-        "$e=Get-ChildItem \"$dir\\MiniDock*.exe\" | Select-Object -First 1; if ($e -and $e.Name -ne 'MiniDock.exe') { Rename-Item -Path $e.FullName -NewName 'MiniDock.exe' -Force }"
-    ],
+    "hash": "sha256:990824662a8574ff5988b89d674e5cbe0e41fb1b2962be69b4c96cc6866c53a1",
     "bin": "MiniDock.exe",
     "shortcuts": [
         [
             "MiniDock.exe",
             "MiniDock"
         ]
+    ],
+    "notes": [
+        "上游自 v2.8.2 起资产名固定为 MiniDock.exe（不再带版本号），autoupdate 模板已同步；同 release 的 *-source.zip 是源码包。"
     ]
 }
