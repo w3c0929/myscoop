@@ -418,7 +418,11 @@ myscoop/
 ├── config.json                     ← Scoop 配置（bucketlist 优先级）
 ├── symlink.bat                     ← 一键部署补丁与 shim
 ├── 智能模式Scoop(3).ps1            ← Scoop 工具箱（文件名预选）
-├── 获取所有权.ps1                  ← Windows 权限体检修复
+├── 获取所有权.ps1                  ← Windows 权限体检修复（附使用说明.md）
+├── myscoop-update.bat              ← 更新脚本的快捷入口（chcp 65001）
+├── sync-chrome-to-ego.bat/.ps1     ← Chrome 数据/扩展到 ego lite 同步
+├── 右键菜单/字体/ComfyUI 辅助脚本    ← 添加gitbash右键菜单.reg、win11右键菜单转win10菜单.bat、
+│                                     Install-FontSystemWide.ps1、cd-comfyui.bat 等，按需取用
 └── README.md                       ← 此文件
 ```
 
