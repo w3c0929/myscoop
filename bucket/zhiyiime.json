@@ -1,16 +1,16 @@
 {
-    "version": "1.7.1",
+    "version": "1.7.2",
     "description": "zhiyi_ime - from github",
     "homepage": "https://github.com/dd1000001000/zhiyi_ime",
     "license": "GPL-3.0",
     "checkver": {
         "github": "https://github.com/dd1000001000/zhiyi_ime"
     },
-    "url": "https://github.com/dd1000001000/zhiyi_ime/releases/download/v1.7.1/zhiyi-v1.7.1-setup.exe",
+    "url": "https://github.com/dd1000001000/zhiyi_ime/releases/download/v1.7.2/zhiyi-v1.7.2-setup.exe",
     "autoupdate": {
         "url": "https://github.com/dd1000001000/zhiyi_ime/releases/download/v$version/zhiyi-v$version-setup.exe"
     },
-    "hash": "sha256:e192c0ab6d6d690fdac5632e0f2d2d58ba067a323ec77490b26401ffb3f02f84",
+    "hash": "sha256:44b954f8b5d6cb007f1cc00e4e38c29decf67561e5d20c89187784c6716998e0",
     "installer": {
         "script": [
             "New-Item -ItemType Directory -Force $persist_dir | Out-Null",
