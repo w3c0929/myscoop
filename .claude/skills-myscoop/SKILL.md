@@ -524,7 +524,7 @@ git add bucket/ README.md && git commit -m "批量更新第三方软件" && git 
 10. **Release 命名规范（本地维护 manifest）**：**包名（文件名）必须用英文**（中文会导致 URL 下载失败）；**标题必须中英结合**（如"压缩工具 Bandizip 6.18"）；**描述必须纯中文**。本地维护 manifest 中 `description` 用英文，`shortcuts` 名称用中文。**第三方官方 manifest 不需要处理此规则**，保持上游原样不动。
 11. **禁止敏感字样**：git commit 信息、Release 标题/描述、manifest description、README 等所有对外文本**不得出现"破解"等敏感字样**。涉及此类版本时用中性词替代（如"汉化版"、"精简优化版"、"便携版"）。
 12. **每次制作/更新完成后**，提交前必须同步更新 `README.md`、`.claude/skills-myscoop/progress.md`（项目进展，含收录总数/版本）和 SKILL.md。
-13. **每次提交完成后**，运行 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*`，将完整输出更新到 `progress.md` 的"提交历史"章节。**必须排除标签装饰**——96 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符（实测最长 1759 字符 → 排除后 123）
+13. **每次提交完成后**，运行 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*`，将完整输出更新到 `progress.md` 的"提交历史"章节。**必须排除标签装饰**——93 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符（实测最长 1759 字符 → 排除后 123）
 14. **下载方式优先用 `curl.exe -L`**：Windows 系统自带 `C:\Windows\System32\curl.exe`（Win10 1803+），无需安装、无需额外工具。下载文件一律使用：
     ```powershell
     curl.exe -L -o "文件名" "下载地址"

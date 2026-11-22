@@ -273,6 +273,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 9. **自动更新资产守卫**：`myscoop-update.py` 更新单清单时，latest release 无可下载 Windows 资产（如 monorepo 子包噪音 tag，assets 为空）→ 自动回退 releases 列表找带资产的 release，仍无则跳过；架构分支所有架构都匹配失败时跳过不写入（防删架构块 + 写垃圾 version 改坏清单）。详见 SKILL 规则 19。
 10. **README 第三方表跳转链接必须指向"引用项目地址"**：每行软件名链接 = 清单实际引用的项目仓库（`checkver.github` → `https://github.com/<owner>/<repo>`），不用官网/产品页/文档站；无 GitHub 仓库的官方直链型（dsh/winsdk/pixpin）保持其官网/项目页。详见 SKILL 规则 22。
 
+11. **迁移/移除软件后必须清理废弃 release 与 tag**：软件从「本地维护」迁移为「第三方官方」、或从 bucket 移除后，同步删除 myscoop 仓库上**不再被任何清单引用**的 release 与 tag（远端用 `gh release delete <tag> --cleanup-tag --yes`，本地残留用 `git tag -d`）。**定期核对 `gh release list` 数量 == 本地维护清单数**（当前 84），多出的即孤儿。案例：mykeymap 迁移到 `w3c0929/MyKeymap` 后，`v2.0-beta33-mykeymap` 成为孤儿（Releases 页 85 vs 清单 84）；另清理了两个无 release 的本地残留 tag `v2.4.0` / `v4.1.11-wechat`。清理后 release 84 / tag 93（远端与本地一致）。
+
 ## 标准处理流程
 
 ### 模式 1：官方 portable zip/7z
