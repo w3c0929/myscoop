@@ -206,6 +206,10 @@
 | 83 | [WGestures](https://github.com/yingDev/WGestures) — 全局鼠标手势（上游已归档） | `scoop install wgestures` | portable zip | 1.8.5.0 | 2026-10-10 | 2026-10-10 |
 | 84 | [Uninstall Tool](https://www.crystalidea.com/uninstall-tool) — 强力卸载工具 | `scoop install uninstalltool` | portable zip | 3.4.3 | 2026-10-10 | 2026-10-10 |
 
+---
+
+## 安装与使用
+
 ### 1. 添加 Bucket
 
 ```powershell
@@ -258,6 +262,8 @@ scoop update *
 scoop uninstall cmm-plus
 ```
 
+---
+
 ## 智能模式：Scoop 工具箱文件名预选
 
 `智能模式Scoop(3).ps1` 支持**文件名预选**：复制脚本并改名为末尾带 `(1)`-`(4)` 的形式，双击即自动执行对应菜单并退出。
@@ -292,8 +298,8 @@ git config --global --add safe.directory D:/scoop/buckets/*
 
 | 文件 | 部署位置 | 作用 |
 |------|----------|------|
-| `manifest.ps1` | `D:\scooppps\scoop\current\lib\manifest.ps1` | 修改同名软件跨 bucket 的选择顺序 |
-| `download.ps1` | `D:\scooppps\scoop\current\lib\download.ps1` | GitHub Release 下载走加速镜像 |
+| `manifest.ps1` | `D:\scoop\apps\scoop\current\lib\manifest.ps1` | 修改同名软件跨 bucket 的选择顺序 |
+| `download.ps1` | `D:\scoop\apps\scoop\current\lib\download.ps1` | GitHub Release 下载走加速镜像 |
 | `config.json` | `%USERPROFILE%\.config\scoop\config.json` | `bucketlist` 控制仓库优先级 |
 
 **部署方式**：运行仓库根目录的 `symlink.bat`（**需管理员权限**）——两个 `.ps1` 以**软链接**部署（`git pull` 后立即生效），`config.json` 以**镜像拷贝**部署（Scoop 自身会重写该文件，故每次重跑同步）；同时把仓库 `*.bat` 链接到 `D:\scoop\shims`。Scoop 自更新后需重跑一次。
