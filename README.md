@@ -26,7 +26,7 @@
 | 2 | [CrossDesk](https://github.com/kunkundi/crossdesk) — 轻量级跨平台远程桌面（支持 Web 客户端访问） | `scoop install crossdesk` | 官方 release 便携 zip（仅 x64） | 1.7.6-20261112 | 2026-11-22 | 2026-11-22 |
 | 3 | [Winc](https://winc.si) — Rust 编写的极速文本编辑器（自研渲染引擎：0.1 秒启动、10 万行仅 52MB） | `scoop install winc` | 官方 release 便携 zip（仅 x64） | 0.1.857 | 2026-11-22 | 2026-11-22 |
 | 4 | [MyKeymap](https://github.com/w3c0929/MyKeymap) — 键盘映射效率工具（AutoHotkey） | `scoop install mykeymap` | 官方 release 便携 zip（自建构建仓库 w3c0929/MyKeymap） | 2.0-beta34 | 2026-10-10 | 2026-11-21 |
-| 5 | [Quiet.md](https://github.com/s1dashu/quiet-md) — 极速原生笔记与富文本编辑器（Rust + GPUI），本地优先 | `scoop install quietmd` | 官方 release Inno 安装包（解包为便携） | 0.1.13 | 2026-11-21 | 2026-11-21 |
+| 5 | [Quiet.md](https://github.com/s1dashu/quiet-md) — 极速原生笔记与富文本编辑器（Rust + GPUI），本地优先 | `scoop install quietmd` | 官方 release Inno 安装包（解包为便携） | 0.1.14 | 2026-11-21 | 2026-11-22 |
 | 6 | [Atrium Desktop](https://github.com/wynter-yaxley/atrium-desktop) — Windows 11 原生玻璃质感桌面：浮动任务栏与桌面小组件，实时折射效果 | `scoop install atrium` | 官方 release 便携 zip（仅 x64） | 2.7.0 | 2026-11-20 | 2026-11-20 |
 | 7 | [MoJian3D](https://github.com/LingCore/MoJian3D-Downloads) — 3D 模型查看器（Qt 桌面应用）：支持 AI Agent 通过内置 mojian3d-control 技能检查并控制当前模型 | `scoop install mojian3d` | 官方 release 便携 zip（仅 x64） | 0.1.6 | 2026-11-20 | 2026-11-20 |
 | 8 | [清风输入法 (WindInput)](https://github.com/huanfeng/WindInput) — 轻量、快速、可定制的开源中文输入法，专为五笔和码表方案设计，支持全拼/双拼 | `scoop install windinput` | 官方 release 便携 zip（TSF 需 wind_portable -start 注册） | 0.132.0 | 2026-11-17 | 2026-11-17 |
@@ -45,7 +45,7 @@
 | 21 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 22 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
 | 23 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.10 | 2026-11-04 | 2026-11-21 |
-| 24 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4667 | 2026-11-03 | 2026-11-22 |
+| 24 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4673 | 2026-11-03 | 2026-11-22 |
 | 25 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.1 | 2026-10-31 | 2026-11-03 |
 | 26 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 27 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.13.7 | 2026-10-30 | 2026-11-20 |
