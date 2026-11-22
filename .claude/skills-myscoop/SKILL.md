@@ -517,11 +517,11 @@ git add bucket/ README.md && git commit -m "批量更新第三方软件" && git 
 3. **Hash 格式固定**：`sha256:xxxx`（全小写）
 4. **版本号去 v 前缀**：tag `v1.2.3` → version `1.2.3`
 5. **autoupdate 中的 URL**：tag 部分用 `v$version`（如果 tag 带 v），文件名部分用 `$version`（单版本、每版本独立 release 的情形）。**多版本共用一个 release 的情形见规则 15**
-6. **autoupdate 不需要 hash 规则**：hash 由 **API digest（免下载，见规则 8）**或自有脚本（`myscoop-update.py --all`）计算；Scoop 侧 `@版本` 安装也走 GitHub Mode digest。实测 bucket 中 **0 个清单**使用 `autoupdate.hash`——旧指引（`$url.sha256` / `checksums.txt`+`$baseurl` / `checkver -u`）已废弃：流程不再调用 Scoop 的 checkver 工具
+6. **Hash 来源：API digest 为主，官方校验文件可选**：CI/脚本（`myscoop-update.py --all`）用 GitHub Release API 的 `digest` 字段免下载取 hash（见规则 8）；清单若有官方校验文件（`.sha256` / `SHA256SUMS` / `.issig`），可加 `autoupdate.hash` 作为 **Scoop 客户端 `@版本` 安装**时的 hash 来源。两者并存：脚本不读 `autoupdate.hash`，它只影响客户端动态生成。当前 7 个清单使用：`anclicker` / `atrium` / `inno-setup` / `quietmd` / `winc` / `windinput` / `winshun`。旧指引 `checkver -u` 已废弃（流程不调用 Scoop 的 checkver 工具）。
 7. **description 用英文（限本地维护 manifest）**，保持国际通用性；**第三方官方保持上游原样**（上游为中文则保留，如 kazumi），见规则 10
 8. **Hash 优先使用 GitHub API digest**：`curl -s api.github.com/repos/{o}/{r}/releases/latest` 直接读取 asset 的 `digest: sha256:xxx`，无需下载。仅 API 不可用时才下载计算
 9. **manifest 提交前必须验证**，确保 scoop 能正确解析
-10. **Release 命名规范（本地维护 manifest）**：**包名（文件名）必须用英文**（中文会导致 URL 下载失败）；**标题必须中英结合**（如"压缩工具 Bandizip 6.18"）；**描述必须纯中文**。本地维护 manifest 中 `description` 用英文，`shortcuts` 名称用中文。**第三方官方 manifest 不需要处理此规则**，保持上游原样不动。
+10. **Release 命名规范（本地维护 manifest）**：**包名（文件名）必须用英文**（中文会导致 URL 下载失败）；**Release 标题必须中英结合**（如"压缩工具 Bandizip 6.18"）；**Release 描述必须纯中文**。注意区分：**manifest 的 `description` 字段用英文**（见规则 7），`shortcuts` 名称用中文。**第三方官方 manifest 不需要处理此规则**，保持上游原样不动。
 11. **禁止敏感字样**：git commit 信息、Release 标题/描述、manifest description、README 等所有对外文本**不得出现"破解"等敏感字样**。涉及此类版本时用中性词替代（如"汉化版"、"精简优化版"、"便携版"）。
 12. **每次制作/更新完成后**，提交前必须同步更新 `README.md`、`.claude/skills-myscoop/progress.md`（项目进展，含收录总数/版本）和 SKILL.md。
 13. **每次提交完成后**，运行 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*`，将完整输出更新到 `progress.md` 的"提交历史"章节。**必须排除标签装饰**——93 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符（实测最长 1759 字符 → 排除后 123）
