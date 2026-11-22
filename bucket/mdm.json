@@ -1,0 +1,37 @@
+{
+    "version": "0.5.2",
+    "description": "misterdownloadmanager: The ultimate open-source, clean-room download manager written from scratch in pure Rust for Windows, Mac, and Linux",
+    "homepage": "https://misterdownloadmanager.com",
+    "license": "GPL-3.0",
+    "checkver": {
+        "github": "https://github.com/anefzaoui/misterdownloadmanager"
+    },
+    "url": "https://github.com/anefzaoui/misterdownloadmanager/releases/download/v0.5.2/MisterDownloadManager-0.5.2-portable.zip",
+    "hash": "sha256:0907a6c6aed5c4967e89549e883147d2b33b073e6f8b0d914dff84d32f3b7cf7",
+    "autoupdate": {
+        "url": "https://github.com/anefzaoui/misterdownloadmanager/releases/download/v$version/MisterDownloadManager-$version-portable.zip",
+        "extract_dir": "MisterDownloadManager-$version-portable"
+    },
+    "extract_dir": "MisterDownloadManager-0.5.2-portable",
+    "bin": [
+        "misterdownloadmanager.exe",
+        [
+            "misterdownloadmanager-cli.exe",
+            "mdm-cli"
+        ],
+        [
+            "misterdownloadmanager-mcp.exe",
+            "mdm-mcp"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "misterdownloadmanager.exe",
+            "MisterDownloadManager"
+        ]
+    ],
+    "notes": [
+        "便携 zip 内含 4 个可执行文件：GUI 主程序 misterdownloadmanager.exe（bin 名 mdm 之外的默认入口）、CLI（mdm-cli）、MCP 服务（mdm-mcp）与 nmhost。",
+        "同 release 的 *-symbols-windows-x64.zip 是调试符号包、*extension*/*.xpi 是浏览器扩展，均非桌面程序本体。"
+    ]
+}

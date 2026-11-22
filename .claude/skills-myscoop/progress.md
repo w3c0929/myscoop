@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-11-21）
 
-- **收录软件总数**: 179 款
+- **收录软件总数**: 180 款
 - **本地维护（自托管 Release）**: 84 款
-- **第三方官方（引用原项目 Release）**: 95 款
+- **第三方官方（引用原项目 Release）**: 96 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -259,6 +259,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **铁律冲突检查与修正（2026-11-22）**：对 SKILL 27 条规则做一致性审计，发现 2 处冲突。① **规则 6 事实过时**——原文称「0 个清单使用 `autoupdate.hash`、该机制已废弃」，实际已有 7 个清单在使用（anclicker/atrium/inno-setup/quietmd/winc/windinput/winshun，均指向官方 `.sha256`/`SHA256SUMS`/`.issig`）。改为「API digest 为主、官方校验文件可选」：CI/脚本用 API digest，`autoupdate.hash` 只影响 Scoop 客户端 `@版本` 安装，两者并存。② **规则 7/10 表述矛盾**——规则 7 说「description 用英文」、规则 10 说「描述必须纯中文」，实际指不同对象（manifest 字段 vs Release 描述）。规则 10 改为明确区分「**Release 描述**纯中文、manifest `description` 字段英文」。其余检查无冲突：规则 5/15（单版本 vs 多版本）、24（顶层 url）互补；sublime-text 示例与 tag `vSublimeText` 均有效；规则 13 标签数 93 与实际一致。
 
 - **新增收录 crossdesk（CrossDesk 1.7.6-20261112）（2026-11-22）**：用户提供 `bucket/crossdesk.json` 并已自行验证。核对通过：官方 release `v1.7.6-20261112` 的 `crossdesk-win-x64-portable-v1.7.6-20261112.zip`（27.6MB）digest `sha256:dce0bc31…` 与清单 hash 逐字一致；license `NOASSERTION`（Other）与仓库 API 一致。上游特点：单个 release 挂 10 个多平台资产（Win portable zip / Win exe / macOS pkg / Linux deb / Android apk / iOS zip），另有 tag `latest` 的历史合集 release（2025-08 发布，比 v1.7.6 旧，不影响 `/releases/latest`）；早期资产名带构建 hash 后缀、近期版本已去掉，`autoupdate` 模板 `v$version/...-win-x64-portable-v$version.zip` 对近期版本有效。清单取 portable zip（符合规则 1），`bin`/`shortcuts` 指向根目录 `CrossDesk.exe`。
+
+- **修复资产评分：调试符号/浏览器扩展/图片数据混入 + 通用包优先级（2026-11-22）**：收录 mdm（`anefzaoui/misterdownloadmanager`）时，工具把 `*-symbols-windows-x64.zip`（PDB 调试符号包）选成 64bit 主包（与 `-x64.zip` 同为 7 分、按列表顺序被选中），随后 `--dl` 探测报「zip 内未发现 exe」；扩展包（`chrome-web-store`/`extension-*`/`.xpi`）与 `flags.png`/`ipcountry.bin.xz` 也进了候选。三处修复：① `is_windows_asset` 排除 `symbols`/`extension`/`ext` 独立段、`chrome-web-store`、以及图片（png/jpg/gif/ico/svg/webp/bmp）、数据（bin/xz/zst/gz/bz2/dat/db/sqlite）、扩展（xpi/crx）后缀；② `score_asset` 对同类再兜底 -100；③ **通用包得分高于专用包时优先**——`portable.zip`（15 分）本应覆盖全部架构，却因存在 7 分的 `-x64.zip` 让 64bit 用了专用包；④ **所有架构指向同一包时退化为单架构顶层 url**，避免生成三个相同条目的 architecture 块。mdm 最终为单架构 portable zip，`bin` 暴露三个入口（`misterdownloadmanager.exe` 主程序 + `mdm-cli` + `mdm-mcp`），实测安装成功。回归：`tools/test_guards.py` 追加 symbols/扩展/图片与 portable 优先级用例。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 

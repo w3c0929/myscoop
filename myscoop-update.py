@@ -640,7 +640,17 @@ def is_windows_asset(name):
                              ".yml", ".blockmap", ".sig", ".minisig", ".sbom",
                              ".pem", ".crt", ".attestation", ".intoto",
                              ".pdb", ".zsync", ".nupkg", ".snupkg", ".snap", ".flatpak",
-                             ".ipa", ".debug", ".dwarf", ".map")):
+                             ".ipa", ".debug", ".dwarf", ".map",
+                             ".png", ".jpg", ".jpeg", ".gif", ".ico", ".svg", ".webp", ".bmp",
+                             ".bin", ".xz", ".zst", ".gz", ".bz2", ".dat", ".db", ".sqlite",
+                             ".xpi", ".crx")):
+        return False
+    # 调试符号包（PDB 集合，不含可执行文件）与浏览器扩展包：都不是桌面应用本体
+    # （教训：MisterDownloadManager 的 *-symbols-windows-x64.zip 与 *-x64.zip 同为 7 分，
+    #   按列表顺序选中符号包 → --dl 探测「zip 内未发现 exe」）
+    if re.search(r'(?i)(?:^|[-_.])symbols?(?:[-_.]|$)', base):
+        return False
+    if re.search(r'(?i)(?:^|[-_.])(?:extension|ext)(?:[-_.]|$)', base) or 'chrome-web-store' in base:
         return False
     # 校验和文件的其他写法：*.SHA256SUMS / *.sha512sums / *.md5sums / *.checksums / *.digest
     # （上面的 endswith 只覆盖 ".sum"/".sha256"；"…x64.SHA256SUMS" 这类写法会漏，且带 x64 时
@@ -853,10 +863,15 @@ def score_asset(name):
     # arm64 降级：通用版（无架构标记）应优先于 arm64 专版
     if "arm64" in lower or "aarch64" in lower:
         score -= 5
-    # 防御性兜底：签名 / 校验 / SBOM / 调试符号等元数据一律沉底。
+    # 防御性兜底：签名 / 校验 / SBOM / 调试符号 / 浏览器扩展等元数据一律沉底。
     # is_windows_asset 已排除这些后缀，此处防止规则漏网时靠 "x64" 加分反超真正的安装包。
     if re.search(r'(?i)\.(?:minisig|sig|asc|sha\d*|sums?|sbom|pem|crt|attestation|intoto|'
-                 r'pdb|zsync|nupkg|snupkg|snap|flatpak|ipa|debug|dwarf|map)$', lower):
+                 r'pdb|zsync|nupkg|snupkg|snap|flatpak|ipa|debug|dwarf|map|'
+                 r'png|jpg|jpeg|gif|ico|svg|webp|bmp|bin|xz|zst|gz|bz2|dat|db|sqlite|xpi|crx)$', lower):
+        score -= 100
+    if re.search(r'(?i)(?:^|[-_.])symbols?(?:[-_.]|$)', lower) or 'chrome-web-store' in lower:
+        score -= 100
+    if re.search(r'(?i)(?:^|[-_.])(?:extension|ext)(?:[-_.]|$)', lower):
         score -= 100
     return score
 
@@ -1160,6 +1175,20 @@ def add_manifest(repo_url, app_name=None, more=False):
             arch_sel[arch] = pick_asset(arch_groups[arch])
         elif generic_best and has_special:
             arch_sel[arch] = generic_best
+
+    # 通用包得分高于某架构专用包时，通用包优先。
+    # 教训：MisterDownloadManager 的 portable.zip（15 分，通用）本应覆盖全部架构，
+    # 却因存在 7 分的 -x64.zip 而让 64bit 用了专用包，最终清单把非便携包混进多架构。
+    if generic_best:
+        gscore = score_asset(generic_best["name"])
+        for arch in list(arch_sel):
+            if score_asset(arch_sel[arch]["name"]) < gscore:
+                arch_sel[arch] = generic_best
+
+    # 所有架构都指向同一个包时，退化为单架构顶层 url（避免生成三个相同条目的 architecture 块）
+    _distinct = {a["browser_download_url"] for a in arch_sel.values()}
+    if len(arch_sel) >= 2 and len(_distinct) == 1:
+        arch_sel = {"64bit": next(iter(arch_sel.values()))}
 
     # --more：主程序 + cudart 运行时配对（两个 zip 合并安装；同架构取 CUDA 版本最高）
     runtime_pairs = {}
