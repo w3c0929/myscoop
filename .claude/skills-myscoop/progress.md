@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-11-21）
 
-- **收录软件总数**: 178 款
+- **收录软件总数**: 179 款
 - **本地维护（自托管 Release）**: 84 款
-- **第三方官方（引用原项目 Release）**: 94 款
+- **第三方官方（引用原项目 Release）**: 95 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -257,6 +257,8 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **铁律收敛到 SKILL.md 单处维护（2026-11-22）**：此前铁律分散在 `SKILL.md`「关键规则」25 条与 `progress.md`「核心规则」11 条，其中 9 条重复。收敛方案：progress 独有的 2 条（**commit 信息用中文**、**迁移/移除后清理孤儿 release/tag**）并入 SKILL 成为规则 **26/27**；progress「核心规则」章节改为一句指向（唯一来源 = SKILL 关键规则 27 条）。理由：SKILL 是 AI 收录时唯一自动加载的文档，规则放这里才能真正约束行为；progress 定位为进展与决策记录。两处规则章节均无其他文档引用，迁移无悬空引用。
 
 - **铁律冲突检查与修正（2026-11-22）**：对 SKILL 27 条规则做一致性审计，发现 2 处冲突。① **规则 6 事实过时**——原文称「0 个清单使用 `autoupdate.hash`、该机制已废弃」，实际已有 7 个清单在使用（anclicker/atrium/inno-setup/quietmd/winc/windinput/winshun，均指向官方 `.sha256`/`SHA256SUMS`/`.issig`）。改为「API digest 为主、官方校验文件可选」：CI/脚本用 API digest，`autoupdate.hash` 只影响 Scoop 客户端 `@版本` 安装，两者并存。② **规则 7/10 表述矛盾**——规则 7 说「description 用英文」、规则 10 说「描述必须纯中文」，实际指不同对象（manifest 字段 vs Release 描述）。规则 10 改为明确区分「**Release 描述**纯中文、manifest `description` 字段英文」。其余检查无冲突：规则 5/15（单版本 vs 多版本）、24（顶层 url）互补；sublime-text 示例与 tag `vSublimeText` 均有效；规则 13 标签数 93 与实际一致。
+
+- **新增收录 crossdesk（CrossDesk 1.7.6-20261112）（2026-11-22）**：用户提供 `bucket/crossdesk.json` 并已自行验证。核对通过：官方 release `v1.7.6-20261112` 的 `crossdesk-win-x64-portable-v1.7.6-20261112.zip`（27.6MB）digest `sha256:dce0bc31…` 与清单 hash 逐字一致；license `NOASSERTION`（Other）与仓库 API 一致。上游特点：单个 release 挂 10 个多平台资产（Win portable zip / Win exe / macOS pkg / Linux deb / Android apk / iOS zip），另有 tag `latest` 的历史合集 release（2025-08 发布，比 v1.7.6 旧，不影响 `/releases/latest`）；早期资产名带构建 hash 后缀、近期版本已去掉，`autoupdate` 模板 `v$version/...-win-x64-portable-v$version.zip` 对近期版本有效。清单取 portable zip（符合规则 1），`bin`/`shortcuts` 指向根目录 `CrossDesk.exe`。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
