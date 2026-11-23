@@ -12,9 +12,9 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-11-21）
 
-- **收录软件总数**: 180 款
+- **收录软件总数**: 181 款
 - **本地维护（自托管 Release）**: 84 款
-- **第三方官方（引用原项目 Release）**: 96 款
+- **第三方官方（引用原项目 Release）**: 97 款
 
 ## 脚本能力（myscoop-update.py 最新）
 
@@ -263,6 +263,9 @@ ustfrp`，不再生成 `client.toml`，也不复制/共用 frp 的配置。`bin`
 - **修复资产评分：调试符号/浏览器扩展/图片数据混入 + 通用包优先级（2026-11-22）**：收录 mdm（`anefzaoui/misterdownloadmanager`）时，工具把 `*-symbols-windows-x64.zip`（PDB 调试符号包）选成 64bit 主包（与 `-x64.zip` 同为 7 分、按列表顺序被选中），随后 `--dl` 探测报「zip 内未发现 exe」；扩展包（`chrome-web-store`/`extension-*`/`.xpi`）与 `flags.png`/`ipcountry.bin.xz` 也进了候选。三处修复：① `is_windows_asset` 排除 `symbols`/`extension`/`ext` 独立段、`chrome-web-store`、以及图片（png/jpg/gif/ico/svg/webp/bmp）、数据（bin/xz/zst/gz/bz2/dat/db/sqlite）、扩展（xpi/crx）后缀；② `score_asset` 对同类再兜底 -100；③ **通用包得分高于专用包时优先**——`portable.zip`（15 分）本应覆盖全部架构，却因存在 7 分的 `-x64.zip` 让 64bit 用了专用包；④ **所有架构指向同一包时退化为单架构顶层 url**，避免生成三个相同条目的 architecture 块。mdm 最终为单架构 portable zip，`bin` 暴露三个入口（`misterdownloadmanager.exe` 主程序 + `mdm-cli` + `mdm-mcp`），实测安装成功。回归：`tools/test_guards.py` 追加 symbols/扩展/图片与 portable 优先级用例。
 
 - **hcsstudio 迁移为多版本固定 tag（sublime-text 模式）（2026-11-23）**：原清单每版本一个 tag（`v1.0.260708`），迁为固定 tag `vHCSStudio` 下挂多版本资产（1.0.260708 72MB + 1.9.261122 130MB），manifest 用 `#/HCSStudio.exe` 重命名到固定名，`bin`/`shortcuts` 不随版本变化，`autoupdate.url` 为 `vHCSStudio/HCSStudio_$version_with_Net8.exe`。**关键发现（与 SKILL 规则 15 的隐含前提）**：`scoop install myscoop/<app>@<版本>` 优先使用 **git 历史中的清单**（url 已固化），而不是当前清单的 autoupdate 模板。因此：① sublime-text 能"一个 release 搞定"是因为它**从第一个版本就用固定 tag**，历史清单天然指向 `vSublimeText`；② 中途迁移的清单（如 hcsstudio 1.0.260708 指向 `v1.0.260708`）若删除旧 release，`@1.0.260708` 会 404。用户要求只保留一个 release，最终删除 `v1.0.260708`，接受 `@1.0.260708` 不可用（notes 已注明）；迁移后发布的版本不受影响。实测 `scoop install hcsstudio` 安装 1.9.261122 成功（HCSStudio.exe + shim + shortcut）。
+
+- **新增收录 nectarlink（Nectarlink 0.1.6-nightly.12）（2026-11-23）**：用户提供并已自行验证。清单两处必要修复：① **checkver 加 tag_regex 锁定 nightly 通道**——上游 stable 停在 0.1.5、全部新版为 prerelease nightly，默认 `github` 取 `/releases/latest` 会把清单**降级到 0.1.5**（实测 `--dry-run` 报 0.1.6-nightly.12 → 0.1.5），加 `^v(\d+\.\d+\.\d+-nightly\.\d+)$` 后 `--dry-run` 为 0 个可更新；② **arm64 补 hash**（清单原缺，官方 digest `6255ee02…`）。包为传统 NSIS 安装器（无 app-*.7z），解包后为 `$_2_/`（应用本体）+ `$PLUGINSDIR/`（NSIS 插件）+ `uninstall.exe`，bin/shortcuts 按实测路径指向 `$_2_
+ectarlink-desktop.exe`；`pre_install` 保留原解包逻辑。另注：程序运行时自带 adb 会占用 `$_2_/` 目录（卸载前需结束）。收录计数 180→181、第三方 96→97。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 

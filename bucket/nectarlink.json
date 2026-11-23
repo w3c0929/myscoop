@@ -1,0 +1,46 @@
+{
+    "version": "0.1.6-nightly.12",
+    "description": "Your Android phone and your PC, working as one. Windows and Linux. Local-first, end-to-end encrypted, no account.",
+    "homepage": "https://github.com/thtbee/nectarlink",
+    "license": "NOASSERTION",
+    "checkver": {
+        "github": "https://github.com/thtbee/nectarlink",
+        "tag_regex": "^v(\\d+\\.\\d+\\.\\d+-nightly\\.\\d+)$"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/thtbee/nectarlink/releases/download/v0.1.6-nightly.12/Nectarlink-0.1.6-nightly.12-x64-setup.exe",
+            "hash": "sha256:f122dbb978c180aec3e6c5ccc9ac58a9eaeabca76fd2137d1e4e8bb6439d0ec6"
+        },
+        "arm64": {
+            "url": "https://github.com/thtbee/nectarlink/releases/download/v0.1.6-nightly.12/Nectarlink-0.1.6-nightly.12-arm64-setup.exe",
+            "hash": "sha256:6255ee0259425da1eae5438f9b5e1f8614fb47d6891ed420d87719c13ddc84a8"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/thtbee/nectarlink/releases/download/v$version/Nectarlink-$version-x64-setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/thtbee/nectarlink/releases/download/v$version/Nectarlink-$version-arm64-setup.exe"
+            }
+        }
+    },
+    "bin": "$_2_\\nectarlink-desktop.exe",
+    "shortcuts": [
+        [
+            "$_2_\\nectarlink-desktop.exe",
+            "nectarlink"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive (Get-ChildItem \"$dir\\*.exe\" | Select-Object -First 1).FullName \"$dir\\_extract\"",
+        "$__app7z = Get-ChildItem \"$dir\\_extract\" -Recurse -Filter 'app-*.7z' | Select-Object -First 1",
+        "if ($__app7z) { Expand-7zipArchive $__app7z.FullName \"$dir\"; Remove-Item \"$dir\\_extract\" -Recurse -Force } else { Move-Item \"$dir\\_extract\\*\" \"$dir\" -Force; Remove-Item \"$dir\\_extract\" -Recurse -Force }"
+    ],
+    "notes": [
+        "上游只发 nightly 预发布（stable 停在 0.1.5），checkver 用 tag_regex 锁定 nightly 通道，避免 CI 降级到 stable。",
+        "NSIS 安装包由 pre_install 解包（$_2_/$PLUGINSDIR 为 NSIS 内部变量目录，bin/shortcuts 按实测路径指向）。"
+    ]
+}
