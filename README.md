@@ -30,8 +30,8 @@
 | 6 | [Quiet.md](https://github.com/s1dashu/quiet-md) — 极速原生笔记与富文本编辑器（Rust + GPUI），本地优先 | `scoop install quietmd` | 官方 release Inno 安装包（解包为便携） | 0.1.14 | 2026-11-21 | 2026-11-22 |
 | 7 | [Atrium Desktop](https://github.com/wynter-yaxley/atrium-desktop) — Windows 11 原生玻璃质感桌面：浮动任务栏与桌面小组件，实时折射效果 | `scoop install atrium` | 官方 release 便携 zip（仅 x64） | 2.7.0 | 2026-11-20 | 2026-11-20 |
 | 8 | [MoJian3D](https://github.com/LingCore/MoJian3D-Downloads) — 3D 模型查看器（Qt 桌面应用）：支持 AI Agent 通过内置 mojian3d-control 技能检查并控制当前模型 | `scoop install mojian3d` | 官方 release 便携 zip（仅 x64） | 0.1.6 | 2026-11-20 | 2026-11-20 |
-| 9 | [清风输入法 (WindInput)](https://github.com/huanfeng/WindInput) — 轻量、快速、可定制的开源中文输入法，专为五笔和码表方案设计，支持全拼/双拼 | `scoop install windinput` | 官方 release 便携 zip（TSF 需 wind_portable -start 注册） | 0.132.0 | 2026-11-17 | 2026-11-17 |
-| 10 | [Argus](https://github.com/Ray-lea/Argus) — 现代 Windows 任务管理器（Rust + GPUI） | `scoop install argus` | 单 exe 官方 release（仅 x64） | 0.5.0 | 2026-11-12 | 2026-11-13 |
+| 9 | [清风输入法 (WindInput)](https://github.com/huanfeng/WindInput) — 轻量、快速、可定制的开源中文输入法，专为五笔和码表方案设计，支持全拼/双拼 | `scoop install windinput` | 官方 release 便携 zip（TSF 需 wind_portable -start 注册） | 0.133.0 | 2026-11-17 | 2026-11-23 |
+| 10 | [Argus](https://github.com/Ray-lea/Argus) — 现代 Windows 任务管理器（Rust + GPUI） | `scoop install argus` | 单 exe 官方 release（仅 x64） | 0.6.0 | 2026-11-12 | 2026-11-23 |
 | 11 | [Snow Shot](https://github.com/mg-chao/snow-shot) — 截图、标注、钉图、离线 OCR 与录屏工具 | `scoop install snowshot` | 多架构便携 zip 官方 release（x64 / arm64） | 1.6.3 | 2026-11-11 | 2026-11-23 |
 | 12 | [AltSnap](https://github.com/w3c0929/AltSnap) — 按住 Alt 拖动窗口（AltDrag 的维护延续版） | `scoop install altsnap` | 便携 zip 官方 release（仅 x64） | 1.68 | 2026-11-10 | 2026-11-10 |
 | 13 | [ELYTerminal](https://github.com/ELY-Open-Source/ELYTerminal) — 基于 GPUI 与 Ely 组件的终端 | `scoop install elyterminal` | 多架构便携 zip 官方 release（x64 / arm64） | 0.2.6 | 2026-11-09 | 2026-11-19 |
@@ -46,7 +46,7 @@
 | 22 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 23 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
 | 24 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.10 | 2026-11-04 | 2026-11-21 |
-| 25 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4708 | 2026-11-03 | 2026-11-23 |
+| 25 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4718 | 2026-11-03 | 2026-11-23 |
 | 26 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.1 | 2026-10-31 | 2026-11-03 |
 | 27 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 28 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.13.7 | 2026-10-30 | 2026-11-20 |
@@ -67,9 +67,9 @@
 | 43 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.7.2 | 2026-10-12 | 2026-11-22 |
 | 44 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.4 | 2026-10-10 | 2026-11-16 |
 | 45 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.2.1 | 2026-10-12 | 2026-11-07 |
-| 46 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.39 | 2026-10-11 | 2026-11-23 |
+| 46 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.40 | 2026-10-11 | 2026-11-23 |
 | 47 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.39 | 2026-10-10 | 2026-11-23 |
-| 48 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.11.0 | 2026-10-10 | 2026-11-23 |
+| 48 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.12.0 | 2026-10-10 | 2026-11-23 |
 | 49 | [KeyCrash](https://github.com/Yuelioi/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.3.1 | 2026-10-10 | 2026-11-01 |
 | 50 | [SuMail](https://github.com/w3c0929/sumail-releases) — SuMail 桌面版（Windows 桌面版安装包与发布资产；源码仓库为私有） | `scoop install sumail` | zip 官方 release | 0.0.1 | 2026-10-10 | 2026-10-10 |
 | 51 | [DiskButler](https://github.com/YGTQ3/disk-butler) — C 盘管家：给普通人的 Windows 磁盘与内存维护助手（Tauri 2 + React） | `scoop install diskbutler` | 多架构 exe 官方 release（Tauri 解包） | 0.8.0 | 2026-10-10 | 2026-10-10 |
@@ -111,7 +111,7 @@
 | 87 | [QuickLook Office 插件](https://github.com/QL-Win/QuickLook.Plugin.OfficeViewer) — 预览 Word/Excel/PPT 文件 | `scoop install qloffice` | qlplugin 官方 release | 6 | 2026-10-10 | 2026-10-10 |
 | 88 | [QuickLook Git 插件](https://github.com/Chendaqian/QuickLook.Plugin.GitFolderViewer) — 预览 .git 文件夹信息 | `scoop install qlgit` | qlplugin 官方 release | 1.0.1 | 2026-10-10 | 2026-11-05 |
 | 89 | [ComfyUI](https://github.com/Comfy-Org/ComfyUI) — AI图像生成扩散模型GUI，支持NVIDIA GPU | `scoop install comfyui` | portable 7z 官方 release | 0.46.0 | 2026-10-10 | 2026-11-19 |
-| 90 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.4 | 2026-10-10 | 2026-10-10 |
+| 90 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.5 | 2026-10-10 | 2026-11-23 |
 | 91 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | 多架构 zip 官方 release | 6.2.2 | 2026-10-10 | 2026-11-04 |
 | 92 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.25.3131.0 | 2026-10-10 | 2026-11-12 |
 | 93 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — 本地优先的跨平台 Claude Code / AI Agent 桌面工作台：多 Agent 协作、Git Worktree、代码 Diff、技能市场、多模型、Computer Use、桌面宠物；支持微信、飞书、钉钉及 H5 等远程访问。 | `scoop install cc-haha` | 多架构 portable exe | 0.7.9 | 2026-10-10 | 2026-11-20 |
