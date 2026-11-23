@@ -1,5 +1,5 @@
 {
-    "version": "0.16.6",
+    "version": "1.0.0",
     "description": "Open-source download manager for courses (Udemy/Hotmart), YouTube, music & 1,800+ sites. Built with Tauri 2.0, Rust & Svelte.",
     "homepage": "https://t.me/OpenSelena",
     "license": "GPL-3.0",
@@ -8,8 +8,8 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/OpenSelena/omniget/releases/download/v0.16.6/omniget_0.16.6_x64-portable.exe",
-            "hash": "sha256:5db562c2532a19161424444fdc2e2822eff4fe8f9f9f087135cf08dd00fd2241"
+            "url": "https://github.com/OpenSelena/libreget/releases/download/v1.0.0/libreget_1.0.0_x64-portable.exe",
+            "hash": "sha256:7d185fb7d8bcdfbefaf5311aed14de251090875ea6ee6d21cc48779eeb4c1a4f"
         }
     },
     "pre_install": [
@@ -25,7 +25,7 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/OpenSelena/omniget/releases/download/v$version/omniget_$version_x64-portable.exe"
+                "url": "https://github.com/OpenSelena/omniget/releases/download/v$version/libreget_$version_x64-portable.exe"
             }
         }
     }
