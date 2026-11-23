@@ -455,9 +455,12 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* f9b1837 (HEAD -> main) 同步 README 第三方版本与日期列
+* 897f374 (HEAD -> main) 同步 README 第三方版本与日期列
+* ee01b14 自动更新第三方软件
+* eb52a99 (origin/main) progress.md 更新提交历史
+* f9b1837 同步 README 第三方版本与日期列
 * 01874f6 自动更新第三方软件
-* 4bb7452 (origin/main) progress.md 更新提交历史
+* 4bb7452 progress.md 更新提交历史
 * 4da4f86 铁律新增第 28 条：用户说「已验证」时禁止安装处理
 * 6157b7e progress.md 更新提交历史
 * b9b4642 新增收录 nectarlink 0.1.6-nightly.12（第三方官方）
