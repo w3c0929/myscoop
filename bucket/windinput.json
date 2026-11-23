@@ -1,14 +1,14 @@
 {
-    "version": "0.132.0",
+    "version": "0.133.0",
     "description": "清风输入法 | 轻量、快速、可定制的开源中文输入法，专为五笔和码表输入方案设计，支持全拼/双拼（Windows / macOS / Linux）",
     "homepage": "https://windinput.com",
     "license": "GPL-3.0",
     "checkver": {
         "github": "https://github.com/huanfeng/WindInput"
     },
-    "url": "https://github.com/huanfeng/WindInput/releases/download/v0.132.0/WindInput-Portable-0.132.0.zip",
-    "hash": "sha256:78ceaec4c58f4fcd37ab115d5e4374f754aa7adc0675555edfe6aac9a1b8984c",
-    "extract_dir": "WindInput-0.132.0",
+    "url": "https://github.com/huanfeng/WindInput/releases/download/v0.133.0/WindInput-Portable-0.133.0.zip",
+    "hash": "sha256:61489d613ed98cf431879bad5288fd938828dd8122eff412a6c66498f27012c7",
+    "extract_dir": "WindInput-0.133.0",
     "bin": "wind_setting.exe",
     "shortcuts": [
         [
