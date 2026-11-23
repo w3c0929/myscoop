@@ -453,8 +453,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* e4c1f63 (HEAD -> main) hcsstudio 迁移为多版本固定 tag（sublime-text 模式）
-* be96cfc (origin/main, origin/HEAD) progress.md 更新提交历史
+* b9b4642 (HEAD -> main) 新增收录 nectarlink 0.1.6-nightly.12（第三方官方）
+* b22c5f0 (origin/main, origin/HEAD) progress.md 更新提交历史
+* e4c1f63 hcsstudio 迁移为多版本固定 tag（sublime-text 模式）
+* be96cfc progress.md 更新提交历史
 * 28135e7 同步 README 第三方版本与日期列
 * 8d0018d 自动更新第三方软件
 * 655cd3e progress.md 更新提交历史
