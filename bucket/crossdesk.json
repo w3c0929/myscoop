@@ -1,13 +1,13 @@
 {
-    "version": "1.7.6-20261112",
+    "version": "1.7.7-20261124",
     "description": "A lightweight, cross-platform remote desktop software with support for Web Client access | 一款支持 Web 客户端访问的轻量级跨平台远程桌面软件。",
     "homepage": "https://www.crossdesk.cn",
     "license": "NOASSERTION",
     "checkver": {
         "github": "https://github.com/kunkundi/crossdesk"
     },
-    "url": "https://github.com/kunkundi/crossdesk/releases/download/v1.7.6-20261112/crossdesk-win-x64-portable-v1.7.6-20261112.zip",
-    "hash": "sha256:dce0bc31631fd8f21c4b75bfeecc177935a56df900e83766480656c8f17a39c3",
+    "url": "https://github.com/kunkundi/crossdesk/releases/download/v1.7.7-20261124/crossdesk-win-x64-portable-v1.7.7-20261124.zip",
+    "hash": "sha256:90ad9f4f4032892ec8efa40662da62e9774a637b69f15f76313a63ffb7f9b4d2",
     "autoupdate": {
         "url": "https://github.com/kunkundi/crossdesk/releases/download/v$version/crossdesk-win-x64-portable-v$version.zip"
     },
