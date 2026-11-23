@@ -1,10 +1,10 @@
 {
     "version": "1.0.0",
-    "description": "Open-source download manager for courses (Udemy/Hotmart), YouTube, music & 1,800+ sites. Built with Tauri 2.0, Rust & Svelte.",
+    "description": "Open-source download manager for courses (Udemy/Hotmart), YouTube, music & 1,800+ sites. Built with Tauri 2.0, Rust & Svelte. (formerly OmniGet)",
     "homepage": "https://t.me/OpenSelena",
     "license": "GPL-3.0",
     "checkver": {
-        "github": "https://github.com/OpenSelena/omniget"
+        "github": "https://github.com/OpenSelena/libreget"
     },
     "architecture": {
         "64bit": {
@@ -13,20 +13,24 @@
         }
     },
     "pre_install": [
-        "$e = Get-ChildItem \"$dir\\omniget*portable.exe\" | Select-Object -First 1; if ($e -and $e.Name -ne 'omniget.exe') { Rename-Item -Path $e.FullName -NewName 'omniget.exe' -Force }"
+        "$e = Get-ChildItem \"$dir\\*portable.exe\" | Where-Object { $_.Name -match '^(omni|libre)get_.*portable\\.exe$' } | Select-Object -First 1; if ($e -and $e.Name -ne 'omniget.exe') { Rename-Item -Path $e.FullName -NewName 'omniget.exe' -Force }"
     ],
     "bin": "omniget.exe",
     "shortcuts": [
         [
             "omniget.exe",
-            "omniget"
+            "LibreGet"
         ]
     ],
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/OpenSelena/omniget/releases/download/v$version/libreget_$version_x64-portable.exe"
+                "url": "https://github.com/OpenSelena/libreget/releases/download/v$version/libreget_$version_x64-portable.exe"
             }
         }
-    }
+    },
+    "notes": [
+        "上游 1.0.0 起由 OmniGet 更名为 LibreGet（仓库 OpenSelena/omniget → OpenSelena/libreget，旧地址仍重定向）。",
+        "清单沿用 omniget 名称以保持命令与升级路径不变；pre_install 按 ^(omni|libre)get_.*portable.exe 精确匹配后重命名为 omniget.exe。"
+    ]
 }
