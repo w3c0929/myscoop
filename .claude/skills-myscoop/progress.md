@@ -459,8 +459,10 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* b8c57f0 (HEAD -> main) sublime-text 加 autoupdate.hash 指向 SHA256SUMS
-* c9d675b (origin/main, origin/HEAD) progress.md 更新提交历史
+* e0e81f2 (HEAD -> main) 修复 omniget 1.0.0 改名后的 shim 失败
+* 6b1d81d (origin/main, origin/HEAD) progress.md 更新提交历史
+* b8c57f0 sublime-text 加 autoupdate.hash 指向 SHA256SUMS
+* c9d675b progress.md 更新提交历史
 * 897f374 同步 README 第三方版本与日期列
 * ee01b14 自动更新第三方软件
 * eb52a99 progress.md 更新提交历史
