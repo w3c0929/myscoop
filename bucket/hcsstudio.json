@@ -1,9 +1,25 @@
 {
-    "version": "1.0.260708",
+    "version": "1.9.261122",
     "description": "HCSStudio - 汉化工具",
     "homepage": "https://github.com/w3c0929/myscoop",
-    "license": {"identifier": "Freeware"},
-    "url": "https://github.com/w3c0929/myscoop/releases/download/v1.0.260708/HCSStudio_1.0.260708_with_Net8.exe",
-    "hash": "sha256:dc1276bcce317b1f4de7721781fef13a527f3e82e25389883ef10ca64dffb05e",
-    "post_install": "Start-Process \"$dir\\HCSStudio_1.0.260708_with_Net8.exe\""
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vHCSStudio/HCSStudio_1.9.261122_with_Net8.exe#/HCSStudio.exe",
+    "hash": "sha256:b4212a8b3738c2cbb3ccbdd2258bc7428d962cba08879e20ca4c5534e0a82aa4",
+    "bin": "HCSStudio.exe",
+    "shortcuts": [
+        [
+            "HCSStudio.exe",
+            "HCSStudio"
+        ]
+    ],
+    "autoupdate": {
+        "url": "https://github.com/w3c0929/myscoop/releases/download/vHCSStudio/HCSStudio_$version_with_Net8.exe#/HCSStudio.exe"
+    },
+    "notes": [
+        "多版本自托管（同 sublime-text 模式）：固定 tag vHCSStudio 下挂各版本 exe，文件名含版本号。",
+        "安装指定版本：scoop install myscoop/hcsstudio@<版本>。注意 1.0.260708 的历史清单指向已删除的旧 tag，@1.0.260708 不可用；迁移后发布的版本不受影响。",
+        "URL 用 #/HCSStudio.exe 重命名为固定名，bin/shortcuts 不随版本变化。"
+    ]
 }

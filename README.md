@@ -131,7 +131,7 @@
 | 6 | WPS Office — 办公套件（文字/表格/演示） | `scoop install wps` | 单 exe 手动安装 | 26899 | 2026-10-10 | 2026-10-10 |
 | 7 | 公众号排版器 — 微信公众号文章排版工具 | `scoop install gzh-formatter` | 单 exe 便携 | 3.7.3 | 2026-10-10 | 2026-10-10 |
 | 8 | Cloudflare WARP — 网络加速与安全工具 | `scoop install cfwarp` | MSI 手动安装 | 2026.6.850.0 | 2026-10-10 | 2026-10-10 |
-| 9 | HCSStudio — 汉化工具 | `scoop install hcsstudio` | 单 exe 手动安装 | 1.0.260708 | 2026-10-10 | 2026-10-10 |
+| 9 | HCSStudio — 汉化工具 | `scoop install hcsstudio` | 多版本自托管 exe（固定 tag + $version 模板） | 1.9.261122 | 2026-10-10 | 2026-11-23 |
 | 10 | 卡卡字幕助手 VideoCaptioner — AI视频字幕生成工具 | `scoop install video-captioner` | 单 exe 手动安装 | 1.3.3 | 2026-10-10 | 2026-10-10 |
 | 11 | Athena-A 汉化版 — 软件本地化翻译工具 | `scoop install athena-loc` | 7z 便携解压即用 | 4.13 | 2026-10-10 | 2026-10-10 |
 | 12 | 软媒PCMaster — 系统工具合集 | `scoop install pcmaster` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
