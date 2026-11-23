@@ -601,3 +601,5 @@ git add bucket/ README.md && git commit -m "批量更新第三方软件" && git 
 26. **git commit 信息必须用中文**：提交信息用中文描述改动；progress 的提交历史直接取自 git log，中文更易读。
 
 27. **迁移/移除软件后必须清理废弃 release 与 tag**：软件从「本地维护」迁移为「第三方官方」、或从 bucket 移除后，同步删除 myscoop 仓库上不再被任何清单引用的 release 与 tag（远端 `gh release delete <tag> --cleanup-tag --yes`，本地 `git tag -d`）。**定期核对 `gh release list` 数量 == 本地维护清单数**，多出的即孤儿。案例：mykeymap 迁移到 `w3c0929/MyKeymap` 后，`v2.0-beta33-mykeymap` 成为孤儿（Releases 页 85 vs 清单 84）。
+
+28. **用户说「已经验证过了」时禁止任何安装处理**：只做**静态检查**（JSON 合法性、url/hash 与官方 digest 是否一致、字段完整性、checkver 会不会把版本改坏），发现问题只改清单字段；**不要**下载安装包、不要 `scoop install/uninstall/update`、不要杀进程、不要动 `apps/` 安装目录。用户已完成验证，重复安装浪费时间且可能破坏其运行环境。检查完直接更新 README/progress 并提交推送。
