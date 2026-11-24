@@ -6,6 +6,8 @@
 
 不想逐条执行下面的命令时，用一键恢复脚本：
 
+> **首次运行脚本前（必做）**：打开 PowerShell 执行一次 `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`（允许本地脚本，远程脚本仍需签名）。
+
 **Windows 10 / 11**
 
 1. 下载 [`restore-scoop-backup.ps1`](https://github.com/w3c0929/myscoop/raw/main/restore-scoop-backup.ps1)（右键 → 另存为）
