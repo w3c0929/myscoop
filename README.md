@@ -214,6 +214,25 @@
 
 ## 安装与使用
 
+### 快速安装（推荐）
+
+不想逐条执行下面的命令时，用一键恢复脚本：
+
+**Windows 10 / 11**
+
+1. 下载 [`restore-scoop-backup.ps1`](https://github.com/w3c0929/myscoop/raw/main/restore-scoop-backup.ps1)（右键 → 另存为）
+2. 右键脚本 → **使用 PowerShell 运行**
+3. 脚本自动安装 Scoop、Git 并添加全部 bucket
+4. 完成后进入 `D:\scoop\buckets\myscoop`，**以管理员身份运行 `symlink.bat`** 完成部署
+
+**Windows 7**
+
+Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
+
+1. 下载 [Win7-WMF5.1-x64.zip](https://github.com/w3c0929/myscoop/releases/download/vWin7WMF/Win7-WMF5.1-x64.zip)
+2. 解压后双击运行 `Win7AndW2K8R2-KB3191566-x64.msu`，**重启电脑**
+3. 再按上面 Windows 10/11 的第 1–4 步操作
+
 ### 1. 添加 Bucket
 
 ```powershell
