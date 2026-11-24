@@ -1,0 +1,14 @@
+{
+    "version": "5.1",
+    "description": "Windows Management Framework 5.1 (KB3191566) for Windows 7 SP1 / Server 2008 R2 — 解压即用，含 MSU 更新包与安装脚本",
+    "homepage": "https://www.microsoft.com/en-us/download/details.aspx?id=54616",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vWin7WMF/Win7-WMF5.1-x64.zip",
+    "hash": "sha256:f383c34aa65332662a17d95409a2ddedadceda74427e35d05024cd0a6a2fa647",
+    "notes": [
+        "解压即用（无 post_install、不自动启动）：安装目录内含 Win7AndW2K8R2-KB3191566-x64.msu 与 Install-WMF5.1.ps1。",
+        "安装：以管理员运行 MSU 更新包，或右键 Install-WMF5.1.ps1 → 使用 PowerShell 运行；装完需重启。"
+    ]
+}

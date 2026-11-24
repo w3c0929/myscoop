@@ -12,8 +12,8 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-11-21）
 
-- **收录软件总数**: 181 款
-- **本地维护（自托管 Release）**: 84 款
+- **收录软件总数**: 182 款
+- **本地维护（自托管 Release）**: 85 款
 - **第三方官方（引用原项目 Release）**: 97 款
 
 ## 脚本能力（myscoop-update.py 最新）
@@ -274,6 +274,8 @@ ectarlink-desktop.exe`；`pre_install` 保留原解包逻辑。另注：程序�
 - **omniget 1.0.0 上游改名 LibreGet（2026-11-24）**：CI 自动升级到 1.0.0 后 shim 失败（`Can't shim 'omniget.exe': File doesn't exist`）。根因：上游把仓库 `OpenSelena/omniget` 更名为 `OpenSelena/libreget`（旧地址 301 重定向），资产名从 `omniget_*` 变为 `libreget_1.0.0_x64-portable.exe`；清单的 `pre_install` 仍按 `omniget*portable.exe` 匹配 → 未重命名 → bin 找不到。修复：① `pre_install` 改为精确正则 `^(omni|libre)get_.*portable\.exe$`（不误匹配其他 portable 文件）；② `checkver`/`autoupdate` 指向新仓库 `OpenSelena/libreget`；③ shortcuts 显示名改 LibreGet（清单名与命令 `omniget` 保持不变，升级路径不变）。实测清理失败残留后重装 1.0.0 成功（omniget.exe + shim + 快捷方式）。
 
 - **cfwarp 迁移为多版本固定 tag（2026-11-24）**：原清单每版本一个 tag（`v2026.6.850.0`），迁为固定 tag `vCloudflareWARP` 下挂 2026.6.850.0 / 2026.8.2115.0 两个 MSI，并上传 `SHA256SUMS`；清单 `autoupdate.url` 用 `Cloudflare_WARP_$version.msi`，`autoupdate.hash.url` 指向 SHA256SUMS（吸取 sublime-text 教训：@版本 安装不依赖 GitHub API）。MSI 手动安装流程（pre_install 从缓存复制 setup.msi、post_install 启动）保持不变。删除旧 tag release；`@2026.6.850.0` 因历史清单指向旧 tag 不可用（与 hcsstudio 同）。新版 sha256 `ab3138db…`，旧版 `c8814ece…`（下载验证一致）。
+
+- **新增收录 win7wmf（Win7 WMF 5.1 KB3191566）（2026-11-24）**：自托管 `vWin7WMF` release 挂 `Win7-WMF5.1-x64.zip`（68MB，sha256 `f383c34a…`）。zip 无顶层目录，仅含 `Win7AndW2K8R2-KB3191566-x64.msu`（68MB）与 `Install-WMF5.1.ps1`；按用户要求**解压即用**——无 `bin`/`shortcuts`/`post_install`，装后由用户手动以管理员运行 MSU 或脚本（装完需重启）。实测 `scoop install win7wmf` 解压成功，两个文件均在安装目录根。计数 181→182、本地 84→85。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 
