@@ -46,7 +46,7 @@
 | 22 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 23 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
 | 24 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.10 | 2026-11-04 | 2026-11-21 |
-| 25 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4759 | 2026-11-03 | 2026-11-24 |
+| 25 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4760 | 2026-11-03 | 2026-11-25 |
 | 26 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.1 | 2026-10-31 | 2026-11-03 |
 | 27 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
 | 28 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.13.7 | 2026-10-30 | 2026-11-20 |
@@ -56,7 +56,7 @@
 | 32 | [MiHome-Windows](https://github.com/huanyuejue/MiHome-Windows) — 米家设备 Windows 桌面控制端（扫码登录，本地查看/控制设备） | `scoop install mihome` | portable zip 官方 release | 0.5.0 | 2026-10-28 | 2026-11-02 |
 | 33 | [MiniDock](https://github.com/wang01116/MiniDock) — 极简 Windows dock 栏工具 | `scoop install minidock` | 单 exe 官方 release | 2.8.5 | 2026-10-28 | 2026-11-23 |
 | 34 | [sdkm](https://github.com/borenchan/sdkmate) — 全栈开发者的跨平台 SDK 版本管理器：Java / Node.js / Python / Maven / Go 等 40+ 工具一键安装与切换（Rust 编写，约 4MB 单文件） | `scoop install sdkm` | zip 官方 release（安装时自动 init） | 0.6.0 | 2026-10-24 | 2026-11-20 |
-| 35 | [网易UU远程](https://uuyc.163.com/) — 超低延迟的远程控制工具（Windows / macOS / iOS / Android / TV） | `scoop install uuyc` | NSIS 安装器安装（服务/驱动注册） | 4.48.3 | 2026-10-10 | 2026-11-24 |
+| 35 | [网易UU远程](https://uuyc.163.com/) — 超低延迟的远程控制工具（Windows / macOS / iOS / Android / TV） | `scoop install uuyc` | NSIS 安装器安装（服务/驱动注册） | 4.48.4 | 2026-10-10 | 2026-11-25 |
 | 36 | [evanOCR](https://github.com/duyuanfu/evan-ocr) — C++ 写了一款比 Snipaste/PixPin 更爽的免费截贴图 OCR 神器 | `scoop install evanocr` | portable zip 官方 release | 1.2.1 | 2026-10-18 | 2026-10-21 |
 | 37 | [Sunpack](https://github.com/Qinjingxue/Sunpack) — Windows 全自动压缩包处理工具：后台监控文件夹、自动识别并解压、递归处理与崩溃恢复 | `scoop install sunpack` | 多架构 exe 官方 release（Inno Setup 解包） | 1.5.2 | 2026-10-15 | 2026-11-21 |
 | 38 | [SVCode](https://github.com/mnigc/SVCode) — 轻量的「编辑优先」文本与代码编辑器（内置预览，Windows 优先） | `scoop install svcode` | 单 exe 官方 release（Tauri 解包） | 0.3.2 | 2026-10-14 | 2026-10-14 |
@@ -67,7 +67,7 @@
 | 43 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.7.2 | 2026-10-12 | 2026-11-22 |
 | 44 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.4 | 2026-10-10 | 2026-11-16 |
 | 45 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.2.1 | 2026-10-12 | 2026-11-07 |
-| 46 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.42 | 2026-10-11 | 2026-11-24 |
+| 46 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.43 | 2026-10-11 | 2026-11-25 |
 | 47 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.40 | 2026-10-10 | 2026-11-24 |
 | 48 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.12.5 | 2026-10-10 | 2026-11-24 |
 | 49 | [KeyCrash](https://github.com/Yuelioi/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.3.1 | 2026-10-10 | 2026-11-01 |
@@ -114,7 +114,7 @@
 | 90 | [Cinetry](https://github.com/gstory0404/Cinetry) — 多媒体播放器，支持多服务器聚合搜索 | `scoop install cinetry` | zip 官方 release | 0.8.5 | 2026-10-10 | 2026-11-23 |
 | 91 | [EServer](https://github.com/xianyunleo/EServer) — Nginx/PHP/MySQL/Redis 集成环境 | `scoop install eserver` | 多架构 zip 官方 release | 6.2.2 | 2026-10-10 | 2026-11-04 |
 | 92 | [Windows Terminal](https://github.com/microsoft/terminal) — 微软新一代命令行终端 | `scoop install terminal` | 多架构 portable zip | 1.25.3131.0 | 2026-10-10 | 2026-11-12 |
-| 93 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — 本地优先的跨平台 Claude Code / AI Agent 桌面工作台：多 Agent 协作、Git Worktree、代码 Diff、技能市场、多模型、Computer Use、桌面宠物；支持微信、飞书、钉钉及 H5 等远程访问。 | `scoop install cc-haha` | 多架构 portable exe | 0.7.9 | 2026-10-10 | 2026-11-20 |
+| 93 | [cc-haha / Claude Code Haha](https://github.com/NanmiCoder/cc-haha) — 本地优先的跨平台 Claude Code / AI Agent 桌面工作台：多 Agent 协作、Git Worktree、代码 Diff、技能市场、多模型、Computer Use、桌面宠物；支持微信、飞书、钉钉及 H5 等远程访问。 | `scoop install cc-haha` | 多架构 portable exe | 0.8.0 | 2026-10-10 | 2026-11-25 |
 | 94 | [Amcfy Music](https://github.com/amcfy-music/amcfy-music) — 跨平台音乐播放器 | `scoop install amcfy-music` | portable zip 官方 release | 1.2.15 | 2026-10-10 | 2026-10-25 |
 | 95 | [LiteMonitor](https://github.com/Diorser/LiteMonitor) — 桌面硬件性能监控 | `scoop install litemonitor` | portable zip 官方 release | 1.3.6 | 2026-10-10 | 2026-10-10 |
 | 96 | [PixPin](https://pixpin.cn/) — 截图标注工具（官方直链，Inno Setup） | `scoop install pixpin` | Inno Setup 官方直链 | 3.6.6.0 | 2026-10-10 | 2026-10-30 |
