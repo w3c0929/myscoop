@@ -1,5 +1,5 @@
 {
-    "version": "0.44.2",
+    "version": "0.45.1",
     "description": "Win顺 (WinShun): instant file, folder and content search | 文件、文件夹与内容搜索",
     "homepage": "https://github.com/w3c0929/WinShun",
     "license": "MIT",
@@ -8,8 +8,8 @@
         "For whole-disk search, turn it on in Settings > Search scope > Disks > Index method (Windows asks for administrator rights).",
         "索引服务不随 Scoop 安装；要索引整个磁盘，到 设置 > 搜索范围 > 磁盘 > 索引方式 里开启。"
     ],
-    "url": "https://github.com/w3c0929/WinShun/releases/download/v0.44.2/WinShun-0.44.2-x64-portable.zip",
-    "hash": "sha256:2a469b1e569aece684f99ab3faa597620a2f1615a0849a20290509a0771159d8",
+    "url": "https://github.com/w3c0929/WinShun/releases/download/v0.45.1/WinShun-0.45.1-x64-portable.zip",
+    "hash": "sha256:0f7a3f8b03a23b095fc38bad7836e5c1a99cda7d03d98adb5f3464ff9cce592b",
     "extract_dir": "WinShun",
     "bin": "bin\\ws.exe",
     "shortcuts": [
