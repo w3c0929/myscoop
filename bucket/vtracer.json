@@ -10,7 +10,7 @@
     "autoupdate": {
         "url": "https://github.com/visioncortex/vtracer/releases/download/$version/VTracer_$version_x64-setup.exe"
     },
-    "hash": "sha256:3ffff2087fdcfa4e3211a0a2a81f045c136185ca164e0304efd222d6a28a3b01",
+    "hash": "sha256:5d9211cc68a9a29b3860f8b86c76c2b377188e47a425c6e678f4731f57a1785c",
     "bin": "vtracer.exe",
     "shortcuts": [
         [

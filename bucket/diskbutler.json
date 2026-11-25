@@ -8,14 +8,16 @@
     },
     "architecture": {
         "32bit": {
-            "url": "https://github.com/YGTQ3/disk-butler/releases/download/v0.8.0/DiskButlerCollector.exe"
+            "url": "https://github.com/YGTQ3/disk-butler/releases/download/v0.8.0/DiskButlerCollector.exe",
+            "hash": "sha256:36faf297d1cbcd73c7cce66cb56650a9d867adc0dc34715bef19143138286afc"
         },
         "64bit": {
             "url": "https://github.com/YGTQ3/disk-butler/releases/download/v0.8.0/DiskButler_0.8.0_x64-setup.exe",
             "hash": "sha256:a1d83e651fdc4fad39cab6ca0eef7a06cfbd557560d286f95b17d895365b53b1"
         },
         "arm64": {
-            "url": "https://github.com/YGTQ3/disk-butler/releases/download/v0.8.0/DiskButlerCollector.exe"
+            "url": "https://github.com/YGTQ3/disk-butler/releases/download/v0.8.0/DiskButlerCollector.exe",
+            "hash": "sha256:36faf297d1cbcd73c7cce66cb56650a9d867adc0dc34715bef19143138286afc"
         }
     },
     "autoupdate": {

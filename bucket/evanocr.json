@@ -7,7 +7,7 @@
         "github": "https://github.com/duyuanfu/evan-ocr"
     },
     "url": "https://github.com/duyuanfu/evan-ocr/releases/download/v1.2.1/evan-v1.2.1-windows-x64.zip",
-    "hash": "sha256:90fb7bc539cd36d9465c53f7d3fc6647d4c92f30b4201796cc086eeb26fe2e8a",
+    "hash": "sha256:7541eafd6725d08a4d36d9431bc05c79c4a9e9587b550af4b73a42fc5c1669a8",
     "autoupdate": {
         "url": "https://github.com/duyuanfu/evan-ocr/releases/download/v$version/evan-v$version-windows-x64.zip"
     },

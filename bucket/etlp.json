@@ -9,15 +9,15 @@
     "architecture": {
         "32bit": {
             "url": "https://github.com/kjtsune/embyToLocalPlayer/releases/download/2026.07.18/etlp-python-embed-win32.zip",
-            "hash": "sha256:24d4560c46a05c3c618ea621dfe3987c82e7021970774ca4616233b7ea1e182c"
+            "hash": "sha256:eb588a0b249a8266b36565708a96de6fe1645ddcc7ad5a213e7b82549a60c677"
         },
         "64bit": {
             "url": "https://github.com/kjtsune/embyToLocalPlayer/releases/download/2026.07.18/etlp-mpv-py-embed-win64.zip",
-            "hash": "sha256:93f8b588001536b4090b7e8cd83a9159e5613464b69831e2042aa2abf543f937"
+            "hash": "sha256:bdbae170b5be6cf7b43c8d75cfa328eb4cba591ff15b4d684cb017f943794936"
         },
         "arm64": {
             "url": "https://github.com/kjtsune/embyToLocalPlayer/releases/download/2026.07.18/etlp-python-embed-win32.zip",
-            "hash": "sha256:24d4560c46a05c3c618ea621dfe3987c82e7021970774ca4616233b7ea1e182c"
+            "hash": "sha256:eb588a0b249a8266b36565708a96de6fe1645ddcc7ad5a213e7b82549a60c677"
         }
     },
     "autoupdate": {
