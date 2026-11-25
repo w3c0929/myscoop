@@ -147,7 +147,7 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
-| 1 | [Google Chrome 109 (Win7)](https://www.google.com/chrome/) — Windows 7 / 8.1 最后可用的 Chrome 版本（官方安装器，手动安装，与新版 Chrome 相互独立） | `scoop install win7chrome` | 单 exe 自托管（官方安装器，仅下载不自动安装） | 109.0.5414.120 | 2026-11-25 | 2026-11-25 |
+| 1 | [Google Chrome 109 (Win7)](https://www.google.com/chrome/) — Windows 7 / 8.1 最后可用的 Chrome 版本（官方安装器，手动安装，与新版 Chrome 相互独立） | `scoop install win7chrome` | 单 exe 自托管（官方安装器，自动启动、手动完成安装） | 109.0.5414.120 | 2026-11-25 | 2026-11-25 |
 | 2 | Windows 7 WMF 5.1 (KB3191566) — Windows 管理框架 5.1 更新包（解压即用，含 MSU 与 Install-WMF5.1.ps1） | `scoop install win7wmf` | zip 便携（自托管，解压即用） | 5.1 | 2026-11-24 | 2026-11-24 |
 | 3 | [INPHIC HUB](https://www.inphic.com/) — 英菲克外设设置工具 | `scoop install inphic` | 7z 便携解压即用（Inno Setup 解包） | 1.0.1.24 | 2026-10-28 | 2026-10-28 |
 | 4 | ego lite — AI Agent 浏览器（Chromium 内核，可导入 Chrome 数据；让 Claude Code / Codex 等在隔离 Space 执行网页自动化） | `scoop install egolite` | 7z 便携（自托管：官方 Web 安装器目录打包） | 0.6.3.17 | 2026-10-20 | 2026-11-17 |
