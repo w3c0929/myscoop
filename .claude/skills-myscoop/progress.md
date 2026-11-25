@@ -472,7 +472,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* a323fd0 (HEAD -> main, origin/main, origin/HEAD) 新增收录 win7chrome（Chrome 109 for Win7，下载即用）
+* f6f7d7a (HEAD -> main, origin/main, origin/HEAD) win7chrome：post_install 自动启动安装器
+* 2d8aecf progress.md 更新提交历史
+* a323fd0 新增收录 win7chrome（Chrome 109 for Win7，下载即用）
 * 6331b4e progress.md 更新提交历史
 * a3cf938 同步 README 第三方版本与日期列
 * 9f3ea3a 自动更新第三方软件
