@@ -2193,16 +2193,33 @@ def _open(req, timeout):
                                       context=ssl._create_unverified_context())
 
 
-def fetch_text(url, timeout=60, headers=None):
+def fetch_text(url, timeout=30, headers=None, retries=2):
     """抓取网页文本（用于 checkver 页面验证等）。
-    与 fetch_json 同样：仅在 GitHub 官方 API 上附带 token，绝不发给其他域名。"""
+    与 fetch_json 同样：仅在 GitHub 官方 API 上附带 token，绝不发给其他域名。
+    网络层错误（连接重置 / SSL 握手超时等）与 429/5xx 退避重试 retries 次：
+    CI（境外）抓国内站点（如 pixpin.cn 的下载页）偶发 handshake timeout，重试即可自愈。"""
     hdrs = dict(headers or {"User-Agent": "myscoop-updater"})
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if token and url.startswith("https://api.github.com/") and "Authorization" not in hdrs:
         hdrs["Authorization"] = f"Bearer {token}"
-    req = urllib.request.Request(url, headers=hdrs)
-    with _open(req, timeout) as resp:
-        return resp.read().decode("utf-8", "replace")
+    last = None
+    for attempt in range(retries + 1):
+        req = urllib.request.Request(url, headers=hdrs)
+        try:
+            with _open(req, timeout) as resp:
+                return resp.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 500, 502, 503, 504) and attempt < retries:
+                last = e
+                time.sleep(2 ** attempt)
+                continue
+            raise
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            last = e
+            if attempt < retries:
+                print(f"[重试] {url} 抓取失败（{e}），{2 ** attempt}s 后重试（{attempt + 1}/{retries}）")
+                time.sleep(2 ** attempt)
+    raise last
 
 
 # 镜像测速参数（可用环境变量覆盖）：probe_window 秒内实测速度 < min_speed 就换下一个镜像；
