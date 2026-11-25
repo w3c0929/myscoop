@@ -1002,6 +1002,46 @@ def find_duplicate_source(owner, repo, exclude_app=None):
     return hits
 
 
+_PORTABLE_VER_RE = re.compile(r"(?:^|[-_.])v?\d+(?:\.\d+)+(?=$|[-_.])")
+_PORTABLE_RENAME_MARK = "Rename-Item -Path $e.FullName"
+
+
+def _portable_rename_fields(asset_name, app_name):
+    """单 exe 便携资产名含版本号时，返回 (固定文件名, 安装时重命名 pre_install 脚本)。
+
+    例：arke-0.9.1.exe → arke.exe（bin/shortcuts 用固定名，pre_install 每次安装重命名）。
+    背景：autoupdate 只更新 version/url/hash，改不了 bin/shortcuts；资产名带版本号时
+    升版后文件变成 arke-0.10.0.exe，写死的 bin 会让 shim/快捷方式指向不存在的文件
+    （sync_bin_version 只能修补 CI 已更新的清单，`scoop install app@版本` 仍会坏）。
+    文件名不含版本号时返回 None（对现有清单零影响）。
+    """
+    name = str(asset_name or "")
+    if not name.lower().endswith(".exe"):
+        return None
+    m = _PORTABLE_VER_RE.search(name)
+    if not m:
+        return None
+    prefix, suffix = name[:m.start()], name[m.end():]
+    stem = re.sub(r"[-_.]+$", "", prefix) or str(app_name or "app")
+    fixed = stem + suffix
+    if fixed.lower() == name.lower():
+        return None
+    # 通配：版本段位置换成 *（升版后仍能匹配），如 arke*.exe / App*-x64.exe；
+    # 版本在文件名开头（prefix 为空）时退化为 *.exe（$dir 内该清单只有这一个 exe）
+    glob = (prefix.rstrip("-_.") + "*" + suffix) if prefix else ("*" + suffix)
+    fixed_ps = fixed.replace("'", "''")
+    script = ('$e = Get-ChildItem "$dir\\%s" | Select-Object -First 1; '
+              "if ($e -and $e.Name -ne '%s') { Rename-Item -Path $e.FullName -NewName '%s' -Force }"
+              % (glob, fixed_ps, fixed_ps))
+    return fixed, script
+
+
+def _is_portable_rename_script(value):
+    """pre_install 是否为 _portable_rename_fields 生成的脚本（--add --dl 重跑清理旧值用）。"""
+    items = [value] if isinstance(value, str) else (value if isinstance(value, list) else [])
+    return any(_PORTABLE_RENAME_MARK in str(x) and 'Get-ChildItem "$dir\\' in str(x) for x in items)
+
+
 def _write_placeholder_manifest(manifest_path, description, homepage, license_val, platform, owner, repo):
     """无 Release 的仓库：写一个占位 manifest 供人工补充 url/hash。"""
     manifest = {
@@ -1270,6 +1310,7 @@ def add_manifest(repo_url, app_name=None, more=False):
             print(f"使用: {best['name']}")
 
     # 添加 bin 和 shortcuts（与架构选择保持一致：多架构用 64bit 选定项）
+    portable_rename = None
     if arch_sel:
         first_arch = list(arch_sel.keys())[0]
         first_pair = runtime_pairs.get(first_arch)
@@ -1302,12 +1343,20 @@ def add_manifest(repo_url, app_name=None, more=False):
         manifest["notes"] = "MSI 手动安装包，scoop install 下载后自动启动，用户手动选择安装目录。"
     elif best_name.endswith(".exe"):
         exe_name = best_name
-        # 去掉版本号得到更通用的名字（用于 bin/shortcuts）
-        clean_name = re.sub(r"[-_]v?[\d]+(?:\.[\d]+)+", "", best_name)
-        clean_name = clean_name.replace(".exe", ".exe")  # 确保后缀
-        manifest["bin"] = exe_name
-        manifest["shortcuts"] = [[exe_name, repo]]
-        print(f"bin: {exe_name}")
+        # 资产名含版本号（如 arke-0.9.1.exe）→ bin/shortcuts 用固定名 + 安装时重命名，
+        # 否则 autoupdate 升版后 bin 失配。多架构各自不同资产名时不适用（文件名随架构变化）
+        arch_names = {a["name"] for a in arch_sel.values()} if arch_sel else set()
+        rename = (_portable_rename_fields(best_name, app_name)
+                  if len(arch_names) <= 1 else None)
+        if rename:
+            portable_rename = rename
+            manifest["bin"] = rename[0]
+            manifest["shortcuts"] = [[rename[0], repo]]
+            print(f"bin: {rename[0]}（{best_name} 含版本号 → 安装时重命名为固定名）")
+        else:
+            manifest["bin"] = exe_name
+            manifest["shortcuts"] = [[exe_name, repo]]
+            print(f"bin: {exe_name}")
     elif best_name.endswith(".qlplugin"):
         # .qlplugin 插件：下载后自启动，用户手动确认安装
         manifest["post_install"] = f"Start-Process \"$dir\\{best_name}\""
@@ -1342,6 +1391,16 @@ def add_manifest(repo_url, app_name=None, more=False):
         kept = merge_existing_manifest(manifest_path, manifest)
         if kept:
             print(f"[提示] 目标 {manifest_path.name} 已存在，已合并保留: {', '.join(kept)}")
+
+    # 便携 exe 重命名脚本：非 --dl 直接写入；--dl 交给探测结束后的判定
+    # （预先写入会命中 finalize 的 "pre_install 已存在" 分支，阻塞 NSIS 解包逻辑）
+    if portable_rename:
+        if "--dl" not in sys.argv[1:]:
+            if ("pre_install" not in manifest
+                    or _is_portable_rename_script(manifest.get("pre_install"))):
+                manifest["pre_install"] = [portable_rename[1]]
+        elif _is_portable_rename_script(manifest.get("pre_install")):
+            manifest.pop("pre_install", None)  # 上次 --add 生成的旧脚本，清掉防干扰本次探测
 
     # 写入 manifest
     manifest_path_str = str(manifest_path)
@@ -1384,12 +1443,23 @@ def add_manifest(repo_url, app_name=None, more=False):
             try:
                 finalize_direct_manifest(manifest, BUCKET_DIR, app_name)
             finally:
+                changed = False
                 if manifest.pop("_bin_skipped", None):
                     print("[跳过] 0：不建立 bin/shortcuts（不恢复原占位 bin）")
+                elif portable_rename and manifest.get("bin") == portable_rename[0]:
+                    # 便携 exe（Inno/NSIS 均未命中）：bin 已是固定名，补安装时重命名脚本
+                    if "pre_install" not in manifest:
+                        manifest["pre_install"] = [portable_rename[1]]
+                        changed = True
+                        print(f"[便携] bin 固定为 {portable_rename[0]}，已追加重命名 pre_install（升版后 bin 不失配）")
                 elif not manifest.get("bin") and saved_bin:
                     manifest["bin"] = saved_bin
                     manifest["shortcuts"] = saved_sc
+                    if portable_rename and "pre_install" not in manifest:
+                        manifest["pre_install"] = [portable_rename[1]]
+                    changed = True
                     print(f"[恢复] 解包探测未产出主程序，保留原 bin: {saved_bin}")
+                if changed:
                     with open(manifest_path_str, "w", encoding="utf-8") as f:
                         json.dump(manifest, f, indent=4, ensure_ascii=False)
                         f.write("\n")
