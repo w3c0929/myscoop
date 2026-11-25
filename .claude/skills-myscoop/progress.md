@@ -12,8 +12,8 @@ GitHub: https://github.com/w3c0929/myscoop
 
 ## 当前状态（截至 2026-11-25）
 
-- **收录软件总数**: 183 款
-- **本地维护（自托管 Release）**: 85 款
+- **收录软件总数**: 184 款
+- **本地维护（自托管 Release）**: 86 款
 - **第三方官方（引用原项目 Release）**: 98 款
 
 ## 脚本能力（myscoop-update.py 最新）
@@ -283,6 +283,8 @@ ectarlink-desktop.exe`；`pre_install` 保留原解包逻辑。另注：程序�
 - **新增收录 arke（Arke 0.9.1）（2026-11-25）**：第三方官方（`Koimsurai/Arke`，AGPL-3.0），Rust + GPUI 编写的 Windows 文件资源管理器。用户提供并已自行验证，按规则 28 仅静态检查：JSON 合法；release `v0.9.1` 资产 `arke-0.9.1.exe`（45,201,408 字节）的 GitHub digest `sha256:8cdf5b7b…` 与清单 hash **逐字一致**；未下载安装。修复一处会在 autoupdate 后失效的问题：上游资产名含版本号（`arke-0.9.1.exe`），原 `bin`/`shortcuts` 硬编码同名文件 → 升版后文件变成 `arke-x.y.z.exe` 导致 shim/快捷方式失效；仿 argus 加 `pre_install`（`arke-*.exe` 通配取首个，重命名为固定 `Arke.exe`），`bin`/`shortcuts` 改用 `Arke.exe`。上游未提供 autoupdate 校验文件格式外的额外资产，保持与仓库多数第三方清单一致（无 `autoupdate.hash`，CI 用 API digest）。计数 182→183、第三方 97→98。
 
 - **根治 `--add` 单 exe 版本名 bin 失配（2026-11-25）**：用户用 `--add https://github.com/Koimsurai/Arke.git --name arke --dl` 生成的清单 bin/shortcuts 写死了 `arke-0.9.1.exe`，升版后必坏。脚本新增 `_portable_rename_fields`（版本正则 `(?:^|[-_.])v?\d+(?:\.\d+)+(?=$|[-_.])` 定位 → 去版本固定名 + `Get-ChildItem "$dir\<前缀>*.exe"` 通配重命名脚本）与 `_is_portable_rename_script`（识别旧脚本，--dl 重跑时先清除防阻塞 NSIS 解包分支）。接入 `add_manifest` 单 exe 分支：非 `--dl` 直接写 `pre_install`；`--dl` 时先只写固定 bin（磁盘版供 finalize merge 带回），探测结束的 finally 里若 bin 仍是固定名（Inno/NSIS 未命中 → 便携 exe）则追加脚本；探测出内部主程序则以探测结果为准。多架构各自不同资产名（rising 文件名随架构变化）跳过。Scoop 顺序「解压 → pre_install → shim」保证 rename 在文件落地后执行（argus 已验证的形态）。回归测试 `tools/test_guards.py` 覆盖 arke/Argus/架构后缀/纯版本名/无版本名零影响。
+
+- **新增收录 win7chrome（Chrome 109.0.5414.120 for Win7）（2026-11-25）**：自托管 release `vWin7Chrome`（规则 15 固定 tag 形态）挂 `win7-chrome-109.0.5414.120-64.exe`（95,791,656 字节，sha256 `6f7adabe…`）。静态核验：Authenticode **Valid**、签署者 **Google LLC**（DigiCert G4 代码签名 CA），PE 内部名 `GoogleUpdateSetup.exe`（Chrome 官方安装器的固定外壳，95MB 载荷在 `.rsrc` 资源节，熵 7.997）→ 未修改的正版安装器。**形态：下载即用**（用户选定）——只下载不安装不自动启动，无 bin/shortcuts/post_install，notes 说明手动运行（需管理员）。制作教训：最初选便携版方案，用安装器 `/silent /install` 提取，装完 **Google Update 在数分钟内把 109 自动升级到 158**（系统版，109 目录被删）→ 放弃提取；已彻底卸载系统 Chrome 并清理 Google Update（`C:\Program Files (x86)\Google` 目录、`HKLM\SOFTWARE\WOW6432Node\Google\Update`、gupdate/gupdatem 服务、GoogleUpdater 计划任务），**本机 scoop 的 googlechrome 158（D 盘）全程未受影响**；用户明确要求 win7 版与本机 Chrome 互相独立（清单名 win7chrome、固定 tag、notes 提示勿共用用户数据）。计数 183→184、本地 85→86。
 
 ## Scoop 工具箱脚本（智能模式Scoop(3).ps1）
 

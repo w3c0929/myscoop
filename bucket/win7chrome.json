@@ -1,0 +1,17 @@
+{
+    "version": "109.0.5414.120",
+    "description": "Google Chrome 109 for Windows 7 — the last Chrome release supporting Windows 7 / 8.1 (official installer, manual install).",
+    "homepage": "https://www.google.com/chrome/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.google.com/chrome/terms/"
+    },
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vWin7Chrome/win7-chrome-109.0.5414.120-64.exe",
+    "hash": "sha256:6f7adabea8d54d72334efb580699dc8d8a10d3967feb87c022c8629d49d7c6d2",
+    "notes": [
+        "Chrome 109.0.5414.120 是最后一个支持 Windows 7 / 8.1 的 Chrome 版本（64 位官方安装器，Google 数字签名有效）。",
+        "本清单只下载、不安装、不自动启动：请手动运行安装目录中的 win7-chrome-109.0.5414.120-64.exe 完成安装（需管理员）。",
+        "安装后 Google 更新服务会尝试自动升级；Win7 上没有更高可用版本，如不需要可禁用 Google Update 服务。",
+        "与 Scoop 的 googlechrome（新版便携版）相互独立，可共存；请勿与本机新版 Chrome 共用同一份用户数据。"
+    ]
+}
