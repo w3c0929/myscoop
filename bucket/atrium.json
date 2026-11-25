@@ -1,13 +1,13 @@
 {
-    "version": "2.7.0",
+    "version": "3.0.0",
     "description": "A native glass desktop for Windows 11: floating taskbar and desktop widgets with real-time refraction. Architecture review and verified feasibility probes.",
     "homepage": "https://github.com/wynter-yaxley/atrium-desktop",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/wynter-yaxley/atrium-desktop"
     },
-    "url": "https://github.com/wynter-yaxley/atrium-desktop/releases/download/v2.7.0/Atrium-2.7.0-win-x64.zip",
-    "hash": "sha256:b18bad732726a96a860121ee5eb075837f6f7fddf154c85d95693da8ca5966ac",
+    "url": "https://github.com/wynter-yaxley/atrium-desktop/releases/download/v3.0.0/Atrium-3.0.0-win-x64.zip",
+    "hash": "sha256:7175da7258d39cb42324f50cf7bfed6536c4ad6a6b81d5733044d1870ff18731",
     "autoupdate": {
         "url": "https://github.com/wynter-yaxley/atrium-desktop/releases/download/v$version/Atrium-$version-win-x64.zip",
         "hash": {
