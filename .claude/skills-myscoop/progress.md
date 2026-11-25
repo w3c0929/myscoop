@@ -470,7 +470,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 47a58f5 (HEAD -> main, origin/main, origin/HEAD) 新增收录 arke 0.9.1（第三方官方）
+* 34cefe3 (HEAD -> main, origin/main, origin/HEAD) myscoop-update.py：--add 单 exe 版本名资产自动固定 bin
+* 753a8e5 progress.md 更新提交历史
+* 47a58f5 新增收录 arke 0.9.1（第三方官方）
 * 88380c1 progress.md 更新提交历史
 * b264ed0 winshun: 0.45.1
 * cb08332 progress.md 更新提交历史
