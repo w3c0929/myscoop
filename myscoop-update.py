@@ -623,6 +623,43 @@ def heal_url_drift(manifest, assets):
     return handle_build_drift(manifest, a, cur) in ("refresh", "removed")
 
 
+def heal_hash_drift(manifest, assets):
+    """版本未变但上游重传了同版本资产时，用 API digest 自愈清单 hash（finch 回归）。
+
+    背景：GitHub release 资产可在发布后重新上传，digest 随之变化而 tag/version 不变；
+    CI 此前只在版本变化时写 hash，用户 `scoop update` 就会 hash 校验失败
+    （finch 1.8.2：清单 f7ef35c3… vs 实际 ef0abda8…）。API digest 是权威值。
+    仅处理字符串 url（数组型 --more 配对跳过）且有 digest 的资产；
+    多架构逐架构按文件名匹配，缺失资产/无 digest 的架构保持原值。
+    返回更新的字段名列表（如 ['64bit.hash']）。"""
+    by_name = {a.get("name"): a for a in assets if a.get("digest")}
+    if not by_name:
+        return []
+    changed = []
+
+    def fix(block, label):
+        url = block.get("url")
+        if not isinstance(url, str) or not url:
+            return
+        asset = by_name.get(url_filename_clean(url))
+        if not asset:
+            return
+        new = str(asset["digest"]).lower()
+        if not new.startswith("sha256:"):
+            new = "sha256:" + new
+        if str(block.get("hash") or "").lower() != new:
+            block["hash"] = new
+            changed.append(label + "hash")
+
+    if isinstance(manifest.get("architecture"), dict):
+        for arch, blk in manifest["architecture"].items():
+            if isinstance(blk, dict):
+                fix(blk, arch + ".")
+    else:
+        fix(manifest, "")
+    return changed
+
+
 def is_windows_asset(name):
     """判断是否为 Windows 平台资产"""
     lower = name.lower()
@@ -1890,15 +1927,22 @@ def update_manifest(manifest_path, dry_run=False):
     if latest_version.startswith(current_version + "-"):
         return None
     if latest_version == current_version:
-        # 版本未变：检查 URL 构建号是否漂移（如 Cinetry_0.8.4+47 → +48），漂移则自愈
+        # 版本未变：URL 构建号漂移（Cinetry_0.8.4+47 → +48）与资产重传（digest 变化）均自愈
         assets_now = release.get("assets", [])
+        healed = False
         if assets_now and heal_url_drift(manifest, assets_now):
-            with open(manifest_path, "w", encoding="utf-8") as f:
-                json.dump(manifest, f, indent=4, ensure_ascii=False)
-                f.write("\n")
             _u = manifest.get("url") or ""
             _u = _u[0] if isinstance(_u, list) else _u
             print(f"  {manifest_path.name}: 版本未变，URL 构建号漂移已自愈 → {_u.split('/')[-1]}")
+            healed = True
+        hch = heal_hash_drift(manifest, assets_now) if assets_now else []
+        if hch:
+            print(f"  {manifest_path.name}: 版本未变，hash 已按 API digest 自愈（{', '.join(hch)}）")
+            healed = True
+        if healed:
+            with open(manifest_path, "w", encoding="utf-8") as f:
+                json.dump(manifest, f, indent=4, ensure_ascii=False)
+                f.write("\n")
             return {"manifest": manifest_path.name, "old": current_version,
                     "new": latest_version, "drift": True}
         return None

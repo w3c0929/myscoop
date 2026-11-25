@@ -113,7 +113,7 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 | 67 | [AI-Vault (updist)](https://github.com/ErgeAIA/updates-dist) — 本地优先的 AI 创作工作台：Skill/Prompt/MCP/工作流统一管理并分发 46+ Agent | `scoop install updist` | exe 官方 release（Tauri 解包） | 0.7.4 | 2026-10-10 | 2026-11-19 |
 | 68 | [llama.cpp Prism](https://github.com/PrismML-Eng/llama.cpp) — llama.cpp 分支（CUDA 主程序 + cudart 运行库配对合并，--more 收录） | `scoop install prllama` | 多架构 zip 官方 release | prism-b12178-03ec600 | 2026-10-10 | 2026-11-25 |
 | 69 | [图吧工具箱 CE](https://github.com/luolangaga/tubatools) — 图吧工具箱 TubaWinUI3 便携版，45+ 内置工具 | `scoop install tubatools` | zip 官方 release | 1.9.1 | 2026-10-10 | 2026-11-15 |
-| 70 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.8.2 | 2026-10-10 | 2026-11-24 |
+| 70 | [Finch](https://github.com/finchtoys/finch-releases) — 桌面 AI 社区中心，停在你桌面上的小灵雀，帮你衔来线索、织成脉络 | `scoop install finch` | 单 exe 官方 release | 1.8.2 | 2026-10-10 | 2026-11-25 |
 | 71 | [Magpiee (实验版)](https://github.com/SAOG0721/Magpie) — 游戏画面缩放/超分工具的非官方实验 fork（原 magpie 清单改名，与官方 Magpie 区分；shim: magpiee.exe） | `scoop install magpiee` | zip 官方直链 | 0.6.14-experimental | 2026-11-03 | 2026-11-24 |
 | 72 | [青简 Qingjian](https://github.com/qingjian-team/qingjian) — Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词 | `scoop install qingjian` | exe 官方 release（installer 注册） | 0.3.5 | 2026-10-10 | 2026-11-20 |
 | 73 | [Windows App SDK 运行时](https://learn.microsoft.com/windows/apps/windows-app-sdk/) — Microsoft Windows App Runtime (WindowsAppSDK) 2.7 运行时官方直链（安装时自动静默安装） | `scoop install winsdk` | 单 exe 官方直链（post_install 静默安装） | 2.7.0 | 2026-10-10 | 2026-11-18 |

@@ -9,11 +9,11 @@
     "architecture": {
         "32bit": {
             "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.8.2/Finch-1.8.2-setup-ia32.exe",
-            "hash": "sha256:c1da84a5373d8b5c7c851ce9199b6722ffd9047fd6edaba282c2cf11a3a1ade9"
+            "hash": "sha256:0e976a9a3bfc0ef1497a0d8172bd79d7ed452401c42d3be5acf9d520c4e2b37b"
         },
         "64bit": {
             "url": "https://github.com/finchtoys/finch-releases/releases/download/v1.8.2/Finch-1.8.2-setup-x64.exe",
-            "hash": "sha256:f7ef35c38237eb80fb6fff4f7875b445076797b4109bf519ef9b553ce6af117f"
+            "hash": "sha256:ef0abda870c2eb1e192541a315210def6ad7d990d3cd9fce33ede3ac87cb61e3"
         }
     },
     "autoupdate": {
