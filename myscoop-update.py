@@ -219,7 +219,7 @@ def fetch_json(url):
             with _open(req, 30) as resp:
                 return json.loads(resp.read().decode())
         except urllib.error.HTTPError as e:
-            if e.code in (429, 500, 502, 503, 504) and attempt < 2:
+            if (e.code == 429 or 500 <= e.code < 600) and attempt < 2:
                 last = e
                 time.sleep(2 ** attempt)
                 continue
@@ -2251,7 +2251,7 @@ def fetch_text(url, timeout=30, headers=None, retries=2):
             with _open(req, timeout) as resp:
                 return resp.read().decode("utf-8", "replace")
         except urllib.error.HTTPError as e:
-            if e.code in (429, 500, 502, 503, 504) and attempt < retries:
+            if (e.code == 429 or 500 <= e.code < 600) and attempt < retries:
                 last = e
                 time.sleep(2 ** attempt)
                 continue
