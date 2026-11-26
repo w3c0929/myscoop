@@ -45,7 +45,7 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 | # | 软件 | 安装命令 | 类型 | 版本 | 创建 | 更新 |
 |--|------|---------|------|------|------|------|
 | 1 | [Arke](https://github.com/Koimsurai/Arke) — 快速美观的 Windows 文件资源管理器（Rust + GPUI 编写，无等待感） | `scoop install arke` | 单 exe 官方 release（仅 x64） | 0.9.2 | 2026-11-25 | 2026-11-26 |
-| 2 | [Nectarlink](https://github.com/thtbee/nectarlink) — Android 手机与 PC 协同一体（本地优先、端到端加密、无账号） | `scoop install nectarlink` | 官方 release NSIS 安装包（解包，nightly 通道） | 0.1.6-nightly.12 | 2026-11-23 | 2026-11-23 |
+| 2 | [Nectarlink](https://github.com/thtbee/nectarlink) — Android 手机与 PC 协同一体（本地优先、端到端加密、无账号） | `scoop install nectarlink` | 官方 release NSIS 安装包（解包，nightly 通道） | 0.1.6-nightly.13 | 2026-11-23 | 2026-11-27 |
 | 3 | [MisterDownloadManager](https://github.com/anefzaoui/misterdownloadmanager) — 开源下载管理器（Rust 编写，跨平台，含 CLI/MCP 入口） | `scoop install mdm` | 官方 release 便携 zip | 0.5.2 | 2026-11-22 | 2026-11-22 |
 | 4 | [CrossDesk](https://github.com/kunkundi/crossdesk) — 轻量级跨平台远程桌面（支持 Web 客户端访问） | `scoop install crossdesk` | 官方 release 便携 zip（仅 x64） | 1.7.7-20261124 | 2026-11-22 | 2026-11-24 |
 | 5 | [Winc](https://winc.si) — Rust 编写的极速文本编辑器（自研渲染引擎：0.1 秒启动、10 万行仅 52MB） | `scoop install winc` | 官方 release 便携 zip（仅 x64） | 0.1.970 | 2026-11-22 | 2026-11-25 |
@@ -69,10 +69,10 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 | 23 | [LibreDWG](https://github.com/LibreDWG/libredwg) — GNU LibreDWG：免费开源的 DWG 文件读写 C 库，附带 dwgread / dwg2dxf / dxf2dwg / dwggrep / dwglayers 等命令行工具 | `scoop install libredwg` | 多架构 zip 官方 release（CLI 工具） | 0.14 | 2026-11-05 | 2026-11-05 |
 | 24 | [Oink](https://github.com/oinkvm/oink) — 让多台电脑协同工作：跨 Mac/PC 共享键盘、鼠标、触控板、剪贴板、拖放与音频 | `scoop install oink` | MSI 官方 release（手动安装） | 0.3.2 | 2026-11-05 | 2026-11-05 |
 | 25 | [Rust-Frp](https://github.com/Nu0vo1212/Rust-Frp) — Rust 版 FRP 客户端/服务端（兼容 Go 原版 frp） | `scoop install rustfrp` | zip 官方 release（shim: rustfrpc/rustfrps；持久化 frpc.toml/frps.toml） | 0.7.10 | 2026-11-04 | 2026-11-21 |
-| 26 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4856 | 2026-11-03 | 2026-11-26 |
+| 26 | [Magpie](https://github.com/yetone/magpie) — AI 模型路由/切换工具：Codex 用 DeepSeek、Claude Code 用 Kimi 等（菜单栏切换） | `scoop install magpie` | 多架构 portable exe 官方 release | 0.1.4885 | 2026-11-03 | 2026-11-27 |
 | 27 | [XL Translator](https://github.com/KlaraGraff/XL_Translator) — 大模型文档翻译工具（Excel / Word / PDF / CAD，双语对照 + 翻译记忆库） | `scoop install xltranslator` | 单 exe 官方 release（NSIS 解包） | 10.5.2 | 2026-10-31 | 2026-11-26 |
 | 28 | [DashBeam](https://github.com/tonyantony300/dashbeam) — 近距离与跨网络文件分享工具 | `scoop install dashbeam` | 多架构 portable zip 官方 release | 0.7.2 | 2026-10-31 | 2026-10-31 |
-| 29 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.14.5 | 2026-10-30 | 2026-11-26 |
+| 29 | [EditHere](https://github.com/Inginnng/EditHere) — 截图/标注并直接让 AI 调整布局的桌面工具 | `scoop install edithere` | zip 官方 release（仅 x64） | 0.14.7 | 2026-10-30 | 2026-11-27 |
 | 30 | [微信 WeChat](https://github.com/cscnk52/wechat-windows-versions) — 腾讯社交聊天应用（版本镜像：cscnk52/wechat-windows-versions） | `scoop install wechat` | 单 exe 官方 release（7z 解包） | 4.2.1.9 | 2026-10-10 | 2026-11-25 |
 | 31 | [BrimDeck](https://github.com/MoFeng2223/BrimDeck) — Windows 11 灵动岛（AI 编程额度/用量、音乐控制等） | `scoop install brimdeck` | 多架构官方 release（x64 便携 zip / Setup） | 1.3.3 | 2026-10-29 | 2026-11-22 |
 | 32 | [Inno Setup](https://www.jrsoftware.org/isinfo.php) — Windows 安装程序制作工具（installer 静默安装，覆盖 extras 解包） | `scoop install inno-setup` | 单 exe 官方 release（installer 静默安装） | 7.1.1 | 2026-10-29 | 2026-10-31 |
@@ -90,8 +90,8 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 | 44 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.7.2 | 2026-10-12 | 2026-11-22 |
 | 45 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.4 | 2026-10-10 | 2026-11-16 |
 | 46 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | 多架构 zip 官方 release（x64 / arm64） | 1.2.2 | 2026-10-12 | 2026-11-26 |
-| 47 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.45 | 2026-10-11 | 2026-11-26 |
-| 48 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.42 | 2026-10-10 | 2026-11-26 |
+| 47 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.46 | 2026-10-11 | 2026-11-27 |
+| 48 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.43 | 2026-10-10 | 2026-11-27 |
 | 49 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.12.5 | 2026-10-10 | 2026-11-24 |
 | 50 | [KeyCrash](https://github.com/Yuelioi/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.3.1 | 2026-10-10 | 2026-11-01 |
 | 51 | [SuMail](https://github.com/w3c0929/sumail-releases) — SuMail 桌面版（Windows 桌面版安装包与发布资产；源码仓库为私有） | `scoop install sumail` | zip 官方 release | 0.0.1 | 2026-10-10 | 2026-10-10 |
