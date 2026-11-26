@@ -77,7 +77,7 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 | 31 | [BrimDeck](https://github.com/MoFeng2223/BrimDeck) — Windows 11 灵动岛（AI 编程额度/用量、音乐控制等） | `scoop install brimdeck` | 多架构官方 release（x64 便携 zip / Setup） | 1.3.3 | 2026-10-29 | 2026-11-22 |
 | 32 | [Inno Setup](https://www.jrsoftware.org/isinfo.php) — Windows 安装程序制作工具（installer 静默安装，覆盖 extras 解包） | `scoop install inno-setup` | 单 exe 官方 release（installer 静默安装） | 7.1.1 | 2026-10-29 | 2026-10-31 |
 | 33 | [MiHome-Windows](https://github.com/huanyuejue/MiHome-Windows) — 米家设备 Windows 桌面控制端（扫码登录，本地查看/控制设备） | `scoop install mihome` | portable zip 官方 release | 0.5.0 | 2026-10-28 | 2026-11-02 |
-| 34 | [MiniDock](https://github.com/wang01116/MiniDock) — 极简 Windows dock 栏工具 | `scoop install minidock` | 单 exe 官方 release | 2.8.5 | 2026-10-28 | 2026-11-23 |
+| 34 | [MiniDock](https://github.com/wang01116/MiniDock) — 极简 Windows dock 栏工具 | `scoop install minidock` | 单 exe 官方 release（版本名资产，安装时重命名为固定 bin） | 2.8.8 | 2026-10-28 | 2026-11-26 |
 | 35 | [sdkm](https://github.com/borenchan/sdkmate) — 全栈开发者的跨平台 SDK 版本管理器：Java / Node.js / Python / Maven / Go 等 40+ 工具一键安装与切换（Rust 编写，约 4MB 单文件） | `scoop install sdkm` | zip 官方 release（安装时自动 init） | 0.6.1 | 2026-10-24 | 2026-11-25 |
 | 36 | [网易UU远程](https://uuyc.163.com/) — 超低延迟的远程控制工具（Windows / macOS / iOS / Android / TV） | `scoop install uuyc` | NSIS 安装器安装（服务/驱动注册） | 4.48.4 | 2026-10-10 | 2026-11-25 |
 | 37 | [evanOCR](https://github.com/duyuanfu/evan-ocr) — C++ 写了一款比 Snipaste/PixPin 更爽的免费截贴图 OCR 神器 | `scoop install evanocr` | portable zip 官方 release | 1.2.1 | 2026-10-18 | 2026-11-26 |
@@ -89,7 +89,7 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 | 43 | [Filee](https://github.com/w3c0929/Filee) — 免费开源文件转换器：拖拽即转 180+ 格式（图片 / PDF / Word / Excel / PPT / HWP / 视频 / 音频 / 电子书 / 压缩包），全程离线、无需上传 | `scoop install filee` | portable zip 官方 release | 2.5.9 | 2026-10-12 | 2026-11-17 |
 | 44 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.7.2 | 2026-10-12 | 2026-11-22 |
 | 45 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.4 | 2026-10-10 | 2026-11-16 |
-| 46 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | zip 官方 release | 1.2.1 | 2026-10-12 | 2026-11-07 |
+| 46 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | 多架构 zip 官方 release（x64 / arm64） | 1.2.2 | 2026-10-12 | 2026-11-26 |
 | 47 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.44 | 2026-10-11 | 2026-11-25 |
 | 48 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.42 | 2026-10-10 | 2026-11-26 |
 | 49 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.12.5 | 2026-10-10 | 2026-11-24 |

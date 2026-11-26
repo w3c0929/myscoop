@@ -1,15 +1,20 @@
 {
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "TaskbarPopup - from github",
     "homepage": "https://github.com/DM74164/TaskbarPopup",
     "license": "AGPL-3.0",
     "checkver": {
         "github": "https://github.com/DM74164/TaskbarPopup"
     },
-    "url": "https://github.com/DM74164/TaskbarPopup/releases/download/v1.2.1/TaskbarPopup.zip",
-    "hash": "sha256:4b26a7f43c752429d2df50da934f6b2e51d5ce417af6432e1f23ecf2947764b9",
-    "autoupdate": {
-        "url": "https://github.com/DM74164/TaskbarPopup/releases/download/v$version/TaskbarPopup.zip"
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/DM74164/TaskbarPopup/releases/download/v1.2.2/TaskbarPopup_v1.2.2.zip",
+            "hash": "sha256:c72e31a5758cb7a0fa22914194b86ad7e7322d2f1f158f9ab0a552d5ba3c88ff"
+        },
+        "arm64": {
+            "url": "https://github.com/DM74164/TaskbarPopup/releases/download/v1.2.2/TaskbarPopup-arm64_v1.2.2.zip",
+            "hash": "sha256:c937e8a5bcb394f1bca2473383c2507f47cbecba3e30a664d5666a1d824ac2a6"
+        }
     },
     "extract_dir": "TaskbarPopup",
     "bin": "TaskbarPopup.exe",
@@ -18,5 +23,15 @@
             "TaskbarPopup.exe",
             "taskbarpopup"
         ]
-    ]
+    ],
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/DM74164/TaskbarPopup/releases/download/v$version/TaskbarPopup_v$version.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/DM74164/TaskbarPopup/releases/download/v$version/TaskbarPopup-arm64_v$version.zip"
+            }
+        }
+    }
 }

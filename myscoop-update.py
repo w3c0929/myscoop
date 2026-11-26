@@ -2046,8 +2046,6 @@ def update_manifest(manifest_path, dry_run=False):
         if not manifest["architecture"]:
             del manifest["architecture"]
             print(f"    [提示] {manifest_path.name}: architecture 块已清空，已整体移除")
-        elif len(manifest["architecture"]) == 1:
-            print(f"    [提示] {manifest_path.name}: 仅剩 1 个架构，可考虑转顶层 url")
 
         # 同步 autoupdate 模板字段（bin/shortcuts/extract_dir 等）到各架构块，
         # 与 scoop 官方 autoupdate 的 arch_specific 行为一致
