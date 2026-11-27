@@ -1,16 +1,16 @@
 {
-    "version": "0.9.2",
+    "version": "0.10.0",
     "description": "A fast, beautiful file explorer for Windows that never makes you wait. Built with Rust and GPUI.",
     "homepage": "https://github.com/Koimsurai/Arke",
     "license": "AGPL-3.0",
     "checkver": {
         "github": "https://github.com/Koimsurai/Arke"
     },
-    "url": "https://github.com/Koimsurai/Arke/releases/download/v0.9.2/arke-0.9.2.exe",
+    "url": "https://github.com/Koimsurai/Arke/releases/download/v0.10.0/arke-0.10.0.exe",
     "autoupdate": {
         "url": "https://github.com/Koimsurai/Arke/releases/download/v$version/arke-$version.exe"
     },
-    "hash": "sha256:45c3c691097b19d10ca8ad8a061ae51372ec66e45b00d6d0a9d6257923115497",
+    "hash": "sha256:8d0ef049b284d94fa80f7e793537e42c2c30d2265c3b45efc0fed4243fb07b18",
     "pre_install": "$e = Get-ChildItem \"$dir\\arke-*.exe\" | Select-Object -First 1; if ($e -and $e.Name -ne 'Arke.exe') { Rename-Item -Path $e.FullName -NewName 'Arke.exe' -Force }",
     "bin": "Arke.exe",
     "shortcuts": [
