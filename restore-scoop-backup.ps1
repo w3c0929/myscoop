@@ -883,6 +883,31 @@ try {
       if (-not (Test-Path $bakRoot)) { Write-Host "  已移除空的 buckets_backup 目录" -ForegroundColor Gray }
     }
   }
+
+  # 自动应用 myscoop 镜像补丁：bucket 恢复完成后运行 symlink.bat
+  # （manifest.ps1/download.ps1 链接或拷贝），让后续 scoop install 的 GitHub 资产下载
+  # 自动走加速镜像。symlink.bat 在非管理员下自动降级拷贝模式；--no-pause 跳过其结尾按键。
+  $symlinkBat = Join-Path $scoopPath 'buckets\myscoop\symlink.bat'
+  if (Test-Path $symlinkBat) {
+    Write-Host "`n[补丁] 应用 myscoop 镜像补丁（symlink.bat）..." -ForegroundColor Cyan
+    try {
+      # 直接调用（不经 PowerShell 管道），避免 UTF-8 输出被按系统代码页解码导致乱码
+      cmd /c "`"$symlinkBat`" --no-pause"
+      if ($LASTEXITCODE -ne 0) {
+        Write-Host "  [提示] symlink.bat 返回码 $LASTEXITCODE（可能部分链接/拷贝失败）" -ForegroundColor Yellow
+      }
+      $dlPatch = Join-Path $scoopPath 'apps\scoop\current\lib\download.ps1'
+      if ((Test-Path $dlPatch) -and ((Get-Content -LiteralPath $dlPatch -Raw -ErrorAction SilentlyContinue) -match 'myscoop 补丁|GitHub 镜像加速补丁')) {
+        Write-Host "  补丁已生效：后续 scoop install 的 GitHub 下载将自动走镜像" -ForegroundColor Green
+      } else {
+        Write-Host "  [提示] 补丁验证未通过，可手动右键以管理员运行 symlink.bat" -ForegroundColor Yellow
+      }
+    } catch {
+      Write-Host "  [提示] 应用补丁失败：$($_.Exception.Message)；可手动运行 symlink.bat" -ForegroundColor Yellow
+    }
+  } else {
+    Write-Host "`n[提示] 未找到 myscoop\symlink.bat，跳过镜像补丁" -ForegroundColor Yellow
+  }
 } catch {
   Write-Host "`n脚本发生致命错误：$_" -ForegroundColor Red
   Write-Host "错误堆栈：$($_.Exception.StackTrace)" -ForegroundColor DarkRed

@@ -173,5 +173,5 @@ if "%MODE%"=="copy" (
     echo [提示] 当前为拷贝模式：Scoop 更新本体（scoop update）或仓库脚本变动后，请重新运行本脚本。
 )
 echo ==============================================
-pause
+if /i not "%~1"=="--no-pause" pause
 endlocal
