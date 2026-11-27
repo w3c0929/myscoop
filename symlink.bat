@@ -2,13 +2,11 @@
 chcp 65001 >nul
 setlocal enabledelayedexpansion
 
-:: 检查管理员权限 mklink 需要
 net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [错误] 请以管理员身份运行此脚本！
-    echo 右键该 bat 文件 - "以管理员身份运行"
-    pause
-    exit /b 1
+if %errorlevel% equ 0 (
+    set "MODE=link"
+) else (
+    set "MODE=copy"
 )
 
 :: ==============================================
@@ -35,6 +33,11 @@ set "SHIMS_DIR=%SCOOP_ROOT%\shims"
 echo.
 echo Scoop 根目录：%SCOOP_ROOT%
 echo 仓库根目录：%REPO%
+if "%MODE%"=="link" (
+    echo 运行模式：符号链接（管理员）
+) else (
+    echo 运行模式：拷贝降级（非管理员）—— Scoop 更新本体或仓库脚本变动后需重跑本脚本
+)
 
 :: ==============================================
 :: 第一部分：Scoop 库文件软链接 链接方式替代覆盖
@@ -79,11 +82,20 @@ for %%i in (
                 echo  删除旧文件 !DEST_FILE!
                 del /f /q "!DEST_FILE!"
             )
-            mklink "!DEST_FILE!" "!SRC_FILE!"
+            if "%MODE%"=="link" (
+                mklink "!DEST_FILE!" "!SRC_FILE!"
+            ) else (
+                copy /Y "!SRC_FILE!" "!DEST_FILE!" >nul
+            )
             if errorlevel 1 (
                 echo  [失败] !DEST_FILE! 创建失败
+                if "%MODE%"=="copy" echo        可能无写入权限（全局安装的 Scoop 需以管理员运行本脚本）
             ) else (
-                echo  [成功] 文件软链接生成完成
+                if "%MODE%"=="link" (
+                    echo  [成功] 文件软链接生成完成
+                ) else (
+                    echo  [成功] 文件拷贝完成（拷贝模式）
+                )
             )
         )
     )
@@ -131,7 +143,7 @@ for %%i in (
 :: ==============================================
 echo.
 echo ==============================================
-echo 【3/3】仓库 .bat -^> %SHIMS_DIR% 链接
+echo 【3/3】仓库 .bat -^> %SHIMS_DIR% 链接/拷贝
 echo ==============================================
 set "SOURCE_DIR=%REPO%"
 set "TARGET_DIR=%SHIMS_DIR%"
@@ -141,9 +153,13 @@ for %%F in ("%SOURCE_DIR%\*.bat") do (
     if /i not "%%~fF"=="%~f0" (
         set "link=%TARGET_DIR%\%%~nxF"
         if exist "!link!" del "!link!" 2>nul
-        mklink "!link!" "%%F"
+        if "%MODE%"=="link" (
+            mklink "!link!" "%%F"
+        ) else (
+            copy /Y "%%~fF" "!link!" >nul
+        )
         if errorlevel 1 (
-            echo %%~nxF
+            echo [失败] %%~nxF
         ) else (
             echo %%~nxF  -^> !link!
         )
@@ -153,6 +169,9 @@ for %%F in ("%SOURCE_DIR%\*.bat") do (
 echo.
 echo ==============================================
 echo 所有任务完成
+if "%MODE%"=="copy" (
+    echo [提示] 当前为拷贝模式：Scoop 更新本体（scoop update）或仓库脚本变动后，请重新运行本脚本。
+)
 echo ==============================================
 pause
 endlocal

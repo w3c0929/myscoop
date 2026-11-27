@@ -12,6 +12,35 @@ try {
   Write-Host "==================== Scoop 恢复工具 ====================" -ForegroundColor Cyan
   $scoopPath = "D:\scoop"
 
+  # GitHub 加速镜像：与 scoop config.json 的 aria2-mirrors 一致，按序尝试；全部失败再直连
+  # （安装脚本下载与 git 缓存预下载共用）
+  $ghMirrors = @(
+    "https://gh-proxy.org",
+    "https://hk.gh-proxy.org",
+    "https://cdn.gh-proxy.com",
+    "https://git.yylx.win",
+    "https://gh.monlor.com",
+    "https://gh.my-website.ccwu.cc",
+    "https://tvv.tw",
+    "https://ghfast.top",
+    "https://gh.acmsz.top",
+    "https://github.ednovas.xyz",
+    "https://gh.sixyin.com",
+    "https://ghproxy.imciel.com",
+    "https://cdn.akaere.online",
+    "https://gh-proxy.com",
+    "https://free.cn.eu.org",
+    "https://fastgit.cc",
+    "https://github.mxw.qzz.io",
+    "https://xsadwsd.kdns.fr",
+    "https://ghproxy.felicity.land",
+    "https://down.mxw.qzz.io",
+    "https://gh.07150721.xyz",
+    "https://github.tbap.top",
+    "https://gh.noki.icu",
+    "https://ghproxy.net"
+  )
+
   # ---- 修复：用子进程执行官方安装脚本，避免其内部 exit 导致闪退 ----
   function Invoke-ScoopInstaller {
     param([switch]$RunAsAdmin)
@@ -20,34 +49,7 @@ try {
     # 启用 TLS 1.2（Win7/WMF 5.1 默认可能只开 TLS 1.0，多数加速镜像不支持）
     try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch { }
 
-    # GitHub 加速镜像：与 scoop config.json 的 aria2-mirrors 一致，按序尝试；全部失败再直连
     $installerSrc = "https://raw.githubusercontent.com/ScoopInstaller/Install/master/install.ps1"
-    $ghMirrors = @(
-      "https://gh-proxy.org",
-      "https://hk.gh-proxy.org",
-      "https://cdn.gh-proxy.com",
-      "https://git.yylx.win",
-      "https://gh.monlor.com",
-      "https://gh.my-website.ccwu.cc",
-      "https://tvv.tw",
-      "https://ghfast.top",
-      "https://gh.acmsz.top",
-      "https://github.ednovas.xyz",
-      "https://gh.sixyin.com",
-      "https://ghproxy.imciel.com",
-      "https://cdn.akaere.online",
-      "https://gh-proxy.com",
-      "https://free.cn.eu.org",
-      "https://fastgit.cc",
-      "https://github.mxw.qzz.io",
-      "https://xsadwsd.kdns.fr",
-      "https://ghproxy.felicity.land",
-      "https://down.mxw.qzz.io",
-      "https://gh.07150721.xyz",
-      "https://github.tbap.top",
-      "https://gh.noki.icu",
-      "https://ghproxy.net"
-    )
     $installerUrls = @()
     foreach ($m in $ghMirrors) { $installerUrls += "$m/$installerSrc" }
     $installerUrls += @($installerSrc, "https://get.scoop.sh")   # 兜底：直连 + 官方短链
@@ -83,6 +85,83 @@ try {
       }
     } finally {
       Remove-Item $tmpInstaller -Force -ErrorAction SilentlyContinue
+    }
+  }
+
+  # ============================================================
+  # 通用：从 main bucket 清单动态读取下载信息（版本/URL/hash，不硬编码），
+  # 用加速镜像下载并校验 sha256，按 Scoop 的缓存命名规则放入 cache，
+  # 随后 scoop install <app> 直接命中缓存（只需解包，不再等待下载）。
+  # 缓存命名与 Scoop v0.6.0 core.ps1 的 cache_path 完全一致：
+  #   <app>#<version>#<sha256(清单原始URL)前7位><扩展名>
+  # 任一步失败都回退为 scoop 直接下载，不影响原有流程。
+  # ============================================================
+  function Install-ScoopAppWithMirrorCache {
+    param([string]$AppName)
+
+    $manifestPath = Join-Path $scoopPath "buckets\main\bucket\$AppName.json"
+    if (-not (Test-Path $manifestPath)) {
+      Write-Host "  [提示] 未找到 main bucket 的 $AppName.json，跳过预下载（Scoop 将直接下载）" -ForegroundColor Yellow
+      return
+    }
+    try {
+      $manifest = Get-Content $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+      $ver = [string]$manifest.version
+      $arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } elseif ([Environment]::Is64BitOperatingSystem) { '64bit' } else { '32bit' }
+      $block = if ($manifest.architecture) { $manifest.architecture.$arch } else { $manifest }
+      if (-not $block -or -not $block.url) {
+        Write-Host "  [提示] $AppName.json 中没有 $arch 架构的下载地址，跳过预下载" -ForegroundColor Yellow
+        return
+      }
+      $url = [string]$block.url
+      $hash = ([string]$block.hash) -replace '^sha256:', ''
+      $sha256Obj = [Security.Cryptography.SHA256]::Create()
+      $shaHex = [BitConverter]::ToString($sha256Obj.ComputeHash([Text.Encoding]::UTF8.GetBytes($url))).Replace('-', '').ToLower()
+      $sha256Obj.Dispose()
+      $cacheName = "$AppName#$ver#$($shaHex.Substring(0, 7))$([IO.Path]::GetExtension($url))"
+      $cacheDir = Join-Path $scoopPath 'cache'
+      $cacheFile = Join-Path $cacheDir $cacheName
+      New-Item -ItemType Directory -Force $cacheDir | Out-Null
+
+      if (Test-Path $cacheFile) {
+        if (-not $hash -or (Get-FileHash -Algorithm SHA256 $cacheFile).Hash.ToLower() -eq $hash) {
+          Write-Host "  缓存已存在且校验通过: $cacheName" -ForegroundColor Green
+          return
+        }
+        Write-Host "  缓存文件 hash 不符，已删除重新下载" -ForegroundColor Yellow
+        Remove-Item $cacheFile -Force -ErrorAction SilentlyContinue
+      }
+
+      # GitHub 资产优先走加速镜像；其他域名直连
+      $urls = @()
+      if ($url -match '^https://github\.com/') {
+        foreach ($m in $ghMirrors) { $urls += "$m/$url" }
+      }
+      $urls += $url
+      $tmpDl = "$cacheFile.download"
+      foreach ($u in $urls) {
+        try {
+          Write-Host "  尝试下载: $u" -ForegroundColor DarkGray
+          if (Test-Path $tmpDl) { Remove-Item $tmpDl -Force -ErrorAction SilentlyContinue }
+          Invoke-WebRequest -Uri $u -OutFile $tmpDl -UseBasicParsing -TimeoutSec 600
+          if ($hash) {
+            $actualHash = (Get-FileHash -Algorithm SHA256 $tmpDl).Hash.ToLower()
+            if ($actualHash -ne $hash) {
+              Write-Host "  hash 不匹配（文件异常），尝试下一个源" -ForegroundColor Yellow
+              continue
+            }
+          }
+          Move-Item -Path $tmpDl -Destination $cacheFile -Force
+          Write-Host ("  下载完成并校验通过（{0:N1} MB）" -f ((Get-Item $cacheFile).Length / 1MB)) -ForegroundColor Green
+          return
+        } catch {
+          Write-Host "  下载失败: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        }
+      }
+      if (Test-Path $tmpDl) { Remove-Item $tmpDl -Force -ErrorAction SilentlyContinue }
+      Write-Host "  所有下载源均失败，回退为 scoop 直接下载（可能较慢）" -ForegroundColor Yellow
+    } catch {
+      Write-Host "  [提示] 预下载跳过：$($_.Exception.Message)" -ForegroundColor Yellow
     }
   }
 
@@ -148,11 +227,38 @@ try {
     Write-Host "未检测到 Git，跳过镜像可达性测试，配置已设置为镜像。" -ForegroundColor Yellow
   }
 
+  # TLS 1.2：若走"已装 Scoop"分支，安装脚本下载段不会执行，这里补设一次（Win7 默认只有 TLS 1.0）
+  try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch { }
+
+  Write-Host "[前置] 检查 7zip 是否可用..." -ForegroundColor Cyan
+  if (-not (Get-Command 7z -ErrorAction SilentlyContinue)) {
+    Write-Host "未检测到 7zip，将使用 Scoop 安装 7zip（镜像预下载加速）..." -ForegroundColor Yellow
+    try {
+      Install-ScoopAppWithMirrorCache -AppName '7zip'
+      # --no-update-scoop：跳过安装前的 Scoop/全 bucket 更新（全新机器刚装完无需更新；
+      # 也避免更新 bucket 时的网络失败把安装带崩）
+      scoop install 7zip --no-update-scoop
+      if ($LASTEXITCODE -ne 0) { throw "scoop install 7zip 失败，退出码 $LASTEXITCODE" }
+      # 刷新环境变量，使 7z 立即可用
+      $env:PATH = [Environment]::GetEnvironmentVariable("PATH","User") + ";" + [Environment]::GetEnvironmentVariable("PATH","Machine")
+      Write-Host "7zip 安装成功！" -ForegroundColor Green
+    } catch {
+      Write-Host "7zip 安装失败：$_" -ForegroundColor Red
+      Write-Host "7zip 是解压 .7z 包（如 git）的依赖，请手动安装后重新运行本脚本。" -ForegroundColor Yellow
+      pause
+      exit 1
+    }
+  } else {
+    Write-Host "7zip 已就绪，继续。" -ForegroundColor Green
+  }
+
   Write-Host "[前置] 检查 Git 是否可用..." -ForegroundColor Cyan
   if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    Write-Host "未检测到 Git，将使用 Scoop 安装 Git..." -ForegroundColor Yellow
+    Write-Host "未检测到 Git，将使用 Scoop 安装 Git（镜像预下载加速）..." -ForegroundColor Yellow
     try {
-      scoop install git
+      Install-ScoopAppWithMirrorCache -AppName 'git'
+      # --no-update-scoop：同上
+      scoop install git --no-update-scoop
       if ($LASTEXITCODE -ne 0) { throw "scoop install git 失败，退出码 $LASTEXITCODE" }
       # 刷新环境变量，使 Git 立即可用
       $env:PATH = [Environment]::GetEnvironmentVariable("PATH","User") + ";" + [Environment]::GetEnvironmentVariable("PATH","Machine")
