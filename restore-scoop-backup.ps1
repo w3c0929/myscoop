@@ -144,6 +144,35 @@ try {
     return $list
   }
 
+  # ============================================================
+  # 已存在 bucket 的 remote 自检：当前 remote（可能是 nju 镜像/某个加速代理）
+  # 不可达时，按候选链（镜像 → 选中代理 → 其余代理 → 官方）逐个探测，
+  # 用 git remote set-url 原地切换（保留本地历史，无需重新克隆），
+  # 避免后续 scoop update 卡在失效代理上报 Connection was reset。
+  # 探测用 ls-remote + 8 秒低速中止，黑洞代理不会长时间卡住自检。
+  # ============================================================
+  function Repair-BucketRemote {
+    param([string]$Name, [string[]]$Candidates)
+
+    $dir = Join-Path $scoopPath "buckets\$Name"
+    if (-not (Test-Path (Join-Path $dir '.git'))) { return }
+    $current = (git -C $dir remote get-url origin 2>$null)
+    if (-not $current) { return }
+    git -c http.lowSpeedLimit=1024 -c http.lowSpeedTime=8 ls-remote --heads $current 2>$null | Out-Null
+    if ($LASTEXITCODE -eq 0) { return }
+    Write-Host "  [自检] Bucket $Name 的 remote 不可用，尝试切换: $current" -ForegroundColor Yellow
+    foreach ($url in $Candidates) {
+      if (-not $url -or $url -eq $current) { continue }
+      git -c http.lowSpeedLimit=1024 -c http.lowSpeedTime=8 ls-remote --heads $url 2>$null | Out-Null
+      if ($LASTEXITCODE -eq 0) {
+        git -C $dir remote set-url origin $url 2>$null
+        Write-Host "  已切换 remote → $url" -ForegroundColor Green
+        return
+      }
+    }
+    Write-Host "  [警告] Bucket $Name 所有候选源均不可达，保留原 remote（scoop update 可能失败）" -ForegroundColor Red
+  }
+
   # ---- 修复：用子进程执行官方安装脚本，避免其内部 exit 导致闪退 ----
   function Invoke-ScoopInstaller {
     param([switch]$RunAsAdmin)
@@ -493,6 +522,7 @@ try {
   # --- Bucket: main (镜像优先，失败自动回退官方) ---
   # 浅克隆加速：nju 镜像优先 → 加速代理 GitHub 回退（失败走下方完整 add 流程）
   Clone-BucketToDir 'main' (@('https://mirror.nju.edu.cn/git/scoop-main.git') + (Get-GitProxyUrls 'https://github.com/ScoopInstaller/Main.git')) | Out-Null
+  Repair-BucketRemote 'main' (@('https://mirror.nju.edu.cn/git/scoop-main.git') + (Get-GitProxyUrls 'https://github.com/ScoopInstaller/Main.git'))
 
   $retryCount = 0
   $bucketAddSuccess = $false
@@ -570,6 +600,7 @@ try {
   # --- Bucket: extras (镜像优先，失败自动回退官方) ---
   # 浅克隆加速：nju 镜像优先 → 加速代理 GitHub 回退（失败走下方完整 add 流程）
   Clone-BucketToDir 'extras' (@('https://mirror.nju.edu.cn/git/scoop-extras.git') + (Get-GitProxyUrls 'https://github.com/ScoopInstaller/Extras.git')) | Out-Null
+  Repair-BucketRemote 'extras' (@('https://mirror.nju.edu.cn/git/scoop-extras.git') + (Get-GitProxyUrls 'https://github.com/ScoopInstaller/Extras.git'))
 
   $retryCount = 0
   $bucketAddSuccess = $false
@@ -647,6 +678,7 @@ try {
   # --- Bucket: versions (镜像优先，失败自动回退官方) ---
   # 浅克隆加速：nju 镜像优先 → 加速代理 GitHub 回退（失败走下方完整 add 流程）
   Clone-BucketToDir 'versions' (@('https://mirror.nju.edu.cn/git/scoop-versions.git') + (Get-GitProxyUrls 'https://github.com/ScoopInstaller/Versions.git')) | Out-Null
+  Repair-BucketRemote 'versions' (@('https://mirror.nju.edu.cn/git/scoop-versions.git') + (Get-GitProxyUrls 'https://github.com/ScoopInstaller/Versions.git'))
 
   $retryCount = 0
   $bucketAddSuccess = $false
@@ -724,6 +756,7 @@ try {
   # --- Bucket: sysinternals (known, official) ---
   # 浅克隆加速：加速代理 GitHub 优先（nju 无 sysinternals 镜像）→ 官方直连回退
   Clone-BucketToDir 'sysinternals' (Get-GitProxyUrls 'https://github.com/niheaven/scoop-sysinternals.git') | Out-Null
+  Repair-BucketRemote 'sysinternals' (Get-GitProxyUrls 'https://github.com/niheaven/scoop-sysinternals.git')
 
   $retryCount = 0
   $bucketAddSuccess = $false
@@ -772,6 +805,7 @@ try {
   # --- Bucket: myscoop (custom, SSH→HTTPS auto-fallback) ---
   # 浅克隆加速：加速代理 HTTPS 优先 → 官方 HTTPS 回退（SSH 密钥场景交给下方完整 add 流程）
   Clone-BucketToDir 'myscoop' (Get-GitProxyUrls 'https://github.com/w3c0929/myscoop.git') | Out-Null
+  Repair-BucketRemote 'myscoop' (Get-GitProxyUrls 'https://github.com/w3c0929/myscoop.git')
 
   $retryCount = 0
   $bucketAddSuccess = $false
@@ -851,6 +885,7 @@ try {
   Clone-BucketToDir 'official' @(
     'https://gitee.com/cmontage/scoopbucket.git'
   ) | Out-Null
+  Repair-BucketRemote 'official' @('https://gitee.com/cmontage/scoopbucket.git')
 
   $retryCount = 0
   $bucketAddSuccess = $false
