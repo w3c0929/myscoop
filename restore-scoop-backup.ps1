@@ -17,10 +17,52 @@ try {
     param([switch]$RunAsAdmin)
 
     Write-Host "正在下载 Scoop 安装脚本..." -ForegroundColor Cyan
-    $installerUrls = @("https://raw.githubusercontent.com/ScoopInstaller/Install/master/install.ps1", "https://get.scoop.sh")
+    # 启用 TLS 1.2（Win7/WMF 5.1 默认可能只开 TLS 1.0，多数加速镜像不支持）
+    try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch { }
+
+    # GitHub 加速镜像：与 scoop config.json 的 aria2-mirrors 一致，按序尝试；全部失败再直连
+    $installerSrc = "https://raw.githubusercontent.com/ScoopInstaller/Install/master/install.ps1"
+    $ghMirrors = @(
+      "https://gh-proxy.org",
+      "https://hk.gh-proxy.org",
+      "https://cdn.gh-proxy.com",
+      "https://git.yylx.win",
+      "https://gh.monlor.com",
+      "https://gh.my-website.ccwu.cc",
+      "https://tvv.tw",
+      "https://ghfast.top",
+      "https://gh.acmsz.top",
+      "https://github.ednovas.xyz",
+      "https://gh.sixyin.com",
+      "https://ghproxy.imciel.com",
+      "https://cdn.akaere.online",
+      "https://gh-proxy.com",
+      "https://free.cn.eu.org",
+      "https://fastgit.cc",
+      "https://github.mxw.qzz.io",
+      "https://xsadwsd.kdns.fr",
+      "https://ghproxy.felicity.land",
+      "https://down.mxw.qzz.io",
+      "https://gh.07150721.xyz",
+      "https://github.tbap.top",
+      "https://gh.noki.icu",
+      "https://ghproxy.net"
+    )
+    $installerUrls = @()
+    foreach ($m in $ghMirrors) { $installerUrls += "$m/$installerSrc" }
+    $installerUrls += @($installerSrc, "https://get.scoop.sh")   # 兜底：直连 + 官方短链
     $installerContent = $null
     foreach ($u in $installerUrls) {
-      try { $installerContent = Invoke-RestMethod $u -UseBasicParsing; break } catch { }
+      try {
+        Write-Host "  尝试下载: $u" -ForegroundColor DarkGray
+        $installerContent = Invoke-RestMethod $u -UseBasicParsing -TimeoutSec 15
+        # 简单内容校验：防止镜像返回错误页/说明页被当作安装脚本执行
+        if ($installerContent -and $installerContent -match 'ScoopInstaller') {
+          Write-Host "  下载成功" -ForegroundColor Green
+          break
+        }
+        $installerContent = $null
+      } catch { }
     }
     if (-not $installerContent) { Write-Host "所有安装脚本源均不可用" -ForegroundColor Red; return }
 

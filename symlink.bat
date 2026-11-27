@@ -12,7 +12,32 @@ if %errorlevel% neq 0 (
 )
 
 :: ==============================================
-:: 第一部分：Scoop 库文件软链接 链接方式替代覆盖 
+:: 路径自动解析（兼容任意机器：不写死盘符与用户名）
+::   Scoop 根目录：优先 %SCOOP% 环境变量 → 用户目录默认位置 → 全局默认位置
+::   仓库根目录：本脚本所在目录（symlink.bat 位于 myscoop 仓库根）
+::   config.json：%USERPROFILE%\.config\scoop\config.json
+:: ==============================================
+set "SCOOP_ROOT=%SCOOP%"
+if not defined SCOOP_ROOT if exist "%USERPROFILE%\scoop\apps\scoop\current" set "SCOOP_ROOT=%USERPROFILE%\scoop"
+if not defined SCOOP_ROOT if exist "%ProgramData%\scoop\apps\scoop\current" set "SCOOP_ROOT=%ProgramData%\scoop"
+if not defined SCOOP_ROOT set "SCOOP_ROOT=%USERPROFILE%\scoop"
+if "%SCOOP_ROOT:~-1%"=="\" set "SCOOP_ROOT=%SCOOP_ROOT:~0,-1%"
+
+set "REPO=%~dp0"
+if "%REPO:~-1%"=="\" set "REPO=%REPO:~0,-1%"
+:: 从 shims 等处调用（非仓库根）时，回退到 Scoop 的标准 bucket 目录
+if not exist "%REPO%\config.json" if exist "%SCOOP_ROOT%\buckets\myscoop\config.json" set "REPO=%SCOOP_ROOT%\buckets\myscoop"
+
+set "SCOOP_CURRENT=%SCOOP_ROOT%\apps\scoop\current"
+set "SCOOP_CONFIG=%USERPROFILE%\.config\scoop\config.json"
+set "SHIMS_DIR=%SCOOP_ROOT%\shims"
+
+echo.
+echo Scoop 根目录：%SCOOP_ROOT%
+echo 仓库根目录：%REPO%
+
+:: ==============================================
+:: 第一部分：Scoop 库文件软链接 链接方式替代覆盖
 :: 格式："目标文件路径|仓库真实源文件路径"
 :: ==============================================
 echo.
@@ -20,9 +45,8 @@ echo ==============================================
 echo 【1/3】Scoop 库文件软链接（manifest/download）
 echo ==============================================
 
-set "REPO=D:\scoop\buckets\myscoop"
 set "SCOOP_VER="
-for /f "delims=" %%v in ('git -C "D:\scoop\apps\scoop\current" describe --tags --abbrev^=0 2^>nul') do set "SCOOP_VER=%%v"
+for /f "delims=" %%v in ('git -C "%SCOOP_CURRENT%" describe --tags --abbrev^=0 2^>nul') do set "SCOOP_VER=%%v"
 set "BASELINE=unknown"
 if exist "%REPO%\patches\baseline.txt" for /f "usebackq delims=" %%b in ("%REPO%\patches\baseline.txt") do set "BASELINE=%%b"
 
@@ -39,8 +63,8 @@ if not defined SCOOP_VER (
 )
 
 for %%i in (
-"D:\scoop\apps\scoop\current\lib\manifest.ps1|!PATCH_SRC!\manifest.ps1"
-"D:\scoop\apps\scoop\current\lib\download.ps1|!PATCH_SRC!\download.ps1"
+"%SCOOP_CURRENT%\lib\manifest.ps1|!PATCH_SRC!\manifest.ps1"
+"%SCOOP_CURRENT%\lib\download.ps1|!PATCH_SRC!\download.ps1"
 ) do (
     set "pair=%%~i"
     for /f "tokens=1,2 delims=^|" %%a in ("!pair!") do (
@@ -76,7 +100,7 @@ echo ==============================================
 echo 【2/3】config.json 镜像拷贝（真实文件，避免软链接崩溃）
 echo ==============================================
 for %%i in (
-"C:\Users\Administrator\.config\scoop\config.json|D:\scoop\buckets\myscoop\config.json"
+"%SCOOP_CONFIG%|%REPO%\config.json"
 ) do (
     set "pair=%%~i"
     for /f "tokens=1,2 delims=^|" %%a in ("!pair!") do (
@@ -107,10 +131,10 @@ for %%i in (
 :: ==============================================
 echo.
 echo ==============================================
-echo 【3/3】仓库 .bat -^> D:\scoop\shims 链接
+echo 【3/3】仓库 .bat -^> %SHIMS_DIR% 链接
 echo ==============================================
-set "SOURCE_DIR=D:\scoop\buckets\myscoop"
-set "TARGET_DIR=D:\scoop\shims"
+set "SOURCE_DIR=%REPO%"
+set "TARGET_DIR=%SHIMS_DIR%"
 
 for %%F in ("%SOURCE_DIR%\*.bat") do (
     rem 跳过脚本自身
