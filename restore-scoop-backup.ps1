@@ -34,7 +34,10 @@ try {
   # 导致 Scoop 内部 git 命令全部失败（scoop install 报 CommitHash 空绑定等次生错误）。
   # 实测 git 只支持精确路径或整值 *（不支持 D:/scoop/* 这类前缀通配），
   # 这里写入整值 *（一次配置，当前账号所有仓库放行；幂等，已有则跳过）。
-  if (Get-Command git -ErrorAction SilentlyContinue) {
+  # 封装为函数：脚本开头调用一次；Git 安装完成后会再调用一次（全新机器首次安装时
+  # 开头检查时 git 尚不存在，必须装完再写一次）。
+  function Set-GitSafeDirectory {
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return }
     $safeList = @()
     try { $safeList = @(git config --global --get-all safe.directory 2>$null) } catch { }
     if ($safeList -notcontains '*') {
@@ -42,6 +45,7 @@ try {
       Write-Host "  已添加 git safe.directory: *（解决跨用户 dubious ownership）" -ForegroundColor DarkGray
     }
   }
+  Set-GitSafeDirectory
 
   # 跨用户使用兜底：当前账号 PATH 中没有 scoop（如 Administrator 使用普通用户安装的 Scoop）时，
   # 把 <Scoop 根>\shims 临时加入当前进程 PATH，保证脚本内 scoop 命令可调用。
@@ -82,6 +86,62 @@ try {
     "https://ghproxy.net"
   )
 
+  # ============================================================
+  # 交互式选择下载加速代理（列表来自上面 $ghMirrors）。
+  # 回车保持当前；输入编号切换；输入 0 表示不使用加速代理（全程直连）。
+  # 选择持久化到 %LOCALAPPDATA%\myscoop\mirror-choice.txt（URL 或 direct），
+  # 下次运行自动作为默认；变更方式：再次运行重新选择，或删除该文件回到默认。
+  # 选中项重排到列表首位（其余代理仍作为失败兜底）。
+  # ============================================================
+  $mirrorChoiceFile = Join-Path ($env:LOCALAPPDATA, $env:USERPROFILE | Where-Object { $_ } | Select-Object -First 1) 'myscoop\mirror-choice.txt'
+  $savedMirror = $null
+  if (Test-Path $mirrorChoiceFile) {
+    try { $savedMirror = (Get-Content -LiteralPath $mirrorChoiceFile -TotalCount 1).Trim() } catch { }
+  }
+  $defaultMirror = if ($savedMirror -eq 'direct') { 'direct' }
+                   elseif ($savedMirror -and ($ghMirrors -contains $savedMirror)) { $savedMirror }
+                   else { $ghMirrors[0] }
+  $defaultText = if ($defaultMirror -eq 'direct') { '不使用加速代理（直连）' } else { $defaultMirror }
+  Write-Host "`n[代理选择] 下载加速代理（回车保持当前：$defaultText；输入编号切换；输入 0 直连）" -ForegroundColor Cyan
+  for ($i = 0; $i -lt $ghMirrors.Count; $i++) {
+    $mark = if ($ghMirrors[$i] -eq $defaultMirror) { '  ← 当前' } else { '' }
+    Write-Host ("  {0,2}. {1}{2}" -f ($i + 1), $ghMirrors[$i], $mark) -ForegroundColor Gray
+  }
+  $directMark = if ($defaultMirror -eq 'direct') { '  ← 当前' } else { '' }
+  Write-Host ("   0. 不使用加速代理（直连）{0}" -f $directMark) -ForegroundColor Gray
+  $mirrorAns = Read-Host "输入编号（直接回车保持不变）"
+  $selectedMirror = $defaultMirror
+  if ($mirrorAns -match '^\d+$') {
+    $num = [int]$mirrorAns
+    if ($num -eq 0) {
+      $selectedMirror = 'direct'
+    } elseif (($num - 1) -ge 0 -and ($num - 1) -lt $ghMirrors.Count) {
+      $selectedMirror = $ghMirrors[$num - 1]
+    } else {
+      Write-Host "  编号无效，保持当前选择" -ForegroundColor Yellow
+    }
+  }
+  try {
+    New-Item -ItemType Directory -Force (Split-Path $mirrorChoiceFile -Parent) | Out-Null
+    Set-Content -LiteralPath $mirrorChoiceFile -Value $selectedMirror -Encoding UTF8
+  } catch { }
+  if ($selectedMirror -eq 'direct') {
+    $ghMirrors = @()
+    Write-Host "  已选择: 不使用加速代理（全部直连）" -ForegroundColor Green
+  } else {
+    $ghMirrors = @($selectedMirror) + @($ghMirrors | Where-Object { $_ -ne $selectedMirror })
+    Write-Host "  已选择: $selectedMirror（其余代理仍作为失败兜底）" -ForegroundColor Green
+  }
+
+  # 浅克隆源辅助：选中代理优先 + 其余代理兜底 + 官方直连（浅克隆块统一用它拼源列表）
+  function Get-GitProxyUrls {
+    param([string]$GitUrl)
+    $list = @()
+    foreach ($m in @($ghMirrors | Select-Object -First 3)) { $list += "$m/$GitUrl" }
+    $list += $GitUrl
+    return $list
+  }
+
   # ---- 修复：用子进程执行官方安装脚本，避免其内部 exit 导致闪退 ----
   function Invoke-ScoopInstaller {
     param([switch]$RunAsAdmin)
@@ -113,11 +173,16 @@ try {
     # （Main/archive/master.zip；检测到 git 时改为 *.git clone）——国内直连经常被重置
     # （实测 WebException"基础连接已经关闭"）。这里把脚本内的 GitHub 地址统一改写为
     # 加速镜像前缀（gh-proxy 支持 zip/raw/git clone），下载链路全程走镜像。
-    $dlMirror = $ghMirrors[0]
-    $patched = $installerContent -replace '(?<!gh-proxy\.org/)https://github\.com/ScoopInstaller/', "$dlMirror/https://github.com/ScoopInstaller/"
-    if ($patched -ne $installerContent) {
-      $installerContent = $patched
-      Write-Host "  已将安装器内部 Scoop/Main 下载地址替换为加速镜像: $dlMirror" -ForegroundColor Gray
+    # 用户选择"直连"时 $ghMirrors 为空 → 不改写，保持官方地址。
+    if ($ghMirrors.Count -gt 0) {
+      $dlMirror = $ghMirrors[0]
+      $patched = $installerContent -replace '(?<!gh-proxy\.org/)https://github\.com/ScoopInstaller/', "$dlMirror/https://github.com/ScoopInstaller/"
+      if ($patched -ne $installerContent) {
+        $installerContent = $patched
+        Write-Host "  已将安装器内部 Scoop/Main 下载地址替换为加速镜像: $dlMirror" -ForegroundColor Gray
+      }
+    } else {
+      Write-Host "  [直连模式] 安装器内部下载保持官方 GitHub 地址" -ForegroundColor Yellow
     }
 
     # 安装前清理残留：目标目录存在但没有有效的 Scoop（上次删除不完整 / 失败安装残留）时，
@@ -405,6 +470,8 @@ try {
       # 刷新环境变量，使 Git 立即可用
       $env:PATH = [Environment]::GetEnvironmentVariable("PATH","User") + ";" + [Environment]::GetEnvironmentVariable("PATH","Machine")
       Write-Host "Git 安装成功！" -ForegroundColor Green
+      # 刚装好的 git 立即写入 safe.directory（全新机器开头检查时 git 还不存在）
+      Set-GitSafeDirectory
     } catch {
       Write-Host "Git 安装失败：$_" -ForegroundColor Red
       Write-Host "请手动安装 Git（https://git-scm.com）后重新运行本脚本。" -ForegroundColor Yellow
@@ -422,12 +489,7 @@ try {
   $ErrorActionPreference = "Continue"
   # --- Bucket: main (镜像优先，失败自动回退官方) ---
   # 浅克隆加速：nju 镜像优先 → 加速代理 GitHub 回退（失败走下方完整 add 流程）
-  Clone-BucketToDir 'main' @(
-    'https://mirror.nju.edu.cn/git/scoop-main.git',
-    'https://gh-proxy.org/https://github.com/ScoopInstaller/Main.git',
-    'https://hk.gh-proxy.org/https://github.com/ScoopInstaller/Main.git',
-    'https://cdn.gh-proxy.com/https://github.com/ScoopInstaller/Main.git'
-  ) | Out-Null
+  Clone-BucketToDir 'main' (@('https://mirror.nju.edu.cn/git/scoop-main.git') + (Get-GitProxyUrls 'https://github.com/ScoopInstaller/Main.git')) | Out-Null
 
   $retryCount = 0
   $bucketAddSuccess = $false
@@ -504,12 +566,7 @@ try {
 
   # --- Bucket: extras (镜像优先，失败自动回退官方) ---
   # 浅克隆加速：nju 镜像优先 → 加速代理 GitHub 回退（失败走下方完整 add 流程）
-  Clone-BucketToDir 'extras' @(
-    'https://mirror.nju.edu.cn/git/scoop-extras.git',
-    'https://gh-proxy.org/https://github.com/ScoopInstaller/Extras.git',
-    'https://hk.gh-proxy.org/https://github.com/ScoopInstaller/Extras.git',
-    'https://cdn.gh-proxy.com/https://github.com/ScoopInstaller/Extras.git'
-  ) | Out-Null
+  Clone-BucketToDir 'extras' (@('https://mirror.nju.edu.cn/git/scoop-extras.git') + (Get-GitProxyUrls 'https://github.com/ScoopInstaller/Extras.git')) | Out-Null
 
   $retryCount = 0
   $bucketAddSuccess = $false
@@ -586,12 +643,7 @@ try {
 
   # --- Bucket: versions (镜像优先，失败自动回退官方) ---
   # 浅克隆加速：nju 镜像优先 → 加速代理 GitHub 回退（失败走下方完整 add 流程）
-  Clone-BucketToDir 'versions' @(
-    'https://mirror.nju.edu.cn/git/scoop-versions.git',
-    'https://gh-proxy.org/https://github.com/ScoopInstaller/Versions.git',
-    'https://hk.gh-proxy.org/https://github.com/ScoopInstaller/Versions.git',
-    'https://cdn.gh-proxy.com/https://github.com/ScoopInstaller/Versions.git'
-  ) | Out-Null
+  Clone-BucketToDir 'versions' (@('https://mirror.nju.edu.cn/git/scoop-versions.git') + (Get-GitProxyUrls 'https://github.com/ScoopInstaller/Versions.git')) | Out-Null
 
   $retryCount = 0
   $bucketAddSuccess = $false
@@ -668,12 +720,7 @@ try {
 
   # --- Bucket: sysinternals (known, official) ---
   # 浅克隆加速：加速代理 GitHub 优先（nju 无 sysinternals 镜像）→ 官方直连回退
-  Clone-BucketToDir 'sysinternals' @(
-    'https://gh-proxy.org/https://github.com/niheaven/scoop-sysinternals.git',
-    'https://hk.gh-proxy.org/https://github.com/niheaven/scoop-sysinternals.git',
-    'https://cdn.gh-proxy.com/https://github.com/niheaven/scoop-sysinternals.git',
-    'https://github.com/niheaven/scoop-sysinternals.git'
-  ) | Out-Null
+  Clone-BucketToDir 'sysinternals' (Get-GitProxyUrls 'https://github.com/niheaven/scoop-sysinternals.git') | Out-Null
 
   $retryCount = 0
   $bucketAddSuccess = $false
@@ -721,12 +768,7 @@ try {
 
   # --- Bucket: myscoop (custom, SSH→HTTPS auto-fallback) ---
   # 浅克隆加速：加速代理 HTTPS 优先 → 官方 HTTPS 回退（SSH 密钥场景交给下方完整 add 流程）
-  Clone-BucketToDir 'myscoop' @(
-    'https://gh-proxy.org/https://github.com/w3c0929/myscoop.git',
-    'https://hk.gh-proxy.org/https://github.com/w3c0929/myscoop.git',
-    'https://cdn.gh-proxy.com/https://github.com/w3c0929/myscoop.git',
-    'https://github.com/w3c0929/myscoop.git'
-  ) | Out-Null
+  Clone-BucketToDir 'myscoop' (Get-GitProxyUrls 'https://github.com/w3c0929/myscoop.git') | Out-Null
 
   $retryCount = 0
   $bucketAddSuccess = $false
