@@ -85,6 +85,38 @@ try {
     }
     if (-not $installerContent) { Write-Host "所有安装脚本源均不可用" -ForegroundColor Red; return }
 
+    # 安装器内部会直连 GitHub 下载 Scoop 本体（Scoop/archive/master.zip）与 main bucket
+    # （Main/archive/master.zip；检测到 git 时改为 *.git clone）——国内直连经常被重置
+    # （实测 WebException"基础连接已经关闭"）。这里把脚本内的 GitHub 地址统一改写为
+    # 加速镜像前缀（gh-proxy 支持 zip/raw/git clone），下载链路全程走镜像。
+    $dlMirror = $ghMirrors[0]
+    $patched = $installerContent -replace '(?<!gh-proxy\.org/)https://github\.com/ScoopInstaller/', "$dlMirror/https://github.com/ScoopInstaller/"
+    if ($patched -ne $installerContent) {
+      $installerContent = $patched
+      Write-Host "  已将安装器内部 Scoop/Main 下载地址替换为加速镜像: $dlMirror" -ForegroundColor Gray
+    }
+
+    # 安装前清理残留：目标目录存在但没有有效的 Scoop（上次删除不完整 / 失败安装残留）时，
+    # 安装器会以 "'D:\scoop' exists and is not empty" 拒绝安装。此处先备份 persist，
+    # 再清理整个残留目录，让安装器可以正常初始化。
+    if (Test-Path $scoopPath) {
+      if (-not (Test-Path (Join-Path $scoopPath 'apps\scoop\current'))) {
+        Write-Host "检测到 $scoopPath 存在残留文件（上次删除/安装不完整），准备清理..." -ForegroundColor Yellow
+        $persistDir = Join-Path $scoopPath 'persist'
+        if (Test-Path $persistDir) {
+          $persistBak = "$scoopPath.persist-backup-$(Get-Date -Format 'yyyyMMddHHmmss')"
+          Move-Item -LiteralPath $persistDir -Destination $persistBak -Force -ErrorAction SilentlyContinue
+          if (Test-Path $persistBak) { Write-Host "  已备份 persist 到 $persistBak" -ForegroundColor Yellow }
+        }
+        Remove-Item -LiteralPath $scoopPath -Recurse -Force -ErrorAction SilentlyContinue
+        if (Test-Path $scoopPath) {
+          Write-Host "  清理失败：部分文件被占用。请关闭相关程序（或重启）后手动删除 $scoopPath 再重试。" -ForegroundColor Red
+          return
+        }
+        Write-Host "  残留目录已清理，继续安装" -ForegroundColor Green
+      }
+    }
+
     $tmpInstaller = Join-Path $env:TEMP ("scoop-installer-{0}.ps1" -f ([guid]::NewGuid().ToString('N')))
     try {
       [System.IO.File]::WriteAllText($tmpInstaller, $installerContent, (New-Object System.Text.UTF8Encoding $false))
