@@ -308,6 +308,10 @@ try {
   }
 
   Write-Host "[步骤1] 恢复所有Bucket仓库（每个最多重试3次，全部成功才继续软件安装）" -ForegroundColor Cyan
+  # 步骤1 期间临时放宽错误偏好：某个 bucket 目录损坏（如上次运行中断留下不完整 .git）时，
+  # Scoop 内部 git 的 stderr（fatal: not a git repository）在 Stop 偏好下会被放大成异常，
+  # 导致 scoop bucket list/add 被误判失败。Continue 下仅打印错误，成败仍由 $LASTEXITCODE 判断。
+  $ErrorActionPreference = "Continue"
   # --- Bucket: main (镜像优先，失败自动回退官方) ---
   $retryCount = 0
   $bucketAddSuccess = $false
@@ -322,7 +326,8 @@ try {
       Write-Host "尝试添加Bucket[main]（镜像源），第$retryCount/3次"
     }
     try {
-      $existingList = scoop bucket list 2>&1
+      $existingList = ""
+      try { $existingList = scoop bucket list 2>&1 } catch { }
       if ((Test-BucketAlreadyPresent 'main') -or ($existingList -match [regex]::Escape('main'))) {
         Write-Host 'Bucket main 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
@@ -395,7 +400,8 @@ try {
       Write-Host "尝试添加Bucket[extras]（镜像源），第$retryCount/3次"
     }
     try {
-      $existingList = scoop bucket list 2>&1
+      $existingList = ""
+      try { $existingList = scoop bucket list 2>&1 } catch { }
       if ((Test-BucketAlreadyPresent 'extras') -or ($existingList -match [regex]::Escape('extras'))) {
         Write-Host 'Bucket extras 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
@@ -468,7 +474,8 @@ try {
       Write-Host "尝试添加Bucket[versions]（镜像源），第$retryCount/3次"
     }
     try {
-      $existingList = scoop bucket list 2>&1
+      $existingList = ""
+      try { $existingList = scoop bucket list 2>&1 } catch { }
       if ((Test-BucketAlreadyPresent 'versions') -or ($existingList -match [regex]::Escape('versions'))) {
         Write-Host 'Bucket versions 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
@@ -534,7 +541,8 @@ try {
     $retryCount++
     Write-Host "尝试添加Bucket[sysinternals]，第$retryCount/3次"
     try {
-      $existingList = scoop bucket list 2>&1
+      $existingList = ""
+      try { $existingList = scoop bucket list 2>&1 } catch { }
       if ((Test-BucketAlreadyPresent 'sysinternals') -or ($existingList -match [regex]::Escape('sysinternals'))) {
         Write-Host 'Bucket sysinternals 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
@@ -587,7 +595,8 @@ try {
     $retryCount++
     Write-Host "尝试添加Bucket[myscoop]，第$retryCount/3次（源: $currentSource）"
     try {
-      $existingList = scoop bucket list 2>&1
+      $existingList = ""
+      try { $existingList = scoop bucket list 2>&1 } catch { }
       if ((Test-BucketAlreadyPresent 'myscoop') -or ($existingList -match [regex]::Escape('myscoop'))) {
         Write-Host 'Bucket myscoop 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
@@ -660,7 +669,8 @@ try {
     $retryCount++
     Write-Host "尝试添加Bucket[official]，第$retryCount/3次（源: $currentSource）"
     try {
-      $existingList = scoop bucket list 2>&1
+      $existingList = ""
+      try { $existingList = scoop bucket list 2>&1 } catch { }
       if ((Test-BucketAlreadyPresent 'official') -or ($existingList -match [regex]::Escape('official'))) {
         Write-Host 'Bucket official 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
@@ -717,6 +727,7 @@ try {
     exit 1
   }
 
+  $ErrorActionPreference = "Stop"
   Write-Host "`n✅ 所有Bucket仓库全部添加成功（此版本仅恢复 Bucket，不含软件安装）" -ForegroundColor Green
 } catch {
   Write-Host "`n脚本发生致命错误：$_" -ForegroundColor Red
