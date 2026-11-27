@@ -29,6 +29,30 @@ try {
   if (-not $scoopPath) { $scoopPath = "D:\scoop" }
   Write-Host "Scoop 根目录：$scoopPath" -ForegroundColor Gray
 
+  # git "dubious ownership" 兼容：Scoop 目录由其他用户创建（如普通用户装好后切到
+  # Administrator 使用）时，git 2.35.2+ 会拒绝操作（fatal: detected dubious ownership），
+  # 导致 Scoop 内部 git 命令全部失败（scoop install 报 CommitHash 空绑定等次生错误）。
+  # 实测 git 只支持精确路径或整值 *（不支持 D:/scoop/* 这类前缀通配），
+  # 这里写入整值 *（一次配置，当前账号所有仓库放行；幂等，已有则跳过）。
+  if (Get-Command git -ErrorAction SilentlyContinue) {
+    $safeList = @()
+    try { $safeList = @(git config --global --get-all safe.directory 2>$null) } catch { }
+    if ($safeList -notcontains '*') {
+      git config --global --add safe.directory '*' 2>$null
+      Write-Host "  已添加 git safe.directory: *（解决跨用户 dubious ownership）" -ForegroundColor DarkGray
+    }
+  }
+
+  # 跨用户使用兜底：当前账号 PATH 中没有 scoop（如 Administrator 使用普通用户安装的 Scoop）时，
+  # 把 <Scoop 根>\shims 临时加入当前进程 PATH，保证脚本内 scoop 命令可调用。
+  if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
+    $shimsPath = Join-Path $scoopPath 'shims'
+    if (Test-Path (Join-Path $shimsPath 'scoop.ps1')) {
+      $env:PATH = "$shimsPath;$env:PATH"
+      Write-Host "  已将 $shimsPath 加入当前进程 PATH（scoop 命令可用）" -ForegroundColor DarkGray
+    }
+  }
+
   # GitHub 加速镜像：与 scoop config.json 的 aria2-mirrors 一致，按序尝试；全部失败再直连
   # （安装脚本下载与 git 缓存预下载共用）
   $ghMirrors = @(
