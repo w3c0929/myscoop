@@ -310,13 +310,25 @@ try {
   if (-not $scoopPath) { $scoopPath = "D:\scoop" }
   Write-Host "Scoop 根目录：$scoopPath" -ForegroundColor Gray
 
+  # 跨用户使用兜底：当前账号 PATH 中没有 scoop 或 git（如 Administrator 使用普通用户安装的
+  # Scoop：git 由 scoop 安装，shim 位于 <Scoop根>\shims，不在该账号 PATH）时，
+  # 把 shims 临时加入当前进程 PATH。
+  # 必须放在 safe.directory 修复之前：否则下面的 Set-GitSafeDirectory 会因找不到 git 直接跳过。
+  if ((-not (Get-Command scoop -ErrorAction SilentlyContinue)) -or (-not (Get-Command git -ErrorAction SilentlyContinue))) {
+    $shimsPath = Join-Path $scoopPath 'shims'
+    if (Test-Path $shimsPath) {
+      $env:PATH = "$shimsPath;$env:PATH"
+      Write-Host "  已将 $shimsPath 加入当前进程 PATH（scoop/git 命令可用）" -ForegroundColor DarkGray
+    }
+  }
+
   # git "dubious ownership" 兼容：Scoop 目录由其他用户创建（如普通用户装好后切到
   # Administrator 使用）时，git 2.35.2+ 会拒绝操作（fatal: detected dubious ownership），
   # 导致 Scoop 内部 git 命令全部失败（scoop install 报 CommitHash 空绑定等次生错误）。
   # 实测 git 只支持精确路径或整值 *（不支持 D:/scoop/* 这类前缀通配），
   # 这里写入整值 *（一次配置，当前账号所有仓库放行；幂等，已有则跳过）。
-  # 封装为函数：脚本开头调用一次；Git 安装完成后会再调用一次（全新机器首次安装时
-  # 开头检查时 git 尚不存在，必须装完再写一次）。
+  # 封装为函数：脚本开头调用一次；Git 检查段之后再统一调用一次（幂等），
+  # 覆盖"全新机器装完 git"与"已装 git 但开头 PATH 未就绪"两种场景。
   function Set-GitSafeDirectory {
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return }
     $safeList = @()
@@ -327,16 +339,6 @@ try {
     }
   }
   Set-GitSafeDirectory
-
-  # 跨用户使用兜底：当前账号 PATH 中没有 scoop（如 Administrator 使用普通用户安装的 Scoop）时，
-  # 把 <Scoop 根>\shims 临时加入当前进程 PATH，保证脚本内 scoop 命令可调用。
-  if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
-    $shimsPath = Join-Path $scoopPath 'shims'
-    if (Test-Path (Join-Path $shimsPath 'scoop.ps1')) {
-      $env:PATH = "$shimsPath;$env:PATH"
-      Write-Host "  已将 $shimsPath 加入当前进程 PATH（scoop 命令可用）" -ForegroundColor DarkGray
-    }
-  }
 
   # GitHub 加速镜像：与 scoop config.json 的 aria2-mirrors 一致，按序尝试；全部失败再直连
   # （安装脚本下载与 git 缓存预下载共用）
@@ -751,8 +753,6 @@ try {
       # 刷新环境变量，使 Git 立即可用
       $env:PATH = [Environment]::GetEnvironmentVariable("PATH","User") + ";" + [Environment]::GetEnvironmentVariable("PATH","Machine")
       Write-Host "Git 安装成功！" -ForegroundColor Green
-      # 刚装好的 git 立即写入 safe.directory（全新机器开头检查时 git 还不存在）
-      Set-GitSafeDirectory
     } catch {
       Write-Host "Git 安装失败：$_" -ForegroundColor Red
       Write-Host "请手动安装 Git（https://git-scm.com）后重新运行本脚本。" -ForegroundColor Yellow
@@ -762,6 +762,9 @@ try {
   } else {
     Write-Host "Git 已就绪，继续。" -ForegroundColor Green
   }
+  # 统一再写一次 safe.directory（幂等）：覆盖"全新机器刚装完 git"与
+  # "已装 git 但脚本开头 PATH 未就绪"的跨账号场景
+  Set-GitSafeDirectory
 
   Write-Host "[步骤1] 恢复所有Bucket仓库（每个最多重试3次，全部成功才继续软件安装）" -ForegroundColor Cyan
   # 步骤1 期间临时放宽错误偏好：某个 bucket 目录损坏（如上次运行中断留下不完整 .git）时，
