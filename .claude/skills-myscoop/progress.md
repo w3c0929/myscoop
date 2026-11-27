@@ -487,9 +487,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* a69f0e5 (HEAD -> main) 同步 README 第三方版本与日期列
+* 674d9e7 (HEAD -> main, origin/main, origin/HEAD) 恢复脚本镜像下载 + symlink.bat 路径兼容任意机器
+* 656e640 progress.md 更新提交历史
+* a69f0e5 同步 README 第三方版本与日期列
 * 1258f62 自动更新第三方软件
-* 81d855d (origin/main) winshun: 0.50.1
+* 81d855d winshun: 0.50.1
 * 1992a59 progress.md 更新提交历史
 * 223ae77 egolite：排除 Current 冗余主体重新打包（298MB→162MB），hash 同步
 * b1aa7b3 pack-egolite：排除 Current/SetupMetrics 冗余副本（0.6.4.22 起安装器双份主体，包体积翻倍）
