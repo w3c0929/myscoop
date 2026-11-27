@@ -12,8 +12,14 @@
 
 1. 下载 [`restore-scoop-backup.ps1`](https://github.com/w3c0929/myscoop/raw/main/restore-scoop-backup.ps1)（右键 → 另存为）
 2. 右键脚本 → **使用 PowerShell 运行**
-3. 脚本自动安装 Scoop、Git 并添加全部 bucket
-4. 完成后进入 `D:\scoop\buckets\myscoop`，**以管理员身份运行 `symlink.bat`** 完成部署
+3. 按提示选择下载加速代理：直接回车用默认（`gh-proxy.org`），输入编号切换，**输入 `0` 不使用代理（直连）**；选择会被记住，以后运行回车即可
+4. 脚本全自动完成（无需其他操作）：
+   - 安装 Scoop（如未装）→ 7zip、Git（镜像预下载加速）
+   - 恢复 6 个 bucket（nju 镜像 / 加速代理浅克隆；已存在 bucket 的 remote 自动自检换源）
+   - 自动应用本桶镜像补丁（运行 `symlink.bat`，**无需再手动部署**）
+   - 跨账号使用（如 Administrator 运行普通用户装的 Scoop）自动配置 `git safe.directory` 与 PATH
+
+> 需要连同本机软件一起恢复时，用 `智能模式Scoop(3).ps1` 导出的 `restore-scoop-full.ps1`：内容与上面完全相同，末尾追加本机已安装软件的 `scoop install` 清单。
 
 **Windows 7**
 
@@ -244,7 +250,7 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 scoop bucket add myscoop https://github.com/w3c0929/myscoop.git
 ```
 
-> **重要提示（添加桶后必做）**：上述命令仅将本桶登记到 Scoop，**尚不足以正常使用**。还须进入 myscoop 仓库目录（如 `D:\scoop\buckets\myscoop`），**以管理员身份双击运行 `symlink.bat`**，完成本桶所需的部署——将 `manifest.ps1`、`download.ps1`、`config.json` 三个文件以软链接方式部署到 Scoop 对应位置，并把仓库 `*.bat` 链接到 `D:\scoop\shims` 以提供全局命令。**未完成该步骤前，本桶软件将无法正常安装与更新**；Scoop 自更新后亦需重新运行一次。详见下文「Scoop 辅助文件」章节。
+> **重要提示（添加桶后必做）**：上述命令仅将本桶登记到 Scoop，**尚不足以正常使用**。还须进入 myscoop 仓库目录（如 `D:\scoop\buckets\myscoop`）运行一次 `symlink.bat`（管理员身份为软链接模式，普通权限自动降级为拷贝模式），完成本桶所需的部署——将 `manifest.ps1`、`download.ps1`、`config.json` 三个文件部署到 Scoop 对应位置，并把仓库 `*.bat` 链接到 `D:\scoop\shims` 以提供全局命令。**未完成该步骤前，本桶软件将无法正常安装与更新**；Scoop 自更新后亦需重新运行一次。**用上文「快速安装」的一键恢复脚本则此步自动完成**。详见下文「Scoop 辅助文件」章节。
 >
 > **Scoop 不在默认目录时（额外一步）**：若 Scoop 装在自定义路径（如 `D:\scoop`）而**未设置 `SCOOP` 环境变量**，第三方工具 `scoop-search` 会报 `Could not open the buckets directory: C:\Users\<用户>\scoop\buckets`——它只认 `SCOOP` 变量或默认的 `~\scoop`（`scoop` 命令本身从 shim 路径推断根目录，所以不受影响）。修复（PowerShell，普通权限即可）：
 >
@@ -330,7 +336,7 @@ git config --global --add safe.directory D:/scoop/buckets/*
 | `download.ps1` | `D:\scoop\apps\scoop\current\lib\download.ps1` | GitHub Release 下载走加速镜像 |
 | `config.json` | `%USERPROFILE%\.config\scoop\config.json` | `bucketlist` 控制仓库优先级 |
 
-**部署方式**：运行仓库根目录的 `symlink.bat`（**需管理员权限**）——两个 `.ps1` 以**软链接**部署（`git pull` 后立即生效），`config.json` 以**镜像拷贝**部署（Scoop 自身会重写该文件，故每次重跑同步）；同时把仓库 `*.bat` 链接到 `D:\scoop\shims`。Scoop 自更新后需重跑一次。
+**部署方式**：运行仓库根目录的 `symlink.bat`——管理员身份为**软链接**部署（`git pull` 后立即生效），普通权限自动降级为**拷贝**部署（Scoop 自更新或仓库脚本变动后需重跑）；`config.json` 始终以**镜像拷贝**部署（Scoop 自身会重写该文件，故每次重跑同步）；同时把仓库 `*.bat` 链接到 `D:\scoop\shims`。路径自动解析（不写死盘符/用户名），支持 `--no-pause`（恢复脚本自动调用用）。
 
 补丁按 Scoop 版本自动分发（根 = 最新基线，`patches\<版本>\` = 冻结补丁）；升级维护流程与镜像测速细节见 `.claude/skills-myscoop/progress.md`「Scoop 库补丁与版本分发」。
 
@@ -359,7 +365,7 @@ git config --global --add safe.directory D:/scoop/buckets/*
 **使用步骤**：
 
 1. **保持仓库最新**：`git pull` 拉取仓库（链接指向仓库源文件，拉取后自动生效）；
-2. **以管理员身份运行**：右键 `symlink.bat` → **以管理员身份运行**（`mklink` 需要管理员权限；脚本开头会自检，无权限时提示后退出）；
+2. **运行方式**：右键 `symlink.bat` → **以管理员身份运行**（软链接模式，推荐）；**非管理员直接双击也可**——脚本会自动降级为**拷贝模式**（把补丁文件复制到 Scoop 目录；此模式下 Scoop 自更新或仓库脚本变动后需重跑本脚本）。脚本会自动解析 Scoop 根目录与当前用户配置路径（不写死盘符/用户名），并支持 `--no-pause` 参数（供恢复脚本自动调用时跳过结尾按键）；
 3. **等待打印过程完成**，脚本分两段执行：
    - **【1/3】Scoop 库文件软链接**：先按 Scoop 版本选择补丁来源（`git describe` 取版本：版本==基线用仓库根，`patches\<版本>` 存在用专用补丁，否则根+警告，并打印所选来源），再依次处理 `manifest.ps1` / `download.ps1`——目标位置若已有旧文件先删除，再 `mklink` 建立软链接指向仓库源文件；每个文件打印 `处理文件：xxx`，成功显示 `[成功] 文件软链接生成完成`，源文件缺失显示 `跳过`，失败显示 `[失败]`；
    - **【2/3】config.json 镜像拷贝**：源（仓库 `config.json`）为权威，删除目标旧文件后 `copy /Y` 覆盖为**真实文件**（避免 Scoop 重写配置时破坏软链接），成功显示 `[成功] … 镜像拷贝完成`；
