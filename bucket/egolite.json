@@ -4,7 +4,7 @@
     "homepage": "https://lite.ego.app/zh-cn",
     "license": "MIT",
     "url": "https://github.com/w3c0929/myscoop/releases/download/vEgoLite/egolite-0.6.4.22.7z",
-    "hash": "sha256:e2951ebf171a72d4ee101921959eb541dcd323f945a3e06c0f320a28a6ef9641",
+    "hash": "sha256:a14f898959c838bc70aa2737098064dcef0ce923d3655b60a2a0d01de4b00d07",
     "bin": [
         [
             "ego.exe",
