@@ -1,10 +1,10 @@
 {
-    "version": "0.6.3.17",
+    "version": "0.6.4.22",
     "description": "AI Agent 浏览器（Chromium 内核）：可直接导入 Chrome 数据，并让 Claude Code / Codex 等 Agent 在隔离 Space 中执行网页自动化，不干扰当前标签页。",
     "homepage": "https://lite.ego.app/zh-cn",
     "license": "MIT",
-    "url": "https://github.com/w3c0929/myscoop/releases/download/vEgoLite/egolite-0.6.3.17.7z",
-    "hash": "sha256:ea673e167af0a25ea8d9de4d259b57902214c03abae331db526cdbc4f4f48dd0",
+    "url": "https://github.com/w3c0929/myscoop/releases/download/vEgoLite/egolite-0.6.4.22.7z",
+    "hash": "sha256:e2951ebf171a72d4ee101921959eb541dcd323f945a3e06c0f320a28a6ef9641",
     "bin": [
         [
             "ego.exe",

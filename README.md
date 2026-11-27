@@ -150,7 +150,7 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 | 1 | [Google Chrome 109 (Win7)](https://www.google.com/chrome/) — Windows 7 / 8.1 最后可用的 Chrome 版本（官方安装器，手动安装，与新版 Chrome 相互独立） | `scoop install win7chrome` | 单 exe 自托管（官方安装器，自动启动、手动完成安装） | 109.0.5414.120 | 2026-11-25 | 2026-11-25 |
 | 2 | Windows 7 WMF 5.1 (KB3191566) — Windows 管理框架 5.1 更新包（解压即用，含 MSU 与 Install-WMF5.1.ps1） | `scoop install win7wmf` | zip 便携（自托管，解压即用） | 5.1 | 2026-11-24 | 2026-11-24 |
 | 3 | [INPHIC HUB](https://www.inphic.com/) — 英菲克外设设置工具 | `scoop install inphic` | 7z 便携解压即用（Inno Setup 解包） | 1.0.1.24 | 2026-10-28 | 2026-10-28 |
-| 4 | ego lite — AI Agent 浏览器（Chromium 内核，可导入 Chrome 数据；让 Claude Code / Codex 等在隔离 Space 执行网页自动化） | `scoop install egolite` | 7z 便携（自托管：官方 Web 安装器目录打包） | 0.6.3.17 | 2026-10-20 | 2026-11-17 |
+| 4 | ego lite — AI Agent 浏览器（Chromium 内核，可导入 Chrome 数据；让 Claude Code / Codex 等在隔离 Space 执行网页自动化） | `scoop install egolite` | 7z 便携（自托管：官方 Web 安装器目录打包） | 0.6.4.22 | 2026-10-20 | 2026-11-27 |
 | 5 | [NInfer](https://github.com/w3c0929/myscoop) — 三元推理引擎（Ternary-Bonsai 模型，CUDA 13.3 sm_89，自带运行库） | `scoop install ninfer` | zip 便携（单文件服务端 + 自带运行库） | 1.2.0 | 2026-10-10 | 2026-10-10 |
 | 6 | [EasyTSHARK](https://github.com/xuanyuanzhifeng/easytshark) — 网络抓包分析工具（基于 Tshark 内核） | `scoop install easytshark` | zip 便携解压即用 | 1.0.2 | 2026-10-10 | 2026-10-10 |
 | 7 | BT种子转磁力链工具 — BT种子转磁力链接 | `scoop install btseed` | zip 便携解压即用 | 1.0 | 2026-10-10 | 2026-10-10 |
