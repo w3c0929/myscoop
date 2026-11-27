@@ -495,7 +495,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 37542f8 (HEAD -> main, origin/main, origin/HEAD) 修复 restore 脚本因损坏 bucket 中断
+* 05b9ba2 (HEAD -> main, origin/main, origin/HEAD) restore 脚本 bucket 源支持加速代理 + 浅克隆
+* c2dc71d progress.md 更新提交历史
+* 37542f8 修复 restore 脚本因损坏 bucket 中断
 * b8e6fb1 progress.md 更新提交历史
 * bb61512 修复 restore 脚本在其他电脑误判 bucket 不存在
 * 026dda7 progress.md 更新提交历史
