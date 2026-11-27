@@ -1,4 +1,9 @@
 @echo off
+:: 记录进入时的控制台代码页，结束时恢复：
+:: Win7 旧控制台在 UTF-8（65001）代码页下无法正常写输出，且 chcp 是控制台级状态、
+:: 不随本脚本退出恢复——残留的 65001 会让调用方（PowerShell）后续 Write-Host
+:: 抛 Win32 0x1F 错误并终止脚本（实测 restore-scoop-full.ps1 因此中断、软件段不执行）。
+for /f "tokens=2 delims=:" %%c in ('chcp') do set "OLDCP=%%c"
 chcp 65001 >nul
 setlocal enabledelayedexpansion
 
@@ -174,4 +179,6 @@ if "%MODE%"=="copy" (
 )
 echo ==============================================
 if /i not "%~1"=="--no-pause" pause
+:: 恢复调用方原有的控制台代码页（见文件头说明）
+if defined OLDCP chcp %OLDCP% >nul
 endlocal

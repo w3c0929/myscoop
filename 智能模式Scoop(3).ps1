@@ -1276,10 +1276,20 @@ try {
   if (Test-Path $symlinkBat) {
     Write-Host "`n[补丁] 应用 myscoop 镜像补丁（symlink.bat）..." -ForegroundColor Cyan
     try {
-      # 直接调用（不经 PowerShell 管道），避免 UTF-8 输出被按系统代码页解码导致乱码
-      cmd /c "`"$symlinkBat`" --no-pause"
-      if ($LASTEXITCODE -ne 0) {
-        Write-Host "  [提示] symlink.bat 返回码 $LASTEXITCODE（可能部分链接/拷贝失败）" -ForegroundColor Yellow
+      # 直接调用（不经 PowerShell 管道），避免 UTF-8 输出被按系统代码页解码导致乱码。
+      # 记录调用前的控制台代码页：symlink.bat 内部 chcp 65001，Win7 旧控制台在 UTF-8
+      # 下无法写输出，且代码页残留会让后续 Write-Host 抛 Win32 0x1F 终止脚本
+      # （实测 full 版软件段因此不执行）——调用后必须恢复。
+      $oldCp = ((chcp) -replace '\D', '')
+      $symlinkExit = 0
+      try {
+        cmd /c "`"$symlinkBat`" --no-pause"
+        $symlinkExit = $LASTEXITCODE
+      } finally {
+        if ($oldCp) { chcp $oldCp 2>$null | Out-Null }
+      }
+      if ($symlinkExit -ne 0) {
+        Write-Host "  [提示] symlink.bat 返回码 $symlinkExit（可能部分链接/拷贝失败）" -ForegroundColor Yellow
       }
       $dlPatch = Join-Path $scoopPath 'apps\scoop\current\lib\download.ps1'
       if ((Test-Path $dlPatch) -and ((Get-Content -LiteralPath $dlPatch -Raw -ErrorAction SilentlyContinue) -match 'myscoop 补丁|GitHub 镜像加速补丁')) {
@@ -1294,12 +1304,14 @@ try {
     Write-Host "`n[提示] 未找到 myscoop\symlink.bat，跳过镜像补丁" -ForegroundColor Yellow
   }
 } catch {
-  Write-Host "`n脚本发生致命错误：$_" -ForegroundColor Red
-  Write-Host "错误堆栈：$($_.Exception.StackTrace)" -ForegroundColor DarkRed
+  try { Write-Host "`n脚本发生致命错误：$_" -ForegroundColor Red } catch { }
+  try { Write-Host "错误堆栈：$($_.Exception.StackTrace)" -ForegroundColor DarkRed } catch { }
 }
 
-Write-Host "`nBucket 恢复完成，按任意键关闭窗口..." -ForegroundColor Gray
-$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+# 结尾提示与按键容错：Win7 旧控制台在异常代码页下写输出可能抛 Win32 0x1F，
+# 不能让最后的提示/按键把脚本拖死（full 版软件段在其后，必须继续执行）。
+try { Write-Host "`nBucket 恢复完成，按任意键关闭窗口..." -ForegroundColor Gray } catch { }
+try { $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") } catch { }
 '@
     # 恢复逻辑：优先读取同目录维护版 restore-scoop-backup.ps1（单一事实来源），
     # 找不到时使用脚本内置的完整快照
@@ -1371,8 +1383,10 @@ $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
     $outputLines += ""
     $outputLines += '  Write-Host "`n全部恢复流程执行完毕！" -ForegroundColor Green'
     $outputLines += ""
-    $outputLines += 'Write-Host "`n操作完成，按任意键关闭窗口..." -ForegroundColor Gray'
-    $outputLines += '$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")'
+    # 结尾提示与按键容错：Win7 旧控制台在异常代码页下写输出可能抛 Win32 0x1F，
+    # 不能让最后的提示/按键抛出未捕获异常（与维护版保持一致）
+    $outputLines += 'try { Write-Host "`n操作完成，按任意键关闭窗口..." -ForegroundColor Gray } catch { }'
+    $outputLines += 'try { $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") } catch { }'
 
     # 写入UTF8-BOM脚本
     $savePath = "restore-scoop-full.ps1"
@@ -1402,8 +1416,9 @@ else {
     exit 1
 }
 } catch {
-    Write-Host "`n脚本发生致命错误：$_" -ForegroundColor Red
-    Write-Host "错误堆栈：$($_.Exception.StackTrace)" -ForegroundColor DarkRed
-    Write-Host "按任意键退出窗口..."
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    # 输出/按键容错：控制台异常（如 Win7 旧代码页下的 Win32 0x1F）不得再抛出
+    try { Write-Host "`n脚本发生致命错误：$_" -ForegroundColor Red } catch { }
+    try { Write-Host "错误堆栈：$($_.Exception.StackTrace)" -ForegroundColor DarkRed } catch { }
+    try { Write-Host "按任意键退出窗口..." } catch { }
+    try { $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") } catch { }
 }
