@@ -499,7 +499,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* f365e02 (HEAD -> main, origin/main, origin/HEAD) 修复 restore 脚本未处理非 git bucket 导致 main 被 Scoop 删除
+* 66cd17d (HEAD -> main, origin/main, origin/HEAD) 修复 restore 脚本全新安装失败（残留目录 + 安装器直连 GitHub）
+* 87d5eb9 progress.md 更新提交历史
+* f365e02 修复 restore 脚本未处理非 git bucket 导致 main 被 Scoop 删除
 * 80a3d4b progress.md 更新提交历史
 * 05b9ba2 restore 脚本 bucket 源支持加速代理 + 浅克隆
 * c2dc71d progress.md 更新提交历史
