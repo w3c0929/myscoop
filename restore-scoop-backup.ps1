@@ -171,6 +171,7 @@ try {
     param([string]$Name, [string[]]$Sources)
 
     $dir = Join-Path $scoopPath "buckets\$Name"
+    $bak = $null
     if (Test-Path $dir) {
       git -C $dir rev-parse --verify HEAD 2>$null | Out-Null
       if ($LASTEXITCODE -eq 0) { return $true }
@@ -189,9 +190,17 @@ try {
       git clone --depth 1 --quiet $src $dir 2>$null
       if ($LASTEXITCODE -eq 0 -and (Test-Path (Join-Path $dir '.git'))) {
         Write-Host "  浅克隆完成: $Name" -ForegroundColor Green
+        # 重建成功：旧备份已无价值，直接删除（避免留下 buckets_backup 目录）
+        if ($bak -and (Test-Path $bak)) {
+          Remove-Item -LiteralPath $bak -Recurse -Force -ErrorAction SilentlyContinue
+          if (-not (Test-Path $bak)) { Write-Host "  已清理旧目录备份" -ForegroundColor Gray }
+        }
         return $true
       }
       if (Test-Path $dir) { Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+    if ($bak -and (Test-Path $bak)) {
+      Write-Host "  [提示] 重建失败，旧目录已保留在 $bak（可手动还原）" -ForegroundColor Yellow
     }
     Write-Host "  [提示] 所有浅克隆源均失败，回退完整添加流程" -ForegroundColor Yellow
     return $false
@@ -849,6 +858,31 @@ try {
 
   $ErrorActionPreference = "Stop"
   Write-Host "`n✅ 所有Bucket仓库全部添加成功（此版本仅恢复 Bucket，不含软件安装）" -ForegroundColor Green
+
+  # 清理 buckets_backup：对应 bucket 已恢复为完整 git 仓库的旧备份直接删除
+  # （重建成功即无保留价值）；仅保留"对应 bucket 尚未恢复"的备份供手动还原。
+  $bakRoot = Join-Path $scoopPath 'buckets_backup'
+  if (Test-Path $bakRoot) {
+    foreach ($bakItem in (Get-ChildItem -LiteralPath $bakRoot -Directory -ErrorAction SilentlyContinue)) {
+      $bucketName = $bakItem.Name -replace '-\d{14}$', ''
+      $bucketDir = Join-Path $scoopPath "buckets\$bucketName"
+      $restored = $false
+      if (Test-Path $bucketDir) {
+        git -C $bucketDir rev-parse --verify HEAD 2>$null | Out-Null
+        $restored = ($LASTEXITCODE -eq 0)
+      }
+      if ($restored) {
+        Remove-Item -LiteralPath $bakItem.FullName -Recurse -Force -ErrorAction SilentlyContinue
+        Write-Host "  已清理重建成功的旧备份: $($bakItem.Name)" -ForegroundColor Gray
+      } else {
+        Write-Host "  [保留] 旧备份 $($bakItem.Name)（对应 bucket 尚未恢复，可手动还原）" -ForegroundColor Yellow
+      }
+    }
+    if ((Get-ChildItem -LiteralPath $bakRoot -ErrorAction SilentlyContinue | Measure-Object).Count -eq 0) {
+      Remove-Item -LiteralPath $bakRoot -Force -ErrorAction SilentlyContinue
+      if (-not (Test-Path $bakRoot)) { Write-Host "  已移除空的 buckets_backup 目录" -ForegroundColor Gray }
+    }
+  }
 } catch {
   Write-Host "`n脚本发生致命错误：$_" -ForegroundColor Red
   Write-Host "错误堆栈：$($_.Exception.StackTrace)" -ForegroundColor DarkRed
