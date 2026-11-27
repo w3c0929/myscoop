@@ -515,7 +515,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* 8062d17 (HEAD -> main, origin/main, origin/HEAD) 修复 Win7 上 symlink.bat 代码页残留导致脚本中断
+* d7939dc (HEAD -> main) symlink.bat：精简开头注释（保留代码页记录/恢复逻辑）
+* b2c03cd (origin/main, origin/HEAD) progress.md 更新提交历史
+* 8062d17 修复 Win7 上 symlink.bat 代码页残留导致脚本中断
 * bc9447d progress.md 更新提交历史
 * 7e65095 README 同步脚本新能力
 * 0df4b50 progress.md 更新提交历史
