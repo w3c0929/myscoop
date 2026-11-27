@@ -511,7 +511,9 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* f625d7f (HEAD -> main, origin/main, origin/HEAD) 修复跨账号场景 safe.directory 未写入
+* 33c8ae5 (HEAD -> main, origin/main, origin/HEAD) bucket remote 自检与自动换源
+* b9d2314 progress.md 更新提交历史
+* f625d7f 修复跨账号场景 safe.directory 未写入
 * 05969b4 progress.md 更新提交历史
 * 6b6ff03 交互式代理选择 + 直连选项 + Git 安装后补 safe.directory
 * 06bbe06 progress.md 更新提交历史
