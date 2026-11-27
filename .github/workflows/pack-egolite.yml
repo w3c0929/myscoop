@@ -85,10 +85,13 @@ jobs:
           Write-Host '=== 检查结束 ==='
 
           # 排除用户数据与日志（确保不含个人信息）
+          # 另排除 Current/：0.6.4.22 起安装器把浏览器主体复制成两份
+          # （版本目录 + Current/，逐字节相同），运行中进程加载的是版本目录
+          # （已核实 ego 进程加载 ...\<ver>\chrome.dll，无任何代码引用 Current 路径）。
           $out = "$env:RUNNER_TEMP\egolite-$ver.7z"
           $7z = "$env:ProgramFiles\7-Zip\7z.exe"
           if (-not (Test-Path $7z)) { $7z = "${env:ProgramFiles(x86)}\7-Zip\7z.exe" }
-          & $7z a $out "$appRoot\*" '-xr!User Data' '-xr!*.log' '-xr!Dictionaries' -mx=9 | Out-Null
+          & $7z a $out "$appRoot\*" '-xr!User Data' '-xr!*.log' '-xr!Dictionaries' '-xr!Current' '-xr!SetupMetrics' -mx=9 | Out-Null
           if ($LASTEXITCODE -ne 0) { throw "7z 打包失败: $LASTEXITCODE" }
 
           Write-Host '=== 包内自查（应无输出）==='
