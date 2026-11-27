@@ -1,13 +1,13 @@
 {
-    "version": "0.1.14",
+    "version": "0.2.0",
     "description": "Blazing-fast native notes app and rich-text editor for macOS, Windows, and Linux. Built with Rust + GPUI. Local-first and beautifully designed.",
     "homepage": "https://quiet.md",
     "license": "MIT",
     "checkver": {
         "github": "https://github.com/s1dashu/quiet-md"
     },
-    "url": "https://github.com/s1dashu/quiet-md/releases/download/v0.1.14/quiet-md-0.1.14-windows-x64-setup.exe",
-    "hash": "sha256:b450cf0811400339d834f1c247885b65fa193732eca59c9a5f447a3084b058ad",
+    "url": "https://github.com/s1dashu/quiet-md/releases/download/v0.2.0/quiet-md-0.2.0-windows-x64-setup.exe",
+    "hash": "sha256:c1b045f82709f700b951cca0adb6a50052152765f433b49215690b471a4122d4",
     "innosetup": true,
     "bin": "quiet_md.exe",
     "shortcuts": [
