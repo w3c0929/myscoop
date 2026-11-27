@@ -123,6 +123,33 @@ try {
   }
 
   # ============================================================
+  # 浅克隆 bucket 仓库到 Scoop 的 buckets 目录（--depth 1，只取最新快照，
+  # 避免完整历史带来数倍流量/时间）。成功返回 $true，目录已就绪
+  # （后续 scoop bucket add 会检测"已存在"并跳过）；全部源失败返回 $false，
+  # 调用方回退原有完整 add 流程。
+  # ============================================================
+  function Clone-BucketToDir {
+    param([string]$Name, [string[]]$Sources)
+
+    $dir = Join-Path $scoopPath "buckets\$Name"
+    if (Test-Path $dir) { return $true }
+    New-Item -ItemType Directory -Force (Split-Path $dir -Parent) | Out-Null
+    foreach ($src in $Sources) {
+      if (-not $src) { continue }
+      if (Test-Path $dir) { Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue }
+      Write-Host "  尝试浅克隆: $src" -ForegroundColor DarkGray
+      git clone --depth 1 --quiet $src $dir 2>$null
+      if ($LASTEXITCODE -eq 0 -and (Test-Path (Join-Path $dir '.git'))) {
+        Write-Host "  浅克隆完成: $Name" -ForegroundColor Green
+        return $true
+      }
+      if (Test-Path $dir) { Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+    Write-Host "  [提示] 所有浅克隆源均失败，回退完整添加流程" -ForegroundColor Yellow
+    return $false
+  }
+
+  # ============================================================
   # 通用：从 main bucket 清单动态读取下载信息（版本/URL/hash，不硬编码），
   # 用加速镜像下载并校验 sha256，按 Scoop 的缓存命名规则放入 cache，
   # 随后 scoop install <app> 直接命中缓存（只需解包，不再等待下载）。
@@ -313,6 +340,16 @@ try {
   # 导致 scoop bucket list/add 被误判失败。Continue 下仅打印错误，成败仍由 $LASTEXITCODE 判断。
   $ErrorActionPreference = "Continue"
   # --- Bucket: main (镜像优先，失败自动回退官方) ---
+  # 浅克隆加速：nju 镜像优先 → 加速代理 GitHub 回退（失败走下方完整 add 流程）
+  if (-not (Test-Path (Join-Path $scoopPath 'buckets\main'))) {
+    Clone-BucketToDir 'main' @(
+      'https://mirror.nju.edu.cn/git/scoop-main.git',
+      'https://gh-proxy.org/https://github.com/ScoopInstaller/Main.git',
+      'https://hk.gh-proxy.org/https://github.com/ScoopInstaller/Main.git',
+      'https://cdn.gh-proxy.com/https://github.com/ScoopInstaller/Main.git'
+    ) | Out-Null
+  }
+
   $retryCount = 0
   $bucketAddSuccess = $false
   $mirrorUrl = 'https://mirror.nju.edu.cn/git/scoop-main.git'
@@ -387,6 +424,16 @@ try {
   }
 
   # --- Bucket: extras (镜像优先，失败自动回退官方) ---
+  # 浅克隆加速：nju 镜像优先 → 加速代理 GitHub 回退（失败走下方完整 add 流程）
+  if (-not (Test-Path (Join-Path $scoopPath 'buckets\extras'))) {
+    Clone-BucketToDir 'extras' @(
+      'https://mirror.nju.edu.cn/git/scoop-extras.git',
+      'https://gh-proxy.org/https://github.com/ScoopInstaller/Extras.git',
+      'https://hk.gh-proxy.org/https://github.com/ScoopInstaller/Extras.git',
+      'https://cdn.gh-proxy.com/https://github.com/ScoopInstaller/Extras.git'
+    ) | Out-Null
+  }
+
   $retryCount = 0
   $bucketAddSuccess = $false
   $mirrorUrl = 'https://mirror.nju.edu.cn/git/scoop-extras.git'
@@ -461,6 +508,16 @@ try {
   }
 
   # --- Bucket: versions (镜像优先，失败自动回退官方) ---
+  # 浅克隆加速：nju 镜像优先 → 加速代理 GitHub 回退（失败走下方完整 add 流程）
+  if (-not (Test-Path (Join-Path $scoopPath 'buckets\versions'))) {
+    Clone-BucketToDir 'versions' @(
+      'https://mirror.nju.edu.cn/git/scoop-versions.git',
+      'https://gh-proxy.org/https://github.com/ScoopInstaller/Versions.git',
+      'https://hk.gh-proxy.org/https://github.com/ScoopInstaller/Versions.git',
+      'https://cdn.gh-proxy.com/https://github.com/ScoopInstaller/Versions.git'
+    ) | Out-Null
+  }
+
   $retryCount = 0
   $bucketAddSuccess = $false
   $mirrorUrl = 'https://mirror.nju.edu.cn/git/scoop-versions.git'
@@ -535,6 +592,16 @@ try {
   }
 
   # --- Bucket: sysinternals (known, official) ---
+  # 浅克隆加速：加速代理 GitHub 优先（nju 无 sysinternals 镜像）→ 官方直连回退
+  if (-not (Test-Path (Join-Path $scoopPath 'buckets\sysinternals'))) {
+    Clone-BucketToDir 'sysinternals' @(
+      'https://gh-proxy.org/https://github.com/niheaven/scoop-sysinternals.git',
+      'https://hk.gh-proxy.org/https://github.com/niheaven/scoop-sysinternals.git',
+      'https://cdn.gh-proxy.com/https://github.com/niheaven/scoop-sysinternals.git',
+      'https://github.com/niheaven/scoop-sysinternals.git'
+    ) | Out-Null
+  }
+
   $retryCount = 0
   $bucketAddSuccess = $false
   while ($retryCount -lt 3 -and !$bucketAddSuccess) {
@@ -580,6 +647,16 @@ try {
   }
 
   # --- Bucket: myscoop (custom, SSH→HTTPS auto-fallback) ---
+  # 浅克隆加速：加速代理 HTTPS 优先 → 官方 HTTPS 回退（SSH 密钥场景交给下方完整 add 流程）
+  if (-not (Test-Path (Join-Path $scoopPath 'buckets\myscoop'))) {
+    Clone-BucketToDir 'myscoop' @(
+      'https://gh-proxy.org/https://github.com/w3c0929/myscoop.git',
+      'https://hk.gh-proxy.org/https://github.com/w3c0929/myscoop.git',
+      'https://cdn.gh-proxy.com/https://github.com/w3c0929/myscoop.git',
+      'https://github.com/w3c0929/myscoop.git'
+    ) | Out-Null
+  }
+
   $retryCount = 0
   $bucketAddSuccess = $false
   $source = 'git@github.com:w3c0929/myscoop.git'
@@ -654,6 +731,13 @@ try {
   }
 
   # --- Bucket: official (custom, SSH→HTTPS auto-fallback) ---
+  # 浅克隆加速：gitee 源（国内直连）
+  if (-not (Test-Path (Join-Path $scoopPath 'buckets\official'))) {
+    Clone-BucketToDir 'official' @(
+      'https://gitee.com/cmontage/scoopbucket.git'
+    ) | Out-Null
+  }
+
   $retryCount = 0
   $bucketAddSuccess = $false
   $source = 'https://gitee.com/cmontage/scoopbucket.git'
