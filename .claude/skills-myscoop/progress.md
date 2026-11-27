@@ -485,8 +485,11 @@ scoop cat myscoop/appname
 每次提交完成后，将 `git log --oneline --decorate --graph --decorate-refs-exclude=refs/tags/*` 输出更新到此处（必须排除标签装饰——95 个 release 锚点标签全指向同一快照提交，不排除时该行可达数千字符）：
 
 ```
-* c0d9b97 (HEAD) egolite 升级到 0.6.4.22（CI 自动打包）
-* e1cff8f (origin/main, origin/HEAD) progress.md 更新提交历史
+* 223ae77 (HEAD -> main) egolite：排除 Current 冗余主体重新打包（298MB→162MB），hash 同步
+* b1aa7b3 (origin/main, origin/HEAD) pack-egolite：排除 Current/SetupMetrics 冗余副本（0.6.4.22 起安装器双份主体，包体积翻倍）
+* 2e21612 progress.md 更新提交历史
+* c0d9b97 egolite 升级到 0.6.4.22（CI 自动打包）
+* e1cff8f progress.md 更新提交历史
 * 02cdd7a 同步 README 第三方版本与日期列
 * 52b8833 自动更新第三方软件
 * ad69aba progress.md 更新提交历史
