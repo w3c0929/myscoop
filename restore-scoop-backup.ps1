@@ -10,7 +10,24 @@ $ErrorActionPreference = "Stop"
 try {
   Clear-Host
   Write-Host "==================== Scoop 恢复工具 ====================" -ForegroundColor Cyan
-  $scoopPath = "D:\scoop"
+  # Scoop 根目录动态解析（兼容任意机器：不写死盘符/用户名）：
+  #   %SCOOP% 环境变量 → scoop 命令安装位置推断 → 常见默认位置 → 全新安装回退 D:\scoop
+  $scoopPath = $env:SCOOP
+  if ($scoopPath -and -not (Test-Path (Join-Path $scoopPath 'apps\scoop\current'))) { $scoopPath = $null }
+  if (-not $scoopPath) {
+    $scoopCmd = Get-Command scoop -ErrorAction SilentlyContinue
+    if ($scoopCmd -and $scoopCmd.Source) {
+      $candidate = Split-Path (Split-Path $scoopCmd.Source -Parent) -Parent
+      if (Test-Path (Join-Path $candidate 'apps\scoop\current')) { $scoopPath = $candidate }
+    }
+  }
+  if (-not $scoopPath) {
+    foreach ($c in @("$env:USERPROFILE\scoop", "C:\ProgramData\scoop", "D:\scoop")) {
+      if (Test-Path (Join-Path $c 'apps\scoop\current')) { $scoopPath = $c; break }
+    }
+  }
+  if (-not $scoopPath) { $scoopPath = "D:\scoop" }
+  Write-Host "Scoop 根目录：$scoopPath" -ForegroundColor Gray
 
   # GitHub 加速镜像：与 scoop config.json 的 aria2-mirrors 一致，按序尝试；全部失败再直连
   # （安装脚本下载与 git 缓存预下载共用）
@@ -86,6 +103,23 @@ try {
     } finally {
       Remove-Item $tmpInstaller -Force -ErrorAction SilentlyContinue
     }
+  }
+
+  # ============================================================
+  # 判断 bucket 是否已存在（目录存在即视为已存在，避免上次中断留下的
+  # 不完整 .git 触发重新 add 时报 "current branch appears to be broken"）。
+  # 目录存在但 git 仓库不完整时打印修复提示（不阻断流程）。
+  # ============================================================
+  function Test-BucketAlreadyPresent {
+    param([string]$Name)
+
+    $dir = Join-Path $scoopPath "buckets\$Name"
+    if (-not (Test-Path $dir)) { return $false }
+    git -C $dir rev-parse --verify HEAD 2>$null | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+      Write-Host "  警告：Bucket $Name 目录存在但 git 仓库不完整（可能上次运行中断）。已跳过添加；如需修复请删除该目录后重新运行。" -ForegroundColor Yellow
+    }
+    return $true
   }
 
   # ============================================================
@@ -289,7 +323,7 @@ try {
     }
     try {
       $existingList = scoop bucket list 2>&1
-      if ((Test-Path (Join-Path $scoopPath "buckets\main")) -or ($existingList -match [regex]::Escape('main'))) {
+      if ((Test-BucketAlreadyPresent 'main') -or ($existingList -match [regex]::Escape('main'))) {
         Write-Host 'Bucket main 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
         continue
@@ -362,7 +396,7 @@ try {
     }
     try {
       $existingList = scoop bucket list 2>&1
-      if ((Test-Path (Join-Path $scoopPath "buckets\extras")) -or ($existingList -match [regex]::Escape('extras'))) {
+      if ((Test-BucketAlreadyPresent 'extras') -or ($existingList -match [regex]::Escape('extras'))) {
         Write-Host 'Bucket extras 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
         continue
@@ -435,7 +469,7 @@ try {
     }
     try {
       $existingList = scoop bucket list 2>&1
-      if ((Test-Path (Join-Path $scoopPath "buckets\versions")) -or ($existingList -match [regex]::Escape('versions'))) {
+      if ((Test-BucketAlreadyPresent 'versions') -or ($existingList -match [regex]::Escape('versions'))) {
         Write-Host 'Bucket versions 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
         continue
@@ -501,7 +535,7 @@ try {
     Write-Host "尝试添加Bucket[sysinternals]，第$retryCount/3次"
     try {
       $existingList = scoop bucket list 2>&1
-      if ((Test-Path (Join-Path $scoopPath "buckets\sysinternals")) -or ($existingList -match [regex]::Escape('sysinternals'))) {
+      if ((Test-BucketAlreadyPresent 'sysinternals') -or ($existingList -match [regex]::Escape('sysinternals'))) {
         Write-Host 'Bucket sysinternals 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
         continue
@@ -554,7 +588,7 @@ try {
     Write-Host "尝试添加Bucket[myscoop]，第$retryCount/3次（源: $currentSource）"
     try {
       $existingList = scoop bucket list 2>&1
-      if ((Test-Path (Join-Path $scoopPath "buckets\myscoop")) -or ($existingList -match [regex]::Escape('myscoop'))) {
+      if ((Test-BucketAlreadyPresent 'myscoop') -or ($existingList -match [regex]::Escape('myscoop'))) {
         Write-Host 'Bucket myscoop 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
         continue
@@ -627,7 +661,7 @@ try {
     Write-Host "尝试添加Bucket[official]，第$retryCount/3次（源: $currentSource）"
     try {
       $existingList = scoop bucket list 2>&1
-      if ((Test-Path (Join-Path $scoopPath "buckets\official")) -or ($existingList -match [regex]::Escape('official'))) {
+      if ((Test-BucketAlreadyPresent 'official') -or ($existingList -match [regex]::Escape('official'))) {
         Write-Host 'Bucket official 已存在，无需重复添加' -ForegroundColor Green
         $bucketAddSuccess = $true
         continue
