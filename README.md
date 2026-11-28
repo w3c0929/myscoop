@@ -8,6 +8,22 @@
 
 > **首次运行脚本前（必做）**：打开 PowerShell 执行一次 `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`（允许本地脚本，远程脚本仍需签名）。
 
+**通用方式（Windows 10 / 11 / 7 通用，无需手动下载脚本）**
+
+在 PowerShell 中执行以下命令之一（会自动下载脚本到临时目录并运行；首次运行前同样需要先执行上面的执行策略命令）：
+
+- **带镜像加速（国内网络推荐）**：
+
+  ```powershell
+  Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force; irm https://gh-proxy.org/https://raw.githubusercontent.com/w3c0929/myscoop/main/restore-scoop-backup.ps1 -OutFile "$env:TEMP\restore-scoop-backup.ps1"; & "$env:TEMP\restore-scoop-backup.ps1"
+  ```
+
+- **不带镜像加速（可直连 GitHub 时使用）**：
+
+  ```powershell
+  Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force; irm https://raw.githubusercontent.com/w3c0929/myscoop/main/restore-scoop-backup.ps1 -OutFile "$env:TEMP\restore-scoop-backup.ps1"; & "$env:TEMP\restore-scoop-backup.ps1"
+  ```
+
 **Windows 10 / 11**
 
 1. 下载 [`restore-scoop-backup.ps1`](https://github.com/w3c0929/myscoop/raw/main/restore-scoop-backup.ps1)（右键 → 另存为）
