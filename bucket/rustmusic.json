@@ -1,16 +1,16 @@
 {
-    "version": "0.7.4",
+    "version": "0.8.0",
     "description": "精美的高性能桌面音乐播放器（Rust + Tauri 2 + React）：本地曲库 / 网易云 / QQ 音乐 / QRC 逐字歌词 / 桌面歌词 / 10 段均衡器",
     "homepage": "https://github.com/LingyunStudio/RustMusic",
     "license": "Apache-2.0",
     "checkver": {
         "github": "https://github.com/LingyunStudio/RustMusic"
     },
-    "url": "https://github.com/LingyunStudio/RustMusic/releases/download/v0.7.4/RustMusic_0.7.4_x64-setup.exe",
+    "url": "https://github.com/LingyunStudio/RustMusic/releases/download/v0.8.0/RustMusic_0.8.0_x64-setup.exe",
     "autoupdate": {
         "url": "https://github.com/LingyunStudio/RustMusic/releases/download/v$version/RustMusic_$version_x64-setup.exe"
     },
-    "hash": "sha256:8929483b640e1c1f97f417072932918dbe52bb987d4c3937f9dd0057b775195e",
+    "hash": "sha256:4258c6149b738c4221467c0ee665e53d056bc255c6f497027b74820be22ae40f",
     "innosetup": true,
     "bin": "rustmusic.exe",
     "shortcuts": [
