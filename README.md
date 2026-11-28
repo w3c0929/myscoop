@@ -61,7 +61,7 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 | 9 | [MoJian3D](https://github.com/LingCore/MoJian3D-Downloads) — 3D 模型查看器（Qt 桌面应用）：支持 AI Agent 通过内置 mojian3d-control 技能检查并控制当前模型 | `scoop install mojian3d` | 官方 release 便携 zip（仅 x64） | 0.1.6 | 2026-11-20 | 2026-11-20 |
 | 10 | [清风输入法 (WindInput)](https://github.com/huanfeng/WindInput) — 轻量、快速、可定制的开源中文输入法，专为五笔和码表方案设计，支持全拼/双拼 | `scoop install windinput` | 官方 release 便携 zip（TSF 需 wind_portable -start 注册） | 0.133.0 | 2026-11-17 | 2026-11-23 |
 | 11 | [Argus](https://github.com/Ray-lea/Argus) — 现代 Windows 任务管理器（Rust + GPUI） | `scoop install argus` | 单 exe 官方 release（仅 x64） | 0.6.0 | 2026-11-12 | 2026-11-23 |
-| 12 | [Snow Shot](https://github.com/mg-chao/snow-shot) — 截图、标注、钉图、离线 OCR 与录屏工具 | `scoop install snowshot` | 多架构便携 zip 官方 release（x64 / arm64） | 1.6.5 | 2026-11-11 | 2026-11-26 |
+| 12 | [Snow Shot](https://github.com/mg-chao/snow-shot) — 截图、标注、钉图、离线 OCR 与录屏工具 | `scoop install snowshot` | 多架构便携 zip 官方 release（x64 / arm64） | 1.6.6 | 2026-11-11 | 2026-11-28 |
 | 13 | [AltSnap](https://github.com/w3c0929/AltSnap) — 按住 Alt 拖动窗口（AltDrag 的维护延续版） | `scoop install altsnap` | 便携 zip 官方 release（仅 x64） | 1.68 | 2026-11-10 | 2026-11-10 |
 | 14 | [ELYTerminal](https://github.com/ELY-Open-Source/ELYTerminal) — 基于 GPUI 与 Ely 组件的终端 | `scoop install elyterminal` | 多架构便携 zip 官方 release（x64 / arm64） | 0.2.7 | 2026-11-09 | 2026-11-25 |
 | 15 | [WhoShitsonMyC](https://github.com/Kami958/WhoShitsonMyC) — 磁盘空间变化对比轻量小工具 | `scoop install whoshitsonmyc` | 单 exe 官方 release | 1.2.0 | 2026-11-09 | 2026-11-16 |
@@ -93,12 +93,12 @@ Windows 7 自带的 PowerShell 版本过旧，需先安装 WMF 5.1：
 | 41 | [StarPie](https://github.com/Star-Pie/StarPie) — 现代化 Windows 鼠标轮盘手势系统：按住键呼出轮盘、自定义手势动作与快捷键（Lightweight 便携版 zip） | `scoop install starpie` | zip 官方 release | 2.0.0 | 2026-10-13 | 2026-10-18 |
 | 42 | [Ludusavi](https://github.com/mtkennerly/ludusavi) — PC 游戏存档备份与恢复工具：自动扫描识别游戏、批量备份/还原存档、支持 6000+ 游戏清单与多存档槽位 | `scoop install ludusavi` | 多架构 zip 官方 release | 0.31.0 | 2026-10-13 | 2026-10-13 |
 | 43 | [Filee](https://github.com/w3c0929/Filee) — 免费开源文件转换器：拖拽即转 180+ 格式（图片 / PDF / Word / Excel / PPT / HWP / 视频 / 音频 / 电子书 / 压缩包），全程离线、无需上传 | `scoop install filee` | portable zip 官方 release | 2.5.9 | 2026-10-12 | 2026-11-17 |
-| 44 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.7.2 | 2026-10-12 | 2026-11-22 |
+| 44 | [知意输入法](https://github.com/dd1000001000/zhiyi_ime) — 按上文推荐候选的拼音输入法（自管理式安装器：script 形态装到 persist + 注册 IME，自动跳过 bin） | `scoop install zhiyiime` | 单 exe 官方 release（installer 注册） | 1.7.3 | 2026-10-12 | 2026-11-28 |
 | 45 | [SwitchHosts](https://github.com/w3c0929/SwitchHosts) — Hosts 文件快速切换管理工具（自建构建仓库） | `scoop install switchhosts` | zip 官方 release（自建构建） | 5.1.4 | 2026-10-10 | 2026-11-16 |
 | 46 | [TaskbarPopup](https://github.com/DM74164/TaskbarPopup) — Windows 11 任务栏增强：最大化时隐藏任务栏让窗口铺满屏幕；长按 Win 弹出液态玻璃风格迷你任务栏（窗口缩略图 / 音量亮度 / 打字筛选） | `scoop install taskbarpopup` | 多架构 zip 官方 release（x64 / arm64） | 1.2.2 | 2026-10-12 | 2026-11-26 |
-| 47 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.50 | 2026-10-11 | 2026-11-28 |
+| 47 | [FreeLLM API](https://github.com/tashfeenahmed/freellmapi) — 免费 LLM API 聚合网关：34 家免费提供商、635 个免费模型端点统一为一个 /v1 接口（智能路由 / 自动故障转移 / 密钥加密） | `scoop install freellmapi` | zip 官方 release | 0.16.51 | 2026-10-11 | 2026-11-28 |
 | 48 | [CC Switch](https://github.com/farion1231/cc-switch) — 多 AI 编程助手（Claude Code / Codex / OpenCode 等）的桌面配置切换器（跨平台 All-in-One） | `scoop install cc-switch` | 多架构 portable zip 官方 release | 4.0.44 | 2026-10-10 | 2026-11-28 |
-| 49 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.13.1 | 2026-10-10 | 2026-11-28 |
+| 49 | [BDL](https://github.com/Yuelioi/bdl) — Bilibili 下载器（Rust 编写；4K、UP 主空间、批量、字幕等） | `scoop install bdl` | 单 exe 官方 release（NSIS 解包） | 0.13.2 | 2026-10-10 | 2026-11-28 |
 | 50 | [KeyCrash](https://github.com/Yuelioi/keycrash) — Windows 快捷键冲突检测工具（一按，找到快捷键冲突 / A Windows shortcut conflict detector） | `scoop install keycrash` | zip 官方 release | 0.3.1 | 2026-10-10 | 2026-11-01 |
 | 51 | [SuMail](https://github.com/w3c0929/sumail-releases) — SuMail 桌面版（Windows 桌面版安装包与发布资产；源码仓库为私有） | `scoop install sumail` | zip 官方 release | 0.0.1 | 2026-10-10 | 2026-10-10 |
 | 52 | [DiskButler](https://github.com/YGTQ3/disk-butler) — C 盘管家：给普通人的 Windows 磁盘与内存维护助手（Tauri 2 + React） | `scoop install diskbutler` | 多架构 exe 官方 release（Tauri 解包） | 0.8.0 | 2026-10-10 | 2026-11-26 |
