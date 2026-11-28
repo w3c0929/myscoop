@@ -1,16 +1,16 @@
 {
-    "version": "0.6.0",
+    "version": "0.7.0",
     "description": "现代 Windows 任务管理器 · A modern task manager for Windows, built with Rust and GPUI Kit.",
     "homepage": "https://argustask.com",
     "license": "AGPL-3.0",
     "checkver": {
         "github": "https://github.com/Ray-lea/Argus"
     },
-    "url": "https://github.com/Ray-lea/Argus/releases/download/v0.6.0/Argus_0.6.0_x64.exe",
+    "url": "https://github.com/Ray-lea/Argus/releases/download/v0.7.0/Argus_0.7.0_x64.exe",
     "autoupdate": {
         "url": "https://github.com/Ray-lea/Argus/releases/download/v$version/Argus_$version_x64.exe"
     },
-    "hash": "sha256:1fbd14fdd689d8a17cb7dc629d0041471626681599af016bca5892573f80c4d6",
+    "hash": "sha256:aab5684c060dbc1b5c0b484f1f2ffd3f479a34a2e5abd0d725035f9f32ccd4a6",
     "pre_install": [
         "Get-Service ArgusPrivileged -ErrorAction SilentlyContinue | Stop-Service -Force -ErrorAction SilentlyContinue",
         "Get-Process -ErrorAction SilentlyContinue | Where-Object { try { $_.Path -like 'C:\\Program Files\\Argus Privileged\\*' -or $_.Path -like 'C:\\Program Files\\Argus Runtime\\*' } catch { $false } } | Stop-Process -Force -ErrorAction SilentlyContinue",
