@@ -8,7 +8,7 @@
 
 > **首次运行脚本前（必做）**：打开 PowerShell 执行一次 `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`（允许本地脚本，远程脚本仍需签名）。
 
-**通用方式（Windows 10 / 11 / 7 通用，无需手动下载脚本）**
+**通用方式（Windows 10 / 11 / 7 通用，无需手动下载脚本），win7需先安装 WMF 5.1**
 
 在 PowerShell 中执行以下命令之一（命令中已包含执行策略设置，并会自动下载脚本到临时目录后运行；若因组策略限制导致设置失败，请先按上方说明手动执行一次）：
 
